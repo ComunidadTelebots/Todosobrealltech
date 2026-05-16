@@ -28,9 +28,11 @@ function Layout({ children }) {
     <div id="stage">
       <SiteHeader />
       <div id="container">
-        {children}
-        <Sidebar />
-        <div style={{ clear: 'both' }}></div>
+        <div id="content">
+          {children}
+          <Sidebar />
+          <div style={{ clear: 'both' }}></div>
+        </div>
       </div>
       <div id="footer">
         <p>© {new Date().getFullYear()} NW3 - Noticiasweb3</p>
