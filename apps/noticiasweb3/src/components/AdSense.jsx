@@ -4,6 +4,12 @@ const CLIENT = import.meta.env.VITE_ADSENSE_ID;
 
 function loadScript() {
   if (!CLIENT || document.getElementById('adsense-script')) return;
+
+  const meta = document.createElement('meta');
+  meta.name = 'google-adsense-account';
+  meta.content = CLIENT;
+  document.head.appendChild(meta);
+
   const s = document.createElement('script');
   s.id = 'adsense-script';
   s.async = true;

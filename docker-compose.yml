@@ -5,6 +5,7 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+        VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
     restart: unless-stopped
     depends_on:
       - api

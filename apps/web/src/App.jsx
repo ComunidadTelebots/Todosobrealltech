@@ -12,6 +12,7 @@ import Footer from '@/components/Footer.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 import CookieConsent from '@/components/CookieConsent.jsx';
 import CookiePreferencesModal from '@/components/CookiePreferencesModal.jsx';
+import AdSenseAutoAds from '@/components/AdSenseAutoAds.jsx';
 import { Toaster } from '@/components/ui/sonner';
 
 import HomePage from '@/pages/HomePage.jsx';
@@ -45,6 +46,7 @@ function App() {
         <LanguageProvider>
           <AnalyticsProvider>
             <PageTracker />
+            <AdSenseAutoAds />
             <ScrollToTop />
             <div className="flex flex-col min-h-screen relative">
               <Header />

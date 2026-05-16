@@ -8,7 +8,9 @@ RUN npm ci --workspace apps/web --include-workspace-root
 
 COPY apps/web apps/web
 ARG VITE_GOOGLE_ANALYTICS_ID=
+ARG VITE_ADSENSE_ID=
 ENV VITE_GOOGLE_ANALYTICS_ID=$VITE_GOOGLE_ANALYTICS_ID
+ENV VITE_ADSENSE_ID=$VITE_ADSENSE_ID
 RUN npm run build --prefix apps/web
 
 FROM nginx:1.27-alpine
