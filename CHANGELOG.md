@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.11] - 2026-05-16
+### noticiasweb3 + pocketbase — Canal de Telegram dinámico (223k posts)
+- Añadida colección `telegram_channel_posts` en PocketBase (migración `1779000001`): campos `message_id` (único), `date`, `text`, `category` (IA/Tecnología/Ciberseguridad/Gaming/Otro), `telegram_url`, `has_photo`. Lectura pública, escritura solo interna.
+- Creado `scripts/scrape-telegram-channel.mjs`: script Node.js sin dependencias que extrae todos los posts del preview público `https://t.me/s/TodoSobreAllTech?before={ID}`, los categoriza por keywords y los guarda en PocketBase con checkpoint reanudable.
+- Creada página `/canal` (`CanalPage.jsx`): lista paginada (20/pág.) de posts con filtro por categoría, buscador de texto libre, badge de categoría con color y enlace directo a Telegram. Solo visible en modo 2026.
+- Añadido enlace "Canal de Telegram" en la navegación principal, visible únicamente en modo 2026.
+- Añadida variable `VITE_POCKETBASE_URL` al Dockerfile de noticiasweb3 y a docker-compose.yml.
+
 ## [0.1.10] - 2026-05-16
 ### noticiasweb3 — 13 artículos adicionales de mayo (13–16 mayo)
 - Añadidos 13 artículos verificados del canal @TodoSobreAllTech (IDs 224040–224080).

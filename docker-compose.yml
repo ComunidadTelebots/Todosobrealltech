@@ -32,6 +32,7 @@ services:
       args:
         VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
         VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+        VITE_POCKETBASE_URL: ${VITE_POCKETBASE_URL:-}
     restart: unless-stopped
     networks:
       - default

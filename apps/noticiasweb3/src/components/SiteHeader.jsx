@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 const navItems = [
   { label: 'Bienvenido', path: '/' },
   { label: 'Novedades y Noticias', path: '/noticias' },
+  { label: 'Canal de Telegram', path: '/canal', version2026Only: true },
   { label: 'Iniciar sesion', path: '/iniciar-sesion' },
   {
     label: 'Extensiones de Buscadores',
@@ -152,7 +153,7 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
 
       <div id="access">
         <ul>
-          {navItems.map((item) => {
+          {navItems.filter((item) => !item.version2026Only || siteVersion === '2026').map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <li
