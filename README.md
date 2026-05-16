@@ -33,6 +33,10 @@ docker compose up -d --build
 
 La web queda expuesta en `http://localhost:8080`.
 
+## Cambios
+
+Consulta `CHANGELOG.md` para ver el historial de cambios del proyecto.
+
 ## Seguridad
 
 Este repositorio no debe incluir:
