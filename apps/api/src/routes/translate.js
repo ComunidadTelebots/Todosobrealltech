@@ -1,5 +1,5 @@
 import express from 'express';
-import translate from 'translate-google';
+import { translate } from '@vitalets/google-translate-api';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 
@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
   }
 
   // Translate text to target language
-  const translatedText = await translate(text, { to: targetLanguage });
+  const { text: translatedText } = await translate(text, { to: targetLanguage });
 
   // Save translation to PocketBase
   const record = await pb.collection('translations').create({
@@ -55,7 +55,7 @@ router.post('/all', async (req, res) => {
   // Translate each record
   for (const record of records) {
     try {
-      const translatedText = await translate(record.translated_text, { to: targetLanguage });
+      const { text: translatedText } = await translate(record.translated_text, { to: targetLanguage });
 
       // Validate data structure before updating
       const updateData = {
