@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.7] - 2026-05-16
+### noticiasweb3 — Páginas de detalle por artículo
+- Extraído el array de artículos a `src/data/articles.jsx` para compartirlo entre páginas.
+- Añadido campo `slug` a todos los artículos (25 en total) para URLs limpias.
+- Creada `NoticiaDetailPage` con ruta `/noticias/:slug`: muestra título, categoría, fecha, fuente y cuerpo completo.
+- Si `telegramUrl` está relleno, aparece enlace "Ver en Telegram" en la cabecera del artículo.
+- Títulos del listado de noticias enlazan ahora a la página de detalle interna en lugar de a la fuente externa.
+- Enlace "← Volver a noticias" en la cabecera y pie de cada detalle.
+
 ## [0.1.6] - 2026-05-16
 ### Infraestructura — GitHub Actions CI/CD
 - Añadido `.github/workflows/deploy.yml`: redeploy automático en el VPS al hacer push a `main`.
