@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.12] - 2026-05-16
+### noticiasweb3 — 9 artículos adicionales (IDs 224041–224088)
+- Añadidos 9 artículos verificados del canal @TodoSobreAllTech.
+- Categoría Tecnología: luces router, Google Pixel 10, Irán cables submarinos, UE cable Polo Norte, El Corte Inglés teles outlet, contratación pública española, Amazon/Zaragoza inundaciones, refrigeración líquida vs aire CPU, cable Europa-África Orange.
+- Todos incluyen `telegramUrl` con enlace directo al post del canal.
+- Fechas del 13 al 16 de mayo de 2026.
+
 ## [0.1.11] - 2026-05-16
 ### noticiasweb3 + pocketbase — Canal de Telegram dinámico (223k posts)
 - Añadida colección `telegram_channel_posts` en PocketBase (migración `1779000001`): campos `message_id` (único), `date`, `text`, `category` (IA/Tecnología/Ciberseguridad/Gaming/Otro), `telegram_url`, `has_photo`. Lectura pública, escritura solo interna.
