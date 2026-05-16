@@ -18,7 +18,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /opt/todosobrealltech
+            docker network create traefik 2>/dev/null || true
+            cd /root/Todosobrealltech
             git pull origin main
             docker compose up -d --build noticiasweb3
             docker image prune -f
