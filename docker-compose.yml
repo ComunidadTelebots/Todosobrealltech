@@ -31,6 +31,7 @@ services:
       dockerfile: apps/noticiasweb3/Dockerfile
       args:
         VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
     restart: unless-stopped
     networks:
       - default

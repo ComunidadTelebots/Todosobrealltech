@@ -1,5 +1,32 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
+
+const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+
+function initGA() {
+  if (!GA_ID || document.getElementById('ga-script')) return;
+  const script = document.createElement('script');
+  script.id = 'ga-script';
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  document.head.appendChild(script);
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', GA_ID, { send_page_view: false });
+}
+
+function PageTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    if (!GA_ID || typeof window.gtag !== 'function') return;
+    window.gtag('event', 'page_view', {
+      page_path: location.pathname + location.search,
+    });
+  }, [location]);
+  return null;
+}
 import SiteHeader from './components/SiteHeader.jsx';
 import AdSense from './components/AdSense.jsx';
 import Sidebar from './components/Sidebar.jsx';
@@ -114,8 +141,11 @@ function NotFound() {
 }
 
 export default function App() {
+  useEffect(() => { initGA(); }, []);
+
   return (
     <Router>
+      <PageTracker />
       <Routes>
         <Route path="/" element={<Layout><BienvenidoPage /></Layout>} />
         <Route path="/bienvenido" element={<Layout><BienvenidoPage /></Layout>} />
