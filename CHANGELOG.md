@@ -5,7 +5,7 @@
 - Anadidas labels de Traefik al servicio `web` para publicar la web por HTTPS.
 - Anadida red externa configurable `TRAEFIK_NETWORK`.
 - Anadidas variables `WEB_HOST`, `TRAEFIK_ENTRYPOINT` y `TRAEFIK_CERT_RESOLVER`.
-- Documentado el despliegue con Traefik en `README.md`.
+- Documentado el despliegue con Traefik en `README.md`, priorizando reutilizar un contenedor/red Traefik existente.
 
 ## [0.1.0] - 2026-05-16
 ### Inicial - Importacion limpia desde Horizons

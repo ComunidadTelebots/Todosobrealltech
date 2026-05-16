@@ -35,7 +35,7 @@ La web queda expuesta en `http://localhost:8080`.
 
 ## Traefik
 
-El `docker-compose.yml` incluye labels para Traefik en el servicio `web`.
+El `docker-compose.yml` incluye labels para Traefik en el servicio `web` y no crea otro contenedor Traefik. Solo conecta la web a una red externa ya existente.
 
 Variables principales:
 
@@ -46,13 +46,26 @@ TRAEFIK_ENTRYPOINT=websecure
 TRAEFIK_CERT_RESOLVER=letsencrypt
 ```
 
-Antes de desplegar, asegúrate de que existe la red externa de Traefik:
+Si Traefik ya esta corriendo, averigua primero su red:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}'
+docker inspect traefik --format '{{json .NetworkSettings.Networks}}'
+```
+
+Si el contenedor tiene otro nombre, sustituye `traefik` por el nombre real. Despues pon ese nombre de red en `.env`:
+
+```env
+TRAEFIK_NETWORK=nombre_de_la_red_existente
+```
+
+Solo si no existe ninguna red externa para Traefik, creala una vez:
 
 ```bash
 docker network create traefik
 ```
 
-Si tu red de Traefik ya tiene otro nombre, cambia `TRAEFIK_NETWORK` en `.env`.
+El bloque `networks.traefik.external: true` hace que Compose reutilice esa red y falle si no existe, evitando crear una red aislada que Traefik no pueda ver.
 
 ## Cambios
 
