@@ -1,9 +1,30 @@
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import articles from '../data/articles.jsx';
+
+function setMeta(name, content) {
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
+  el.content = content;
+}
 
 export default function NoticiaDetailPage({ siteVersion }) {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
+
+  useEffect(() => {
+    if (!article) return;
+    const prev = document.title;
+    document.title = `${article.title} — NW3 Noticiasweb3`;
+    const desc = typeof article.body?.props?.children === 'string'
+      ? article.body.props.children.slice(0, 155)
+      : article.title;
+    setMeta('description', desc);
+    setMeta('og:title', article.title);
+    setMeta('og:description', desc);
+    setMeta('og:url', window.location.href);
+    return () => { document.title = prev; };
+  }, [article]);
 
   if (!article) {
     return (

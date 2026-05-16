@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import blogPosts from '../data/blogPosts.jsx';
@@ -21,7 +21,30 @@ function parseDate(str) {
 function toDateKey(str) {
   const d = parseDate(str);
   if (!d || isNaN(d)) return str;
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+  return d.toISOString().slice(0, 10);
+}
+
+const PER_PAGE = 20;
+
+function pageBtnStyle(disabled, active = false) {
+  return {
+    padding: '4px 10px',
+    border: '1px solid #ccc',
+    borderRadius: '3px',
+    cursor: disabled ? 'default' : 'pointer',
+    background: active ? '#b50433' : disabled ? '#f5f5f5' : '#fff',
+    color: active ? '#fff' : disabled ? '#bbb' : '#333',
+    fontSize: '13px',
+    fontWeight: active ? '700' : '400',
+    fontFamily: 'inherit',
+  };
+}
+
+function getPageNumbers(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, '…', total];
+  if (current >= total - 3) return [1, '…', total - 4, total - 3, total - 2, total - 1, total];
+  return [1, '…', current - 1, current, current + 1, '…', total];
 }
 
 const tabStyle = (active) => ({
@@ -47,6 +70,17 @@ export default function NoticiasPage({ siteVersion }) {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
   const [activeDateKey, setActiveDateKey] = useState('');
+
+  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+
+  function setPage(p) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (p === 1) next.delete('page'); else next.set('page', String(p));
+      return next;
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   const switchTab = (tab) => {
     setActiveTab(tab);
@@ -93,6 +127,13 @@ export default function NoticiasPage({ siteVersion }) {
         a.date.toLowerCase().includes(query.toLowerCase())
       )
     : byDate;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
+
+  // Reset to page 1 when filters change
+  useEffect(() => { setPage(1); }, [activeCategory, activeDateKey, query, activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div id="main">
@@ -253,9 +294,19 @@ export default function NoticiasPage({ siteVersion }) {
             <p style={{ color: '#888', fontSize: '13px' }}>No se encontraron noticias.</p>
           )}
 
+          {filtered.length > 0 && (
+            <p style={{ fontSize: '12px', color: '#999', marginBottom: '8px' }}>
+              {filtered.length} noticia{filtered.length !== 1 ? 's' : ''}
+              {activeCategory !== 'Todas' ? ` en ${activeCategory}` : ''}
+              {activeDateKey ? ` · ${filtered[0]?.date}` : ''}
+              {query ? ` para "${query}"` : ''}
+              {totalPages > 1 ? ` · página ${safePage} de ${totalPages}` : ''}
+            </p>
+          )}
+
           {(() => {
             let lastDateKey = null;
-            return filtered.map((article, index) => {
+            return paginated.map((article, index) => {
               const dateKey = toDateKey(article.date);
               const showHeader = siteVersion === '2026' && !activeDateKey && !query.trim() && dateKey !== lastDateKey;
               lastDateKey = dateKey;
@@ -278,7 +329,7 @@ export default function NoticiasPage({ siteVersion }) {
                   )}
                   <div
                     className="article"
-                    style={index === filtered.length - 1 ? { borderBottom: 'none' } : undefined}
+                    style={index === paginated.length - 1 ? { borderBottom: 'none' } : undefined}
                   >
                     <h2>
                       <Link to={`/noticias/${article.slug}`}>{article.title}</Link>
@@ -310,6 +361,20 @@ export default function NoticiasPage({ siteVersion }) {
               );
             });
           })()}
+
+          {totalPages > 1 && siteVersion !== '2014' && (
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center', justifyContent: 'center', marginTop: '24px', flexWrap: 'wrap' }}>
+              <button onClick={() => setPage(1)} disabled={safePage === 1} style={pageBtnStyle(safePage === 1)}>«</button>
+              <button onClick={() => setPage(safePage - 1)} disabled={safePage === 1} style={pageBtnStyle(safePage === 1)}>‹</button>
+              {getPageNumbers(safePage, totalPages).map((p, i) =>
+                p === '…'
+                  ? <span key={`e${i}`} style={{ padding: '4px 4px', color: '#999' }}>…</span>
+                  : <button key={p} onClick={() => setPage(p)} style={pageBtnStyle(false, p === safePage)}>{p}</button>
+              )}
+              <button onClick={() => setPage(safePage + 1)} disabled={safePage === totalPages} style={pageBtnStyle(safePage === totalPages)}>›</button>
+              <button onClick={() => setPage(totalPages)} disabled={safePage === totalPages} style={pageBtnStyle(safePage === totalPages)}>»</button>
+            </div>
+          )}
         </>
       )}
     </div>
