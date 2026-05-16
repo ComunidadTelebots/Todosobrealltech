@@ -1,5 +1,15 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.8] - 2026-05-16
+### noticiasweb3 — Blog integrado en Novedades y Noticias
+- Añadida pestaña "Blog" junto a "Noticias" en la página `/noticias` (solo modo 2026).
+- Creado `src/data/blogPosts.jsx` con estructura de entradas: slug, título, fecha, autor, extracto y cuerpo.
+- Creada `BlogPostDetailPage` con ruta `/blog/:slug`: muestra la entrada completa con enlace de vuelta al blog.
+- Las entradas del blog muestran extracto + "Leer más →" en el listado.
+- Badge rojo "Blog" para diferenciar visualmente las entradas de las noticias.
+- Enlace "Ver en Telegram" aparece en el detalle cuando `telegramUrl` está relleno.
+- La pestaña activa se preserva en la URL mediante query param `?tab=blog`.
+
 ## [0.1.7] - 2026-05-16
 ### noticiasweb3 — Páginas de detalle por artículo
 - Extraído el array de artículos a `src/data/articles.jsx` para compartirlo entre páginas.

@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar.jsx';
 import BienvenidoPage from './pages/HomePage.jsx';
 import NoticiasPage from './pages/NoticiasPage.jsx';
 import NoticiaDetailPage from './pages/NoticiaDetailPage.jsx';
+import BlogPostDetailPage from './pages/BlogPostDetailPage.jsx';
 import ExtensionesPage from './pages/ExtensionesPage.jsx';
 import ExtensionDetailPage from './pages/ExtensionDetailPage.jsx';
 import PulserasRojasPage from './pages/PulserasRojasPage.jsx';
@@ -120,6 +121,7 @@ export default function App() {
         <Route path="/bienvenido" element={<Layout><BienvenidoPage /></Layout>} />
         <Route path="/noticias" element={<Layout><NoticiasPage /></Layout>} />
         <Route path="/noticias/:slug" element={<Layout><NoticiaDetailPage /></Layout>} />
+        <Route path="/blog/:slug" element={<Layout><BlogPostDetailPage /></Layout>} />
         <Route path="/iniciar-sesion" element={<Layout><IniciarSesionPage /></Layout>} />
         <Route path="/extensiones" element={<Layout><ExtensionesPage /></Layout>} />
         <Route path="/extensiones/:slug" element={<Layout><ExtensionDetailPage /></Layout>} />
