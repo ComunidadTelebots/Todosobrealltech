@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SiteHeader from './components/SiteHeader.jsx';
 import Sidebar from './components/Sidebar.jsx';
-import HomePage from './pages/HomePage.jsx';
+import BienvenidoPage from './pages/BienvenidoPage.jsx';
 import NoticiasPage from './pages/NoticiasPage.jsx';
 
 function Layout({ children }) {
@@ -38,7 +38,8 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout><HomePage /></Layout>} />
+        <Route path="/" element={<Layout><BienvenidoPage /></Layout>} />
+        <Route path="/bienvenido" element={<Layout><BienvenidoPage /></Layout>} />
         <Route path="/noticias" element={<Layout><NoticiasPage /></Layout>} />
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
