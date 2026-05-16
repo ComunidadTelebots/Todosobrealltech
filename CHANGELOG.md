@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.9] - 2026-05-16
+### noticiasweb3 — 24 artículos de mayo desde el canal de Telegram
+- Añadidos 24 artículos verificados del canal @TodoSobreAllTech (IDs 223431–224061).
+- Categorías: 9 IA, 8 Tecnología, 5 Ciberseguridad, 2 Gaming.
+- Todos los artículos nuevos incluyen `telegramUrl` apuntando al post original del canal.
+- Fechas del 1 al 16 de mayo de 2026.
+
 ## [0.1.8] - 2026-05-16
 ### noticiasweb3 — Blog integrado en Novedades y Noticias
 - Añadida pestaña "Blog" junto a "Noticias" en la página `/noticias` (solo modo 2026).
