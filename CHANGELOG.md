@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.10] - 2026-05-16
+### noticiasweb3 — 13 artículos adicionales de mayo (13–16 mayo)
+- Añadidos 13 artículos verificados del canal @TodoSobreAllTech (IDs 224040–224080).
+- Categorías: 3 IA, 9 Tecnología, 1 Ciberseguridad.
+- Artículos: Sony IA fotos, Cybertruck ruedas, crisis RAM smartphones, robot albañil lunar (China), informe Windows vs MacBook (Microsoft), Claude Mythos vuln macOS, NASA Psyche sobrevuelo Marte, Ormuz chips Samsung/TSMC, IA regla los servidores, Firefox selector UE, juicio Sam Altman OpenAI, NotebookLM vs Gemini, boyas centros datos China.
+- Todos incluyen `telegramUrl` con enlace directo al post del canal.
+- Fechas del 13 al 16 de mayo de 2026.
+
 ## [0.1.9] - 2026-05-16
 ### noticiasweb3 — 24 artículos de mayo desde el canal de Telegram
 - Añadidos 24 artículos verificados del canal @TodoSobreAllTech (IDs 223431–224061).
