@@ -7,6 +7,7 @@ const articles = [
     category: 'Tecnología',
     title: 'Google I/O 2026: Gemini llega a todo el ecosistema con Android 17 y nuevas laptops IA',
     date: '20 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'El Androide Libre', url: 'https://www.elespanol.com/elandroidelibre/noticias-y-novedades/20260424/revolucion-google-io-anos-importantes-android-compania/1003744220946_0.html' },
     body: (
       <>
@@ -36,6 +37,7 @@ const articles = [
     category: 'IA',
     title: 'Anthropic supera a OpenAI en adopción empresarial por primera vez',
     date: '15 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'Infobae', url: 'https://www.infobae.com/estados-unidos/2026/05/15/la-pelea-por-la-ia-ya-tiene-ganador-no-es-el-que-todos-pensaban/' },
     body: (
       <>
@@ -60,6 +62,7 @@ const articles = [
     category: 'Tecnología',
     title: 'The Android Show 2026: Android se convierte en un "sistema de inteligencia"',
     date: '12 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'TechCrunch', url: 'https://techcrunch.com/2026/05/12/everything-google-announced-at-its-android-show-from-googlebooks-to-vibe-coded-widgets/' },
     body: (
       <>
@@ -84,6 +87,7 @@ const articles = [
     category: 'Ciberseguridad',
     title: 'Patch Tuesday de mayo 2026: 120 vulnerabilidades corregidas y Xbox Mode para todos',
     date: '13 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'BleepingComputer', url: 'https://www.bleepingcomputer.com/news/microsoft/microsoft-may-2026-patch-tuesday-fixes-120-flaws-no-zero-days/' },
     body: (
       <>
@@ -112,6 +116,7 @@ const articles = [
     category: 'Ciberseguridad',
     title: 'Vulnerabilidad crítica de 18 años en NGINX permite ejecución remota de código',
     date: '13 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'CybersecurityNews', url: 'https://cybersecuritynews.com/18-year-old-nginx-rce-vulnerability/' },
     body: (
       <>
@@ -139,6 +144,7 @@ const articles = [
     category: 'Gaming',
     title: 'Xbox confirma que su próxima consola está "bien encaminada"; Nintendo Switch 2 lidera las portátiles',
     date: 'Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'T3', url: 'https://www.t3.com/tech/gaming-consoles/our-next-console-is-well-underway-xbox-drops-bombshell-announcement-as-it-confirms-2026-plans-and-beyond' },
     body: (
       <>
@@ -162,6 +168,7 @@ const articles = [
     category: 'Tecnología',
     title: 'Apple Smart Glasses: la carrera por las gafas inteligentes se intensifica de cara a 2027',
     date: '20 de Abril del 2026',
+    telegramUrl: '',
     source: { label: 'AppleInsider', url: 'https://appleinsider.com/articles/26/04/20/smart-glasses-race-heats-up-as-apple-prepares-for-late-2026-entry' },
     body: (
       <>
@@ -192,6 +199,7 @@ const articles = [
     category: 'IA',
     title: 'OpenAI lanza GPT-5.5 Instant como nuevo modelo predeterminado de ChatGPT',
     date: '5 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'TechCrunch', url: 'https://techcrunch.com/2026/05/05/openai-releases-gpt-5-5-instant-a-new-default-model-for-chatgpt/' },
     body: (
       <>
@@ -218,6 +226,7 @@ const articles = [
     category: 'IA',
     title: 'xAI lanza Grok 4.3 con precios agresivos, vídeo nativo y suite de clonación de voz',
     date: '6 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'Artificial Analysis', url: 'https://artificialanalysis.ai/articles/xai-launches-grok-4-3-with-improved-agentic-performance-and-lower-pricing' },
     body: (
       <>
@@ -243,6 +252,7 @@ const articles = [
     category: 'Ciberseguridad',
     title: 'CISA añade Cisco SD-WAN CVE-2026-20182 al catálogo KEV: puntuación CVSS 10.0',
     date: '15 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'The Hacker News', url: 'https://thehackernews.com/2026/05/cisa-adds-cisco-sd-wan-cve-2026-20182.html' },
     body: (
       <>
@@ -269,6 +279,7 @@ const articles = [
     category: 'Ciberseguridad',
     title: 'Microsoft Exchange Server: CVE-2026-42897 explotado activamente vía correo manipulado',
     date: '15 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'The Hacker News', url: 'https://thehackernews.com/2026/05/on-prem-microsoft-exchange-server-cve.html' },
     body: (
       <>
@@ -294,6 +305,7 @@ const articles = [
     category: 'Ciberseguridad',
     title: 'Fallo crítico en Apache HTTP/2 (CVE-2026-23918) permite DoS y posible ejecución remota',
     date: '5 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'The Hacker News', url: 'https://thehackernews.com/2026/05/critical-apache-http2-flaw-cve-2026.html' },
     body: (
       <>
@@ -320,6 +332,7 @@ const articles = [
     category: 'Gaming',
     title: 'Subnautica 2 entra en Early Access con cooperativo para 4 jugadores',
     date: '14 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'PC Gamer', url: 'https://subnautica2.gg/news/subnautica-2-early-access-launches-may-14-2026/' },
     body: (
       <>
@@ -345,6 +358,7 @@ const articles = [
     category: 'Gaming',
     title: 'Forza Horizon 6 lanza con 92 en Metacritic: el juego mejor valorado de 2026',
     date: '19 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'Windows Central', url: 'https://www.windowscentral.com/gaming/forza/playground-does-it-again-our-forza-horizon-6-review-roundup-points-to-a-major-win-for-the-legacy-racing-franchise' },
     body: (
       <>
@@ -369,6 +383,7 @@ const articles = [
     category: 'Gaming',
     title: '007 First Light de IO Interactive confirma lanzamiento para el 27 de mayo y alcanza estado Gold',
     date: '14 de Mayo del 2026',
+    telegramUrl: '',
     source: { label: 'Push Square', url: 'https://www.pushsquare.com/news/2026/05/007-first-light-now-ready-for-action-james-bond-ps5-game-goes-gold' },
     body: (
       <>
@@ -692,7 +707,11 @@ export default function NoticiasPage({ siteVersion }) {
           key={article.id}
           style={index === filtered.length - 1 ? { borderBottom: 'none' } : undefined}
         >
-          <h2>{article.title}</h2>
+          <h2>
+            {article.source
+              ? <a href={article.source.url} target="_blank" rel="noopener noreferrer">{article.title}</a>
+              : article.title}
+          </h2>
           <div className="article-meta">
             {siteVersion !== '2014' && article.category && (
               <span style={{

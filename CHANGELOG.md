@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.5] - 2026-05-16
+### noticiasweb3 — Enlaces de noticias y campo telegramUrl
+
+#### Noticias
+- Añadido campo `telegramUrl` a los 15 artículos de 2026 para enlazar al post específico del canal de Telegram cuando esté publicado.
+- Mientras `telegramUrl` esté vacío, el enlace apunta al canal general `https://t.me/todosobrealltech`.
+- Títulos de artículos con fuente enlazados a la URL original de la noticia; artículos de 2014 sin fuente muestran el título como texto plano.
+- Enlace "Fuente:" restaurado para apuntar siempre a la web original de cada noticia.
+
 ## [0.1.4] - 2026-05-16
 ### noticiasweb3 — Separación estricta versión 2014 / 2026
 
