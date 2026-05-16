@@ -1,9 +1,28 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import blogPosts from '../data/blogPosts.jsx';
 
 const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming'];
+
+const MONTHS_ES = {
+  enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
+  julio: 6, agosto: 7, septiembre: 8, octubre: 9, noviembre: 10, diciembre: 11,
+};
+
+function parseDate(str) {
+  if (!str) return new Date(0);
+  const m = str.match(/(\d+)\s+de\s+(\w+)\s+del?\s+(\d+)/i);
+  if (!m) return new Date(0);
+  const month = MONTHS_ES[m[2].toLowerCase()];
+  return new Date(parseInt(m[3]), month ?? 0, parseInt(m[1]));
+}
+
+function toDateKey(str) {
+  const d = parseDate(str);
+  if (!d || isNaN(d)) return str;
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+}
 
 const tabStyle = (active) => ({
   padding: '7px 20px',
@@ -27,28 +46,53 @@ export default function NoticiasPage({ siteVersion }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
+  const [activeDateKey, setActiveDateKey] = useState('');
 
   const switchTab = (tab) => {
     setActiveTab(tab);
     setQuery('');
     setActiveCategory('Todas');
+    setActiveDateKey('');
     setSearchParams(tab === 'blog' ? { tab: 'blog' } : {});
   };
 
-  const visible = siteVersion === '2014'
-    ? articles.filter((a) => !a.year || a.year === 2014)
-    : articles;
+  // Artículos visibles según versión, ordenados por fecha descendente en 2026
+  const visible = useMemo(() => {
+    const base = siteVersion === '2014'
+      ? articles.filter((a) => !a.year || a.year === 2014)
+      : articles.filter((a) => a.year === 2026 || !a.year);
+    if (siteVersion === '2026') {
+      return [...base].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+    }
+    return base;
+  }, [siteVersion]);
+
+  // Fechas únicas disponibles (solo 2026)
+  const availableDates = useMemo(() => {
+    if (siteVersion !== '2026') return [];
+    const seen = new Set();
+    const dates = [];
+    for (const a of visible) {
+      const key = toDateKey(a.date);
+      if (!seen.has(key)) { seen.add(key); dates.push({ key, label: a.date }); }
+    }
+    return dates;
+  }, [visible, siteVersion]);
 
   const byCat = activeCategory === 'Todas'
     ? visible
     : visible.filter((a) => a.category === activeCategory);
 
+  const byDate = activeDateKey
+    ? byCat.filter((a) => toDateKey(a.date) === activeDateKey)
+    : byCat;
+
   const filtered = query.trim()
-    ? byCat.filter((a) =>
+    ? byDate.filter((a) =>
         a.title.toLowerCase().includes(query.toLowerCase()) ||
         a.date.toLowerCase().includes(query.toLowerCase())
       )
-    : byCat;
+    : byDate;
 
   return (
     <div id="main">
@@ -107,7 +151,8 @@ export default function NoticiasPage({ siteVersion }) {
         <>
           {siteVersion !== '2014' && (
             <>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>
+              {/* Filtro por categoría */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
@@ -133,6 +178,52 @@ export default function NoticiasPage({ siteVersion }) {
                 ))}
               </div>
 
+              {/* Filtro por fecha */}
+              {availableDates.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '14px', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', color: '#888', marginRight: 2 }}>Día:</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveDateKey('')}
+                    style={{
+                      padding: '3px 10px',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      border: '1px solid',
+                      borderRadius: '3px',
+                      borderColor: !activeDateKey ? '#b50433' : '#ccc',
+                      background: !activeDateKey ? '#b50433' : '#f5f5f5',
+                      color: !activeDateKey ? '#fff' : '#444',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    Todos
+                  </button>
+                  {availableDates.map(({ key, label }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => { setActiveDateKey(key); setQuery(''); }}
+                      style={{
+                        padding: '3px 10px',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                        border: '1px solid',
+                        borderRadius: '3px',
+                        borderColor: activeDateKey === key ? '#b50433' : '#ccc',
+                        background: activeDateKey === key ? '#b50433' : '#f5f5f5',
+                        color: activeDateKey === key ? '#fff' : '#444',
+                        fontFamily: 'inherit',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Buscador */}
               <div style={{ marginBottom: '20px' }}>
                 <input
                   type="search"
@@ -162,39 +253,63 @@ export default function NoticiasPage({ siteVersion }) {
             <p style={{ color: '#888', fontSize: '13px' }}>No se encontraron noticias.</p>
           )}
 
-          {filtered.map((article, index) => (
-            <div
-              className="article"
-              key={article.id}
-              style={index === filtered.length - 1 ? { borderBottom: 'none' } : undefined}
-            >
-              <h2>
-                <Link to={`/noticias/${article.slug}`}>{article.title}</Link>
-              </h2>
-              <div className="article-meta">
-                {siteVersion !== '2014' && article.category && (
-                  <span style={{
-                    display: 'inline-block',
-                    marginRight: '8px',
-                    padding: '1px 7px',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.4px',
-                    background: '#1982d1',
-                    color: '#fff',
-                    borderRadius: '2px',
-                    verticalAlign: 'middle',
-                  }}>{article.category}</span>
-                )}
-                {article.date}
-                {article.source && (
-                  <> · Fuente: <a href={article.source.url} target="_blank" rel="noopener noreferrer">{article.source.label}</a></>
-                )}
-              </div>
-              <div className="article-body">{article.body}</div>
-            </div>
-          ))}
+          {(() => {
+            let lastDateKey = null;
+            return filtered.map((article, index) => {
+              const dateKey = toDateKey(article.date);
+              const showHeader = siteVersion === '2026' && !activeDateKey && !query.trim() && dateKey !== lastDateKey;
+              lastDateKey = dateKey;
+              return (
+                <div key={article.id}>
+                  {showHeader && (
+                    <div style={{
+                      margin: '20px 0 10px',
+                      padding: '5px 10px',
+                      background: '#f0f0f0',
+                      borderLeft: '3px solid #b50433',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      color: '#555',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                    }}>
+                      {article.date}
+                    </div>
+                  )}
+                  <div
+                    className="article"
+                    style={index === filtered.length - 1 ? { borderBottom: 'none' } : undefined}
+                  >
+                    <h2>
+                      <Link to={`/noticias/${article.slug}`}>{article.title}</Link>
+                    </h2>
+                    <div className="article-meta">
+                      {siteVersion !== '2014' && article.category && (
+                        <span style={{
+                          display: 'inline-block',
+                          marginRight: '8px',
+                          padding: '1px 7px',
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.4px',
+                          background: '#1982d1',
+                          color: '#fff',
+                          borderRadius: '2px',
+                          verticalAlign: 'middle',
+                        }}>{article.category}</span>
+                      )}
+                      {article.date}
+                      {article.source && (
+                        <> · Fuente: <a href={article.source.url} target="_blank" rel="noopener noreferrer">{article.source.label}</a></>
+                      )}
+                    </div>
+                    <div className="article-body">{article.body}</div>
+                  </div>
+                </div>
+              );
+            });
+          })()}
         </>
       )}
     </div>
