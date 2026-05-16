@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.6] - 2026-05-16
+### Infraestructura — GitHub Actions CI/CD
+- Añadido `.github/workflows/deploy.yml`: redeploy automático en el VPS al hacer push a `main`.
+- El workflow conecta al VPS por SSH, ejecuta `git pull` y reconstruye el contenedor `noticiasweb3`.
+- Limpieza automática de imágenes Docker huérfanas tras cada despliegue.
+- Requiere 3 secrets en GitHub: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`.
+
 ## [0.1.5] - 2026-05-16
 ### noticiasweb3 — Enlaces de noticias y campo telegramUrl
 
