@@ -33,6 +33,27 @@ docker compose up -d --build
 
 La web queda expuesta en `http://localhost:8080`.
 
+## Traefik
+
+El `docker-compose.yml` incluye labels para Traefik en el servicio `web`.
+
+Variables principales:
+
+```env
+WEB_HOST=todosobreall.tech
+TRAEFIK_NETWORK=traefik
+TRAEFIK_ENTRYPOINT=websecure
+TRAEFIK_CERT_RESOLVER=letsencrypt
+```
+
+Antes de desplegar, asegúrate de que existe la red externa de Traefik:
+
+```bash
+docker network create traefik
+```
+
+Si tu red de Traefik ya tiene otro nombre, cambia `TRAEFIK_NETWORK` en `.env`.
+
 ## Cambios
 
 Consulta `CHANGELOG.md` para ver el historial de cambios del proyecto.

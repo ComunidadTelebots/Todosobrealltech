@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.1] - 2026-05-16
+### Feature - Compatibilidad con Traefik
+- Anadidas labels de Traefik al servicio `web` para publicar la web por HTTPS.
+- Anadida red externa configurable `TRAEFIK_NETWORK`.
+- Anadidas variables `WEB_HOST`, `TRAEFIK_ENTRYPOINT` y `TRAEFIK_CERT_RESOLVER`.
+- Documentado el despliegue con Traefik en `README.md`.
+
 ## [0.1.0] - 2026-05-16
 ### Inicial - Importacion limpia desde Horizons
 - Importado el monorepo base con `apps/web`, `apps/api` y `apps/pocketbase`.

@@ -11,6 +11,18 @@ services:
       - pocketbase
     ports:
       - "8080:80"
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.todosobrealltech.rule=Host(`${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.todosobrealltech.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.todosobrealltech.tls=true"
+      - "traefik.http.routers.todosobrealltech.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.todosobrealltech.loadbalancer.server.port=80"
+      - "traefik.http.services.todosobrealltech.loadbalancer.passHostHeader=true"
 
   api:
     build:
@@ -36,3 +48,8 @@ services:
 
 volumes:
   pocketbase_data:
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}
