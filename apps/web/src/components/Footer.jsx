@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import SocialWidgets from '@/components/SocialWidgets.jsx';
 
 const Footer = () => {
   return (
@@ -75,7 +76,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t">
+        <SocialWidgets />
+
+        <div className="pt-6">
           <p className="text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} Todo sobre alltech. All rights reserved.
           </p>
