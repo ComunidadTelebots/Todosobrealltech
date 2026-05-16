@@ -1,0 +1,15 @@
+.env
+*.env
+!*.env.example
+
+node_modules/
+dist/
+build/
+
+apps/pocketbase/pb_data/
+apps/pocketbase/pocketbase
+apps/pocketbase/pb_snapshots/
+
+*.log
+.DS_Store
+Thumbs.db
