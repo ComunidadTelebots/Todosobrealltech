@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import SiteHeader from './components/SiteHeader.jsx';
 import AdSense from './components/AdSense.jsx';
 import Sidebar from './components/Sidebar.jsx';
@@ -25,6 +26,47 @@ import GrupoPage from './pages/GrupoPage.jsx';
 import EncuestasPage from './pages/EncuestasPage.jsx';
 
 function Layout({ children }) {
+  const [siteVersion, setSiteVersion] = useState(() => {
+    if (typeof window === 'undefined') return '2014';
+    return localStorage.getItem('nw3-version') || '2014';
+  });
+  const [appPlatform, setAppPlatform] = useState(() => {
+    if (typeof window === 'undefined') return 'windows';
+    return localStorage.getItem('nw3-platform') || 'windows';
+  });
+  const [isNightMode, setIsNightMode] = useState(() => {
+    const hour = new Date().getHours();
+    return hour >= 20 || hour < 7;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('nw3-version', siteVersion);
+  }, [siteVersion]);
+
+  useEffect(() => {
+    localStorage.setItem('nw3-platform', appPlatform);
+  }, [appPlatform]);
+
+  useEffect(() => {
+    const updateNightMode = () => {
+      const hour = new Date().getHours();
+      setIsNightMode(hour >= 20 || hour < 7);
+    };
+
+    updateNightMode();
+    const interval = window.setInterval(updateNightMode, 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('nw3-night-mode', isNightMode);
+    document.body.classList.toggle('nw3-day-mode', !isNightMode);
+
+    return () => {
+      document.body.classList.remove('nw3-night-mode', 'nw3-day-mode');
+    };
+  }, [isNightMode]);
+
   return (
     <>
       <div id="banner-top">
@@ -33,12 +75,22 @@ function Layout({ children }) {
       <div id="banner-right">
         <AdSense slot="SLOT_RIGHT" style={{ width: 160, height: 600 }} />
       </div>
-      <div id="stage">
-      <SiteHeader />
+      <div id="stage" className={`version-${siteVersion} platform-${appPlatform} ${isNightMode ? 'night-mode' : 'day-mode'}`}>
+      <SiteHeader
+        siteVersion={siteVersion}
+        onVersionChange={setSiteVersion}
+        appPlatform={appPlatform}
+        onPlatformChange={setAppPlatform}
+        isNightMode={isNightMode}
+      />
       <div id="container">
         <div id="content">
-          {children}
-          <Sidebar />
+          <div className="version-shell">
+            {isValidElement(children)
+              ? cloneElement(children, { appPlatform, onPlatformChange: setAppPlatform, isNightMode, siteVersion })
+              : children}
+          </div>
+          <Sidebar siteVersion={siteVersion} />
           <div style={{ clear: 'both' }}></div>
         </div>
       </div>

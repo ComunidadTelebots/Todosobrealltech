@@ -83,7 +83,7 @@ const navItems = [
   { label: 'gol television', path: 'http://www.goltelevision.com/', external: true },
 ];
 
-export default function SiteHeader() {
+export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, onPlatformChange, isNightMode }) {
   const location = useLocation();
   const [openItem, setOpenItem] = useState(null);
 
@@ -97,6 +97,53 @@ export default function SiteHeader() {
                 <div className="site-title">NW3 - Noticiasweb3</div>
                 <div className="site-description">Las novedades de Internet a tu alcance.</div>
               </Link>
+              <div className="version-switch" role="group" aria-label="Cambiar version de Noticiasweb3">
+                <button
+                  type="button"
+                  className={siteVersion === '2014' ? 'active' : ''}
+                  onClick={() => onVersionChange('2014')}
+                >
+                  2014
+                </button>
+                <button
+                  type="button"
+                  className={siteVersion === '2026' ? 'active' : ''}
+                  onClick={() => onVersionChange('2026')}
+                >
+                  2026
+                </button>
+              </div>
+              {siteVersion === '2026' && <div className="platform-switch" role="group" aria-label="Cambiar diseno movil">
+                <button
+                  type="button"
+                  className={appPlatform === 'android' ? 'active' : ''}
+                  onClick={() => onPlatformChange('android')}
+                >
+                  Android
+                </button>
+                <button
+                  type="button"
+                  className={appPlatform === 'ios' ? 'active' : ''}
+                  onClick={() => onPlatformChange('ios')}
+                >
+                  iOS
+                </button>
+                <button
+                  type="button"
+                  className={appPlatform === 'windows' ? 'active' : ''}
+                  onClick={() => onPlatformChange('windows')}
+                >
+                  Windows 11
+                </button>
+              </div>}
+              {siteVersion === '2026' && (
+                <div className="platform-caption">
+                  {appPlatform === 'android' && 'Material Design Android'}
+                  {appPlatform === 'ios' && 'Interfaz iOS estilo app'}
+                  {appPlatform === 'windows' && 'Fluent Design Windows 11'}
+                  <span className="time-mode">{isNightMode ? 'Modo noche automatico' : 'Modo dia automatico'}</span>
+                </div>
+              )}
             </div>
           </div>
           <div id="header-image"></div>

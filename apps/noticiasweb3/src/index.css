@@ -106,6 +106,67 @@ ol, ul { list-style: none; }
   white-space: nowrap;
   margin-top: 4px;
 }
+.version-switch {
+  display: inline-flex;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 3px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid #d2d2d2;
+}
+.version-switch button {
+  border: 0;
+  background: transparent;
+  color: #333;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 7px 10px;
+}
+.version-switch button.active {
+  background: #1982d1;
+  color: #fff;
+}
+.platform-switch {
+  display: inline-flex;
+  gap: 4px;
+  margin-top: 8px;
+  margin-left: 8px;
+  padding: 3px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid #d2d2d2;
+}
+.platform-switch button {
+  border: 0;
+  background: transparent;
+  color: #333;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 7px 10px;
+}
+.platform-switch button.active {
+  background: #257a41;
+  color: #fff;
+}
+.platform-caption {
+  margin-top: 8px;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+}
+.time-mode {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(25,130,209,0.12);
+  color: #155f9b;
+}
 
 /* =Navigation
 ----------------------------------------------- */
@@ -277,6 +338,1252 @@ h6 {
 }
 .article-body p { margin-bottom: 10px; }
 
+/* =App showcase
+----------------------------------------------- */
+.app-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 24px;
+  align-items: center;
+  margin: 28px 0;
+  padding: 24px;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+}
+.app-showcase.android-active {
+  background: linear-gradient(135deg, #f7fff9, #eef7ff);
+}
+.app-showcase.ios-active {
+  background: linear-gradient(135deg, #f8fbff, #fff5fb);
+}
+.app-showcase.windows-active {
+  background: linear-gradient(135deg, #f6fbff, #edf6ff);
+}
+.app-kicker {
+  color: #b50433;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.app-showcase h2 {
+  box-shadow: none;
+  padding-left: 0;
+}
+.app-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.store-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 130px;
+  padding: 10px 12px;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+  opacity: 0.62;
+  transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.store-button:hover { text-decoration: none; }
+.store-button.active {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+}
+.store-button.android { background: #257a41; }
+.store-button.ios { background: #1f2937; }
+.store-button.windows { background: #0067c0; }
+.store-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  font-weight: bold;
+}
+.store-button strong,
+.store-button small {
+  display: block;
+  line-height: 1.1;
+}
+.store-button small {
+  color: rgba(255,255,255,0.78);
+  font-size: 11px;
+  margin-top: 2px;
+}
+.phone-previews {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.phone-card {
+  width: 166px;
+  min-height: 310px;
+  padding: 8px;
+  background: #111827;
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+  transition: background 0.2s ease, border-radius 0.2s ease;
+}
+.android-phone {
+  background: #202b23;
+  border-radius: 24px;
+}
+.ios-phone {
+  background: #15151c;
+  border-radius: 34px;
+  padding: 10px;
+}
+.phone-top {
+  width: 34px;
+  height: 4px;
+  margin: 4px auto 8px;
+  border-radius: 999px;
+  background: #313946;
+}
+.phone-screen {
+  min-height: 272px;
+  padding: 12px 10px;
+  border-radius: 15px;
+  background: #f8fafc;
+  transition: background 0.2s ease, border-radius 0.2s ease;
+}
+.android-phone .phone-screen {
+  background: #f7fbf7;
+  border-radius: 16px;
+  border-bottom: 8px solid #dfeee3;
+}
+.ios-phone .phone-screen {
+  background: #f9fafb;
+  border-radius: 25px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
+}
+.phone-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e6eef8;
+  color: #1f5f99;
+  font-size: 10px;
+  font-weight: bold;
+}
+.android-phone .phone-badge {
+  background: #dff5e4;
+  color: #257a41;
+}
+.ios-phone .phone-badge {
+  background: #e7efff;
+  color: #3557b7;
+}
+.phone-screen h3 {
+  color: #111827;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.phone-screen p {
+  color: #586276;
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+.phone-list {
+  display: grid;
+  gap: 8px;
+}
+.phone-list span {
+  display: block;
+  padding: 9px 8px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 11px;
+  font-weight: bold;
+}
+.android-phone .phone-list span {
+  border-radius: 8px;
+  border-left: 4px solid #34a853;
+}
+.ios-phone .phone-list span {
+  border-radius: 16px;
+  box-shadow: 0 5px 14px rgba(15,23,42,0.08);
+}
+.phone-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.phone-nav i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #c9d3df;
+}
+.android-phone .phone-nav {
+  justify-content: space-around;
+  padding: 8px 18px 0;
+}
+.android-phone .phone-nav i {
+  width: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: #879b8d;
+}
+.ios-phone .phone-nav i {
+  width: 36px;
+  height: 4px;
+  background: #111827;
+}
+.ios-phone .phone-nav i:nth-child(2),
+.ios-phone .phone-nav i:nth-child(3) {
+  display: none;
+}
+
+/* =2026 version
+----------------------------------------------- */
+.version-2026 {
+  max-width: 1180px;
+  min-width: 0;
+}
+.version-2026 #masthead {
+  border-radius: 18px;
+  box-shadow: 0 18px 42px rgba(31,41,55,0.16);
+}
+.version-2026 #inner-masthead {
+  margin: 0;
+}
+.version-2026 #header-image {
+  height: 260px;
+  background-image:
+    linear-gradient(135deg, rgba(9,132,227,0.78), rgba(181,4,51,0.58)),
+    url('http://theme.webme.com/designs/globals/header/underwater1.jpg');
+}
+.version-2026 #claim {
+  top: 28px;
+  left: 28px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+}
+.version-2026 .site-title {
+  font-size: 34px;
+}
+.version-2026 #access {
+  float: none;
+  margin: 14px 0;
+  border-radius: 16px;
+  background: #111827;
+  overflow: visible;
+}
+.version-2026 #access > ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px;
+}
+.version-2026 #access li {
+  float: none;
+  margin-right: 0;
+}
+.version-2026 #access > ul > li > a {
+  margin-bottom: 0;
+  border-radius: 999px;
+  color: #e5e7eb;
+  line-height: 36px;
+  padding: 0 15px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.version-2026 #access > ul > li > a::before {
+  content: none;
+}
+.version-2026 #access > ul > li:hover > a,
+.version-2026 #access > ul > li.active > a,
+.version-2026 #access > ul > li > a:focus {
+  background: #fff;
+  color: #111827;
+  box-shadow: none;
+  transform: none;
+}
+.version-2026 #access ul ul {
+  top: 44px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.version-2026 #container {
+  padding-top: 0;
+}
+.version-2026 #content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 22px;
+  overflow: visible;
+}
+.version-2026 .version-shell,
+.version-2026 #sidebar {
+  background: rgba(255,255,255,0.92);
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(31,41,55,0.1);
+}
+.version-2026 .version-shell {
+  padding: 24px;
+}
+.version-2026 #content #main {
+  float: none;
+  width: auto;
+  margin: 0;
+  padding-top: 0;
+}
+.version-2026 #sidebar {
+  float: none;
+  width: auto;
+  margin: 0;
+}
+.version-2026 .article {
+  border-bottom-color: #e5e7eb;
+}
+.version-2026 .app-showcase {
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ffffff, #eef6ff);
+  border-color: #d9e7f6;
+}
+.version-2026 .app-showcase.android-active {
+  background: linear-gradient(135deg, #f6fff8, #e9f7ee);
+}
+.version-2026 .app-showcase.ios-active {
+  background: linear-gradient(135deg, #ffffff, #edf3ff);
+}
+
+/* =Platform-wide app skins
+----------------------------------------------- */
+.version-2026.platform-android {
+  color: #223027;
+  --md-primary: #1b5e20;
+  --md-primary-container: #d7f5dc;
+  --md-secondary: #0f6b58;
+  --md-surface: #fbfdf7;
+  --md-surface-container: #eef6ed;
+  --md-outline: #c3d7c5;
+  --md-shadow: 0 8px 20px rgba(27,94,32,0.14);
+}
+.version-2026.platform-android #masthead,
+.version-2026.platform-android .version-shell,
+.version-2026.platform-android #sidebar {
+  border-radius: 28px;
+  border-color: var(--md-outline);
+  background: var(--md-surface);
+}
+.version-2026.platform-android #header-image {
+  background-image:
+    radial-gradient(circle at 18% 18%, rgba(215,245,220,0.85), transparent 24%),
+    linear-gradient(135deg, rgba(27,94,32,0.92), rgba(15,107,88,0.72)),
+    url('http://theme.webme.com/designs/globals/header/underwater1.jpg');
+  height: 230px;
+}
+.version-2026.platform-android #claim {
+  top: 22px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  max-width: 720px;
+  border-radius: 28px;
+  background: rgba(251,253,247,0.96);
+  box-shadow: var(--md-shadow);
+}
+.version-2026.platform-android .site-title {
+  color: var(--md-primary);
+  font-size: 32px;
+}
+.version-2026.platform-android .site-description {
+  color: #47624c;
+}
+.version-2026.platform-android #access {
+  padding: 6px;
+  border-radius: 28px;
+  background: var(--md-surface-container);
+  box-shadow: var(--md-shadow);
+}
+.version-2026.platform-android #access > ul {
+  gap: 8px;
+}
+.version-2026.platform-android #access > ul > li > a {
+  min-height: 40px;
+  border-radius: 999px;
+  color: #36513b;
+  font-weight: bold;
+  line-height: 40px;
+  padding: 0 18px;
+}
+.version-2026.platform-android #access > ul > li.active > a {
+  background: var(--md-primary-container);
+  color: var(--md-primary);
+}
+.version-2026.platform-android #access > ul > li:hover > a {
+  background: #fff;
+  color: var(--md-primary);
+  box-shadow: 0 4px 12px rgba(27,94,32,0.12);
+}
+.version-2026.platform-android #access ul ul {
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(27,94,32,0.16);
+}
+.version-2026.platform-android #access ul ul a {
+  padding: 12px 14px;
+}
+.version-2026.platform-android h1,
+.version-2026.platform-android h1 a {
+  color: var(--md-primary);
+  font-size: 34px;
+  letter-spacing: 0;
+}
+.version-2026.platform-android h2,
+.version-2026.platform-android h2 a {
+  border-left: 0;
+  border-radius: 18px;
+  box-shadow: none;
+  background: var(--md-primary-container);
+  color: var(--md-primary);
+  padding: 10px 14px;
+}
+.version-2026.platform-android .article {
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid var(--md-outline);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(27,94,32,0.08);
+}
+.version-2026.platform-android .article-meta {
+  color: var(--md-secondary);
+  font-weight: bold;
+}
+.version-2026.platform-android .article-body {
+  color: #37483a;
+}
+.version-2026.platform-android .widget-title {
+  color: var(--md-primary);
+}
+.version-2026.platform-android #sidebar .widget {
+  margin-bottom: 24px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--md-surface-container);
+}
+.version-2026.platform-android .platform-switch button.active {
+  background: var(--md-primary);
+}
+.version-2026.platform-android .version-switch,
+.version-2026.platform-android .platform-switch {
+  border-radius: 999px;
+  border-color: var(--md-outline);
+  background: var(--md-surface-container);
+}
+.version-2026.platform-android .version-switch button,
+.version-2026.platform-android .platform-switch button {
+  border-radius: 999px;
+}
+.version-2026.platform-android .version-switch button.active {
+  background: var(--md-primary);
+}
+.version-2026.platform-android .app-showcase.android-active {
+  background: linear-gradient(135deg, #fbfdf7, #d7f5dc);
+  border-color: var(--md-outline);
+  box-shadow: var(--md-shadow);
+}
+.version-2026.platform-android .store-button.android {
+  background: var(--md-primary);
+  border-radius: 999px;
+}
+.version-2026.platform-android .android-phone {
+  background: #26352a;
+  border-radius: 30px;
+  box-shadow: 0 18px 42px rgba(27,94,32,0.28);
+}
+.version-2026.platform-android .android-phone .phone-screen {
+  background: #fbfdf7;
+  border-radius: 22px;
+}
+.version-2026.platform-android .android-phone .phone-list span {
+  border-left: 0;
+  border-radius: 16px;
+  background: var(--md-primary-container);
+  color: var(--md-primary);
+}
+
+.version-2026.platform-ios {
+  color: #1f2937;
+  --ios-blue: #007aff;
+  --ios-indigo: #5856d6;
+  --ios-pink: #ff2d55;
+  --ios-surface: rgba(255,255,255,0.82);
+  --ios-grouped: #f2f2f7;
+  --ios-separator: rgba(60,60,67,0.18);
+  --ios-shadow: 0 18px 44px rgba(0,0,0,0.10);
+}
+.version-2026.platform-ios #masthead,
+.version-2026.platform-ios .version-shell,
+.version-2026.platform-ios #sidebar {
+  border-radius: 32px;
+  border-color: rgba(255,255,255,0.72);
+  background: var(--ios-surface);
+  box-shadow: var(--ios-shadow);
+  backdrop-filter: blur(18px);
+}
+.version-2026.platform-ios #header-image {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,0.72), transparent 22%),
+    linear-gradient(135deg, rgba(0,122,255,0.82), rgba(88,86,214,0.64), rgba(255,45,85,0.36)),
+    url('http://theme.webme.com/designs/globals/header/underwater1.jpg');
+  height: 250px;
+}
+.version-2026.platform-ios #claim {
+  top: 26px;
+  left: 26px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.84);
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: var(--ios-shadow);
+  backdrop-filter: blur(18px);
+}
+.version-2026.platform-ios .site-title {
+  color: #111827;
+  font-size: 33px;
+  letter-spacing: 0;
+}
+.version-2026.platform-ios .site-description {
+  color: #6b7280;
+}
+.version-2026.platform-ios #access {
+  padding: 7px;
+  border: 1px solid rgba(255,255,255,0.68);
+  background: rgba(242,242,247,0.84);
+  box-shadow: var(--ios-shadow);
+  backdrop-filter: blur(18px);
+}
+.version-2026.platform-ios #access > ul > li > a {
+  border-radius: 18px;
+  color: #3a3a3c;
+  font-weight: bold;
+  line-height: 38px;
+  padding: 0 16px;
+}
+.version-2026.platform-ios #access > ul > li.active > a,
+.version-2026.platform-ios #access > ul > li:hover > a {
+  background: #fff;
+  color: var(--ios-blue);
+  box-shadow: 0 7px 18px rgba(0,122,255,0.14);
+}
+.version-2026.platform-ios #access ul ul {
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.13);
+  backdrop-filter: blur(18px);
+}
+.version-2026.platform-ios #access ul ul a {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ios-separator);
+  background: transparent;
+}
+.version-2026.platform-ios h1,
+.version-2026.platform-ios h1 a {
+  color: #111827;
+  font-size: 34px;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+.version-2026.platform-ios h2,
+.version-2026.platform-ios h2 a {
+  border-radius: 20px;
+  box-shadow: none;
+  background: var(--ios-grouped);
+  color: var(--ios-blue);
+  padding: 11px 14px;
+}
+.version-2026.platform-ios .article {
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.72);
+  border-radius: 26px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 12px 28px rgba(15,23,42,0.07);
+}
+.version-2026.platform-ios .article + .article {
+  margin-top: 16px;
+}
+.version-2026.platform-ios .article-meta {
+  color: #8e8e93;
+  font-weight: bold;
+}
+.version-2026.platform-ios .article-body {
+  color: #3a3a3c;
+}
+.version-2026.platform-ios .widget-title {
+  color: #8e8e93;
+  font-size: 11px;
+}
+.version-2026.platform-ios #sidebar .widget {
+  margin-bottom: 22px;
+  padding: 14px;
+  border-radius: 22px;
+  background: var(--ios-grouped);
+}
+.version-2026.platform-ios a {
+  color: var(--ios-blue);
+}
+.version-2026.platform-ios .platform-switch button.active {
+  background: var(--ios-blue);
+}
+.version-2026.platform-ios .version-switch,
+.version-2026.platform-ios .platform-switch {
+  border-radius: 999px;
+  border: 1px solid var(--ios-separator);
+  background: rgba(242,242,247,0.9);
+  backdrop-filter: blur(16px);
+}
+.version-2026.platform-ios .version-switch button,
+.version-2026.platform-ios .platform-switch button {
+  border-radius: 999px;
+  color: #3a3a3c;
+}
+.version-2026.platform-ios .version-switch button.active,
+.version-2026.platform-ios .platform-switch button.active {
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,122,255,0.24);
+}
+.version-2026.platform-ios .app-showcase.ios-active {
+  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(242,242,247,0.94));
+  border-color: rgba(255,255,255,0.74);
+  box-shadow: var(--ios-shadow);
+  backdrop-filter: blur(18px);
+}
+.version-2026.platform-ios .store-button.ios {
+  background: #111827;
+  border-radius: 18px;
+}
+.version-2026.platform-ios .ios-phone {
+  border-radius: 42px;
+  background: #0f1117;
+  box-shadow: 0 22px 48px rgba(0,0,0,0.24);
+}
+.version-2026.platform-ios .ios-phone .phone-top {
+  width: 56px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background: #05070a;
+}
+.version-2026.platform-ios .ios-phone .phone-screen {
+  border-radius: 32px;
+  background: #f2f2f7;
+}
+.version-2026.platform-ios .ios-phone .phone-list span {
+  border-radius: 18px;
+  background: rgba(255,255,255,0.94);
+  color: #111827;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.07);
+}
+
+/* =Distinct 2026 platform experiences
+----------------------------------------------- */
+.version-2026.platform-android {
+  max-width: 1120px;
+}
+.version-2026.platform-android #masthead {
+  margin-bottom: 14px;
+  border-radius: 22px;
+  overflow: hidden;
+}
+.version-2026.platform-android #inner-masthead {
+  min-height: 220px;
+}
+.version-2026.platform-android #claim {
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: none;
+  width: auto;
+  padding: 16px 22px;
+  border-radius: 0;
+  background: var(--md-primary);
+  color: #fff;
+  box-shadow: none;
+}
+.version-2026.platform-android .site-title,
+.version-2026.platform-android .site-description,
+.version-2026.platform-android .platform-caption {
+  color: #fff;
+}
+.version-2026.platform-android .site-title::before {
+  content: '☰';
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-right: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.16);
+  font-size: 20px;
+  vertical-align: middle;
+}
+.version-2026.platform-android .version-switch,
+.version-2026.platform-android .platform-switch {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.28);
+}
+.version-2026.platform-android .version-switch button,
+.version-2026.platform-android .platform-switch button {
+  color: #fff;
+}
+.version-2026.platform-android .version-switch button.active,
+.version-2026.platform-android .platform-switch button.active {
+  background: #fff;
+  color: var(--md-primary);
+}
+.version-2026.platform-android #header-image {
+  height: 220px;
+  padding-top: 92px;
+}
+.version-2026.platform-android #access {
+  position: sticky;
+  top: 8px;
+  z-index: 20;
+  border-radius: 18px;
+}
+.version-2026.platform-android #content {
+  grid-template-columns: minmax(0, 1fr) 260px;
+}
+.version-2026.platform-android .version-shell {
+  border-radius: 18px;
+}
+.version-2026.platform-android #content #main::after {
+  content: '+';
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: var(--md-secondary);
+  color: #fff;
+  font-size: 32px;
+  line-height: 1;
+  box-shadow: 0 12px 26px rgba(15,107,88,0.32);
+}
+.version-2026.platform-android .app-showcase {
+  grid-template-columns: minmax(0, 1fr) 190px;
+}
+.version-2026.platform-android .phone-card {
+  border-radius: 28px;
+}
+
+.version-2026.platform-ios {
+  max-width: 1040px;
+}
+.version-2026.platform-ios::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(0,122,255,0.20), transparent 28%),
+    radial-gradient(circle at 82% 20%, rgba(255,45,85,0.16), transparent 24%),
+    linear-gradient(180deg, #f7f8fb 0%, #eef1f7 100%);
+}
+.version-2026.platform-ios #masthead {
+  margin-bottom: 18px;
+  border-radius: 40px;
+  overflow: hidden;
+}
+.version-2026.platform-ios #inner-masthead {
+  min-height: 310px;
+}
+.version-2026.platform-ios #claim {
+  top: 28px;
+  left: 28px;
+  right: 28px;
+  max-width: none;
+  padding: 24px;
+}
+.version-2026.platform-ios .site-title {
+  display: block;
+  font-size: 42px;
+  line-height: 1.05;
+}
+.version-2026.platform-ios .site-title::after {
+  content: 'Today';
+  display: block;
+  margin-top: 8px;
+  color: var(--ios-blue);
+  font-size: 17px;
+  font-weight: bold;
+}
+.version-2026.platform-ios .site-description {
+  margin-top: 10px;
+  font-size: 15px;
+}
+.version-2026.platform-ios #header-image {
+  height: 310px;
+}
+.version-2026.platform-ios #access {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 40;
+  width: min(760px, calc(100% - 24px));
+  transform: translateX(-50%);
+  border-radius: 28px;
+}
+.version-2026.platform-ios #access > ul {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px;
+  scrollbar-width: none;
+}
+.version-2026.platform-ios #access > ul::-webkit-scrollbar {
+  display: none;
+}
+.version-2026.platform-ios #access > ul > li > a {
+  min-width: max-content;
+}
+.version-2026.platform-ios #content {
+  display: block;
+  padding-bottom: 96px;
+}
+.version-2026.platform-ios .version-shell {
+  padding: 26px;
+}
+.version-2026.platform-ios #sidebar {
+  width: auto;
+  margin-top: 18px;
+}
+.version-2026.platform-ios #content #main {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.version-2026.platform-ios #content #main > h1 {
+  font-size: 44px;
+}
+.version-2026.platform-ios .app-showcase {
+  grid-template-columns: minmax(0, 1fr) 190px;
+  border-radius: 32px;
+}
+.version-2026.platform-ios .phone-card {
+  border-radius: 44px;
+}
+
+/* =Windows 11 Fluent 2026
+----------------------------------------------- */
+.windows-device {
+  width: 230px;
+  min-height: 170px;
+  border-radius: 18px;
+  background: #1f2937;
+  padding: 8px;
+}
+.windows-device .phone-top {
+  display: none;
+}
+.windows-device .phone-screen {
+  min-height: 154px;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(0,103,192,0.20), rgba(96,165,250,0.10)),
+    #f8fbff;
+}
+.windows-device .phone-list {
+  grid-template-columns: 1fr 1fr;
+}
+.windows-device .phone-list span {
+  border-radius: 8px;
+  background: rgba(255,255,255,0.82);
+  border-color: rgba(0,103,192,0.18);
+}
+.windows-device .phone-nav {
+  justify-content: flex-start;
+  margin-top: 12px;
+  padding: 7px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.74);
+}
+.windows-device .phone-nav i {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #0067c0;
+}
+.version-2026.platform-windows {
+  max-width: 1220px;
+  color: #1f2937;
+  --win-blue: #0067c0;
+  --win-blue-light: #d8ecff;
+  --win-surface: rgba(255,255,255,0.76);
+  --win-border: rgba(255,255,255,0.72);
+  --win-shadow: 0 18px 44px rgba(15,23,42,0.14);
+}
+.version-2026.platform-windows::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(96,165,250,0.30), transparent 24%),
+    radial-gradient(circle at 82% 14%, rgba(14,165,233,0.18), transparent 24%),
+    linear-gradient(135deg, #eef6ff 0%, #f8fbff 48%, #edf4ff 100%);
+}
+.version-2026.platform-windows #masthead,
+.version-2026.platform-windows .version-shell,
+.version-2026.platform-windows #sidebar {
+  border: 1px solid var(--win-border);
+  border-radius: 14px;
+  background: var(--win-surface);
+  box-shadow: var(--win-shadow);
+  backdrop-filter: blur(20px);
+}
+.version-2026.platform-windows #masthead {
+  overflow: hidden;
+}
+.version-2026.platform-windows #inner-masthead {
+  min-height: 250px;
+}
+.version-2026.platform-windows #header-image {
+  height: 250px;
+  background-image:
+    linear-gradient(135deg, rgba(0,103,192,0.72), rgba(96,165,250,0.38)),
+    url('http://theme.webme.com/designs/globals/header/underwater1.jpg');
+}
+.version-2026.platform-windows #claim {
+  top: 26px;
+  left: 26px;
+  min-width: 430px;
+  padding: 18px 20px;
+  border: 1px solid var(--win-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.82);
+  box-shadow: var(--win-shadow);
+  backdrop-filter: blur(20px);
+}
+.version-2026.platform-windows .site-title {
+  color: #111827;
+  font-size: 32px;
+}
+.version-2026.platform-windows .site-title::before {
+  content: '⊞';
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  border-radius: 8px;
+  background: var(--win-blue);
+  color: #fff;
+  font-size: 22px;
+  vertical-align: middle;
+}
+.version-2026.platform-windows .site-description,
+.version-2026.platform-windows .platform-caption {
+  color: #4b5563;
+}
+.version-2026.platform-windows #access {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  z-index: 50;
+  width: min(900px, calc(100% - 24px));
+  transform: translateX(-50%);
+  border: 1px solid var(--win-border);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.82);
+  box-shadow: var(--win-shadow);
+  backdrop-filter: blur(22px);
+}
+.version-2026.platform-windows #access > ul {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px;
+  scrollbar-width: none;
+}
+.version-2026.platform-windows #access > ul::-webkit-scrollbar {
+  display: none;
+}
+.version-2026.platform-windows #access > ul > li {
+  float: none;
+  margin-right: 0;
+}
+.version-2026.platform-windows #access > ul > li > a {
+  min-width: max-content;
+  margin-bottom: 0;
+  border-radius: 10px;
+  color: #374151;
+  line-height: 36px;
+  padding: 0 14px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.version-2026.platform-windows #access > ul > li > a::before {
+  content: none;
+}
+.version-2026.platform-windows #access > ul > li.active > a,
+.version-2026.platform-windows #access > ul > li:hover > a {
+  background: var(--win-blue-light);
+  color: var(--win-blue);
+  box-shadow: none;
+  transform: none;
+}
+.version-2026.platform-windows #access ul ul {
+  top: auto;
+  bottom: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.94);
+  box-shadow: var(--win-shadow);
+  backdrop-filter: blur(20px);
+}
+.version-2026.platform-windows #content {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  padding-bottom: 90px;
+}
+.version-2026.platform-windows h1,
+.version-2026.platform-windows h1 a {
+  color: #111827;
+  font-size: 34px;
+}
+.version-2026.platform-windows h2,
+.version-2026.platform-windows h2 a {
+  border-radius: 10px;
+  background: rgba(255,255,255,0.78);
+  box-shadow: inset 0 0 0 1px rgba(0,103,192,0.14);
+  color: var(--win-blue);
+  padding: 9px 12px;
+}
+.version-2026.platform-windows .article {
+  padding: 16px;
+  border: 1px solid rgba(0,103,192,0.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.72);
+  box-shadow: 0 8px 18px rgba(15,23,42,0.08);
+}
+.version-2026.platform-windows #sidebar .widget {
+  margin-bottom: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.68);
+}
+.version-2026.platform-windows .version-switch,
+.version-2026.platform-windows .platform-switch {
+  border-radius: 10px;
+  border-color: rgba(0,103,192,0.18);
+  background: rgba(255,255,255,0.72);
+}
+.version-2026.platform-windows .version-switch button,
+.version-2026.platform-windows .platform-switch button {
+  border-radius: 8px;
+}
+.version-2026.platform-windows .version-switch button.active,
+.version-2026.platform-windows .platform-switch button.active {
+  background: var(--win-blue);
+  color: #fff;
+}
+.version-2026.platform-windows .app-showcase.windows-active {
+  background: rgba(255,255,255,0.68);
+  border-color: rgba(0,103,192,0.16);
+  box-shadow: var(--win-shadow);
+  backdrop-filter: blur(20px);
+}
+.version-2026.platform-windows .store-button.windows {
+  border-radius: 10px;
+  background: var(--win-blue);
+}
+
+/* =Automatic night mode
+----------------------------------------------- */
+body.nw3-night-mode {
+  color: #dbeafe;
+  background-color: #07111f;
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(59,130,246,0.18), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(20,184,166,0.14), transparent 24%),
+    linear-gradient(180deg, #07111f 0%, #0b1220 100%);
+}
+
+body.nw3-night-mode a {
+  color: #7dd3fc;
+}
+
+.night-mode #masthead,
+.night-mode .version-shell,
+.night-mode #sidebar,
+.night-mode .article,
+.night-mode .app-showcase {
+  border-color: rgba(148,163,184,0.28);
+  background-color: rgba(15,23,42,0.86);
+  color: #dbeafe;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.36);
+}
+
+.night-mode #claim,
+.night-mode #access,
+.night-mode #access ul ul,
+.night-mode .version-switch,
+.night-mode .platform-switch,
+.night-mode #sidebar .widget {
+  border-color: rgba(148,163,184,0.24);
+  background-color: rgba(15,23,42,0.86);
+  color: #dbeafe;
+}
+
+.night-mode .site-title,
+.night-mode h1,
+.night-mode h1 a,
+.night-mode h2,
+.night-mode h2 a,
+.night-mode .widget-title {
+  color: #eff6ff;
+}
+
+.night-mode .site-description,
+.night-mode .platform-caption,
+.night-mode .article-body,
+.night-mode .widget-body,
+.night-mode #footer {
+  color: #b6c7dc;
+}
+
+.night-mode #access > ul > li > a,
+.night-mode .version-switch button,
+.night-mode .platform-switch button {
+  color: #dbeafe;
+}
+
+.night-mode #access > ul > li.active > a,
+.night-mode #access > ul > li:hover > a {
+  background: rgba(56,189,248,0.18);
+  color: #f8fafc;
+}
+
+.night-mode .time-mode {
+  background: rgba(14,165,233,0.22);
+  color: #bae6fd;
+}
+
+.night-mode #header-image {
+  background-blend-mode: multiply, normal;
+  filter: saturate(0.95) brightness(0.72);
+}
+
+.night-mode .phone-screen,
+.night-mode .windows-device .phone-screen,
+.night-mode .ios-phone .phone-screen,
+.night-mode .android-phone .phone-screen {
+  background: #111827;
+  color: #dbeafe;
+}
+
+.night-mode .phone-list span,
+.night-mode .windows-device .phone-list span,
+.night-mode .ios-phone .phone-list span,
+.night-mode .android-phone .phone-list span {
+  border-color: rgba(125,211,252,0.24);
+  background: rgba(30,41,59,0.92);
+  color: #dbeafe;
+}
+
+.night-mode .instagram-widget {
+  box-shadow: 0 18px 42px rgba(216,41,118,0.24);
+}
+
+.night-mode .telegram-widget {
+  box-shadow: 0 18px 42px rgba(56,189,248,0.22);
+}
+
+.version-2026.platform-android .instagram-widget {
+  border-radius: 24px;
+}
+
+.version-2026.platform-android .telegram-widget {
+  border-radius: 24px;
+}
+
+.version-2026.platform-ios .instagram-widget {
+  border-radius: 28px;
+}
+
+.version-2026.platform-ios .telegram-widget {
+  border-radius: 28px;
+}
+
+.version-2026.platform-windows .instagram-widget {
+  border-radius: 12px;
+}
+
+.version-2026.platform-windows .telegram-widget {
+  border-radius: 12px;
+}
+
+.version-2026.platform-android.night-mode {
+  --md-primary: #8ee8a1;
+  --md-primary-container: rgba(22,101,52,0.38);
+  --md-secondary: #5eead4;
+  --md-surface: rgba(13,31,23,0.92);
+  --md-surface-container: rgba(22,56,42,0.82);
+  --md-outline: rgba(134,239,172,0.22);
+}
+
+.version-2026.platform-android.night-mode #claim {
+  background: #0b3b24;
+}
+
+.version-2026.platform-ios.night-mode {
+  --ios-blue: #66b7ff;
+  --ios-surface: rgba(15,23,42,0.76);
+  --ios-grouped: rgba(30,41,59,0.82);
+  --ios-separator: rgba(148,163,184,0.24);
+}
+
+.version-2026.platform-ios.night-mode::before {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(59,130,246,0.28), transparent 28%),
+    radial-gradient(circle at 82% 20%, rgba(244,114,182,0.16), transparent 24%),
+    linear-gradient(180deg, #060b17 0%, #111827 100%);
+}
+
+.version-2026.platform-windows.night-mode {
+  --win-blue: #60a5fa;
+  --win-blue-light: rgba(96,165,250,0.22);
+  --win-surface: rgba(15,23,42,0.72);
+  --win-border: rgba(148,163,184,0.28);
+}
+
+.version-2026.platform-windows.night-mode::before {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(59,130,246,0.26), transparent 24%),
+    radial-gradient(circle at 82% 14%, rgba(45,212,191,0.14), transparent 24%),
+    linear-gradient(135deg, #07111f 0%, #101827 48%, #081220 100%);
+}
+
+.version-2026.platform-windows.night-mode .site-title,
+.version-2026.platform-windows.night-mode h1,
+.version-2026.platform-windows.night-mode h1 a {
+  color: #f8fafc;
+}
+
 /* =Widgets
 ----------------------------------------------- */
 .widget {
@@ -311,6 +1618,206 @@ h6 {
 .widget-body { font-size: 13px; line-height: 1.6; color: #555; }
 .widget-body p { margin-bottom: 8px; }
 
+.instagram-widget {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 210px;
+  padding: 16px;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,0.42), transparent 20%),
+    linear-gradient(135deg, #feda75 0%, #fa7e1e 23%, #d62976 52%, #962fbf 75%, #4f5bd5 100%);
+  box-shadow: 0 16px 34px rgba(150,47,191,0.28);
+}
+.instagram-widget:hover {
+  text-decoration: none;
+}
+.instagram-widget__glow {
+  position: absolute;
+  inset: auto -30px -48px;
+  height: 120px;
+  background: rgba(255,255,255,0.22);
+  filter: blur(16px);
+  transform: rotate(-8deg);
+}
+.instagram-widget__top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.instagram-widget__avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(255,255,255,0.86);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.18);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24);
+  font-size: 14px;
+  font-weight: bold;
+}
+.instagram-widget strong,
+.instagram-widget small,
+.instagram-widget__cta {
+  position: relative;
+  display: block;
+  color: #fff;
+}
+.instagram-widget strong {
+  font-size: 15px;
+  line-height: 1.2;
+}
+.instagram-widget small {
+  margin-top: 2px;
+  color: rgba(255,255,255,0.86);
+  font-size: 11px;
+  line-height: 1.25;
+}
+.instagram-widget__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 18px 0;
+}
+.instagram-widget__grid i {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.25);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+}
+.instagram-widget__grid i:nth-child(1) { background: rgba(255,255,255,0.46); }
+.instagram-widget__grid i:nth-child(2) { background: rgba(255,255,255,0.20); }
+.instagram-widget__grid i:nth-child(3) { background: rgba(255,255,255,0.34); }
+.instagram-widget__grid i:nth-child(4) { background: rgba(255,255,255,0.24); }
+.instagram-widget__grid i:nth-child(5) { background: rgba(255,255,255,0.42); }
+.instagram-widget__grid i:nth-child(6) { background: rgba(255,255,255,0.26); }
+.instagram-widget__cta {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  color: #9d174d;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.telegram-widget {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 210px;
+  padding: 16px;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 80% 14%, rgba(255,255,255,0.38), transparent 18%),
+    linear-gradient(135deg, #37aee2 0%, #1e96c8 54%, #0f6ea9 100%);
+  box-shadow: 0 16px 34px rgba(30,150,200,0.28);
+}
+.telegram-widget:hover {
+  text-decoration: none;
+}
+.telegram-widget__signal {
+  position: absolute;
+  right: -32px;
+  bottom: -46px;
+  width: 150px;
+  height: 150px;
+  border: 22px solid rgba(255,255,255,0.16);
+  border-radius: 50%;
+}
+.telegram-widget__signal::before,
+.telegram-widget__signal::after {
+  content: '';
+  position: absolute;
+  border: 2px solid rgba(255,255,255,0.18);
+  border-radius: 50%;
+}
+.telegram-widget__signal::before {
+  inset: 18px;
+}
+.telegram-widget__signal::after {
+  inset: 44px;
+}
+.telegram-widget__top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.telegram-widget__avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 8px 18px rgba(4,73,114,0.22);
+}
+.telegram-widget__avatar svg {
+  width: 24px;
+  height: 24px;
+  fill: #229ed9;
+}
+.telegram-widget strong,
+.telegram-widget small,
+.telegram-widget__cta {
+  position: relative;
+  display: block;
+  color: #fff;
+}
+.telegram-widget strong {
+  font-size: 15px;
+  line-height: 1.2;
+}
+.telegram-widget small {
+  margin-top: 2px;
+  color: rgba(255,255,255,0.86);
+  font-size: 11px;
+  line-height: 1.25;
+}
+.telegram-widget__messages {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+.telegram-widget__messages i {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  padding: 8px 10px;
+  border-radius: 12px 12px 12px 4px;
+  background: rgba(255,255,255,0.20);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.20);
+  color: #fff;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: bold;
+}
+.telegram-widget__messages i:nth-child(2) {
+  justify-self: end;
+  border-radius: 12px 12px 4px 12px;
+  background: rgba(255,255,255,0.34);
+}
+.telegram-widget__cta {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  color: #075985;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
 /* =Footer
 ----------------------------------------------- */
 #footer {
@@ -332,4 +1839,33 @@ h6 {
   #access ul ul { position: static; box-shadow: none; display: none; width: auto; }
   #access li.open > ul { display: block; }
   #access > ul > li:hover > a { transform: none; }
+  .app-showcase {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+  .phone-previews {
+    flex-wrap: wrap;
+  }
+  .version-2026 #content {
+    display: block;
+  }
+  .version-2026 .version-shell {
+    margin: 0 12px 14px;
+    padding: 18px;
+  }
+  .version-2026 #sidebar {
+    margin: 0 12px;
+  }
+  .version-2026 #claim {
+    left: 16px;
+    right: 16px;
+    padding: 14px 16px;
+  }
+  .version-2026 .site-title {
+    font-size: 24px;
+    white-space: normal;
+  }
+  .version-2026 .site-description {
+    white-space: normal;
+  }
 }
