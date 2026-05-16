@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SiteHeader from './components/SiteHeader.jsx';
+import AdSense from './components/AdSense.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import BienvenidoPage from './pages/HomePage.jsx';
 import NoticiasPage from './pages/NoticiasPage.jsx';
@@ -25,7 +26,14 @@ import EncuestasPage from './pages/EncuestasPage.jsx';
 
 function Layout({ children }) {
   return (
-    <div id="stage">
+    <>
+      <div id="banner-top">
+        <AdSense slot="SLOT_TOP" style={{ width: 728, height: 90 }} />
+      </div>
+      <div id="banner-right">
+        <AdSense slot="SLOT_RIGHT" style={{ width: 160, height: 600 }} />
+      </div>
+      <div id="stage">
       <SiteHeader />
       <div id="container">
         <div id="content">
@@ -38,6 +46,7 @@ function Layout({ children }) {
         <p>© {new Date().getFullYear()} NW3 - Noticiasweb3</p>
       </div>
     </div>
+    </>
   );
 }
 

@@ -33,6 +33,22 @@ body {
 a { color: #1982d1; text-decoration: none; }
 a:focus, a:active, a:hover { text-decoration: underline; }
 
+/* =Banners publicitarios
+----------------------------------------------- */
+#banner-top {
+  margin: 15px auto;
+  width: 728px;
+  height: 90px;
+  overflow: hidden;
+}
+#banner-right {
+  width: 160px;
+  height: 600px;
+  position: absolute;
+  left: 50%;
+  margin-left: 526px;
+}
+
 ol, ul { list-style: none; }
 
 /* =Stage

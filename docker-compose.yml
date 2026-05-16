@@ -28,6 +28,8 @@ services:
     build:
       context: .
       dockerfile: apps/noticiasweb3/Dockerfile
+      args:
+        VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
     restart: unless-stopped
     networks:
       - default
