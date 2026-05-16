@@ -49,9 +49,31 @@ export default function NoticiaDetailPage({ siteVersion }) {
 
       <div className="article-body">{article.body}</div>
 
-      <p style={{ marginTop: '24px', borderTop: '1px solid #ddd', paddingTop: '14px' }}>
+      <div style={{ marginTop: '24px', borderTop: '1px solid #ddd', paddingTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
         <Link to="/noticias">← Volver a noticias</Link>
-      </p>
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 14px',
+            background: '#2aabee',
+            color: '#fff',
+            borderRadius: '4px',
+            textDecoration: 'none',
+            fontSize: '13px',
+            fontWeight: '700',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M21.7 4.3 18.5 19c-.2 1-1 1.2-1.8.8l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.2 9.5-8.6c.4-.4-.1-.6-.6-.2L5.8 12.3.7 10.7c-1-.3-1-1.1.2-1.6L20.4 1.6c.9-.3 1.7.2 1.3 2.7z"/>
+          </svg>
+          Compartir en Telegram
+        </a>
+      </div>
     </div>
   );
 }
