@@ -56,6 +56,13 @@ const Header = () => {
     { name: getTranslation('nav_proxies'), path: '/proxies' },
   ];
 
+  const ecosystemLinks = [
+    { name: getTranslation('nav_news'), href: 'https://noticiasweb3.todosobreall.tech' },
+    { name: getTranslation('nav_resistencia'), href: 'https://resistenciaalacensura.todosobreall.tech' },
+    { name: getTranslation('nav_telebots'), href: 'https://comunidadtelebots.todosobreall.tech' },
+    { name: getTranslation('nav_gameplays'), href: 'https://todosobregameplays.todosobreall.tech' },
+  ];
+
   if (currentUser) {
     navLinks.push({ name: getTranslation('nav_dashboard'), path: '/dashboard' });
     if (currentUser.role === 'admin' || currentUser.role === 'creator') {
@@ -169,6 +176,17 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
+            {ecosystemLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                {link.name}
+              </a>
+            ))}
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
@@ -226,6 +244,18 @@ const Header = () => {
                 >
                   {link.name}
                 </Link>
+              ))}
+              {ecosystemLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-muted-foreground"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
               ))}
             </nav>
             <div className="pt-4 border-t flex flex-col gap-3">

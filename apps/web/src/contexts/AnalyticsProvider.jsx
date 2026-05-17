@@ -4,6 +4,30 @@ import { useGoogleAnalytics } from '@/hooks/useGoogleAnalytics.js';
 
 const AnalyticsContext = createContext(null);
 
+const CONSENT_REQUIRED_REGIONS = new Set([
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
+  'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK',
+  'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'UK', 'CH',
+]);
+
+function getBrowserRegion() {
+  const locale = navigator.languages?.[0] || navigator.language || '';
+  const region = locale.match(/[-_]([A-Z]{2})$/i)?.[1]?.toUpperCase();
+  return region || '';
+}
+
+function requiresPriorAnalyticsConsent() {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+  const region = getBrowserRegion();
+
+  if (CONSENT_REQUIRED_REGIONS.has(region)) return true;
+  if (timeZone.startsWith('Europe/')) return true;
+  if (timeZone === 'Atlantic/Canary' || timeZone === 'Atlantic/Madeira' || timeZone === 'Atlantic/Azores') return true;
+  if (!timeZone && !region) return true;
+
+  return false;
+}
+
 export const AnalyticsProvider = ({ children }) => {
   const { initialize, trackEvent } = useGoogleAnalytics(import.meta.env.VITE_GOOGLE_ANALYTICS_ID || '');
   const [analyticsEnabled, setAnalyticsEnabledState] = useState(false);
@@ -19,6 +43,11 @@ export const AnalyticsProvider = ({ children }) => {
         if (isEnabled) {
           initialize(true);
         }
+      } else if (!requiresPriorAnalyticsConsent()) {
+        localStorage.setItem('analytics_consent', 'true');
+        localStorage.setItem('analytics_consent_source', 'regional_default');
+        setAnalyticsEnabledState(true);
+        initialize(true);
       }
     } catch (e) {
       console.error('Failed to parse analytics_consent', e);

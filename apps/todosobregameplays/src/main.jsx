@@ -9,8 +9,27 @@ const INSTAGRAM_URL = 'https://www.instagram.com/todosobrealltech/';
 const API_URL = `/hcgi/api/telegram-channel/${CHANNEL}`;
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 
+const CONSENT_REQUIRED_REGIONS = new Set([
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
+  'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK',
+  'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'UK', 'CH',
+]);
+
+function allowsDefaultAnalytics() {
+  const locale = navigator.languages?.[0] || navigator.language || '';
+  const region = locale.match(/[-_]([A-Z]{2})$/i)?.[1]?.toUpperCase() || '';
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+
+  if (CONSENT_REQUIRED_REGIONS.has(region)) return false;
+  if (timeZone.startsWith('Europe/')) return false;
+  if (timeZone === 'Atlantic/Canary' || timeZone === 'Atlantic/Madeira' || timeZone === 'Atlantic/Azores') return false;
+  if (!timeZone && !region) return false;
+
+  return true;
+}
+
 function initGA() {
-  if (!GA_ID || document.getElementById('ga-script')) return;
+  if (!GA_ID || document.getElementById('ga-script') || !allowsDefaultAnalytics()) return;
   const script = document.createElement('script');
   script.id = 'ga-script';
   script.async = true;

@@ -16,6 +16,22 @@ const LOCAL_TRANSLATIONS = {
     es: 'Proxies',
     en: 'Proxies',
   },
+  nav_news: {
+    es: 'Noticiasweb3',
+    en: 'Noticiasweb3',
+  },
+  nav_resistencia: {
+    es: 'Resistencia',
+    en: 'Resistance',
+  },
+  nav_telebots: {
+    es: 'Telebots',
+    en: 'Telebots',
+  },
+  nav_gameplays: {
+    es: 'Gameplays',
+    en: 'Gameplays',
+  },
   nav_dashboard: {
     es: 'Panel',
     en: 'Dashboard',
