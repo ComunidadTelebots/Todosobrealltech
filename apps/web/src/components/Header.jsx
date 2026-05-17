@@ -51,16 +51,16 @@ const Header = () => {
   };
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Proxies', path: '/proxies' },
+    { name: getTranslation('nav_home'), path: '/' },
+    { name: getTranslation('nav_blog'), path: '/blog' },
+    { name: getTranslation('nav_proxies'), path: '/proxies' },
   ];
 
   if (currentUser) {
-    navLinks.push({ name: 'Dashboard', path: '/dashboard' });
+    navLinks.push({ name: getTranslation('nav_dashboard'), path: '/dashboard' });
     if (currentUser.role === 'admin' || currentUser.role === 'creator') {
-      navLinks.push({ name: 'Admin', path: '/admin' });
-      navLinks.push({ name: 'Creador', path: '/creator' });
+      navLinks.push({ name: getTranslation('nav_admin'), path: '/admin' });
+      navLinks.push({ name: getTranslation('nav_creator'), path: '/creator' });
     }
   }
 
@@ -108,7 +108,7 @@ const Header = () => {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{currentUser.name || 'User'}</p>
+              <p className="text-sm font-medium leading-none">{currentUser.name || getTranslation('user')}</p>
               <p className="text-xs leading-none text-muted-foreground">
                 {currentUser.email}
               </p>
@@ -118,23 +118,23 @@ const Header = () => {
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link to="/profile" className="flex items-center w-full">
               <User className="mr-2 h-4 w-4" />
-              <span>{getTranslation('profile') || 'Profile'}</span>
+              <span>{getTranslation('profile')}</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link to="/settings" className="flex items-center w-full">
               <Settings className="mr-2 h-4 w-4" />
-              <span>{getTranslation('settings') || 'Settings'}</span>
+              <span>{getTranslation('settings')}</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={openCookieModal} className="cursor-pointer">
             <Cookie className="mr-2 h-4 w-4" />
-            <span>Preferencias de Cookies</span>
+            <span>{getTranslation('cookie_preferences')}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
             <LogOut className="mr-2 h-4 w-4" />
-            <span>{getTranslation('logout') || 'Log out'}</span>
+            <span>{getTranslation('logout')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -184,10 +184,10 @@ const Header = () => {
             ) : (
               <div className="flex items-center gap-3">
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/login">Login</Link>
+                  <Link to="/login">{getTranslation('login')}</Link>
                 </Button>
                 <Button size="sm" asChild>
-                  <Link to="/signup">Sign Up</Link>
+                  <Link to="/signup">{getTranslation('signup')}</Link>
                 </Button>
               </div>
             )}
@@ -200,7 +200,7 @@ const Header = () => {
             <button
               className="p-2 text-muted-foreground hover:text-foreground"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label={getTranslation('open_menu')}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -232,7 +232,7 @@ const Header = () => {
               {!currentUser && (
                 <Button variant="ghost" className="w-full justify-start" onClick={() => { openCookieModal(); setIsMobileMenuOpen(false); }}>
                   <Cookie className="w-4 h-4 mr-2" />
-                  Preferencias de Cookies
+                  {getTranslation('cookie_preferences')}
                 </Button>
               )}
               {currentUser ? (
@@ -240,27 +240,27 @@ const Header = () => {
                   <Button variant="ghost" className="w-full justify-start" asChild onClick={() => setIsMobileMenuOpen(false)}>
                     <Link to="/profile">
                       <User className="w-4 h-4 mr-2" />
-                      {getTranslation('profile') || 'Profile'}
+                      {getTranslation('profile')}
                     </Link>
                   </Button>
                   <Button variant="ghost" className="w-full justify-start" asChild onClick={() => setIsMobileMenuOpen(false)}>
                     <Link to="/settings">
                       <Settings className="w-4 h-4 mr-2" />
-                      {getTranslation('settings') || 'Settings'}
+                      {getTranslation('settings')}
                     </Link>
                   </Button>
                   <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive" onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}>
                     <LogOut className="w-4 h-4 mr-2" />
-                    {getTranslation('logout') || 'Logout'}
+                    {getTranslation('logout')}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button variant="outline" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
-                    <Link to="/login">Login</Link>
+                    <Link to="/login">{getTranslation('login')}</Link>
                   </Button>
                   <Button className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
-                    <Link to="/signup">Sign Up</Link>
+                    <Link to="/signup">{getTranslation('signup')}</Link>
                   </Button>
                 </>
               )}

@@ -3,6 +3,181 @@ import pb from '@/lib/pocketbaseClient.js';
 
 const LanguageContext = createContext(null);
 
+const LOCAL_TRANSLATIONS = {
+  nav_home: {
+    es: 'Inicio',
+    en: 'Home',
+  },
+  nav_blog: {
+    es: 'Blog',
+    en: 'Blog',
+  },
+  nav_proxies: {
+    es: 'Proxies',
+    en: 'Proxies',
+  },
+  nav_dashboard: {
+    es: 'Panel',
+    en: 'Dashboard',
+  },
+  nav_admin: {
+    es: 'Admin',
+    en: 'Admin',
+  },
+  nav_creator: {
+    es: 'Creador',
+    en: 'Creator',
+  },
+  login: {
+    es: 'Iniciar sesion',
+    en: 'Login',
+  },
+  signup: {
+    es: 'Crear cuenta',
+    en: 'Sign up',
+  },
+  profile: {
+    es: 'Perfil',
+    en: 'Profile',
+  },
+  settings: {
+    es: 'Ajustes',
+    en: 'Settings',
+  },
+  logout: {
+    es: 'Cerrar sesion',
+    en: 'Log out',
+  },
+  cookie_preferences: {
+    es: 'Preferencias de cookies',
+    en: 'Cookie preferences',
+  },
+  user: {
+    es: 'Usuario',
+    en: 'User',
+  },
+  open_menu: {
+    es: 'Abrir menu',
+    en: 'Open menu',
+  },
+  home_meta_title: {
+    es: 'Todo sobre alltech - Soluciones tecnologicas',
+    en: 'Todo sobre alltech - Technology solutions',
+  },
+  home_meta_description: {
+    es: 'Servicios, automatizaciones, bots y herramientas digitales para gestionar proyectos tecnologicos con Todo sobre alltech.',
+    en: 'Services, automations, bots and digital tools to manage technology projects with Todo sobre alltech.',
+  },
+  home_hero_title: {
+    es: 'Soluciones tecnologicas para proyectos digitales modernos',
+    en: 'Technology solutions for modern digital projects',
+  },
+  home_hero_subtitle: {
+    es: 'Gestiona bots, contenidos, proxies, analitica y servicios online desde una plataforma pensada para crecer contigo.',
+    en: 'Manage bots, content, proxies, analytics and online services from a platform built to grow with you.',
+  },
+  get_started: {
+    es: 'Crear cuenta',
+    en: 'Get started',
+  },
+  go_dashboard: {
+    es: 'Ir al panel',
+    en: 'Go to dashboard',
+  },
+  feature_fast_title: {
+    es: 'Rendimiento rapido',
+    en: 'Fast performance',
+  },
+  feature_fast_desc: {
+    es: 'Carga veloz, interacciones fluidas y una base tecnica optimizada para proyectos digitales.',
+    en: 'Fast loading, smooth interactions and an optimized technical base for digital projects.',
+  },
+  feature_security_title: {
+    es: 'Seguridad avanzada',
+    en: 'Advanced security',
+  },
+  feature_security_desc: {
+    es: 'Proteccion de datos, cifrado y buenas practicas para servicios, bots y paneles de gestion.',
+    en: 'Data protection, encryption and good practices for services, bots and management panels.',
+  },
+  feature_innovation_title: {
+    es: 'Soluciones innovadoras',
+    en: 'Innovative solutions',
+  },
+  feature_innovation_desc: {
+    es: 'Herramientas actualizadas para automatizar, publicar, analizar y hacer crecer tu presencia online.',
+    en: 'Updated tools to automate, publish, analyze and grow your online presence.',
+  },
+  why_title: {
+    es: 'Por que elegir Todo sobre alltech',
+    en: 'Why choose Todo sobre alltech',
+  },
+  why_desc: {
+    es: 'Unimos automatizacion, seguridad y contenido para que tus proyectos funcionen con menos friccion.',
+    en: 'We combine automation, security and content so your projects run with less friction.',
+  },
+  testimonials_title: {
+    es: 'Lo que dicen nuestros usuarios',
+    en: 'What our users say',
+  },
+  testimonials_desc: {
+    es: 'Equipos y creadores confian en Todo sobre alltech para organizar su infraestructura digital.',
+    en: 'Teams and creators trust Todo sobre alltech to organize their digital infrastructure.',
+  },
+  testimonial_role_technical: {
+    es: 'Responsable tecnica',
+    en: 'Technical lead',
+  },
+  testimonial_content_technical: {
+    es: 'Todo sobre alltech nos ayudo a ordenar servicios, automatizaciones y contenidos desde un unico entorno.',
+    en: 'Todo sobre alltech helped us organize services, automations and content from one place.',
+  },
+  testimonial_role_product: {
+    es: 'Gestor de producto',
+    en: 'Product manager',
+  },
+  testimonial_content_product: {
+    es: 'La plataforma es estable, clara y nos permite ahorrar tiempo en tareas repetitivas.',
+    en: 'The platform is stable, clear and helps us save time on repetitive tasks.',
+  },
+  cta_title: {
+    es: 'Listo para impulsar tu proyecto?',
+    en: 'Ready to boost your project?',
+  },
+  cta_desc: {
+    es: 'Empieza hoy a centralizar tus herramientas, canales y servicios en una sola plataforma.',
+    en: 'Start centralizing your tools, channels and services in one platform today.',
+  },
+  get_started_today: {
+    es: 'Crear cuenta ahora',
+    en: 'Get started today',
+  },
+  footer_desc: {
+    es: 'Tu espacio para servicios tecnologicos, automatizaciones, bots y herramientas digitales.',
+    en: 'Your space for technology services, automations, bots and digital tools.',
+  },
+  quick_links: {
+    es: 'Enlaces rapidos',
+    en: 'Quick links',
+  },
+  privacy_policy: {
+    es: 'Politica de privacidad',
+    en: 'Privacy policy',
+  },
+  terms_service: {
+    es: 'Terminos del servicio',
+    en: 'Terms of service',
+  },
+  contact: {
+    es: 'Contacto',
+    en: 'Contact',
+  },
+  rights_reserved: {
+    es: 'Todos los derechos reservados.',
+    en: 'All rights reserved.',
+  },
+};
+
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
@@ -49,14 +224,24 @@ export const LanguageProvider = ({ children }) => {
     fetchTranslations();
   }, []);
 
+  useEffect(() => {
+    document.documentElement.lang = currentLanguage;
+  }, [currentLanguage]);
+
   const setLanguage = useCallback((langCode) => {
     setCurrentLanguage(langCode);
     localStorage.setItem('selectedLanguage', langCode);
   }, []);
 
   const getTranslation = useCallback((key) => {
-    if (!translations[key]) return key;
-    return translations[key][currentLanguage] || translations[key]['es'] || key;
+    const remote = translations[key];
+    const local = LOCAL_TRANSLATIONS[key];
+
+    return remote?.[currentLanguage]
+      || remote?.es
+      || local?.[currentLanguage]
+      || local?.es
+      || key;
   }, [translations, currentLanguage]);
 
   const value = {

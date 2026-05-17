@@ -2,8 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import SocialWidgets from '@/components/SocialWidgets.jsx';
+import { useLanguage } from '@/contexts/LanguageContext.jsx';
 
 const Footer = () => {
+  const { getTranslation } = useLanguage();
+
   return (
     <footer className="border-t bg-muted/50">
       <div className="container py-12">
@@ -16,26 +19,26 @@ const Footer = () => {
               <span className="text-lg font-bold">Todo sobre alltech</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Your comprehensive technology solutions partner, delivering innovation and excellence in every project.
+              {getTranslation('footer_desc')}
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
+            <h3 className="font-semibold mb-4">{getTranslation('quick_links')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Home
+                  {getTranslation('nav_home')}
                 </Link>
               </li>
               <li>
                 <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Dashboard
+                  {getTranslation('nav_dashboard')}
                 </Link>
               </li>
               <li>
                 <Link to="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Login
+                  {getTranslation('login')}
                 </Link>
               </li>
             </ul>
@@ -46,19 +49,19 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
+                  {getTranslation('privacy_policy')}
                 </Link>
               </li>
               <li>
                 <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Terms of Service
+                  {getTranslation('terms_service')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Contact</h3>
+            <h3 className="font-semibold mb-4">{getTranslation('contact')}</h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <Mail className="w-4 h-4 mt-0.5 text-muted-foreground" />
@@ -80,7 +83,7 @@ const Footer = () => {
 
         <div className="pt-6">
           <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Todo sobre alltech. All rights reserved.
+            (c) {new Date().getFullYear()} Todo sobre alltech. {getTranslation('rights_reserved')}
           </p>
         </div>
       </div>

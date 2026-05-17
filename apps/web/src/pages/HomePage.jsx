@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
+import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Zap, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
@@ -9,36 +10,37 @@ import { motion } from 'framer-motion';
 
 const HomePage = () => {
   const { isAuthenticated } = useAuth();
+  const { getTranslation } = useLanguage();
 
   const features = [
     {
       icon: Zap,
-      title: 'Lightning Fast Performance',
-      description: 'Experience blazing-fast load times and seamless interactions with our optimized technology stack.'
+      title: getTranslation('feature_fast_title'),
+      description: getTranslation('feature_fast_desc')
     },
     {
       icon: Shield,
-      title: 'Enterprise-Grade Security',
-      description: 'Your data is protected with industry-leading security measures and encryption protocols.'
+      title: getTranslation('feature_security_title'),
+      description: getTranslation('feature_security_desc')
     },
     {
       icon: Sparkles,
-      title: 'Innovative Solutions',
-      description: 'Stay ahead with cutting-edge features and continuous updates that drive your success.'
+      title: getTranslation('feature_innovation_title'),
+      description: getTranslation('feature_innovation_desc')
     }
   ];
 
   const testimonials = [
     {
       name: 'Elena Rodriguez',
-      role: 'CTO at Meridian Labs',
-      content: 'Todo sobre alltech transformed our development workflow. The platform is intuitive and powerful.',
+      role: getTranslation('testimonial_role_technical'),
+      content: getTranslation('testimonial_content_technical'),
       rating: 4.8
     },
     {
       name: 'Marcus Chen',
-      role: 'Product Manager at Coastal Roasters',
-      content: 'Outstanding support and reliability. Our team productivity increased by 47% within the first month.',
+      role: getTranslation('testimonial_role_product'),
+      content: getTranslation('testimonial_content_product'),
       rating: 4.9
     }
   ];
@@ -46,8 +48,8 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>Todo sobre alltech - Comprehensive Technology Solutions</title>
-        <meta name="description" content="Your comprehensive technology solutions partner, delivering innovation and excellence in every project. Get started with Todo sobre alltech today." />
+        <title>{getTranslation('home_meta_title')}</title>
+        <meta name="description" content={getTranslation('home_meta_description')} />
       </Helmet>
 
       <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
@@ -71,28 +73,28 @@ const HomePage = () => {
             className="max-w-4xl mx-auto text-center"
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight" style={{ letterSpacing: '-0.02em' }}>
-              Comprehensive technology solutions for modern businesses
+              {getTranslation('home_hero_title')}
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
-              Transform your digital presence with innovative tools, expert guidance, and enterprise-grade infrastructure.
+              {getTranslation('home_hero_subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {!isAuthenticated ? (
                 <>
                   <Button size="lg" asChild className="text-lg px-8">
                     <Link to="/signup">
-                      Get Started
+                      {getTranslation('get_started')}
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" asChild className="text-lg px-8">
-                    <Link to="/login">Login</Link>
+                    <Link to="/login">{getTranslation('login')}</Link>
                   </Button>
                 </>
               ) : (
                 <Button size="lg" asChild className="text-lg px-8">
                   <Link to="/dashboard">
-                    Go to Dashboard
+                    {getTranslation('go_dashboard')}
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
                 </Button>
@@ -111,9 +113,9 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why choose Todo sobre alltech</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{getTranslation('why_title')}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We deliver comprehensive solutions that combine innovation, reliability, and exceptional performance.
+              {getTranslation('why_desc')}
             </p>
           </motion.div>
 
@@ -154,9 +156,9 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What our clients say</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{getTranslation('testimonials_title')}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of satisfied customers who trust Todo sobre alltech for their technology needs.
+              {getTranslation('testimonials_desc')}
             </p>
           </motion.div>
 
@@ -202,22 +204,22 @@ const HomePage = () => {
             className="max-w-3xl mx-auto text-center"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to transform your business?
+              {getTranslation('cta_title')}
             </h2>
             <p className="text-xl mb-8 text-primary-foreground/90">
-              Join thousands of companies already using Todo sobre alltech to drive innovation and growth.
+              {getTranslation('cta_desc')}
             </p>
             {!isAuthenticated ? (
               <Button size="lg" variant="secondary" asChild className="text-lg px-8">
                 <Link to="/signup">
-                  Get Started Today
+                  {getTranslation('get_started_today')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
             ) : (
               <Button size="lg" variant="secondary" asChild className="text-lg px-8">
                 <Link to="/dashboard">
-                  Go to Dashboard
+                  {getTranslation('go_dashboard')}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>

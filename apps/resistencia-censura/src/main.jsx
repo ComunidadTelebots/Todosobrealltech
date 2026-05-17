@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertCircle, BarChart3, CalendarClock, ExternalLink, Image, RefreshCw, Radio, Search } from 'lucide-react';
+import { AlertCircle, BarChart3, CalendarClock, ExternalLink, Image, Instagram, RefreshCw, Radio, Search, Send } from 'lucide-react';
 import './styles.css';
 
 const CHANNEL = 'resistencia_censura';
 const CHANNEL_URL = `https://t.me/${CHANNEL}`;
+const INSTAGRAM_URL = 'https://www.instagram.com/todosobrealltech/';
 const API_URL = `/hcgi/api/telegram-channel/${CHANNEL}`;
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 
@@ -57,6 +58,21 @@ function AdPreview({ position }) {
       <strong>{position === 'top' ? 'Banner superior' : position === 'side' ? 'Lateral fijo' : 'Entre publicaciones'}</strong>
       <small>Espacio reservado para Google AdSense o campaña directa</small>
     </aside>
+  );
+}
+
+function SocialButtons() {
+  return (
+    <div className="social-buttons" aria-label="Redes sociales">
+      <a className="social-button telegram" href={CHANNEL_URL} target="_blank" rel="noreferrer">
+        <Send size={16} aria-hidden="true" />
+        Telegram
+      </a>
+      <a className="social-button instagram" href={INSTAGRAM_URL} target="_blank" rel="noreferrer">
+        <Instagram size={16} aria-hidden="true" />
+        Instagram
+      </a>
+    </div>
   );
 }
 
@@ -134,6 +150,7 @@ function App() {
               Actualizar
             </button>
           </div>
+          <SocialButtons />
         </div>
         <div className="live-panel" aria-label="Resumen del canal">
           <Stat icon={BarChart3} label="Posts cargados" value={payload?.stats?.totalLoaded ?? '-'} />
