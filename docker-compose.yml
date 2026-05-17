@@ -31,6 +31,9 @@ services:
       dockerfile: apps/noticiasweb3/Dockerfile
       args:
         VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
+        VITE_ADSENSE_SLOT_TOP: ${VITE_ADSENSE_SLOT_TOP:-}
+        VITE_ADSENSE_SLOT_RIGHT: ${VITE_ADSENSE_SLOT_RIGHT:-}
+        VITE_ADSENSE_SLOT_INLINE: ${VITE_ADSENSE_SLOT_INLINE:-}
         VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
         VITE_POCKETBASE_URL: ${VITE_POCKETBASE_URL:-}
     restart: unless-stopped
@@ -46,6 +49,72 @@ services:
       - "traefik.http.routers.noticiasweb3.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
       - "traefik.http.services.noticiasweb3.loadbalancer.server.port=80"
       - "traefik.http.services.noticiasweb3.loadbalancer.passHostHeader=true"
+
+  resistencia-censura:
+    build:
+      context: .
+      dockerfile: apps/resistencia-censura/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.resistencia-censura.rule=Host(`resistenciaalacensura.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.resistencia-censura.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.resistencia-censura.tls=true"
+      - "traefik.http.routers.resistencia-censura.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.resistencia-censura.loadbalancer.server.port=80"
+      - "traefik.http.services.resistencia-censura.loadbalancer.passHostHeader=true"
+
+  comunidadtelebots:
+    build:
+      context: .
+      dockerfile: apps/comunidadtelebots/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.comunidadtelebots.rule=Host(`comunidadtelebots.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.comunidadtelebots.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.comunidadtelebots.tls=true"
+      - "traefik.http.routers.comunidadtelebots.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.comunidadtelebots.loadbalancer.server.port=80"
+      - "traefik.http.services.comunidadtelebots.loadbalancer.passHostHeader=true"
+
+  todosobregameplays:
+    build:
+      context: .
+      dockerfile: apps/todosobregameplays/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.todosobregameplays.rule=Host(`todosobregameplays.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.todosobregameplays.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.todosobregameplays.tls=true"
+      - "traefik.http.routers.todosobregameplays.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.todosobregameplays.loadbalancer.server.port=80"
+      - "traefik.http.services.todosobregameplays.loadbalancer.passHostHeader=true"
 
   api:
     build:

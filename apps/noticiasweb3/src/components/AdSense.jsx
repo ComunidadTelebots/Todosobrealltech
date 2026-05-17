@@ -18,25 +18,50 @@ function loadScript() {
   document.head.appendChild(s);
 }
 
-export default function AdSense({ slot, style }) {
+function getPreviewLabel(slot) {
+  if (slot === 'SLOT_TOP') return 'Banner superior';
+  if (slot === 'SLOT_RIGHT') return 'Lateral derecho';
+  if (slot === 'SLOT_INLINE') return 'Entre contenidos';
+  return 'Espacio publicitario';
+}
+
+export default function AdSense({ slot, style, className = '' }) {
+  const hasRealSlot = Boolean(slot && !String(slot).startsWith('SLOT_'));
+  const label = getPreviewLabel(slot);
+
   useEffect(() => {
-    if (!CLIENT) return;
+    if (!CLIENT || !hasRealSlot) return;
     loadScript();
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (_) {}
-  }, []);
+  }, [hasRealSlot]);
 
-  if (!CLIENT) return null;
+  if (!CLIENT || !hasRealSlot) {
+    return (
+      <div className={`ad-preview ${className}`} style={style} role="complementary" aria-label={label}>
+        <span>Publicidad</span>
+        <strong>{label}</strong>
+        <small>Espacio reservado para Google AdSense o campaña directa</small>
+      </div>
+    );
+  }
 
   return (
-    <ins
-      className="adsbygoogle"
-      style={{ display: 'block', ...style }}
-      data-ad-client={CLIENT}
-      data-ad-slot={slot}
-      data-ad-format="auto"
-      data-full-width-responsive="false"
-    />
+    <div className={`ad-slot ${className}`} style={style} role="complementary" aria-label={label}>
+      <div className="ad-preview ad-preview-fallback">
+        <span>Publicidad</span>
+        <strong>{label}</strong>
+        <small>Google AdSense se mostrara aqui cuando entregue anuncio</small>
+      </div>
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block', width: '100%', height: '100%' }}
+        data-ad-client={CLIENT}
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="false"
+      />
+    </div>
   );
 }

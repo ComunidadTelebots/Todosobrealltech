@@ -8,6 +8,7 @@ import testProxyRouter from './test-proxy.js';
 import freezeAccountRouter from './freeze-account.js';
 import blockedUsersRouter from './blocked-users.js';
 import botsRouter from './bots.js';
+import telegramChannelRouter from './telegram-channel.js';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ export default () => {
     router.use('/freeze-account', freezeAccountRouter);
     router.use('/blocked-users', blockedUsersRouter);
     router.use('/bots', botsRouter);
+    router.use('/telegram-channel', telegramChannelRouter);
 
     return router;
 };

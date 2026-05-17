@@ -1,5 +1,45 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.15] - 2026-05-17
+### Monorepo - Comandos unificados
+- Anadidos scripts raiz para gestionar todas las webs:
+  - `npm run dev:webs` lanza todas las webs en desarrollo.
+  - `npm run build:webs` compila todas las webs.
+  - `npm run webs` reconstruye y levanta todos los servicios web con Docker Compose, incluyendo `web` (`todosobreall.tech`), `api` y `pocketbase`.
+  - `npm run docker:webs` queda como alias de `npm run webs`.
+
+### TodoSobreGameplays - Nueva web visor de Telegram
+- Anadida la app `apps/todosobregameplays` como nueva web React + Vite del monorepo.
+- Configurado el servicio Docker `todosobregameplays` con Traefik para el dominio `todosobregameplays.todosobreall.tech`.
+- Creado visor publico del canal `https://t.me/TodoSobreGameplaysCanal` reutilizando el lector de Telegram, buscador, tarjetas, estadisticas, Google Analytics, `ads.txt` y espacios publicitarios visibles.
+- Ampliado el endpoint API `/telegram-channel/:channel` para permitir tambien el canal `TodoSobreGameplaysCanal`.
+
+## [0.1.14] - 2026-05-17
+### comunidadtelebots - Nueva web visor de Telegram
+- Anadida la app `apps/comunidadtelebots` como nueva web React + Vite del monorepo.
+- Configurado el servicio Docker `comunidadtelebots` con Traefik para el dominio `comunidadtelebots.todosobreall.tech`.
+- Creado visor publico del canal `https://t.me/comunidadtelebots` reutilizando el lector de Telegram, buscador, tarjetas, estadisticas, Google Analytics y espacios publicitarios visibles.
+- Ampliado el endpoint API `/telegram-channel/:channel` para permitir tambien el canal `comunidadtelebots`.
+
+## [0.1.13] - 2026-05-17
+### resistenciaalacensura - Nueva web visor de Telegram
+- Anadida la app `apps/resistencia-censura` como tercera web React + Vite del monorepo.
+- Configurado el servicio Docker `resistencia-censura` con Traefik para el dominio `resistenciaalacensura.todosobreall.tech`.
+- Creado visor publico del canal `https://t.me/resistencia_censura` con buscador, tarjetas de publicaciones, resumen de actividad y enlace directo a Telegram.
+- Anadido endpoint API `/telegram-channel/resistencia_censura` para leer el preview publico de Telegram desde servidor y evitar problemas CORS en navegador.
+- Anadida integracion de Google Analytics mediante `VITE_GOOGLE_ANALYTICS_ID`.
+- Anadidas muestras visibles de espacios publicitarios en la nueva web: banner superior, lateral y bloque entre publicaciones.
+- Anadido `apps/resistencia-censura/public/ads.txt` con la autorizacion de Google AdSense `pub-1927309987076600`.
+
+### noticiasweb3 - Publicidad visible y slots de AdSense
+- Anadidas muestras visibles de publicidad para `noticiasweb3` cuando AdSense no entrega anuncio o faltan slots reales.
+- Anadido bloque publicitario interno junto a los banners superior y lateral existentes.
+- Anadidas variables `VITE_ADSENSE_SLOT_TOP`, `VITE_ADSENSE_SLOT_RIGHT` y `VITE_ADSENSE_SLOT_INLINE` al `.env.example`, `docker-compose.yml` y `apps/noticiasweb3/Dockerfile`.
+- Actualizado `AdSense.jsx` para usar anuncios reales solo cuando existen `VITE_ADSENSE_ID` y un `data-ad-slot` real; en local mantiene una maqueta visible como respaldo.
+
+### API - Desarrollo local
+- Ajustada la inicializacion del cliente PocketBase para registrar el fallo si PocketBase no esta disponible sin tumbar toda la API, permitiendo probar endpoints independientes como el visor de Telegram en local.
+
 ## [0.1.12] - 2026-05-16
 ### noticiasweb3 — 9 artículos adicionales (IDs 224041–224088)
 - Añadidos 9 artículos verificados del canal @TodoSobreAllTech.

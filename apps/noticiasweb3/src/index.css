@@ -48,6 +48,62 @@ a:focus, a:active, a:hover { text-decoration: underline; }
   left: 50%;
   margin-left: 526px;
 }
+.ad-preview {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  padding: 10px;
+  border: 1px dashed #b50433;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(181,4,51,0.08) 0,
+      rgba(181,4,51,0.08) 8px,
+      rgba(25,130,209,0.06) 8px,
+      rgba(25,130,209,0.06) 16px
+    ),
+    #fff;
+  color: #373737;
+  text-align: center;
+}
+.ad-slot {
+  position: relative;
+  overflow: hidden;
+}
+.ad-slot > .adsbygoogle {
+  position: relative;
+  z-index: 2;
+}
+.ad-preview-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.ad-preview span {
+  color: #b50433;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.ad-preview strong {
+  color: #1982d1;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+.ad-preview small {
+  max-width: 220px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.25;
+}
+.ad-preview-inline {
+  clear: both;
+  width: 100%;
+  margin: 24px 0 0;
+}
 
 ol, ul { list-style: none; }
 
@@ -1839,6 +1895,17 @@ body.nw3-night-mode a {
   #access ul ul { position: static; box-shadow: none; display: none; width: auto; }
   #access li.open > ul { display: block; }
   #access > ul > li:hover > a { transform: none; }
+  #banner-top {
+    width: calc(100% - 24px);
+    max-width: 728px;
+  }
+  #banner-right {
+    position: static;
+    width: calc(100% - 24px);
+    max-width: 728px;
+    height: 120px;
+    margin: 12px auto;
+  }
   .app-showcase {
     grid-template-columns: 1fr;
     padding: 18px;
