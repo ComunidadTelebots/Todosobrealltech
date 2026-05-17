@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Zap, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Bot, Gamepad2, Newspaper, Radio, Shield, Sparkles, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const HomePage = () => {
@@ -43,6 +43,39 @@ const HomePage = () => {
       content: getTranslation('testimonial_content_product'),
       rating: 4.9
     }
+  ];
+
+  const ecosystemSites = [
+    {
+      icon: Shield,
+      title: 'Todo sobre alltech',
+      description: getTranslation('ecosystem_main_desc'),
+      href: 'https://todosobreall.tech',
+    },
+    {
+      icon: Newspaper,
+      title: 'Noticiasweb3',
+      description: getTranslation('ecosystem_news_desc'),
+      href: 'https://noticiasweb3.todosobreall.tech',
+    },
+    {
+      icon: Radio,
+      title: 'Resistencia a la Censura',
+      description: getTranslation('ecosystem_resistencia_desc'),
+      href: 'https://resistenciaalacensura.todosobreall.tech',
+    },
+    {
+      icon: Bot,
+      title: 'Comunidad Telebots',
+      description: getTranslation('ecosystem_telebots_desc'),
+      href: 'https://comunidadtelebots.todosobreall.tech',
+    },
+    {
+      icon: Gamepad2,
+      title: 'TodoSobreGameplays',
+      description: getTranslation('ecosystem_gameplays_desc'),
+      href: 'https://todosobregameplays.todosobreall.tech',
+    },
   ];
 
   return (
@@ -186,6 +219,55 @@ const HomePage = () => {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-muted/50">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{getTranslation('ecosystem_title')}</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {getTranslation('ecosystem_desc')}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {ecosystemSites.map((site, index) => (
+              <motion.div
+                key={site.href}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.06 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full hover:shadow-lg transition-all duration-200">
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                      <site.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">{site.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex h-full flex-col">
+                    <CardDescription className="text-base leading-relaxed mb-5">
+                      {site.description}
+                    </CardDescription>
+                    <Button variant="outline" asChild className="mt-auto w-fit">
+                      <a href={site.href} target="_blank" rel="noreferrer">
+                        {getTranslation('open_site')}
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </a>
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>

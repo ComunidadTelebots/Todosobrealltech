@@ -5,6 +5,7 @@
 - Traducidos al castellano los textos principales de `apps/web`: cabecera, hero, secciones de valor, testimonios, llamada a la accion y footer.
 - Restaurados botones visibles de Telegram e Instagram en las nuevas webs de canales (`resistencia-censura`, `comunidadtelebots` y `todosobregameplays`).
 - Arreglado el selector de idiomas de la web principal conectando cabecera, portada y footer a traducciones locales con fallback ES/EN cuando PocketBase no devuelve traducciones.
+- Anadida en la portada principal una seccion de tarjetas con enlaces a todas las webs del ecosistema: Todo sobre alltech, Noticiasweb3, Resistencia a la Censura, Comunidad Telebots y TodoSobreGameplays.
 
 ### API - Clave de cifrado
 - Corregida la validacion de `ENCRYPTION_KEY`: ahora acepta claves hex reales de 64 caracteres (`openssl rand -hex 32`) o claves de texto de 32 bytes.

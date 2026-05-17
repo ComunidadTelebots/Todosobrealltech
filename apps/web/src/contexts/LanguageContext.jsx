@@ -140,6 +140,38 @@ const LOCAL_TRANSLATIONS = {
     es: 'La plataforma es estable, clara y nos permite ahorrar tiempo en tareas repetitivas.',
     en: 'The platform is stable, clear and helps us save time on repetitive tasks.',
   },
+  ecosystem_title: {
+    es: 'Webs del ecosistema',
+    en: 'Ecosystem sites',
+  },
+  ecosystem_desc: {
+    es: 'Accede rapidamente a las webs publicas y visores de canales conectados a Todo sobre alltech.',
+    en: 'Quickly access the public sites and channel viewers connected to Todo sobre alltech.',
+  },
+  ecosystem_main_desc: {
+    es: 'Portal principal de servicios, paneles, bots, proxies y gestion tecnologica.',
+    en: 'Main portal for services, panels, bots, proxies and technology management.',
+  },
+  ecosystem_news_desc: {
+    es: 'Noticias, articulos y contenido tecnologico con estilo clasico y version moderna.',
+    en: 'News, articles and technology content with classic style and modern mode.',
+  },
+  ecosystem_resistencia_desc: {
+    es: 'Visor del canal Resistencia Censura con publicaciones y acceso directo a Telegram.',
+    en: 'Viewer for the Resistencia Censura channel with posts and direct Telegram access.',
+  },
+  ecosystem_telebots_desc: {
+    es: 'Comunidad y canal publico de Telebots en formato web consultable.',
+    en: 'Telebots community and public channel in a browsable web format.',
+  },
+  ecosystem_gameplays_desc: {
+    es: 'Publicaciones del canal TodoSobreGameplays con lectura rapida desde la web.',
+    en: 'TodoSobreGameplays channel posts with fast web reading.',
+  },
+  open_site: {
+    es: 'Abrir web',
+    en: 'Open site',
+  },
   cta_title: {
     es: 'Listo para impulsar tu proyecto?',
     en: 'Ready to boost your project?',
