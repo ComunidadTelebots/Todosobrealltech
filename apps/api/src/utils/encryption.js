@@ -5,16 +5,27 @@ import logger from './logger.js';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 
 if (!ENCRYPTION_KEY) {
-  logger.error('ENCRYPTION_KEY is not set in .env file. Please set a 32-character hex string.');
+  logger.error('ENCRYPTION_KEY is not set in .env file. Set a 64-character hex key or a 32-character text key.');
   throw new Error('ENCRYPTION_KEY must be set in .env file');
 }
 
-if (ENCRYPTION_KEY.length !== 32) {
-  logger.error(`ENCRYPTION_KEY must be exactly 32 characters. Current length: ${ENCRYPTION_KEY.length}`);
-  throw new Error('ENCRYPTION_KEY must be exactly 32 characters');
+function parseEncryptionKey(value) {
+  const trimmed = value.trim();
+
+  if (/^[a-f0-9]{64}$/i.test(trimmed)) {
+    return Buffer.from(trimmed, 'hex');
+  }
+
+  const rawKey = Buffer.from(trimmed, 'utf-8');
+  if (rawKey.length === 32) {
+    return rawKey;
+  }
+
+  logger.error(`ENCRYPTION_KEY must be 64 hex characters or 32 UTF-8 bytes. Current length: ${trimmed.length} characters, ${rawKey.length} bytes.`);
+  throw new Error('ENCRYPTION_KEY must be 64 hex characters or 32 UTF-8 bytes');
 }
 
-const key = Buffer.from(ENCRYPTION_KEY, 'utf-8');
+const key = parseEncryptionKey(ENCRYPTION_KEY);
 
 /**
  * Encrypt a bot token using AES-256-GCM

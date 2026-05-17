@@ -1,6 +1,10 @@
 # Changelog - TodoSobreAllTech
 
 ## [0.1.15] - 2026-05-17
+### API - Clave de cifrado
+- Corregida la validacion de `ENCRYPTION_KEY`: ahora acepta claves hex reales de 64 caracteres (`openssl rand -hex 32`) o claves de texto de 32 bytes.
+- Actualizados `.env.example` y `apps/api/.env.example` para documentar la longitud correcta y evitar errores de arranque por longitud de clave.
+
 ### noticiasweb3 - Dominio alternativo DuckDNS
 - Anadido `noticiasweb3.duckdns.org` como host alternativo del servicio Docker `noticiasweb3`, sirviendo la misma web que `noticiasweb3.todosobreall.tech`.
 - Separado `noticiasweb3.duckdns.org` en un router Traefik independiente (`noticiasweb3-duckdns`) para solicitar su propio certificado SSL de Let's Encrypt sin mezclarlo con el certificado de `todosobreall.tech`.
