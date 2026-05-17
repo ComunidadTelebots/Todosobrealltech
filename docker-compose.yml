@@ -121,6 +121,26 @@ services:
       - "traefik.http.services.todosobregameplays.loadbalancer.server.port=80"
       - "traefik.http.services.todosobregameplays.loadbalancer.passHostHeader=true"
 
+  gamergitbug:
+    build:
+      context: .
+      dockerfile: apps/gamergitbug/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+    restart: unless-stopped
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.gamergitbug.rule=Host(`gamergitbug.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.gamergitbug.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.gamergitbug.tls=true"
+      - "traefik.http.routers.gamergitbug.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.gamergitbug.loadbalancer.server.port=80"
+      - "traefik.http.services.gamergitbug.loadbalancer.passHostHeader=true"
+
   api:
     build:
       context: .

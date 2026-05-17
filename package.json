@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "concurrently --kill-others --raw \"npm run dev --prefix apps/web\" \"npm run dev --prefix apps/api\" \"npm run dev --prefix apps/pocketbase\"",
-    "dev:webs": "concurrently --kill-others --raw \"npm run dev --prefix apps/web\" \"npm run dev --prefix apps/noticiasweb3\" \"npm run dev --prefix apps/resistencia-censura\" \"npm run dev --prefix apps/comunidadtelebots\" \"npm run dev --prefix apps/todosobregameplays\"",
-    "build:webs": "concurrently --raw \"npm run build --prefix apps/web\" \"npm run build --prefix apps/noticiasweb3\" \"npm run build --prefix apps/resistencia-censura\" \"npm run build --prefix apps/comunidadtelebots\" \"npm run build --prefix apps/todosobregameplays\"",
-    "webs": "docker compose up -d --build web noticiasweb3 resistencia-censura comunidadtelebots todosobregameplays api pocketbase",
+    "dev:webs": "concurrently --kill-others --raw \"npm run dev --prefix apps/web\" \"npm run dev --prefix apps/noticiasweb3\" \"npm run dev --prefix apps/resistencia-censura\" \"npm run dev --prefix apps/comunidadtelebots\" \"npm run dev --prefix apps/todosobregameplays\" \"npm run dev --prefix apps/gamergitbug\"",
+    "build:webs": "concurrently --raw \"npm run build --prefix apps/web\" \"npm run build --prefix apps/noticiasweb3\" \"npm run build --prefix apps/resistencia-censura\" \"npm run build --prefix apps/comunidadtelebots\" \"npm run build --prefix apps/todosobregameplays\" \"npm run build --prefix apps/gamergitbug\"",
+    "webs": "docker compose up -d --build web noticiasweb3 resistencia-censura comunidadtelebots todosobregameplays gamergitbug api pocketbase",
     "docker:webs": "npm run webs",
     "build": "concurrently --raw \"npm run build --prefix apps/web\"",
     "start": "concurrently --kill-others --raw \"npm run start --prefix apps/api\" \"npm run start --prefix apps/pocketbase\"",
