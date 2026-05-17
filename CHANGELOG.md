@@ -1,6 +1,10 @@
 # Changelog - TodoSobreAllTech
 
 ## [0.1.15] - 2026-05-17
+### noticiasweb3 - Dominio alternativo DuckDNS
+- Anadido `noticiasweb3.duckdns.org` como host alternativo del servicio Docker `noticiasweb3`, sirviendo la misma web que `noticiasweb3.todosobreall.tech`.
+- Separado `noticiasweb3.duckdns.org` en un router Traefik independiente (`noticiasweb3-duckdns`) para solicitar su propio certificado SSL de Let's Encrypt sin mezclarlo con el certificado de `todosobreall.tech`.
+
 ### Monorepo - Comandos unificados
 - Anadidos scripts raiz para gestionar todas las webs:
   - `npm run dev:webs` lanza todas las webs en desarrollo.
