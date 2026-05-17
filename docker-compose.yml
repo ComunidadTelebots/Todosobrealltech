@@ -138,6 +138,11 @@ services:
       - "traefik.http.routers.gamergitbug.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.gamergitbug.tls=true"
       - "traefik.http.routers.gamergitbug.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.gamergitbug-duckdns.rule=Host(`gamergitbug.duckdns.org`)"
+      - "traefik.http.routers.gamergitbug-duckdns.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.gamergitbug-duckdns.tls=true"
+      - "traefik.http.routers.gamergitbug-duckdns.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.gamergitbug-duckdns.service=gamergitbug"
       - "traefik.http.services.gamergitbug.loadbalancer.server.port=80"
       - "traefik.http.services.gamergitbug.loadbalancer.passHostHeader=true"
 

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+const CONSENT_STORAGE_KEY = 'gamergitbug_analytics_consent';
 
 const CONSENT_REQUIRED_REGIONS = new Set([
   'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
@@ -10,7 +11,7 @@ const CONSENT_REQUIRED_REGIONS = new Set([
   'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'UK', 'CH',
 ]);
 
-function getAnalyticsConsentValue() {
+function getRegionalDefaultConsentValue() {
   const locale = navigator.languages?.[0] || navigator.language || '';
   const region = locale.match(/[-_]([A-Z]{2})$/i)?.[1]?.toUpperCase() || '';
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
@@ -23,19 +24,49 @@ function getAnalyticsConsentValue() {
   return 'granted';
 }
 
-function initGA() {
-  if (!GA_ID || document.getElementById('ga-script')) return;
-  const consentValue = getAnalyticsConsentValue();
+function getConsentSettings(consentValue) {
+  return {
+    analytics_storage: consentValue,
+    ad_storage: consentValue,
+    ad_user_data: consentValue,
+    ad_personalization: consentValue,
+  };
+}
+
+function getStoredAnalyticsConsent() {
+  try {
+    return localStorage.getItem(CONSENT_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function trackPageView() {
+  if (!GA_ID || typeof window.gtag !== 'function') return;
+  window.gtag('event', 'page_view', {
+    page_title: document.title,
+    page_location: window.location.href,
+    page_path: window.location.pathname + window.location.search,
+  });
+}
+
+function initGA(analyticsEnabled) {
+  if (!GA_ID) return;
+  const consentValue = analyticsEnabled ? 'granted' : 'denied';
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function gtag() {
     window.dataLayer.push(arguments);
   };
+
+  if (document.getElementById('ga-script')) {
+    window.gtag('consent', 'update', getConsentSettings(consentValue));
+    if (analyticsEnabled) trackPageView();
+    return;
+  }
+
   window.gtag('consent', 'default', {
-    analytics_storage: consentValue,
-    ad_storage: consentValue,
-    ad_user_data: consentValue,
-    ad_personalization: consentValue,
+    ...getConsentSettings(consentValue),
     wait_for_update: 500,
   });
 
@@ -46,176 +77,159 @@ function initGA() {
   document.head.appendChild(script);
 
   window.gtag('js', new Date());
-  window.gtag('config', GA_ID);
+  window.gtag('config', GA_ID, { send_page_view: false });
+  if (analyticsEnabled) trackPageView();
 }
 
 const services = [
-  {
-    icon: '⚡',
-    title: 'Rendimiento rapido',
-    text: 'Carga veloz, interacciones fluidas y una base tecnica optimizada para proyectos digitales.',
-  },
-  {
-    icon: '🛡',
-    title: 'Seguridad avanzada',
-    text: 'Proteccion de datos, cifrado y buenas practicas para servicios, bots y paneles de gestion.',
-  },
-  {
-    icon: '✦',
-    title: 'Soluciones innovadoras',
-    text: 'Herramientas actualizadas para automatizar, publicar, analizar y hacer crecer tu presencia online.',
-  },
-];
-
-const highlights = [
-  {
-    title: 'Bots y automatizaciones',
-    text: 'Flujos para Telegram, paneles de gestion y tareas repetitivas que se ejecutan con menos friccion.',
-  },
-  {
-    title: 'Contenido y canales',
-    text: 'Visores web para comunidades, publicaciones y proyectos conectados al ecosistema Todo sobre alltech.',
-  },
-  {
-    title: 'Infraestructura digital',
-    text: 'Bases tecnicas para publicar, medir, proteger y hacer crecer herramientas online.',
-  },
+  'Portafolios y landing pages',
+  'Sitios para comunidades y creadores',
+  'Interfaces admin y dashboards',
 ];
 
 const projects = [
   {
-    title: 'Todo sobre alltech',
-    url: 'https://todosobreall.tech',
-    text: 'Portal principal de servicios, paneles, bots, proxies y gestion tecnologica.',
+    title: 'UI/UX Rediseno',
+    text: 'Interfaz moderna para una comunidad gamer con foco en velocidad, claridad y conversion.',
+    tags: ['React', 'UI', 'Branding'],
   },
   {
-    title: 'Noticiasweb3',
-    url: 'https://noticiasweb3.todosobreall.tech',
-    text: 'Noticias, articulos y contenido tecnologico con estilo clasico y version moderna.',
+    title: 'Dashboard de Contenido',
+    text: 'Panel para publicar noticias, ordenar categorias y medir el rendimiento de cada seccion.',
+    tags: ['Dashboard', 'SEO', 'Analytics'],
   },
   {
-    title: 'Resistencia a la Censura',
-    url: 'https://resistenciaalacensura.todosobreall.tech',
-    text: 'Visor del canal Resistencia Censura con publicaciones y acceso directo a Telegram.',
-  },
-  {
-    title: 'Comunidad Telebots',
-    url: 'https://comunidadtelebots.todosobreall.tech',
-    text: 'Comunidad y canal publico de Telebots en formato web consultable.',
-  },
-  {
-    title: 'TodoSobreGameplays',
-    url: 'https://todosobregameplays.todosobreall.tech',
-    text: 'Publicaciones del canal TodoSobreGameplays con lectura rapida desde la web.',
+    title: 'Landing de Marca Personal',
+    text: 'Sitio de presentacion profesional con portfolio, contacto y enlaces a redes.',
+    tags: ['Landing', 'Portfolio', 'Responsive'],
   },
 ];
 
+const skills = ['React', 'Vite', 'Docker', 'Traefik', 'HTML/CSS', 'SEO', 'Responsive Design', 'UI Systems'];
+
 function App() {
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+
   useEffect(() => {
-    initGA();
+    const storedConsent = getStoredAnalyticsConsent();
+    const hasChoice = storedConsent === 'true' || storedConsent === 'false';
+    const regionalConsent = getRegionalDefaultConsentValue();
+    const shouldEnableAnalytics = hasChoice ? storedConsent === 'true' : regionalConsent === 'granted';
+
+    setAnalyticsEnabled(shouldEnableAnalytics);
+    setShowCookieBanner(!hasChoice);
+    initGA(shouldEnableAnalytics);
   }, []);
+
+  const updateAnalyticsConsent = (enabled) => {
+    try {
+      localStorage.setItem(CONSENT_STORAGE_KEY, enabled ? 'true' : 'false');
+    } catch {
+      // Consent still updates for the current page when storage is unavailable.
+    }
+    setAnalyticsEnabled(enabled);
+    setShowCookieBanner(false);
+    initGA(enabled);
+  };
 
   return (
     <>
-      <header className="site-header">
-        <a href="#inicio" className="brand" aria-label="GamerGitBug inicio">
-          <span className="brand-mark">G</span>
-          <span>GamerGitBug</span>
-        </a>
-        <nav aria-label="Navegacion principal">
-          <a href="#servicios">Servicios</a>
-          <a href="#proyectos">Portafolio</a>
-          <a href="#contacto">Contacto</a>
-        </nav>
-      </header>
-
-      <main id="inicio">
+      <main className="page" id="inicio">
         <section className="hero">
-          <div className="hero-media" aria-hidden="true" />
-          <div className="hero-overlay" />
-          <div className="container hero-content">
-            <h1>Soluciones tecnologicas para proyectos digitales modernos</h1>
-            <p>
-              GamerGitBug reune automatizacion, contenido, canales, analitica y herramientas web desde una plataforma pensada para crecer contigo.
-            </p>
-            <div className="hero-actions">
-              <a className="button primary" href="#proyectos">Ver portafolio <span aria-hidden="true">→</span></a>
-              <a className="button secondary" href="https://todosobreall.tech" target="_blank" rel="noreferrer">Web principal</a>
-            </div>
+          <div className="kicker">Gamergitbug // Portfolio</div>
+          <h1>Diseno y desarrollo web con estilo propio.</h1>
+          <p>
+            Soy Gamergitbug. Creo experiencias web modernas, rapidas y visualmente fuertes para proyectos personales, marcas y comunidades.
+          </p>
+          <div className="hero-actions">
+            <a className="button primary" href="#proyectos">Ver proyectos</a>
+            <a className="button secondary" href="#contacto">Contactar</a>
           </div>
         </section>
 
-        <section id="servicios" className="section">
-          <div className="container">
-            <div className="section-heading">
-            <h2>Por que elegir GamerGitBug</h2>
-            <p>Unimos automatizacion, seguridad y contenido para que tus proyectos funcionen con menos friccion.</p>
-            </div>
-            <div className="service-grid">
+        <section className="intro-grid" aria-label="Resumen">
+          <article className="panel">
+            <h2>Sobre mi</h2>
+            <p>Me enfoco en construir sitios claros, con identidad visual y buena experiencia en movil y escritorio.</p>
+          </article>
+
+          <article className="panel">
+            <h2>Servicios</h2>
+            <ul>
               {services.map((service) => (
-                <article className="card" key={service.title}>
-                  <span className="card-icon" aria-hidden="true">{service.icon}</span>
-                  <h3>{service.title}</h3>
-                  <p>{service.text}</p>
-                </article>
+                <li key={service}>{service}</li>
               ))}
-            </div>
+            </ul>
+          </article>
+        </section>
+
+        <section id="proyectos" className="section">
+          <div className="section-heading">
+            <h2>Proyectos de muestra</h2>
+            <p>Una seleccion breve para mostrar estilo, estructura y enfoque.</p>
+          </div>
+          <div className="project-grid">
+            {projects.map((project) => (
+              <article className="project-card" key={project.title}>
+                <h3>{project.title}</h3>
+                <p>{project.text}</p>
+                <div className="tags">
+                  {project.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
         <section className="section">
-          <div className="container">
-            <div className="section-heading">
-              <h2>Servicios, automatizaciones y herramientas digitales</h2>
-              <p>Gestiona proyectos, canales y servicios online con una base visual y tecnica alineada con Todo sobre alltech.</p>
-            </div>
-            <div className="service-grid compact">
-              {highlights.map((item) => (
-                <article className="card" key={item.title}>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                </article>
-              ))}
-            </div>
+          <div className="section-heading">
+            <h2>Skills</h2>
+            <p>Herramientas y tecnologias que uso para construir proyectos solidos.</p>
+          </div>
+          <div className="skills" aria-label="Skills">
+            {skills.map((skill) => (
+              <span key={skill}>{skill}</span>
+            ))}
           </div>
         </section>
 
-        <section id="proyectos" className="section muted">
-          <div className="container">
-            <div className="section-heading">
-              <h2>Webs del ecosistema</h2>
-              <p>Accede rapidamente a las webs publicas y visores de canales conectados a Todo sobre alltech.</p>
-            </div>
-            <div className="portfolio-grid">
-              {projects.map((project) => (
-                <article className="project-card" key={project.url}>
-                  <div>
-                    <span className="card-icon small" aria-hidden="true">↗</span>
-                    <h3>{project.title}</h3>
-                    <p>{project.text}</p>
-                  </div>
-                  <a className="button secondary" href={project.url} target="_blank" rel="noreferrer">Abrir web <span aria-hidden="true">→</span></a>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="contacto" className="section cta-section">
-          <div className="container cta">
-            <div>
-            <h2>Listo para impulsar tu proyecto?</h2>
-            <p>Empieza a centralizar tus herramientas, canales y servicios en una sola plataforma.</p>
-            </div>
-            <a className="button inverted" href="https://todosobreall.tech/signup" target="_blank" rel="noreferrer">Crear cuenta ahora <span aria-hidden="true">→</span></a>
-          </div>
+        <section id="contacto" className="contact-panel">
+          <h2>Contacto</h2>
+          <p>Abierto a colaboraciones, encargos y nuevos proyectos.</p>
+          <a href="mailto:hello@gamergitbug.com">hello@gamergitbug.com</a>
         </section>
       </main>
 
-      <footer>
-        <span>GamerGitBug</span>
-        <span>Parte del ecosistema Todo sobre alltech.</span>
-      </footer>
+      {showCookieBanner ? (
+        <aside className="cookie-banner" aria-label="Preferencias de cookies">
+          <div>
+            <strong>Cookies y estadisticas</strong>
+            <p>
+              Usamos Google Analytics para medir visitas y mejorar la web. Puedes aceptar o rechazar las cookies de analitica.
+            </p>
+          </div>
+          <div className="cookie-actions">
+            <button type="button" className="button secondary" onClick={() => updateAnalyticsConsent(false)}>
+              Rechazar
+            </button>
+            <button type="button" className="button primary" onClick={() => updateAnalyticsConsent(true)}>
+              Aceptar
+            </button>
+          </div>
+        </aside>
+      ) : (
+        <button
+          type="button"
+          className="cookie-preferences"
+          onClick={() => setShowCookieBanner(true)}
+          aria-label="Abrir preferencias de cookies"
+        >
+          Cookies {analyticsEnabled ? 'on' : 'off'}
+        </button>
+      )}
     </>
   );
 }
