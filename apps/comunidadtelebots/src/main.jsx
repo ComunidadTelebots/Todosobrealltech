@@ -15,31 +15,41 @@ const CONSENT_REQUIRED_REGIONS = new Set([
   'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'UK', 'CH',
 ]);
 
-function allowsDefaultAnalytics() {
+function getAnalyticsConsentValue() {
   const locale = navigator.languages?.[0] || navigator.language || '';
   const region = locale.match(/[-_]([A-Z]{2})$/i)?.[1]?.toUpperCase() || '';
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
 
-  if (CONSENT_REQUIRED_REGIONS.has(region)) return false;
-  if (timeZone.startsWith('Europe/')) return false;
-  if (timeZone === 'Atlantic/Canary' || timeZone === 'Atlantic/Madeira' || timeZone === 'Atlantic/Azores') return false;
-  if (!timeZone && !region) return false;
+  if (CONSENT_REQUIRED_REGIONS.has(region)) return 'denied';
+  if (timeZone.startsWith('Europe/')) return 'denied';
+  if (timeZone === 'Atlantic/Canary' || timeZone === 'Atlantic/Madeira' || timeZone === 'Atlantic/Azores') return 'denied';
+  if (!timeZone && !region) return 'denied';
 
-  return true;
+  return 'granted';
 }
 
 function initGA() {
-  if (!GA_ID || document.getElementById('ga-script') || !allowsDefaultAnalytics()) return;
+  if (!GA_ID || document.getElementById('ga-script')) return;
+  const consentValue = getAnalyticsConsentValue();
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function gtag() {
+    window.dataLayer.push(arguments);
+  };
+  window.gtag('consent', 'default', {
+    analytics_storage: consentValue,
+    ad_storage: consentValue,
+    ad_user_data: consentValue,
+    ad_personalization: consentValue,
+    wait_for_update: 500,
+  });
+
   const script = document.createElement('script');
   script.id = 'ga-script';
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   document.head.appendChild(script);
 
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
-  };
   window.gtag('js', new Date());
   window.gtag('config', GA_ID);
 }

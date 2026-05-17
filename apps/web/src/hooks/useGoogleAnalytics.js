@@ -5,11 +5,32 @@ export const useGoogleAnalytics = (measurementId = '') => {
   const isInitialized = useRef(false);
 
   const initialize = useCallback((analyticsEnabled) => {
-    // Only load if analytics cookies are accepted, a measurement id exists, and not already loaded.
-    if (!analyticsEnabled || !measurementId || isInitialized.current) return;
+    if (!measurementId) return;
 
     const scriptId = 'google-analytics-script';
-    if (document.getElementById(scriptId)) return;
+    const consentValue = analyticsEnabled ? 'granted' : 'denied';
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+    window.gtag = window.gtag || gtag;
+
+    if (isInitialized.current || document.getElementById(scriptId)) {
+      window.gtag('consent', 'update', {
+        analytics_storage: consentValue,
+        ad_storage: consentValue,
+        ad_user_data: consentValue,
+        ad_personalization: consentValue,
+      });
+      return;
+    }
+
+    window.gtag('consent', 'default', {
+      analytics_storage: consentValue,
+      ad_storage: consentValue,
+      ad_user_data: consentValue,
+      ad_personalization: consentValue,
+      wait_for_update: 500,
+    });
 
     const script = document.createElement('script');
     script.id = scriptId;
@@ -17,13 +38,9 @@ export const useGoogleAnalytics = (measurementId = '') => {
     script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
     document.head.appendChild(script);
 
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { window.dataLayer.push(arguments); }
-    window.gtag = gtag;
-
-    gtag('js', new Date());
+    window.gtag('js', new Date());
     // Configure tracking but disable automatic page views to handle them manually via React Router
-    gtag('config', measurementId, { send_page_view: false });
+    window.gtag('config', measurementId, { send_page_view: false });
 
     isInitialized.current = true;
   }, [measurementId]);

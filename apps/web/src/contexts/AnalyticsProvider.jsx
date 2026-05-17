@@ -40,14 +40,14 @@ export const AnalyticsProvider = ({ children }) => {
       if (stored !== null) {
         const isEnabled = stored === 'true';
         setAnalyticsEnabledState(isEnabled);
-        if (isEnabled) {
-          initialize(true);
-        }
+        initialize(isEnabled);
       } else if (!requiresPriorAnalyticsConsent()) {
         localStorage.setItem('analytics_consent', 'true');
         localStorage.setItem('analytics_consent_source', 'regional_default');
         setAnalyticsEnabledState(true);
         initialize(true);
+      } else {
+        initialize(false);
       }
     } catch (e) {
       console.error('Failed to parse analytics_consent', e);
@@ -58,9 +58,7 @@ export const AnalyticsProvider = ({ children }) => {
   const setAnalyticsEnabled = (enabled) => {
     localStorage.setItem('analytics_consent', enabled ? 'true' : 'false');
     setAnalyticsEnabledState(enabled);
-    if (enabled) {
-      initialize(true);
-    }
+    initialize(enabled);
     window.dispatchEvent(new Event('analyticsConsentUpdate'));
   };
 
@@ -72,9 +70,7 @@ export const AnalyticsProvider = ({ children }) => {
         if (stored !== null) {
           const isEnabled = stored === 'true';
           setAnalyticsEnabledState(isEnabled);
-          if (isEnabled) {
-            initialize(true);
-          }
+          initialize(isEnabled);
         }
       }
     };
