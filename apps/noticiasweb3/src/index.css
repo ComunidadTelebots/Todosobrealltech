@@ -114,6 +114,7 @@ ol, ul { list-style: none; }
   max-width: 1000px;
   min-width: 810px;
   position: relative;
+  box-shadow: -1px 0 0 #b0aca6, 1px 0 0 #b0aca6, -2px 0 0 #ccc8c2, 2px 0 0 #ccc8c2;
 }
 
 /* =Masthead
@@ -268,9 +269,10 @@ ol, ul { list-style: none; }
 #access > ul > li:hover > a,
 #access > ul > li.active > a,
 #access > ul > li > a:focus {
-  background: #fff;
-  box-shadow: 0 0 8px rgba(0,0,0,0.65);
-  color: #373737;
+  background: linear-gradient(180deg, #e8f0fe 0%, #d0e4ff 100%);
+  color: #1a4a8a;
+  border-bottom: 2px solid #1982d1;
+  box-shadow: none;
   transform: scale(1.08);
   z-index: 1;
   text-decoration: none;
