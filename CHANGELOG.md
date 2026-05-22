@@ -1,5 +1,15 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.16] - 2026-05-22
+### noticiasweb3 - Fix dropdown de navegacion en versiones 2026
+- Corregido bug en `#access` de `.version-2026`: los submenus se renderizaban siempre visibles bajo cada item porque faltaba `display: none` y `position: absolute` por defecto, rompiendo el layout horizontal.
+- Anadidas reglas `:hover > ul` y `.open > ul` para mostrar el submenu solo al interactuar.
+- Anadido fondo, sombra, `width` fijo y `z-index` al desplegable en `.version-2026`.
+- Forzado `overflow: visible` en `<ul>` y `<li>` del nav para que los dropdowns no se recorten en escritorio.
+- Variantes platform-ios y platform-windows: el dropdown ahora usa `position: fixed` centrado sobre la nav inferior (con `max-height: 60vh` y scroll interno) para escapar del `overflow-x: auto` del nav y no cortarse en los bordes.
+- Variante platform-android: estilos del submenu reforzados con fondo blanco y hover verde Material.
+- `SiteHeader.jsx`: el `onClick` del `<li>` solo se asigna cuando el item tiene hijos, los clicks en sub-links no propagan al toggle y `openItem` se limpia al cambiar de ruta.
+
 ## [0.1.15] - 2026-05-17
 ### Web principal - Castellano y botones sociales
 - Traducidos al castellano los textos principales de `apps/web`: cabecera, hero, secciones de valor, testimonios, llamada a la accion y footer.

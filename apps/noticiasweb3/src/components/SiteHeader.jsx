@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
@@ -88,6 +88,10 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
   const location = useLocation();
   const [openItem, setOpenItem] = useState(null);
 
+  useEffect(() => {
+    setOpenItem(null);
+  }, [location.pathname]);
+
   return (
     <div>
       <div id="masthead">
@@ -162,22 +166,26 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
         <ul>
           {navItems.filter((item) => !item.version2026Only || siteVersion === '2026').map((item) => {
             const isActive = location.pathname === item.path;
+            const hasChildren = Boolean(item.children);
             return (
               <li
                 key={item.path}
                 className={`${isActive ? 'active' : ''} ${openItem === item.path ? 'open' : ''}`}
-                onClick={() => setOpenItem(openItem === item.path ? null : item.path)}
+                onClick={hasChildren ? (e) => {
+                  if (e.target.closest('ul ul')) return;
+                  setOpenItem(openItem === item.path ? null : item.path);
+                } : undefined}
               >
                 {item.external ? (
                   <a href={item.path} target="_blank" rel="noopener noreferrer">{item.label}</a>
                 ) : (
                   <Link to={item.path}>{item.label}</Link>
                 )}
-                {item.children && (
+                {hasChildren && (
                   <ul>
                     {item.children.map((child) => (
                       <li key={child.path}>
-                        <Link to={child.path}>{child.label}</Link>
+                        <Link to={child.path} onClick={(e) => e.stopPropagation()}>{child.label}</Link>
                       </li>
                     ))}
                   </ul>
