@@ -101,6 +101,13 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
               <div className="version-switch" role="group" aria-label="Cambiar version de Noticiasweb3">
                 <button
                   type="button"
+                  className={siteVersion === '2012' ? 'active' : ''}
+                  onClick={() => onVersionChange('2012')}
+                >
+                  2012
+                </button>
+                <button
+                  type="button"
                   className={siteVersion === '2014' ? 'active' : ''}
                   onClick={() => onVersionChange('2014')}
                 >
