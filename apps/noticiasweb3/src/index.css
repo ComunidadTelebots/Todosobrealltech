@@ -225,16 +225,16 @@ ol, ul { list-style: none; }
   color: #155f9b;
 }
 
-/* =Navigation
+/* =Navigation (2014 default — scoped so it doesn't leak into 2012/2026)
 ----------------------------------------------- */
-#access {
+.version-2014 #access {
   background-color: #ebe8e3;
   clear: both;
   display: block;
   float: left;
   width: 100%;
 }
-#access ul {
+.version-2014 #access ul {
   font-size: 13px;
   list-style: none;
   margin: 0;
@@ -242,12 +242,12 @@ ol, ul { list-style: none; }
   display: flex;
   flex-wrap: wrap;
 }
-#access li {
+.version-2014 #access li {
   position: relative;
   margin: 0;
   border-bottom: 1px solid #bbb;
 }
-#access > ul > li > a {
+.version-2014 #access > ul > li > a {
   background: #e8e8e8;
   border-bottom: 1px solid #ccc;
   color: #333;
@@ -262,7 +262,7 @@ ol, ul { list-style: none; }
   position: relative;
   white-space: nowrap;
 }
-#access > ul > li > a::before {
+.version-2014 #access > ul > li > a::before {
   content: '';
   display: inline-block;
   width: 22px;
@@ -272,16 +272,16 @@ ol, ul { list-style: none; }
   margin-right: 8px;
   vertical-align: middle;
 }
-#access > ul > li:hover > a,
-#access > ul > li.active > a,
-#access > ul > li > a:focus {
+.version-2014 #access > ul > li:hover > a,
+.version-2014 #access > ul > li.active > a,
+.version-2014 #access > ul > li > a:focus {
   background: #1982d1;
   color: #fff;
   text-decoration: none;
 }
 
-/* Dropdown */
-#access ul ul {
+/* Dropdown (2014) */
+.version-2014 #access ul ul {
   box-shadow: 0 0 8px rgba(0,0,0,0.65);
   display: none;
   margin: 0;
@@ -293,8 +293,8 @@ ol, ul { list-style: none; }
   list-style: none;
   flex-wrap: nowrap;
 }
-#access ul li:hover > ul { display: block; }
-#access ul ul a {
+.version-2014 #access ul li:hover > ul { display: block; }
+.version-2014 #access ul ul a {
   background: #f9f9f9;
   border-bottom: 1px dotted #ddd;
   color: #444;
@@ -309,8 +309,8 @@ ol, ul { list-style: none; }
   white-space: normal;
   margin-bottom: 0;
 }
-#access ul ul a::before { content: none !important; }
-#access ul ul a:hover {
+.version-2014 #access ul ul a::before { content: none !important; }
+.version-2014 #access ul ul a:hover {
   background: #efefef;
   box-shadow: none;
   transform: none;
@@ -1891,10 +1891,10 @@ body.nw3-night-mode a {
   #stage { min-width: 0; width: 100%; }
   #content #main { width: calc(100% - 80px); float: none; }
   #sidebar { float: none; width: calc(100% - 40px); margin: 10px 20px; }
-  #access li { float: none; }
-  #access ul ul { position: static; box-shadow: none; display: none; width: auto; }
-  #access li.open > ul { display: block; }
-  #access > ul > li:hover > a { transform: none; }
+  .version-2014 #access li { float: none; }
+  .version-2014 #access ul ul { position: static; box-shadow: none; display: none; width: auto; }
+  .version-2014 #access li.open > ul { display: block; }
+  .version-2014 #access > ul > li:hover > a { transform: none; }
   #banner-top {
     width: calc(100% - 24px);
     max-width: 728px;
