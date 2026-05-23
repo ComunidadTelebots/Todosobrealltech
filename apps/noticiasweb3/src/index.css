@@ -246,12 +246,18 @@ ol, ul { list-style: none; }
   position: relative;
   margin: 0;
   border-bottom: 1px solid #bbb;
+  flex: 1;
+}
+
+.version-2014 #access ul ul li {
+  flex: none;
 }
 .version-2014 #access > ul > li > a {
   background: #e8e8e8;
   border-bottom: 1px solid #ccc;
   color: #333;
   display: block;
+  height: 100%;
   padding: 10px 16px;
   text-decoration: none;
   text-transform: uppercase;
@@ -1612,6 +1618,22 @@ body.nw3-night-mode a {
 .version-2014.night-mode #access > ul > li > a,
 .version-2026.night-mode #access > ul > li > a {
   color: #dbeafe;
+}
+
+.version-2014.night-mode #access > ul > li > a {
+  background: rgba(15,23,42,0.86);
+  border-bottom-color: rgba(148,163,184,0.2);
+}
+
+.version-2014.night-mode #access ul ul a {
+  background: rgba(15,23,42,0.92);
+  border-bottom-color: rgba(148,163,184,0.18);
+  color: #dbeafe;
+}
+
+.version-2014.night-mode #access ul ul a:hover {
+  background: rgba(30,41,59,0.96);
+  color: #f8fafc;
 }
 
 .version-2014.night-mode #access > ul > li.active > a,
