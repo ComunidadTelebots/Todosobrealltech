@@ -1,5 +1,34 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.22] - 2026-05-24
+### noticiasweb3 — Easter eggs por categoría
+- Al hacer clic en cualquier categoría del filtro de noticias aparece un toast animado con emoji y mensaje temático que desaparece automáticamente tras 2,8 segundos.
+- Cada categoría tiene identidad visual propia (color de fondo, borde y texto diferente):
+  - 🤖 **IA** — "Probabilidad de que esto sea sentience: 73,6%..." (morado)
+  - ⚙️ **Tecnología** — "¡Sistema iniciado! Todos los subsistemas operativos." (azul)
+  - 🔐 **Ciberseguridad** — `ACCESO CONCEDIDO. Bienvenido, agente.` (terminal verde sobre negro, monospace)
+  - 🎮 **Gaming** — "¡NIVEL DESBLOQUEADO! +100 XP · Logro: Curioso/a" (rojo)
+  - 🔬 **Ciencia** — "Hipótesis confirmada: eres increíblemente curioso/a." (cian)
+  - 🚀 **Espacio** — "T−3... T−2... T−1... ¡Despegue exitoso!" (fondo oscuro índigo)
+  - 📱 **Móviles** — "▂▄▆█ Señal al 100%. Conexión establecida." (azul claro)
+  - ⚡ **Energía** — "Cargando ████████ 100% — ¡Batería completa!" (ámbar)
+  - 📢 **Redes Sociales** — "¡Tu like ha sido procesado! +1 karma social 🌐" (rosa)
+  - 📈 **Economía** — "Cotización de tu curiosidad: AL ALZA ↑ +∞%" (verde)
+  - 💊 **Salud** — "Dosis diaria administrada. ¡Toma tu vitamina tech!" (rojo oscuro)
+- Animación de entrada `eggFadeIn` (fade + deslizamiento desde arriba, 0,25s).
+
+## [0.1.21] - 2026-05-24
+### noticiasweb3 — Nuevas categorías + auto-categorización + recategorización
+- Categorías añadidas: **Ciencia**, **Espacio**, **Móviles**, **Energía**, **Redes Sociales**, **Economía**, **Salud** (antes solo existían Tecnología, IA, Ciberseguridad y Gaming).
+- Auto-categorización por palabras clave en `useTelegramFeed`: cada post del feed de Telegram es analizado por título y texto para asignarle la categoría más adecuada antes de mostrarlo. Si no coincide ninguna keyword, se usa la categoría por defecto del canal.
+- Canal `@resistencia_censura` añadido al feed con categoría por defecto **Ciberseguridad**. Los posts de ambos canales (`@TodoSobreAllTech` y `@resistencia_censura`) se combinan en paralelo con `Promise.allSettled`.
+- 13 artículos estáticos recategorizados:
+  - → **Espacio**: China superfábrica cohetes, China robot base lunar, NASA Psyche-Marte
+  - → **Móviles**: Apple Smart Glasses, Vision Pro crisis, Apple lab Madrid, Google Pixel 10
+  - → **Economía**: Nvidia H200 China, Ormuz chips Samsung/TSMC, Irán cables submarinos, El Corte Inglés outlet
+  - → **Energía**: Singapur célula solar invisible perovskita
+  - → **IA**: Sony IA mejora fotos
+
 ## [0.1.19] - 2026-05-24
 ### noticiasweb3 — Noticias desde @TodoSobreAllTech + feed RSS automático
 - Feed automático conectado a `rsshub.app/telegram/channel/TodoSobreAllTech` vía `rss2json.com` (CORS). Los posts del canal de Telegram aparecen automáticamente en la sección de noticias (versión 2026) sin intervención manual.
