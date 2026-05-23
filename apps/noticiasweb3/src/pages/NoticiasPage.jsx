@@ -10,7 +10,7 @@ const EXISTING_TELEGRAM_URLS = new Set(
   articles.filter(a => a.telegramUrl).map(a => a.telegramUrl)
 );
 
-const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming'];
+const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming', 'Ciencia', 'Espacio', 'Móviles', 'Energía', 'Redes Sociales', 'Economía', 'Salud'];
 
 const MONTHS_ES = {
   enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,

@@ -8,22 +8,68 @@ const CHANNELS = [
 const CATEGORY_KEYWORDS = {
   'IA': [
     'inteligencia artificial', ' ia ', ' ai ', 'chatgpt', 'gpt', 'claude', 'gemini', 'llm',
-    'openai', 'anthropic', 'deepseek', 'copilot', 'neural', 'machine learning',
+    'openai', 'anthropic', 'deepseek', 'copilot', 'machine learning',
     'aprendizaje automático', 'modelo de lenguaje', 'generativa', 'generativo',
     'mistral', 'llama', 'stable diffusion', 'midjourney', 'sora', 'agente ia',
+    'neural', 'perplexity', 'grok', 'notebooklm',
   ],
   'Gaming': [
     'gaming', 'videojuego', 'videogame', 'consola', 'ps5', 'playstation', 'xbox',
     'nintendo', 'switch', 'steam', 'fortnite', 'minecraft', 'gamer', 'esport',
     'pc gamer', 'metacritic', 'forza', 'call of duty', 'gta', 'valorant',
-    'twitch', 'streamer', 'gameplay', 'dlc', 'early access',
+    'twitch', 'streamer', 'gameplay', 'dlc', 'early access', 'pokemon',
   ],
   'Ciberseguridad': [
     'hack', 'hacker', 'ciberseguridad', 'cybersecurity', 'vulnerabilidad', 'malware',
     'ransomware', 'phishing', 'brecha', 'filtración', 'ciberataque', 'exploit',
     'vpn', 'cifrado', 'contraseña', 'datos robados', 'spyware', 'backdoor',
-    'zero-day', '0-day', 'ddos', 'botnet', 'robo de datos', 'privacidad',
+    'zero-day', '0-day', 'ddos', 'botnet', 'robo de datos',
     'censura', 'vigilancia', 'espionaje', 'nsa', 'gdpr', 'datos personales',
+  ],
+  'Espacio': [
+    'nasa', 'espacio', 'cohete', 'satélite', 'órbita', 'astronauta', 'spacex',
+    'marte', 'luna', 'telescopio', 'hubble', 'james webb', 'iss', 'estación espacial',
+    'lanzamiento espacial', 'exoplaneta', 'asteroide', 'cometa', 'galaxia',
+    'agujero negro', 'esa ', 'cosmos', 'universo', 'supernova',
+  ],
+  'Móviles': [
+    'iphone', 'android', 'smartphone', 'móvil', 'samsung', 'pixel', 'oneplus',
+    'xiaomi', 'huawei', 'app store', 'google play', 'ios ', 'aplicación móvil',
+    'tableta', 'tablet', 'wearable', 'smartwatch', 'apple watch', 'galaxy',
+    'snapdragon', 'dimensity', 'batería móvil', '5g', 'telefono',
+  ],
+  'Energía': [
+    'energía solar', 'panel solar', 'célula solar', 'fotovoltaica', 'renovable',
+    'eólica', 'batería', 'almacenamiento energía', 'hidrógeno', 'nuclear',
+    'fusión nuclear', 'carbono', 'emisiones', 'co2', 'cambio climático',
+    'electricidad', 'red eléctrica', 'cargador', 'coche eléctrico', 'tesla',
+    'perovskita', 'biomasa', 'geotérmica',
+  ],
+  'Redes Sociales': [
+    'twitter', 'x.com', 'instagram', 'facebook', 'meta ', 'tiktok', 'youtube',
+    'linkedin', 'reddit', 'snapchat', 'whatsapp', 'telegram', 'mastodon',
+    'bluesky', 'threads', 'influencer', 'viral', 'redes sociales', 'social media',
+    'moderación de contenido', 'desinformación', 'bulo', 'fake news',
+  ],
+  'Economía': [
+    'bolsa', 'wall street', 'nasdaq', 'cotización', 'inversión', 'startup',
+    'valoración', 'ipo', 'fusión', 'adquisición', 'despidos', 'ertes',
+    'inflación', 'banco', 'criptomoneda', 'bitcoin', 'ethereum', 'blockchain',
+    'economía', 'pib', 'recesión', 'beneficios', 'facturación', 'multa',
+    'regulación', 'ue tech', 'antitrust', 'monopolio',
+  ],
+  'Salud': [
+    'salud', 'médico', 'medicina', 'hospital', 'enfermedad', 'vacuna', 'virus',
+    'bacteria', 'cáncer', 'investigación médica', 'farmacéutica', 'tratamiento',
+    'estudio científico', 'longevidad', 'alzheimer', 'diabetes', 'cardio',
+    'mental', 'sueño', 'descanso', 'nutrición', 'dieta', 'ejercicio',
+  ],
+  'Ciencia': [
+    'científicos', 'investigadores', 'descubrimiento', 'estudio', 'universidad',
+    'laboratorio', 'experimento', 'física', 'química', 'biología', 'arqueología',
+    'fósil', 'evolución', 'genética', 'adn', 'crispr', 'cuántica', 'átomo',
+    'partícula', 'materia oscura', 'teoría', 'naturaleza', 'animal', 'especie',
+    'clima', 'océano', 'geología', 'volcán', 'terremoto',
   ],
 };
 
