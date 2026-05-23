@@ -89,19 +89,34 @@ const services = [
 
 const projects = [
   {
-    title: 'UI/UX Rediseno',
-    text: 'Interfaz moderna para una comunidad gamer con foco en velocidad, claridad y conversion.',
-    tags: ['React', 'UI', 'Branding'],
+    title: 'TodoSobreAllTech',
+    text: 'Hub principal con blog, panel de administración, sistema de autenticación y gestión de contenido por colecciones.',
+    tags: ['React', 'shadcn/ui', 'PocketBase', 'Tailwind'],
+    url: 'https://todosobreall.tech',
   },
   {
-    title: 'Dashboard de Contenido',
-    text: 'Panel para publicar noticias, ordenar categorias y medir el rendimiento de cada seccion.',
-    tags: ['Dashboard', 'SEO', 'Analytics'],
+    title: 'NoticiasWeb3',
+    text: 'Sitio de noticias con secciones de juegos PC, extensiones de navegador, PlayStation, foro y modo noche automático.',
+    tags: ['React', 'React Router', 'AdSense', 'Docker'],
+    url: 'https://noticiasweb3.todosobreall.tech',
   },
   {
-    title: 'Landing de Marca Personal',
-    text: 'Sitio de presentacion profesional con portfolio, contacto y enlaces a redes.',
-    tags: ['Landing', 'Portfolio', 'Responsive'],
+    title: 'Resistencia a la Censura',
+    text: 'Visor web del canal de Telegram con búsqueda, filtros por fecha y estadísticas de publicaciones en tiempo real.',
+    tags: ['React', 'Telegram API', 'Lucide', 'Docker'],
+    url: 'https://resistenciaalacensura.todosobreall.tech',
+  },
+  {
+    title: 'Comunidad Telebots',
+    text: 'Sitio web para la comunidad de bots de Telegram, con visor de canal integrado, búsqueda y galería de imágenes.',
+    tags: ['React', 'Telegram API', 'Lucide', 'Docker'],
+    url: 'https://comunidadtelebots.todosobreall.tech',
+  },
+  {
+    title: 'Todo Sobre Gameplays',
+    text: 'Canal de contenido sobre gameplays presentado como web: visor de posts, filtros y navegación por publicaciones.',
+    tags: ['React', 'Telegram API', 'Vite', 'Docker'],
+    url: 'https://todosobregameplays.todosobreall.tech',
   },
 ];
 
@@ -138,7 +153,7 @@ function App() {
       <main className="page" id="inicio">
         <section className="hero">
           <div className="kicker">Gamergitbug // Portfolio</div>
-          <h1>Diseno y desarrollo web con estilo propio.</h1>
+          <h1>Diseño y desarrollo web con estilo propio.</h1>
           <p>
             Soy Gamergitbug. Creo experiencias web modernas, rapidas y visualmente fuertes para proyectos personales, marcas y comunidades.
           </p>
@@ -166,13 +181,17 @@ function App() {
 
         <section id="proyectos" className="section">
           <div className="section-heading">
-            <h2>Proyectos de muestra</h2>
-            <p>Una seleccion breve para mostrar estilo, estructura y enfoque.</p>
+            <h2>Proyectos</h2>
+            <p>Sitios en producción construidos y mantenidos por mí.</p>
           </div>
           <div className="project-grid">
             {projects.map((project) => (
               <article className="project-card" key={project.title}>
-                <h3>{project.title}</h3>
+                <h3>
+                  {project.url
+                    ? <a href={project.url} target="_blank" rel="noopener noreferrer">{project.title} ↗</a>
+                    : project.title}
+                </h3>
                 <p>{project.text}</p>
                 <div className="tags">
                   {project.tags.map((tag) => (

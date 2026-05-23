@@ -216,6 +216,15 @@ h3 {
   margin-bottom: 20px;
 }
 
+.project-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-card h3 a:hover {
+  opacity: 0.75;
+}
+
 .tags,
 .skills {
   display: flex;
