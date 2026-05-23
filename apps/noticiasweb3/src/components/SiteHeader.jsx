@@ -86,7 +86,7 @@ export const navItems = [
   { label: 'gol television', path: 'http://www.goltelevision.com/', external: true },
 ];
 
-export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, onPlatformChange, isNightMode }) {
+export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, onPlatformChange, isNightMode, onModeToggle }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [openItem, setOpenItem] = useState(null);
@@ -139,6 +139,16 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
                   2026
                 </button>
               </div>
+              {siteVersion !== '2014' && (
+                <button
+                  type="button"
+                  className={`mode-toggle-btn ${isNightMode ? 'mode-night' : 'mode-day'}`}
+                  onClick={onModeToggle}
+                  title={isNightMode ? 'Cambiar a modo día' : 'Cambiar a modo noche'}
+                >
+                  {isNightMode ? '☀ Día' : '☾ Noche'}
+                </button>
+              )}
               {siteVersion === '2026' && <div className="platform-switch" role="group" aria-label="Cambiar diseno movil">
                 <button
                   type="button"

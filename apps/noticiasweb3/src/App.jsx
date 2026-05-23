@@ -103,10 +103,25 @@ function Layout({ children }) {
     if (typeof window === 'undefined') return 'windows';
     return localStorage.getItem('nw3-platform') || 'windows';
   });
-  const [isNightMode, setIsNightMode] = useState(() => {
+  const [autoNightMode, setAutoNightMode] = useState(() => {
     const hour = new Date().getHours();
     return hour >= 20 || hour < 7;
   });
+  const [manualMode, setManualMode] = useState(() => localStorage.getItem('nw3-manual-mode') || null);
+
+  const isNightMode = siteVersion === '2014'
+    ? false
+    : manualMode === 'night'
+      ? true
+      : manualMode === 'day'
+        ? false
+        : autoNightMode;
+
+  function toggleMode() {
+    const newMode = isNightMode ? 'day' : 'night';
+    setManualMode(newMode);
+    localStorage.setItem('nw3-manual-mode', newMode);
+  }
 
   useEffect(() => {
     localStorage.setItem('nw3-version', siteVersion);
@@ -117,20 +132,18 @@ function Layout({ children }) {
   }, [appPlatform]);
 
   useEffect(() => {
-    const updateNightMode = () => {
+    const update = () => {
       const hour = new Date().getHours();
-      setIsNightMode(hour >= 20 || hour < 7);
+      setAutoNightMode(hour >= 20 || hour < 7);
     };
-
-    updateNightMode();
-    const interval = window.setInterval(updateNightMode, 60 * 1000);
+    update();
+    const interval = window.setInterval(update, 60 * 1000);
     return () => window.clearInterval(interval);
   }, []);
 
   useEffect(() => {
     document.body.classList.toggle('nw3-night-mode', isNightMode);
     document.body.classList.toggle('nw3-day-mode', !isNightMode);
-
     return () => {
       document.body.classList.remove('nw3-night-mode', 'nw3-day-mode');
     };
@@ -151,6 +164,7 @@ function Layout({ children }) {
         appPlatform={appPlatform}
         onPlatformChange={setAppPlatform}
         isNightMode={isNightMode}
+        onModeToggle={toggleMode}
       />
       <div id="container">
         <div id="content">
