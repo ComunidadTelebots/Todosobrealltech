@@ -139,7 +139,7 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
                   2026
                 </button>
               </div>
-              {siteVersion !== '2014' && (
+              {siteVersion === '2026' && (
                 <button
                   type="button"
                   className={`mode-toggle-btn ${isNightMode ? 'mode-night' : 'mode-day'}`}
