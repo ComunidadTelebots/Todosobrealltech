@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import blogPosts from '../data/blogPosts.jsx';
@@ -11,6 +11,20 @@ const EXISTING_TELEGRAM_URLS = new Set(
 );
 
 const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming', 'Ciencia', 'Espacio', 'Móviles', 'Energía', 'Redes Sociales', 'Economía', 'Salud'];
+
+const EASTER_EGGS = {
+  'Tecnología': { emoji: '⚙️', msg: '¡Sistema iniciado! Todos los subsistemas operativos.', accent: '#2563eb', bg: '#eff6ff' },
+  'IA':         { emoji: '🤖', msg: 'Probabilidad de que esto sea sentience: 73,6%...', accent: '#7c3aed', bg: '#f5f3ff' },
+  'Ciberseguridad': { emoji: '🔐', msg: 'ACCESO CONCEDIDO. Bienvenido, agente.', accent: '#15803d', bg: '#052e16', light: '#4ade80', mono: true },
+  'Gaming':     { emoji: '🎮', msg: '¡NIVEL DESBLOQUEADO! +100 XP · Logro: "Curioso/a"', accent: '#b91c1c', bg: '#fef2f2' },
+  'Ciencia':    { emoji: '🔬', msg: 'Hipótesis confirmada: eres increíblemente curioso/a.', accent: '#0891b2', bg: '#ecfeff' },
+  'Espacio':    { emoji: '🚀', msg: 'T−3... T−2... T−1... ¡Despegue exitoso!', accent: '#c4b5fd', bg: '#0f0728', light: '#c4b5fd' },
+  'Móviles':    { emoji: '📱', msg: '▂▄▆█ Señal al 100%. Conexión establecida.', accent: '#0369a1', bg: '#f0f9ff' },
+  'Energía':    { emoji: '⚡', msg: 'Cargando ████████ 100% — ¡Batería completa!', accent: '#854d0e', bg: '#fefce8' },
+  'Redes Sociales': { emoji: '📢', msg: '¡Tu like ha sido procesado! +1 karma social 🌐', accent: '#be185d', bg: '#fdf2f8' },
+  'Economía':   { emoji: '📈', msg: 'Cotización de tu curiosidad: AL ALZA ↑ +∞%', accent: '#166534', bg: '#f0fdf4' },
+  'Salud':      { emoji: '💊', msg: 'Dosis diaria administrada. ¡Toma tu vitamina tech!', accent: '#9f1239', bg: '#fff1f2' },
+};
 
 const MONTHS_ES = {
   enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
@@ -73,6 +87,8 @@ const tabStyle = (active) => ({
 export default function NoticiasPage({ siteVersion }) {
   const { isAuthenticated } = useAuth();
   const { posts: telegramPosts } = useTelegramFeed(EXISTING_TELEGRAM_URLS);
+  const [activeEgg, setActiveEgg] = useState(null);
+  const eggTimer = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') === 'blog' ? 'blog' : 'noticias';
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -298,7 +314,15 @@ export default function NoticiasPage({ siteVersion }) {
                   <button
                     key={cat}
                     type="button"
-                    onClick={() => { setActiveCategory(cat); setQuery(''); }}
+                    onClick={() => {
+                      setActiveCategory(cat);
+                      setQuery('');
+                      if (cat !== 'Todas' && EASTER_EGGS[cat]) {
+                        clearTimeout(eggTimer.current);
+                        setActiveEgg(cat);
+                        eggTimer.current = setTimeout(() => setActiveEgg(null), 2800);
+                      }
+                    }}
                     style={{
                       padding: '4px 12px',
                       fontSize: '11px',
@@ -318,6 +342,30 @@ export default function NoticiasPage({ siteVersion }) {
                   </button>
                 ))}
               </div>
+
+              {/* Easter egg toast */}
+              {activeEgg && EASTER_EGGS[activeEgg] && (() => {
+                const egg = EASTER_EGGS[activeEgg];
+                return (
+                  <div key={activeEgg} style={{
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    margin: '0 0 14px',
+                    padding: '10px 16px',
+                    background: egg.bg,
+                    border: `1.5px solid ${egg.accent}`,
+                    borderRadius: '8px',
+                    color: egg.light || egg.accent,
+                    fontFamily: egg.mono ? 'monospace' : 'inherit',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    animation: 'eggFadeIn 0.25s ease',
+                    boxShadow: `0 2px 12px ${egg.accent}33`,
+                  }}>
+                    <span style={{ fontSize: '22px', lineHeight: 1 }}>{egg.emoji}</span>
+                    <span>{egg.msg}</span>
+                  </div>
+                );
+              })()}
 
               {/* Filtro por fecha */}
               {availableDates.length > 0 && (

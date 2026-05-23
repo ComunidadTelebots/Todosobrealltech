@@ -2856,3 +2856,8 @@ body:has(#stage.version-2012) {
 .night-mode .admin-users-table td { border-color: rgba(217,119,6,0.2); }
 .night-mode .admin-users-row-self td { background: rgba(120,80,10,0.25); }
 .night-mode .admin-role-select { background: #2d2d2d; color: #e5e7eb; border-color: #555; }
+
+@keyframes eggFadeIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
