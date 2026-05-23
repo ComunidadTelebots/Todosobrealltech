@@ -84,6 +84,9 @@ import AfiliarteePage from './pages/AfiliarteePage.jsx';
 import AfiadosPage from './pages/AfiadosPage.jsx';
 import ListaVipPage from './pages/ListaVipPage.jsx';
 import ForoPage from './pages/ForoPage.jsx';
+import ForoCategoriaPage from './pages/ForoCategoriaPage.jsx';
+import ForoHiloPage from './pages/ForoHiloPage.jsx';
+import ForoNuevoHiloPage from './pages/ForoNuevoHiloPage.jsx';
 import ContactoPage from './pages/ContactoPage.jsx';
 import GrupoPage from './pages/GrupoPage.jsx';
 import EncuestasPage from './pages/EncuestasPage.jsx';
@@ -204,6 +207,10 @@ export default function App() {
         <Route path="/afiliados" element={<Layout><AfiadosPage /></Layout>} />
         <Route path="/lista-vip" element={<Layout><ListaVipPage /></Layout>} />
         <Route path="/foro" element={<Layout><ForoPage /></Layout>} />
+        <Route path="/foro/nuevo" element={<Layout><ForoNuevoHiloPage /></Layout>} />
+        <Route path="/foro/:categoria" element={<Layout><ForoCategoriaPage /></Layout>} />
+        <Route path="/foro/:categoria/nuevo" element={<Layout><ForoNuevoHiloPage /></Layout>} />
+        <Route path="/foro/:categoria/:id" element={<Layout><ForoHiloPage /></Layout>} />
         <Route path="/contacto" element={<Layout><ContactoPage /></Layout>} />
         <Route path="/grupo" element={<Layout><GrupoPage /></Layout>} />
         <Route path="/encuestas" element={<Layout><EncuestasPage /></Layout>} />

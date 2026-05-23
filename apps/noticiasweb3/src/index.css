@@ -2510,3 +2510,184 @@ body:has(#stage.version-2012) {
     margin: 0 10px 10px;
   }
 }
+
+/* =Foro
+----------------------------------------------- */
+.foro-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.foro-volver {
+  font-size: 13px;
+  color: #1982d1;
+  text-decoration: none;
+}
+.foro-volver:hover { text-decoration: underline; }
+
+.foro-btn-nuevo {
+  display: inline-block;
+  padding: 6px 14px;
+  background: #1982d1;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 3px;
+}
+.foro-btn-nuevo:hover { background: #1570b8; text-decoration: none; }
+
+.foro-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+.foro-tabla th {
+  background: #1982d1;
+  color: #fff;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: bold;
+}
+.foro-tabla td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+.foro-tabla tr:hover td { background: #f5f5f5; }
+.foro-tabla tr:last-child td { border-bottom: none; }
+
+.foro-cat-link {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #1982d1;
+  text-decoration: none;
+}
+.foro-cat-link:hover { text-decoration: underline; }
+.foro-cat-desc {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.foro-hilo-link {
+  color: #1982d1;
+  text-decoration: none;
+  font-weight: bold;
+}
+.foro-hilo-link:hover { text-decoration: underline; }
+.foro-num { text-align: center; color: #555; }
+.foro-fecha { color: #888; white-space: nowrap; font-size: 12px; }
+.foro-meta {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 14px;
+}
+
+.foro-post {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  border-radius: 3px;
+}
+.foro-post-op {
+  border-color: #1982d1;
+  background: #f0f7ff;
+}
+.foro-post-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: #555;
+}
+.foro-post-cuerpo {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.foro-paginacion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.foro-paginacion button {
+  padding: 5px 12px;
+  border: 1px solid #ccc;
+  background: #f0f0f0;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 3px;
+}
+.foro-paginacion button:hover { background: #e0e0e0; }
+
+.foro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  max-width: 600px;
+}
+.foro-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: bold;
+  color: #444;
+  gap: 4px;
+}
+.foro-form input,
+.foro-form textarea,
+.foro-form select {
+  padding: 7px 9px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  font-family: inherit;
+  border-radius: 3px;
+  color: #333;
+  background: #fff;
+}
+.foro-form textarea { resize: vertical; }
+.foro-form button[type="submit"] {
+  align-self: flex-start;
+  padding: 8px 20px;
+  background: #1982d1;
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.foro-form button[type="submit"]:disabled { opacity: 0.6; cursor: default; }
+.foro-form button[type="submit"]:hover:not(:disabled) { background: #1570b8; }
+
+.foro-error { color: #b50433; font-weight: bold; font-size: 13px; }
+.foro-exito { color: #257a41; font-weight: bold; font-size: 13px; }
+.foro-campo-error { color: #b50433; font-size: 12px; font-weight: normal; }
+
+/* Foro noche */
+.night-mode .foro-tabla th { background: #1570b8; }
+.night-mode .foro-tabla td { border-bottom-color: rgba(148,163,184,0.2); }
+.night-mode .foro-tabla tr:hover td { background: rgba(30,41,59,0.6); }
+.night-mode .foro-post { background: rgba(15,23,42,0.7); border-color: rgba(148,163,184,0.24); }
+.night-mode .foro-post-op { background: rgba(25,130,209,0.14); border-color: #1982d1; }
+.night-mode .foro-post-cuerpo { color: #dbeafe; }
+.night-mode .foro-form input,
+.night-mode .foro-form textarea,
+.night-mode .foro-form select {
+  background: rgba(15,23,42,0.8);
+  border-color: rgba(148,163,184,0.3);
+  color: #dbeafe;
+}
