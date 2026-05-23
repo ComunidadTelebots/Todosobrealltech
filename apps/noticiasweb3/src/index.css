@@ -679,8 +679,8 @@ h6 {
 .version-2026 #access > ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  padding: 8px;
+  gap: 4px;
+  padding: 6px 8px;
   overflow: visible;
 }
 .version-2026 #access li {
@@ -692,10 +692,12 @@ h6 {
   margin-bottom: 0;
   border-radius: 999px;
   color: #e5e7eb;
-  line-height: 36px;
-  padding: 0 15px;
+  font-size: 11px;
+  line-height: 26px;
+  padding: 0 10px;
   letter-spacing: 0;
   text-transform: none;
+  white-space: nowrap;
 }
 .version-2026 #access > ul > li > a::before {
   content: none;
@@ -1014,8 +1016,8 @@ h6 {
   border-radius: 18px;
   color: #3a3a3c;
   font-weight: bold;
-  line-height: 38px;
-  padding: 0 16px;
+  line-height: 26px;
+  padding: 0 10px;
 }
 .version-2026.platform-ios #access > ul > li.active > a,
 .version-2026.platform-ios #access > ul > li:hover > a {
@@ -1024,11 +1026,11 @@ h6 {
   box-shadow: 0 7px 18px rgba(0,122,255,0.14);
 }
 .version-2026.platform-ios #access ul ul {
-  position: fixed;
-  top: auto;
-  left: 50%;
-  bottom: 80px;
-  transform: translateX(-50%);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  bottom: auto;
+  transform: none;
   width: min(360px, calc(100% - 32px));
   max-height: 60vh;
   overflow-y: auto;
@@ -1294,29 +1296,14 @@ h6 {
   height: 310px;
 }
 .version-2026.platform-ios #access {
-  position: fixed;
-  left: 50%;
-  bottom: 16px;
-  z-index: 40;
-  width: min(760px, calc(100% - 24px));
-  transform: translateX(-50%);
   border-radius: 28px;
 }
 .version-2026.platform-ios #access > ul {
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
   padding: 8px;
-  scrollbar-width: none;
-}
-.version-2026.platform-ios #access > ul::-webkit-scrollbar {
-  display: none;
-}
-.version-2026.platform-ios #access > ul > li > a {
-  min-width: max-content;
 }
 .version-2026.platform-ios #content {
   display: block;
-  padding-bottom: 96px;
 }
 .version-2026.platform-ios .version-shell {
   padding: 26px;
@@ -1453,12 +1440,6 @@ h6 {
   color: #4b5563;
 }
 .version-2026.platform-windows #access {
-  position: fixed;
-  left: 50%;
-  bottom: 14px;
-  z-index: 50;
-  width: min(900px, calc(100% - 24px));
-  transform: translateX(-50%);
   border: 1px solid var(--win-border);
   border-radius: 16px;
   background: rgba(255,255,255,0.82);
@@ -1467,26 +1448,20 @@ h6 {
 }
 .version-2026.platform-windows #access > ul {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
   padding: 8px;
-  scrollbar-width: none;
-}
-.version-2026.platform-windows #access > ul::-webkit-scrollbar {
-  display: none;
 }
 .version-2026.platform-windows #access > ul > li {
   float: none;
   margin-right: 0;
 }
 .version-2026.platform-windows #access > ul > li > a {
-  min-width: max-content;
   margin-bottom: 0;
   border-radius: 10px;
   color: #374151;
-  line-height: 36px;
-  padding: 0 14px;
+  line-height: 26px;
+  padding: 0 10px;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -1501,11 +1476,11 @@ h6 {
   transform: none;
 }
 .version-2026.platform-windows #access ul ul {
-  position: fixed;
-  top: auto;
-  left: 50%;
-  bottom: 76px;
-  transform: translateX(-50%);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  bottom: auto;
+  transform: none;
   width: min(360px, calc(100% - 32px));
   max-height: 60vh;
   overflow-y: auto;
@@ -1526,7 +1501,6 @@ h6 {
 }
 .version-2026.platform-windows #content {
   grid-template-columns: minmax(0, 1fr) 300px;
-  padding-bottom: 90px;
 }
 .version-2026.platform-windows h1,
 .version-2026.platform-windows h1 a {
