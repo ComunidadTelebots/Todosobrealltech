@@ -91,6 +91,7 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
   const { isAuthenticated } = useAuth();
   const [openItem, setOpenItem] = useState(null);
   const [hiddenNavPaths, setHiddenNavPaths] = useState([]);
+  const [customNavItems, setCustomNavItems] = useState([]);
 
   useEffect(() => {
     setOpenItem(null);
@@ -98,7 +99,10 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
 
   useEffect(() => {
     pb.collection('nw3_settings').getFirstListItem('key="nav"')
-      .then((r) => setHiddenNavPaths(r.value?.hidden || []))
+      .then((r) => {
+        setHiddenNavPaths(r.value?.hidden || []);
+        setCustomNavItems(r.value?.custom || []);
+      })
       .catch(() => {});
   }, [isAuthenticated]);
 
@@ -174,7 +178,7 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
 
       <div id="access">
         <ul>
-          {navItems
+          {[...navItems, ...customNavItems]
             .filter((item) => !item.version2026Only || siteVersion === '2026')
             .filter((item) => isAuthenticated || !hiddenNavPaths.includes(item.path))
             .map((item) => {
