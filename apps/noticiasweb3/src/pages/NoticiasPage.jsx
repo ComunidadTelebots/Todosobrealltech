@@ -4,6 +4,11 @@ import articles from '../data/articles.jsx';
 import blogPosts from '../data/blogPosts.jsx';
 import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { useTelegramFeed } from '../hooks/useTelegramFeed.jsx';
+
+const EXISTING_TELEGRAM_URLS = new Set(
+  articles.filter(a => a.telegramUrl).map(a => a.telegramUrl)
+);
 
 const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming'];
 
@@ -67,6 +72,7 @@ const tabStyle = (active) => ({
 
 export default function NoticiasPage({ siteVersion }) {
   const { isAuthenticated } = useAuth();
+  const { posts: telegramPosts } = useTelegramFeed(EXISTING_TELEGRAM_URLS);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') === 'blog' ? 'blog' : 'noticias';
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -136,7 +142,7 @@ export default function NoticiasPage({ siteVersion }) {
       body: <p style={{ whiteSpace: 'pre-wrap' }}>{r.contenido}</p>,
       source: r.fuente_url ? { url: r.fuente_url, label: r.fuente_label || r.fuente_url } : null,
     }));
-    const all = [...articles, ...pbNormalized];
+    const all = [...articles, ...pbNormalized, ...telegramPosts];
     const base = siteVersion === '2014'
       ? all.filter((a) => !a.year || a.year === 2014)
       : all.filter((a) => a.year === 2026 || !a.year);
@@ -148,7 +154,7 @@ export default function NoticiasPage({ siteVersion }) {
       });
     }
     return base;
-  }, [siteVersion, pbArticles]);
+  }, [siteVersion, pbArticles, telegramPosts]);
 
   // Fechas únicas disponibles (solo 2026)
   const availableDates = useMemo(() => {
@@ -426,7 +432,10 @@ export default function NoticiasPage({ siteVersion }) {
                     style={index === paginated.length - 1 ? { borderBottom: 'none' } : undefined}
                   >
                     <h2>
-                      <Link to={`/noticias/${article.slug}`}>{article.title}</Link>
+                      {article.externalUrl
+                        ? <a href={article.externalUrl} target="_blank" rel="noopener noreferrer">{article.title}</a>
+                        : <Link to={`/noticias/${article.slug}`}>{article.title}</Link>
+                      }
                     </h2>
                     <div className="article-meta">
                       {siteVersion !== '2014' && article.category && (
