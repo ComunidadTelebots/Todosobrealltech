@@ -90,6 +90,8 @@ import ForoNuevoHiloPage from './pages/ForoNuevoHiloPage.jsx';
 import ContactoPage from './pages/ContactoPage.jsx';
 import GrupoPage from './pages/GrupoPage.jsx';
 import EncuestasPage from './pages/EncuestasPage.jsx';
+import NuevaNoticiaPage from './pages/NuevaNoticiaPage.jsx';
+import { AuthProvider } from './contexts/AuthContext.jsx';
 
 function Layout({ children }) {
   const [siteVersion, setSiteVersion] = useState(() => {
@@ -182,12 +184,14 @@ export default function App() {
   useEffect(() => { initGA(); }, []);
 
   return (
+    <AuthProvider>
     <Router>
       <PageTracker />
       <Routes>
         <Route path="/" element={<Layout><BienvenidoPage /></Layout>} />
         <Route path="/bienvenido" element={<Layout><BienvenidoPage /></Layout>} />
         <Route path="/noticias" element={<Layout><NoticiasPage /></Layout>} />
+        <Route path="/noticias/nueva" element={<Layout><NuevaNoticiaPage /></Layout>} />
         <Route path="/noticias/:slug" element={<Layout><NoticiaDetailPage /></Layout>} />
         <Route path="/blog/:slug" element={<Layout><BlogPostDetailPage /></Layout>} />
         <Route path="/canal" element={<Layout><CanalPage /></Layout>} />
@@ -217,5 +221,6 @@ export default function App() {
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }

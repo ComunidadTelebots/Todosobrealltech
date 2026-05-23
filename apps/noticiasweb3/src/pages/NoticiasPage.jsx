@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import blogPosts from '../data/blogPosts.jsx';
+import pb from '../pb.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming'];
 
@@ -64,6 +66,7 @@ const tabStyle = (active) => ({
 });
 
 export default function NoticiasPage({ siteVersion }) {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') === 'blog' ? 'blog' : 'noticias';
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -72,6 +75,13 @@ export default function NoticiasPage({ siteVersion }) {
   const [activeDateKey, setActiveDateKey] = useState('');
 
   const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+  const [pbArticles, setPbArticles] = useState([]);
+
+  useEffect(() => {
+    pb.collection('nw3_noticias').getFullList({ sort: '-created' })
+      .then(setPbArticles)
+      .catch(() => {});
+  }, []);
 
   function setPage(p) {
     setSearchParams((prev) => {
@@ -92,14 +102,25 @@ export default function NoticiasPage({ siteVersion }) {
 
   // Artículos visibles según versión, ordenados por fecha descendente en 2026
   const visible = useMemo(() => {
+    const pbNormalized = pbArticles.map((r) => ({
+      id: `pb-${r.id}`,
+      slug: r.slug,
+      title: r.titulo,
+      date: r.fecha || '',
+      category: r.categoria || 'General',
+      year: r.year || 2026,
+      body: <p style={{ whiteSpace: 'pre-wrap' }}>{r.contenido}</p>,
+      source: r.fuente_url ? { url: r.fuente_url, label: r.fuente_label || r.fuente_url } : null,
+    }));
+    const all = [...articles, ...pbNormalized];
     const base = siteVersion === '2014'
-      ? articles.filter((a) => !a.year || a.year === 2014)
-      : articles.filter((a) => a.year === 2026 || !a.year);
+      ? all.filter((a) => !a.year || a.year === 2014)
+      : all.filter((a) => a.year === 2026 || !a.year);
     if (siteVersion === '2026') {
       return [...base].sort((a, b) => parseDate(b.date) - parseDate(a.date));
     }
     return base;
-  }, [siteVersion]);
+  }, [siteVersion, pbArticles]);
 
   // Fechas únicas disponibles (solo 2026)
   const availableDates = useMemo(() => {
@@ -137,7 +158,27 @@ export default function NoticiasPage({ siteVersion }) {
 
   return (
     <div id="main">
-      <h1>Novedades y Noticias</h1>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '4px' }}>
+        <h1 style={{ margin: 0 }}>Novedades y Noticias</h1>
+        {isAuthenticated && (
+          <Link
+            to="/noticias/nueva"
+            style={{
+              display: 'inline-block',
+              padding: '6px 14px',
+              background: '#b50433',
+              color: '#fff',
+              borderRadius: '3px',
+              textDecoration: 'none',
+              fontSize: '13px',
+              fontWeight: '700',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            + Nueva noticia
+          </Link>
+        )}
+      </div>
 
       {siteVersion !== '2014' && (
         <div style={{ display: 'flex', borderBottom: '1px solid #ccc', marginBottom: '20px' }}>

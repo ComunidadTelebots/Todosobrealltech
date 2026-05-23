@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import articles from '../data/articles.jsx';
+import pb from '../pb.js';
 
 function setMeta(name, content) {
   let el = document.querySelector(`meta[name="${name}"]`);
@@ -10,7 +11,32 @@ function setMeta(name, content) {
 
 export default function NoticiaDetailPage({ siteVersion }) {
   const { slug } = useParams();
-  const article = articles.find((a) => a.slug === slug);
+  const staticArticle = articles.find((a) => a.slug === slug);
+  const [pbArticle, setPbArticle] = useState(null);
+  const [loadingPb, setLoadingPb] = useState(!staticArticle);
+
+  useEffect(() => {
+    if (staticArticle) return;
+    setLoadingPb(true);
+    pb.collection('nw3_noticias').getFirstListItem(`slug="${slug}"`)
+      .then((r) => {
+        setPbArticle({
+          id: r.id,
+          slug: r.slug,
+          title: r.titulo,
+          date: r.fecha || '',
+          category: r.categoria || '',
+          year: r.year || 2026,
+          body: <p style={{ whiteSpace: 'pre-wrap' }}>{r.contenido}</p>,
+          source: r.fuente_url ? { url: r.fuente_url, label: r.fuente_label || r.fuente_url } : null,
+          telegramUrl: r.telegram_url || null,
+        });
+      })
+      .catch(() => setPbArticle(null))
+      .finally(() => setLoadingPb(false));
+  }, [slug, staticArticle]);
+
+  const article = staticArticle || pbArticle;
 
   useEffect(() => {
     if (!article) return;
@@ -25,6 +51,10 @@ export default function NoticiaDetailPage({ siteVersion }) {
     setMeta('og:url', window.location.href);
     return () => { document.title = prev; };
   }, [article]);
+
+  if (loadingPb) {
+    return <div id="main"><p>Cargando…</p></div>;
+  }
 
   if (!article) {
     return (
