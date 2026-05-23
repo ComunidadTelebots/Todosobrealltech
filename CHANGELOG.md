@@ -1,5 +1,35 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.19] - 2026-05-24
+### noticiasweb3 — Noticias desde @TodoSobreAllTech + feed RSS automático
+- Feed automático conectado a `rsshub.app/telegram/channel/TodoSobreAllTech` vía `rss2json.com` (CORS). Los posts del canal de Telegram aparecen automáticamente en la sección de noticias (versión 2026) sin intervención manual.
+- Deduplicación automática: los posts que ya existen como artículos manuales se excluyen por `telegramUrl` para evitar duplicados.
+- Los títulos de los artículos del feed enlazan directamente al post de Telegram (nueva pestaña), mientras que los artículos manuales enlazan a la página de detalle interna.
+- Añadidas 4 noticias del 24 mayo 2026 añadidas manualmente desde @TodoSobreAllTech:
+  - Célula solar invisible de perovskita (Universidad Nanyang, Singapur) — genera energía en sombra con 7,6% de eficiencia
+  - Brecha de seguridad en vigilabebés Meari — 1 millón de dispositivos en 118 países expuestos (Wyze, Petcube, Arenti)
+  - Aeropuerto Pokémon de Japón — Noto Satoyama reabre el 7 julio con 111 especies de Pokémon
+  - Mercedes-Benz declara intención de entrar en la industria de defensa europea
+
+## [0.1.18] - 2026-05-24
+### noticiasweb3 — Nav 2026 iOS/Windows fijo abajo + submenús corregidos
+- Nav fijo en la parte inferior de la pantalla (`position: fixed; bottom`) restaurado correctamente para iOS y Windows 11, ocupando el ancho completo (`left: 8px; right: 8px`).
+- Items del nav aumentados a `font-size: 13px` y `line-height: 36px` para mejor legibilidad.
+- Submenús cambiados de `top: 100%` a `bottom: 100%`: ahora se abren hacia arriba (correcto cuando el nav está abajo).
+- Ancho del submenú ajustado al contenido (`width: max-content`) en vez de fijo o pantalla completa.
+- Todos los 19 items del nav caben sin scroll horizontal en las 3 plataformas (Android: 3 filas, iOS: 2 filas, Windows 11: 2 filas) gracias a `flex-wrap: wrap`.
+
+## [0.1.17] - 2026-05-23
+### noticiasweb3 — Admin: pills de visibilidad, gestión de usuarios y mejoras de nav
+- **Panel admin — visibilidad del nav**: reemplazados los checkboxes por botones pill coloreados (verde ● Visible / gris ✗ Oculto) para cada ítem de la navegación.
+- **Panel admin — gestión de usuarios** (solo rol `admin`): tabla con todos los usuarios, selector de rol y botón de eliminar; formulario para crear nuevos usuarios con email, contraseña y rol inicial.
+- **AuthContext**: expuesto el campo `role` del usuario autenticado para controlar funcionalidades exclusivas de admin en toda la app.
+- **Nav admin — ítems personalizados**: crear nuevos ítems de nav con etiqueta y ruta, activar/desactivar visibilidad individualmente, y eliminar.
+- **Admin — gestión de categorías de noticias**: ocultar/mostrar categorías al público sin eliminar los artículos.
+- **Admin — moderación de artículos**: editar, eliminar y marcar artículos como destacados desde el panel.
+- **Modo día/noche**: añadido botón toggle visible únicamente en versión 2026. Estado manual persistido en `localStorage` (`nw3-manual-mode`). Versiones 2012 y 2014 forzadas siempre a modo día.
+- **Submenús (2014 y 2026)**: se cerraban demasiado rápido al mover el ratón del ítem padre al submenú. Solucionado con `visibility: hidden/visible` + `transition-delay: 0.15s` en lugar de `display: none/block`.
+
 ## [0.1.16] - 2026-05-22
 ### noticiasweb3 - Fix dropdown de navegacion en versiones 2026
 - Corregido bug en `#access` de `.version-2026`: los submenus se renderizaban siempre visibles bajo cada item porque faltaba `display: none` y `position: absolute` por defecto, rompiendo el layout horizontal.
