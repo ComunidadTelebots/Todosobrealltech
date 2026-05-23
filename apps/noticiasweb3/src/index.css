@@ -307,7 +307,10 @@ ol, ul { list-style: none; }
 /* Dropdown (2014) */
 .version-2014 #access ul ul {
   box-shadow: 0 0 8px rgba(0,0,0,0.65);
-  display: none;
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 0.15s;
   margin: 0;
   position: absolute;
   top: 100%;
@@ -317,7 +320,12 @@ ol, ul { list-style: none; }
   list-style: none;
   flex-wrap: nowrap;
 }
-.version-2014 #access ul li:hover > ul { display: block; }
+.version-2014 #access ul li:hover > ul,
+.version-2014 #access ul li.open > ul {
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
 .version-2014 #access ul ul a {
   background: #f9f9f9;
   border-bottom: 1px dotted #ddd;
@@ -701,7 +709,10 @@ h6 {
   transform: none;
 }
 .version-2026 #access ul ul {
-  display: none;
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 0.15s;
   position: absolute;
   top: 44px;
   left: 0;
@@ -717,7 +728,9 @@ h6 {
 .version-2026 #access > ul > li { position: relative; }
 .version-2026 #access ul li:hover > ul,
 .version-2026 #access ul li.open > ul {
-  display: block;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
 }
 .version-2026 #access ul ul li { width: 100%; }
 .version-2026 #access ul ul a {
@@ -2020,7 +2033,7 @@ body.nw3-night-mode a {
   #content #main { width: calc(100% - 80px); float: none; }
   #sidebar { float: none; width: calc(100% - 40px); margin: 10px 20px; }
   .version-2014 #access li { float: none; }
-  .version-2014 #access ul ul { position: static; box-shadow: none; display: none; width: auto; }
+  .version-2014 #access ul ul { position: static; box-shadow: none; display: none; visibility: visible; pointer-events: auto; width: auto; }
   .version-2014 #access li.open > ul { display: block; }
   .version-2014 #access > ul > li:hover > a { transform: none; }
   #banner-top {
