@@ -109,7 +109,7 @@ function Layout({ children }) {
   });
   const [manualMode, setManualMode] = useState(() => localStorage.getItem('nw3-manual-mode') || null);
 
-  const isNightMode = siteVersion === '2014'
+  const isNightMode = (siteVersion === '2014' || siteVersion === '2012')
     ? false
     : manualMode === 'night'
       ? true
