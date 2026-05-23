@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { navItems } from '../components/SiteHeader.jsx';
+import pb from '../pb.js';
 
 export default function IniciarSesionPage() {
   const { login, isAuthenticated, logout, user } = useAuth();
@@ -8,23 +10,46 @@ export default function IniciarSesionPage() {
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
 
+  // Nav management state (only when logged in)
+  const [hiddenNavPaths, setHiddenNavPaths] = useState([]);
+  const [navSettingsId, setNavSettingsId] = useState(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    pb.collection('nw3_settings').getFirstListItem('key="nav"')
+      .then((r) => { setNavSettingsId(r.id); setHiddenNavPaths(r.value?.hidden || []); })
+      .catch(() => {});
+  }, [isAuthenticated]);
+
+  async function toggleNavItem(path) {
+    const newHidden = hiddenNavPaths.includes(path)
+      ? hiddenNavPaths.filter((p) => p !== path)
+      : [...hiddenNavPaths, path];
+    setHiddenNavPaths(newHidden);
+    try {
+      if (navSettingsId) {
+        await pb.collection('nw3_settings').update(navSettingsId, { value: { hidden: newHidden } });
+      } else {
+        const r = await pb.collection('nw3_settings').create({ key: 'nav', value: { hidden: newHidden } });
+        setNavSettingsId(r.id);
+      }
+    } catch { /* ignore */ }
+  }
+
   if (isAuthenticated) {
     return (
       <div id="main">
-        <h1>Sesión activa</h1>
-        <p>Has iniciado sesión como <strong>{user?.email || user?.username}</strong>.</p>
-        <div style={{ display: 'flex', gap: '12px', marginTop: '14px', flexWrap: 'wrap' }}>
+        <h1>Panel de administración</h1>
+        <p style={{ marginBottom: 14 }}>
+          Sesión activa como <strong>{user?.email || user?.username}</strong>.
+        </p>
+
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
           <Link
             to="/noticias/nueva"
             style={{
-              display: 'inline-block',
-              padding: '7px 16px',
-              background: '#b50433',
-              color: '#fff',
-              borderRadius: '3px',
-              textDecoration: 'none',
-              fontSize: '13px',
-              fontWeight: '700',
+              display: 'inline-block', padding: '7px 16px', background: '#b50433',
+              color: '#fff', borderRadius: '3px', textDecoration: 'none', fontSize: '13px', fontWeight: '700',
             }}
           >
             + Nueva noticia
@@ -33,20 +58,35 @@ export default function IniciarSesionPage() {
             type="button"
             onClick={() => { logout(); navigate('/'); }}
             style={{
-              padding: '7px 16px',
-              background: '#555',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: '700',
-              fontFamily: 'inherit',
+              padding: '7px 16px', background: '#555', color: '#fff', border: 'none',
+              borderRadius: '3px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', fontFamily: 'inherit',
             }}
           >
             Cerrar sesión
           </button>
         </div>
+
+        <details className="admin-panel-categorias" open>
+          <summary>⚙ Gestión del menú de navegación</summary>
+          <div className="admin-panel-body" style={{ flexDirection: 'column', gap: '8px' }}>
+            <p className="admin-panel-hint">
+              Desactiva items para ocultarlos del menú a todos los visitantes. Tú los sigues viendo.
+            </p>
+            {navItems.map((item) => (
+              <label key={item.path} className="admin-cat-toggle">
+                <input
+                  type="checkbox"
+                  checked={!hiddenNavPaths.includes(item.path)}
+                  onChange={() => toggleNavItem(item.path)}
+                />
+                {item.label}
+                {hiddenNavPaths.includes(item.path) && (
+                  <span className="admin-cat-hidden-tag">oculto</span>
+                )}
+              </label>
+            ))}
+          </div>
+        </details>
       </div>
     );
   }
@@ -60,7 +100,7 @@ export default function IniciarSesionPage() {
     setEnviando(true);
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/iniciar-sesion');
     } catch {
       setError('Correo o contraseña incorrectos.');
     } finally {

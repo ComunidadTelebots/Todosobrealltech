@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import pb from '../pb.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
-const navItems = [
+export const navItems = [
   { label: 'Bienvenido', path: '/' },
   { label: 'Novedades y Noticias', path: '/noticias' },
   { label: 'Canal de Telegram', path: '/canal', version2026Only: true },
@@ -86,11 +88,19 @@ const navItems = [
 
 export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, onPlatformChange, isNightMode }) {
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [openItem, setOpenItem] = useState(null);
+  const [hiddenNavPaths, setHiddenNavPaths] = useState([]);
 
   useEffect(() => {
     setOpenItem(null);
   }, [location.pathname]);
+
+  useEffect(() => {
+    pb.collection('nw3_settings').getFirstListItem('key="nav"')
+      .then((r) => setHiddenNavPaths(r.value?.hidden || []))
+      .catch(() => {});
+  }, [isAuthenticated]);
 
   return (
     <div>
@@ -164,7 +174,10 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
 
       <div id="access">
         <ul>
-          {navItems.filter((item) => !item.version2026Only || siteVersion === '2026').map((item) => {
+          {navItems
+            .filter((item) => !item.version2026Only || siteVersion === '2026')
+            .filter((item) => isAuthenticated || !hiddenNavPaths.includes(item.path))
+            .map((item) => {
             const isActive = location.pathname === item.path;
             const hasChildren = Boolean(item.children);
             return (
