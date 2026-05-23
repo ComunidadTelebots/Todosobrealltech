@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import pb from '../pb.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 function setMeta(name, content) {
   let el = document.querySelector(`meta[name="${name}"]`);
@@ -11,32 +12,35 @@ function setMeta(name, content) {
 
 export default function NoticiaDetailPage({ siteVersion }) {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const staticArticle = articles.find((a) => a.slug === slug);
-  const [pbArticle, setPbArticle] = useState(null);
+  const [pbRecord, setPbRecord] = useState(null);
   const [loadingPb, setLoadingPb] = useState(!staticArticle);
+  const [eliminando, setEliminando] = useState(false);
+  const [togglingDestacado, setTogglingDestacado] = useState(false);
 
   useEffect(() => {
     if (staticArticle) return;
     setLoadingPb(true);
     pb.collection('nw3_noticias').getFirstListItem(`slug="${slug}"`)
-      .then((r) => {
-        setPbArticle({
-          id: r.id,
-          slug: r.slug,
-          title: r.titulo,
-          date: r.fecha || '',
-          category: r.categoria || '',
-          year: r.year || 2026,
-          body: <p style={{ whiteSpace: 'pre-wrap' }}>{r.contenido}</p>,
-          source: r.fuente_url ? { url: r.fuente_url, label: r.fuente_label || r.fuente_url } : null,
-          telegramUrl: r.telegram_url || null,
-        });
-      })
-      .catch(() => setPbArticle(null))
+      .then(setPbRecord)
+      .catch(() => setPbRecord(null))
       .finally(() => setLoadingPb(false));
   }, [slug, staticArticle]);
 
-  const article = staticArticle || pbArticle;
+  const article = staticArticle || (pbRecord ? {
+    id: pbRecord.id,
+    slug: pbRecord.slug,
+    title: pbRecord.titulo,
+    date: pbRecord.fecha || '',
+    category: pbRecord.categoria || '',
+    year: pbRecord.year || 2026,
+    destacado: pbRecord.destacado || false,
+    body: <p style={{ whiteSpace: 'pre-wrap' }}>{pbRecord.contenido}</p>,
+    source: pbRecord.fuente_url ? { url: pbRecord.fuente_url, label: pbRecord.fuente_label || pbRecord.fuente_url } : null,
+    telegramUrl: pbRecord.telegram_url || null,
+  } : null);
 
   useEffect(() => {
     if (!article) return;
@@ -52,9 +56,32 @@ export default function NoticiaDetailPage({ siteVersion }) {
     return () => { document.title = prev; };
   }, [article]);
 
-  if (loadingPb) {
-    return <div id="main"><p>Cargando…</p></div>;
+  async function handleEliminar() {
+    if (!pbRecord || !window.confirm('¿Eliminar esta noticia? Esta acción no se puede deshacer.')) return;
+    setEliminando(true);
+    try {
+      await pb.collection('nw3_noticias').delete(pbRecord.id);
+      navigate('/noticias');
+    } catch {
+      alert('No se pudo eliminar la noticia.');
+      setEliminando(false);
+    }
   }
+
+  async function handleToggleDestacado() {
+    if (!pbRecord) return;
+    setTogglingDestacado(true);
+    try {
+      const updated = await pb.collection('nw3_noticias').update(pbRecord.id, { destacado: !pbRecord.destacado });
+      setPbRecord(updated);
+    } catch {
+      alert('No se pudo cambiar el estado.');
+    } finally {
+      setTogglingDestacado(false);
+    }
+  }
+
+  if (loadingPb) return <div id="main"><p>Cargando…</p></div>;
 
   if (!article) {
     return (
@@ -70,6 +97,28 @@ export default function NoticiaDetailPage({ siteVersion }) {
       <p style={{ marginBottom: '10px' }}>
         <Link to="/noticias">← Volver a noticias</Link>
       </p>
+
+      {isAuthenticated && pbRecord && (
+        <div className="admin-actions-bar">
+          <Link to={`/noticias/editar/${pbRecord.id}`} className="admin-btn admin-btn-edit">
+            ✎ Editar
+          </Link>
+          <button
+            className={`admin-btn ${pbRecord.destacado ? 'admin-btn-unfeature' : 'admin-btn-feature'}`}
+            onClick={handleToggleDestacado}
+            disabled={togglingDestacado}
+          >
+            {pbRecord.destacado ? '★ Quitar destacado' : '☆ Destacar'}
+          </button>
+          <button
+            className="admin-btn admin-btn-delete"
+            onClick={handleEliminar}
+            disabled={eliminando}
+          >
+            {eliminando ? 'Eliminando…' : '✕ Eliminar'}
+          </button>
+        </div>
+      )}
 
       <h1>{article.title}</h1>
 
@@ -88,6 +137,9 @@ export default function NoticiaDetailPage({ siteVersion }) {
             borderRadius: '2px',
             verticalAlign: 'middle',
           }}>{article.category}</span>
+        )}
+        {article.destacado && (
+          <span className="nw3-destacado-badge">★ Destacado</span>
         )}
         {article.date}
         {article.source && (

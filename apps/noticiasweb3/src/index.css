@@ -2691,3 +2691,109 @@ body:has(#stage.version-2012) {
   border-color: rgba(148,163,184,0.3);
   color: #dbeafe;
 }
+
+/* =Admin */
+.admin-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  background: #f8f0e3;
+  border: 1px solid #e0c97f;
+  border-radius: 4px;
+}
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.admin-btn:disabled { opacity: 0.6; cursor: default; }
+.admin-btn-edit  { background: #1982d1; color: #fff; }
+.admin-btn-delete { background: #b50433; color: #fff; }
+.admin-btn-feature { background: #d97706; color: #fff; }
+.admin-btn-unfeature { background: #6b7280; color: #fff; }
+.admin-btn-sm { padding: 2px 7px; font-size: 11px; }
+
+.nw3-destacado-badge {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: #d97706;
+  color: #fff;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.admin-panel-categorias {
+  margin-bottom: 14px;
+  border: 1px solid #e0c97f;
+  border-radius: 4px;
+  background: #fffbeb;
+}
+.admin-panel-categorias summary {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #92400e;
+  user-select: none;
+}
+.admin-panel-body {
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-top: 1px solid #e0c97f;
+}
+.admin-panel-hint {
+  width: 100%;
+  font-size: 11px;
+  color: #92400e;
+  margin: 0 0 4px;
+}
+.admin-cat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.admin-cat-hidden-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #b50433;
+  background: #fee2e2;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.admin-check-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.admin-check-label input[type="checkbox"] { width: auto; }
+
+/* admin night mode */
+.night-mode .admin-actions-bar { background: rgba(120,80,10,0.2); border-color: rgba(217,119,6,0.4); }
+.night-mode .admin-panel-categorias { background: rgba(120,80,10,0.15); border-color: rgba(217,119,6,0.35); }
+.night-mode .admin-panel-categorias summary { color: #fbbf24; }
+.night-mode .admin-panel-hint { color: #fbbf24; }
+.night-mode .admin-panel-body { border-color: rgba(217,119,6,0.35); }
+.night-mode .nw3-destacado-badge { background: #b45309; }

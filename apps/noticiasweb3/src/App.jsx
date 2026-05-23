@@ -91,6 +91,7 @@ import ContactoPage from './pages/ContactoPage.jsx';
 import GrupoPage from './pages/GrupoPage.jsx';
 import EncuestasPage from './pages/EncuestasPage.jsx';
 import NuevaNoticiaPage from './pages/NuevaNoticiaPage.jsx';
+import EditarNoticiaPage from './pages/EditarNoticiaPage.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 
 function Layout({ children }) {
@@ -192,6 +193,7 @@ export default function App() {
         <Route path="/bienvenido" element={<Layout><BienvenidoPage /></Layout>} />
         <Route path="/noticias" element={<Layout><NoticiasPage /></Layout>} />
         <Route path="/noticias/nueva" element={<Layout><NuevaNoticiaPage /></Layout>} />
+        <Route path="/noticias/editar/:id" element={<Layout><EditarNoticiaPage /></Layout>} />
         <Route path="/noticias/:slug" element={<Layout><NoticiaDetailPage /></Layout>} />
         <Route path="/blog/:slug" element={<Layout><BlogPostDetailPage /></Layout>} />
         <Route path="/canal" element={<Layout><CanalPage /></Layout>} />

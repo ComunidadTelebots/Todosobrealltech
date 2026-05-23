@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import pb from '../pb.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const NOMBRES = {
   general:     'General',
@@ -19,6 +20,8 @@ function formatFecha(iso) {
 
 export default function ForoHiloPage() {
   const { categoria, id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [hilo, setHilo] = useState(null);
   const [respuestas, setRespuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -26,6 +29,27 @@ export default function ForoHiloPage() {
   const [enviando, setEnviando] = useState(false);
   const [exito, setExito] = useState(false);
   const formRef = useRef(null);
+
+  async function handleEliminarHilo() {
+    if (!window.confirm('¿Eliminar este hilo y todas sus respuestas?')) return;
+    try {
+      await pb.collection('nw3_foro_hilos').delete(id);
+      navigate(`/foro/${categoria}`);
+    } catch {
+      alert('No se pudo eliminar el hilo.');
+    }
+  }
+
+  async function handleEliminarRespuesta(respId) {
+    if (!window.confirm('¿Eliminar esta respuesta?')) return;
+    try {
+      await pb.collection('nw3_foro_respuestas').delete(respId);
+      setRespuestas((prev) => prev.filter((r) => r.id !== respId));
+      setHilo((prev) => prev ? { ...prev, respuestas_count: Math.max(0, (prev.respuestas_count ?? 1) - 1) } : prev);
+    } catch {
+      alert('No se pudo eliminar la respuesta.');
+    }
+  }
 
   const nombre = NOMBRES[categoria] ?? categoria;
 
@@ -90,6 +114,11 @@ export default function ForoHiloPage() {
     <div id="main">
       <div className="foro-acciones">
         <Link to={`/foro/${categoria}`} className="foro-volver">← {nombre}</Link>
+        {isAuthenticated && (
+          <button className="admin-btn admin-btn-delete" onClick={handleEliminarHilo}>
+            ✕ Eliminar hilo
+          </button>
+        )}
       </div>
 
       <h1>{hilo.titulo}</h1>
@@ -109,6 +138,15 @@ export default function ForoHiloPage() {
               <div className="foro-post-header">
                 <strong>{r.autor_nombre}</strong>
                 <span className="foro-fecha">#{i + 1} · {formatFecha(r.created)}</span>
+                {isAuthenticated && (
+                  <button
+                    className="admin-btn admin-btn-delete admin-btn-sm"
+                    onClick={() => handleEliminarRespuesta(r.id)}
+                    style={{ marginLeft: 'auto' }}
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
               <div className="foro-post-cuerpo">{r.contenido}</div>
             </div>

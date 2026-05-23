@@ -76,12 +76,35 @@ export default function NoticiasPage({ siteVersion }) {
 
   const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
   const [pbArticles, setPbArticles] = useState([]);
+  const [hiddenCategories, setHiddenCategories] = useState([]);
+  const [settingsId, setSettingsId] = useState(null);
 
   useEffect(() => {
     pb.collection('nw3_noticias').getFullList({ sort: '-created' })
       .then(setPbArticles)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    pb.collection('nw3_settings').getFirstListItem('key="categories"')
+      .then((r) => { setSettingsId(r.id); setHiddenCategories(r.value?.hidden || []); })
+      .catch(() => {});
+  }, []);
+
+  async function toggleCategoryVisibility(cat) {
+    const newHidden = hiddenCategories.includes(cat)
+      ? hiddenCategories.filter((c) => c !== cat)
+      : [...hiddenCategories, cat];
+    setHiddenCategories(newHidden);
+    try {
+      if (settingsId) {
+        await pb.collection('nw3_settings').update(settingsId, { value: { hidden: newHidden } });
+      } else {
+        const r = await pb.collection('nw3_settings').create({ key: 'categories', value: { hidden: newHidden } });
+        setSettingsId(r.id);
+      }
+    } catch { /* ignore */ }
+  }
 
   function setPage(p) {
     setSearchParams((prev) => {
@@ -109,6 +132,7 @@ export default function NoticiasPage({ siteVersion }) {
       date: r.fecha || '',
       category: r.categoria || 'General',
       year: r.year || 2026,
+      destacado: r.destacado || false,
       body: <p style={{ whiteSpace: 'pre-wrap' }}>{r.contenido}</p>,
       source: r.fuente_url ? { url: r.fuente_url, label: r.fuente_label || r.fuente_url } : null,
     }));
@@ -117,7 +141,11 @@ export default function NoticiasPage({ siteVersion }) {
       ? all.filter((a) => !a.year || a.year === 2014)
       : all.filter((a) => a.year === 2026 || !a.year);
     if (siteVersion === '2026') {
-      return [...base].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+      return [...base].sort((a, b) => {
+        if (a.destacado && !b.destacado) return -1;
+        if (!a.destacado && b.destacado) return 1;
+        return parseDate(b.date) - parseDate(a.date);
+      });
     }
     return base;
   }, [siteVersion, pbArticles]);
@@ -134,8 +162,12 @@ export default function NoticiasPage({ siteVersion }) {
     return dates;
   }, [visible, siteVersion]);
 
+  const visibleCategoryOptions = isAuthenticated
+    ? CATEGORIES
+    : CATEGORIES.filter((c) => c === 'Todas' || !hiddenCategories.includes(c));
+
   const byCat = activeCategory === 'Todas'
-    ? visible
+    ? visible.filter((a) => isAuthenticated || !hiddenCategories.includes(a.category))
     : visible.filter((a) => a.category === activeCategory);
 
   const byDate = activeDateKey
@@ -233,9 +265,30 @@ export default function NoticiasPage({ siteVersion }) {
         <>
           {siteVersion !== '2014' && (
             <>
+              {/* Panel admin: gestión de categorías */}
+              {isAuthenticated && (
+                <details className="admin-panel-categorias">
+                  <summary>⚙ Gestión de categorías</summary>
+                  <div className="admin-panel-body">
+                    <p className="admin-panel-hint">Desactiva una categoría para ocultarla al público.</p>
+                    {CATEGORIES.filter((c) => c !== 'Todas').map((cat) => (
+                      <label key={cat} className="admin-cat-toggle">
+                        <input
+                          type="checkbox"
+                          checked={!hiddenCategories.includes(cat)}
+                          onChange={() => toggleCategoryVisibility(cat)}
+                        />
+                        {cat}
+                        {hiddenCategories.includes(cat) && <span className="admin-cat-hidden-tag">oculta</span>}
+                      </label>
+                    ))}
+                  </div>
+                </details>
+              )}
+
               {/* Filtro por categoría */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
-                {CATEGORIES.map((cat) => (
+                {visibleCategoryOptions.map((cat) => (
                   <button
                     key={cat}
                     type="button"
@@ -390,6 +443,9 @@ export default function NoticiasPage({ siteVersion }) {
                           borderRadius: '2px',
                           verticalAlign: 'middle',
                         }}>{article.category}</span>
+                      )}
+                      {article.destacado && (
+                        <span className="nw3-destacado-badge">★ Destacado</span>
                       )}
                       {article.date}
                       {article.source && (
