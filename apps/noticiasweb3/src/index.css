@@ -1016,8 +1016,9 @@ h6 {
   border-radius: 18px;
   color: #3a3a3c;
   font-weight: bold;
-  line-height: 26px;
-  padding: 0 10px;
+  font-size: 13px;
+  line-height: 36px;
+  padding: 0 14px;
 }
 .version-2026.platform-ios #access > ul > li.active > a,
 .version-2026.platform-ios #access > ul > li:hover > a {
@@ -1027,11 +1028,11 @@ h6 {
 }
 .version-2026.platform-ios #access ul ul {
   position: absolute;
-  top: 100%;
+  bottom: 100%;
+  top: auto;
   left: 0;
-  bottom: auto;
+  width: max-content;
   transform: none;
-  width: min(360px, calc(100% - 32px));
   max-height: 60vh;
   overflow-y: auto;
   border-radius: 20px;
@@ -1296,6 +1297,12 @@ h6 {
   height: 310px;
 }
 .version-2026.platform-ios #access {
+  position: fixed;
+  bottom: 16px;
+  left: 8px;
+  right: 8px;
+  width: auto;
+  z-index: 100;
   border-radius: 28px;
 }
 .version-2026.platform-ios #access > ul {
@@ -1304,6 +1311,7 @@ h6 {
 }
 .version-2026.platform-ios #content {
   display: block;
+  padding-bottom: 140px;
 }
 .version-2026.platform-ios .version-shell {
   padding: 26px;
@@ -1440,6 +1448,12 @@ h6 {
   color: #4b5563;
 }
 .version-2026.platform-windows #access {
+  position: fixed;
+  bottom: 14px;
+  left: 8px;
+  right: 8px;
+  width: auto;
+  z-index: 100;
   border: 1px solid var(--win-border);
   border-radius: 16px;
   background: rgba(255,255,255,0.82);
@@ -1459,9 +1473,10 @@ h6 {
 .version-2026.platform-windows #access > ul > li > a {
   margin-bottom: 0;
   border-radius: 10px;
+  font-size: 13px;
+  line-height: 36px;
+  padding: 0 14px;
   color: #374151;
-  line-height: 26px;
-  padding: 0 10px;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -1477,11 +1492,11 @@ h6 {
 }
 .version-2026.platform-windows #access ul ul {
   position: absolute;
-  top: 100%;
+  bottom: 100%;
+  top: auto;
   left: 0;
-  bottom: auto;
+  width: max-content;
   transform: none;
-  width: min(360px, calc(100% - 32px));
   max-height: 60vh;
   overflow-y: auto;
   border-radius: 12px;
@@ -1501,6 +1516,7 @@ h6 {
 }
 .version-2026.platform-windows #content {
   grid-template-columns: minmax(0, 1fr) 300px;
+  padding-bottom: 130px;
 }
 .version-2026.platform-windows h1,
 .version-2026.platform-windows h1 a {
