@@ -2790,6 +2790,34 @@ body:has(#stage.version-2012) {
 }
 .admin-check-label input[type="checkbox"] { width: auto; }
 
+/* admin nav visibility pills */
+.admin-section-label { font-size: 11px; font-weight: 700; color: #92400e; margin: 4px 0 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+.admin-nav-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.admin-vis-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; font-size: 12px; font-weight: 600; font-family: inherit;
+  border: none; border-radius: 20px; cursor: pointer; transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.admin-vis-pill:hover { opacity: 0.8; }
+.admin-vis-visible { background: #d1fae5; color: #065f46; }
+.admin-vis-hidden  { background: #f3f4f6; color: #6b7280; }
+.admin-vis-dot { font-size: 10px; }
+.admin-custom-item { display: flex; align-items: center; gap: 6px; }
+
+/* admin role badge */
+.admin-role-badge { display: inline-block; margin-left: 8px; padding: 1px 7px; font-size: 10px; font-weight: 700; text-transform: uppercase; border-radius: 2px; vertical-align: middle; }
+.admin-role-admin   { background: #b50433; color: #fff; }
+.admin-role-creator { background: #1982d1; color: #fff; }
+.admin-role-user    { background: #6b7280; color: #fff; }
+
+/* admin users table */
+.admin-users-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.admin-users-table th { text-align: left; padding: 5px 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #92400e; border-bottom: 1px solid #e0c97f; }
+.admin-users-table td { padding: 5px 8px; border-bottom: 1px solid #f0e8cc; vertical-align: middle; }
+.admin-users-row-self td { background: #fefce8; }
+.admin-role-select { font-family: inherit; font-size: 12px; padding: 2px 6px; border: 1px solid #ccc; border-radius: 3px; }
+
 /* admin night mode */
 .night-mode .admin-actions-bar { background: rgba(120,80,10,0.2); border-color: rgba(217,119,6,0.4); }
 .night-mode .admin-panel-categorias { background: rgba(120,80,10,0.15); border-color: rgba(217,119,6,0.35); }
@@ -2797,3 +2825,10 @@ body:has(#stage.version-2012) {
 .night-mode .admin-panel-hint { color: #fbbf24; }
 .night-mode .admin-panel-body { border-color: rgba(217,119,6,0.35); }
 .night-mode .nw3-destacado-badge { background: #b45309; }
+.night-mode .admin-section-label { color: #fbbf24; }
+.night-mode .admin-vis-visible { background: rgba(6,95,70,0.4); color: #6ee7b7; }
+.night-mode .admin-vis-hidden  { background: rgba(55,65,81,0.5); color: #9ca3af; }
+.night-mode .admin-users-table th { color: #fbbf24; border-color: rgba(217,119,6,0.35); }
+.night-mode .admin-users-table td { border-color: rgba(217,119,6,0.2); }
+.night-mode .admin-users-row-self td { background: rgba(120,80,10,0.25); }
+.night-mode .admin-role-select { background: #2d2d2d; color: #e5e7eb; border-color: #555; }
