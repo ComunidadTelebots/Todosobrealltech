@@ -161,15 +161,15 @@ const LOCAL_TRANSLATIONS = {
     en: 'Ecosystem sites',
   },
   ecosystem_desc: {
-    es: 'Accede rapidamente a las webs publicas y visores de canales conectados a Todo sobre alltech.',
+    es: 'Accede rápidamente a las webs públicas y visores de canales conectados a Todo sobre alltech.',
     en: 'Quickly access the public sites and channel viewers connected to Todo sobre alltech.',
   },
   ecosystem_main_desc: {
-    es: 'Portal principal de servicios, paneles, bots, proxies y gestion tecnologica.',
+    es: 'Portal principal de servicios, paneles, bots, proxies y gestión tecnológica.',
     en: 'Main portal for services, panels, bots, proxies and technology management.',
   },
   ecosystem_news_desc: {
-    es: 'Noticias, articulos y contenido tecnologico con estilo clasico y version moderna.',
+    es: 'Noticias, artículos y contenido tecnológico con estilo clásico y versión moderna.',
     en: 'News, articles and technology content with classic style and modern mode.',
   },
   ecosystem_resistencia_desc: {
@@ -177,12 +177,16 @@ const LOCAL_TRANSLATIONS = {
     en: 'Viewer for the Resistencia Censura channel with posts and direct Telegram access.',
   },
   ecosystem_telebots_desc: {
-    es: 'Comunidad y canal publico de Telebots en formato web consultable.',
+    es: 'Comunidad y canal público de Telebots en formato web consultable.',
     en: 'Telebots community and public channel in a browsable web format.',
   },
   ecosystem_gameplays_desc: {
-    es: 'Publicaciones del canal TodoSobreGameplays con lectura rapida desde la web.',
+    es: 'Publicaciones del canal TodoSobreGameplays con lectura rápida desde la web.',
     en: 'TodoSobreGameplays channel posts with fast web reading.',
+  },
+  ecosystem_gamergitbug_desc: {
+    es: 'Portfolio de diseño y desarrollo web: proyectos, tecnologías y contacto.',
+    en: 'Web design and development portfolio: projects, technologies and contact.',
   },
   open_site: {
     es: 'Abrir web',

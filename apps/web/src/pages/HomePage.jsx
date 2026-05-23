@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Bot, Gamepad2, Newspaper, Radio, Shield, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, Bot, Code2, Gamepad2, Newspaper, Radio, Shield, Sparkles, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const HomePage = () => {
@@ -75,6 +75,12 @@ const HomePage = () => {
       title: 'TodoSobreGameplays',
       description: getTranslation('ecosystem_gameplays_desc'),
       href: 'https://todosobregameplays.todosobreall.tech',
+    },
+    {
+      icon: Code2,
+      title: 'Gamergitbug',
+      description: getTranslation('ecosystem_gamergitbug_desc'),
+      href: 'https://gamergitbug.todosobreall.tech',
     },
   ];
 
@@ -246,19 +252,20 @@ const HomePage = () => {
             {ecosystemSites.map((site, index) => (
               <motion.div
                 key={site.href}
+                className="h-full"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.06 }}
                 viewport={{ once: true }}
               >
-                <Card className="h-full hover:shadow-lg transition-all duration-200">
+                <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-200">
                   <CardHeader>
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                       <site.icon className="w-6 h-6 text-primary" />
                     </div>
                     <CardTitle className="text-xl">{site.title}</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex h-full flex-col">
+                  <CardContent className="flex flex-col flex-1">
                     <CardDescription className="text-base leading-relaxed mb-5">
                       {site.description}
                     </CardDescription>
