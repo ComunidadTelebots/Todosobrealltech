@@ -1,9 +1,39 @@
 import { useState, useEffect } from 'react';
 
 const CHANNELS = [
-  { channel: 'TodoSobreAllTech',   category: 'Tecnología' },
-  { channel: 'resistencia_censura', category: 'Ciberseguridad' },
+  { channel: 'TodoSobreAllTech',    defaultCategory: 'Tecnología' },
+  { channel: 'resistencia_censura', defaultCategory: 'Ciberseguridad' },
 ];
+
+const CATEGORY_KEYWORDS = {
+  'IA': [
+    'inteligencia artificial', ' ia ', ' ai ', 'chatgpt', 'gpt', 'claude', 'gemini', 'llm',
+    'openai', 'anthropic', 'deepseek', 'copilot', 'neural', 'machine learning',
+    'aprendizaje automático', 'modelo de lenguaje', 'generativa', 'generativo',
+    'mistral', 'llama', 'stable diffusion', 'midjourney', 'sora', 'agente ia',
+  ],
+  'Gaming': [
+    'gaming', 'videojuego', 'videogame', 'consola', 'ps5', 'playstation', 'xbox',
+    'nintendo', 'switch', 'steam', 'fortnite', 'minecraft', 'gamer', 'esport',
+    'pc gamer', 'metacritic', 'forza', 'call of duty', 'gta', 'valorant',
+    'twitch', 'streamer', 'gameplay', 'dlc', 'early access',
+  ],
+  'Ciberseguridad': [
+    'hack', 'hacker', 'ciberseguridad', 'cybersecurity', 'vulnerabilidad', 'malware',
+    'ransomware', 'phishing', 'brecha', 'filtración', 'ciberataque', 'exploit',
+    'vpn', 'cifrado', 'contraseña', 'datos robados', 'spyware', 'backdoor',
+    'zero-day', '0-day', 'ddos', 'botnet', 'robo de datos', 'privacidad',
+    'censura', 'vigilancia', 'espionaje', 'nsa', 'gdpr', 'datos personales',
+  ],
+};
+
+function detectCategory(text, defaultCategory) {
+  const lower = ` ${text.toLowerCase()} `;
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (keywords.some(kw => lower.includes(kw))) return cat;
+  }
+  return defaultCategory;
+}
 
 const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
@@ -31,7 +61,7 @@ function stripHtml(html = '') {
     .trim();
 }
 
-function normalizeItems(items, channel, category, excludeUrls) {
+function normalizeItems(items, channel, defaultCategory, excludeUrls) {
   return items
     .filter(item => item.link && !excludeUrls.has(item.link))
     .map(item => {
@@ -46,7 +76,7 @@ function normalizeItems(items, channel, category, excludeUrls) {
         slug: `tg-${channel}-${postId}`,
         title,
         date: pubDateToDisplay(item.pubDate),
-        category,
+        category: detectCategory(title + ' ' + text, defaultCategory),
         year: 2026,
         destacado: false,
         body: <p style={{ whiteSpace: 'pre-wrap' }}>{text}</p>,
@@ -63,11 +93,11 @@ export function useTelegramFeed(excludeUrls) {
 
   useEffect(() => {
     Promise.allSettled(
-      CHANNELS.map(({ channel, category }) =>
+      CHANNELS.map(({ channel, defaultCategory }) =>
         fetch(apiUrl(channel))
           .then(r => r.json())
           .then(data => data.status === 'ok'
-            ? normalizeItems(data.items, channel, category, excludeUrls)
+            ? normalizeItems(data.items, channel, defaultCategory, excludeUrls)
             : []
           )
       )
