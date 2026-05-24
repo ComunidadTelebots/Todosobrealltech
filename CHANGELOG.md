@@ -1,5 +1,47 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.27] - 2026-05-24
+### noticiasweb3 — Corrección de categorización RSS + keywords Ciberseguridad
+- Corregido bug por el que artículos de NetBlocks (apagones de internet) se clasificaban como **Móviles** en lugar de **Ciberseguridad**: la keyword `'móvil'` sin espacios coincidía con "datos móviles" y "red móvil" en el texto de los posts, ganando antes que el fallback de categoría.
+- `'móvil'` cambiado a `' móvil'` (con espacio delantero) para que solo coincida como palabra independiente.
+- Añadidas keywords de apagones de internet a **Ciberseguridad**: `'apagón de internet'`, `'corte de internet'`, `'bloqueo de internet'`, `'internet bloqueado'`, `'netblocks'`, `'internet shutdown'`, `'conectividad a internet'`.
+
+## [0.1.26] - 2026-05-24
+### noticiasweb3 — Corrección de errores de inicio y deduplicación
+- Corregido crash "Cannot access 'pbArticles' before initialization": el `useMemo` de `excludeUrls` y la llamada a `useTelegramFeed` estaban declarados antes que los `useState` que necesitaban. Reordenado: primero todos los estados, luego el useMemo y el hook.
+- `EXISTING_TELEGRAM_URLS` renombrado a `STATIC_ARTICLE_URLS` y ampliado: ahora incluye `telegramUrl`, `externalUrl` y `source.url` de todos los artículos estáticos, no solo los `telegramUrl`.
+- `excludeUrls` ahora es un `useMemo` dinámico que también incluye `fuente_url` y `telegram_url` de los artículos de PocketBase: si una noticia ya está publicada manualmente y llega por un feed RSS, se filtra automáticamente.
+- Eliminado parámetro `&count=50` de las llamadas a rss2json (requería API key de pago y causaba error 422, dejando todos los feeds sin cargar).
+- Deduplicación interna en el hook por URL externa: si dos feeds RSS traen el mismo artículo, solo aparece una vez.
+
+## [0.1.25] - 2026-05-24
+### noticiasweb3 — Panel de admin para feeds RSS
+- Panel "📡 Gestión de feeds RSS" visible solo para usuarios autenticados, en la sección de noticias.
+- Formulario para añadir feeds: URL del feed, etiqueta (nombre de la fuente) y categoría por defecto.
+- Lista de feeds activos con botón "✕ Eliminar" por cada uno.
+- Los feeds se persisten en PocketBase (`nw3_settings`, key `rss_feeds`) y se cargan automáticamente al abrir la página.
+- Al añadir o eliminar un feed, `useTelegramFeed` re-fetcha automáticamente los artículos (el array `rssFeeds` se pasa como parámetro al hook).
+
+## [0.1.24] - 2026-05-24
+### noticiasweb3 — Compatibilidad con rss.app
+- Soporte para feeds RSS genéricos (rss.app y cualquier otro proveedor RSS) en paralelo con los canales de Telegram.
+- Array `RSS_APP_FEEDS` en `useTelegramFeed.jsx` donde se añaden feeds: `{ url, defaultCategory, label }`.
+- Nueva función `normalizeRssItems`: usa `item.title` directamente (a diferencia de los posts de Telegram, que no tienen título propio y lo extraen de la primera línea del cuerpo). Títulos de hasta 120 caracteres.
+- Función `normalizeRssItems` reutiliza el mismo proxy `rss2json.com`, la misma auto-categorización por keywords y el mismo `pubDateToDisplay`.
+- IDs estables generados desde la URL del artículo (`rss-{slug-de-la-url}`).
+- `Promise.allSettled` ahora combina fetches de Telegram y de rss.app en paralelo.
+
+## [0.1.23] - 2026-05-24
+### noticiasweb3 — Botones de compartir y tiempo de lectura
+- **Componente `ShareBar`** (`src/components/ShareBar.jsx`) con cuatro opciones de compartir:
+  - 📨 **Telegram** — abre `t.me/share/url` en nueva pestaña
+  - ✖ **X (Twitter)** — abre `twitter.com/intent/tweet` en nueva pestaña
+  - 💬 **WhatsApp** — abre `wa.me/?text=` en nueva pestaña
+  - 🔗 **Copiar enlace** — copia al portapapeles con feedback visual ("¡Copiado!" en verde durante 2 s)
+- En la **lista de noticias** (`NoticiasPage`): botones compactos (solo icono) bajo cada artículo, visibles en versión 2026.
+- En la **página de detalle** (`NoticiaDetailPage`): barra completa (icono + etiqueta) que reemplaza el anterior botón único de Telegram.
+- **Tiempo de lectura estimado** calculado con `extractText` + `readingTime` (200 ppm): visible en el meta de cada artículo tanto en la lista como en el detalle, con indicador ⏱. Se oculta en versión 2014.
+
 ## [0.1.22] - 2026-05-24
 ### noticiasweb3 — Easter eggs por categoría
 - Al hacer clic en cualquier categoría del filtro de noticias aparece un toast animado con emoji y mensaje temático que desaparece automáticamente tras 2,8 segundos.

@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { ShareBar, readingTime } from '../components/ShareBar.jsx';
+import { TelegramEmbed, getTelegramPost } from '../components/TelegramEmbed.jsx';
 
 function setMeta(name, content) {
   let el = document.querySelector(`meta[name="${name}"]`);
@@ -142,6 +144,8 @@ export default function NoticiaDetailPage({ siteVersion }) {
           <span className="nw3-destacado-badge">★ Destacado</span>
         )}
         {article.date}
+        {' · '}
+        <span style={{ color: '#888' }}>⏱ {readingTime(article.body)} lectura</span>
         {article.source && (
           <> · Fuente: <a href={article.source.url} target="_blank" rel="noopener noreferrer">{article.source.label}</a></>
         )}
@@ -152,30 +156,14 @@ export default function NoticiaDetailPage({ siteVersion }) {
 
       <div className="article-body">{article.body}</div>
 
+      {(() => {
+        const post = getTelegramPost(article);
+        return post ? <TelegramEmbed post={post} /> : null;
+      })()}
+
       <div style={{ marginTop: '24px', borderTop: '1px solid #ddd', paddingTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
         <Link to="/noticias">← Volver a noticias</Link>
-        <a
-          href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '6px 14px',
-            background: '#2aabee',
-            color: '#fff',
-            borderRadius: '4px',
-            textDecoration: 'none',
-            fontSize: '13px',
-            fontWeight: '700',
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M21.7 4.3 18.5 19c-.2 1-1 1.2-1.8.8l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.2 9.5-8.6c.4-.4-.1-.6-.6-.2L5.8 12.3.7 10.7c-1-.3-1-1.1.2-1.6L20.4 1.6c.9-.3 1.7.2 1.3 2.7z"/>
-          </svg>
-          Compartir en Telegram
-        </a>
+        <ShareBar url={window.location.href} title={article.title} />
       </div>
     </div>
   );

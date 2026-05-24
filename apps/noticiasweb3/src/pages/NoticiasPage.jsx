@@ -5,9 +5,11 @@ import blogPosts from '../data/blogPosts.jsx';
 import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useTelegramFeed } from '../hooks/useTelegramFeed.jsx';
+import { ShareBar, readingTime } from '../components/ShareBar.jsx';
 
-const EXISTING_TELEGRAM_URLS = new Set(
-  articles.filter(a => a.telegramUrl).map(a => a.telegramUrl)
+// URLs de artículos estáticos ya publicados (para evitar duplicados con feeds RSS)
+const STATIC_ARTICLE_URLS = new Set(
+  articles.flatMap(a => [a.telegramUrl, a.externalUrl, a.source?.url]).filter(Boolean)
 );
 
 const CATEGORIES = ['Todas', 'Tecnología', 'IA', 'Ciberseguridad', 'Gaming', 'Ciencia', 'Espacio', 'Móviles', 'Energía', 'Redes Sociales', 'Economía', 'Salud'];
@@ -86,7 +88,6 @@ const tabStyle = (active) => ({
 
 export default function NoticiasPage({ siteVersion }) {
   const { isAuthenticated } = useAuth();
-  const { posts: telegramPosts } = useTelegramFeed(EXISTING_TELEGRAM_URLS);
   const [activeEgg, setActiveEgg] = useState(null);
   const eggTimer = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,11 +96,29 @@ export default function NoticiasPage({ siteVersion }) {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
   const [activeDateKey, setActiveDateKey] = useState('');
-
-  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
   const [pbArticles, setPbArticles] = useState([]);
   const [hiddenCategories, setHiddenCategories] = useState([]);
   const [settingsId, setSettingsId] = useState(null);
+  const [rssFeeds, setRssFeeds] = useState([]);
+  const [rssFeedsId, setRssFeedsId] = useState(null);
+  const [newFeedUrl, setNewFeedUrl] = useState('');
+  const [newFeedCategory, setNewFeedCategory] = useState('Tecnología');
+  const [newFeedLabel, setNewFeedLabel] = useState('');
+  const [savingFeed, setSavingFeed] = useState(false);
+
+  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+
+  // Set completo de URLs ya publicadas: estáticas + PocketBase
+  const excludeUrls = useMemo(() => {
+    const urls = new Set(STATIC_ARTICLE_URLS);
+    pbArticles.forEach(r => {
+      if (r.fuente_url) urls.add(r.fuente_url);
+      if (r.telegram_url) urls.add(r.telegram_url);
+    });
+    return urls;
+  }, [pbArticles]);
+
+  const { posts: telegramPosts } = useTelegramFeed(excludeUrls, rssFeeds);
 
   useEffect(() => {
     pb.collection('nw3_noticias').getFullList({ sort: '-created' })
@@ -112,6 +131,43 @@ export default function NoticiasPage({ siteVersion }) {
       .then((r) => { setSettingsId(r.id); setHiddenCategories(r.value?.hidden || []); })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    pb.collection('nw3_settings').getFirstListItem('key="rss_feeds"')
+      .then((r) => { setRssFeedsId(r.id); setRssFeeds(r.value?.feeds || []); })
+      .catch(() => {});
+  }, []);
+
+  async function saveRssFeeds(feeds) {
+    try {
+      if (rssFeedsId) {
+        await pb.collection('nw3_settings').update(rssFeedsId, { value: { feeds } });
+      } else {
+        const r = await pb.collection('nw3_settings').create({ key: 'rss_feeds', value: { feeds } });
+        setRssFeedsId(r.id);
+      }
+    } catch { /* ignore */ }
+  }
+
+  async function handleAddFeed(e) {
+    e.preventDefault();
+    const url = newFeedUrl.trim();
+    if (!url) return;
+    setSavingFeed(true);
+    const feed = { url, defaultCategory: newFeedCategory, label: newFeedLabel.trim() || url };
+    const updated = [...rssFeeds, feed];
+    setRssFeeds(updated);
+    await saveRssFeeds(updated);
+    setNewFeedUrl('');
+    setNewFeedLabel('');
+    setSavingFeed(false);
+  }
+
+  async function handleRemoveFeed(index) {
+    const updated = rssFeeds.filter((_, i) => i !== index);
+    setRssFeeds(updated);
+    await saveRssFeeds(updated);
+  }
 
   async function toggleCategoryVisibility(cat) {
     const newHidden = hiddenCategories.includes(cat)
@@ -308,6 +364,79 @@ export default function NoticiasPage({ siteVersion }) {
                 </details>
               )}
 
+              {/* Panel admin: gestión de feeds RSS */}
+              {isAuthenticated && (
+                <details className="admin-panel-categorias" style={{ marginBottom: '10px' }}>
+                  <summary>📡 Gestión de feeds RSS</summary>
+                  <div className="admin-panel-body">
+                    <p className="admin-panel-hint">Añade feeds de rss.app u otros proveedores RSS.</p>
+
+                    {rssFeeds.length === 0 && (
+                      <p style={{ fontSize: '12px', color: '#888', marginBottom: '10px' }}>No hay feeds activos.</p>
+                    )}
+                    {rssFeeds.map((feed, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', fontSize: '12px' }}>
+                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <strong>{feed.label}</strong>
+                          <span style={{ color: '#888' }}> · {feed.defaultCategory} · </span>
+                          <span style={{ color: '#aaa', fontSize: '11px' }}>{feed.url}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFeed(i)}
+                          style={{ padding: '2px 8px', fontSize: '11px', background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '3px', color: '#b91c1c', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}
+                        >
+                          ✕ Eliminar
+                        </button>
+                      </div>
+                    ))}
+
+                    <form onSubmit={handleAddFeed} style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', alignItems: 'flex-end' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: '2 1 200px' }}>
+                        <label style={{ fontSize: '11px', color: '#666' }}>URL del feed</label>
+                        <input
+                          type="url"
+                          placeholder="https://rss.app/feeds/xxxx.xml"
+                          value={newFeedUrl}
+                          onChange={e => setNewFeedUrl(e.target.value)}
+                          required
+                          style={{ padding: '5px 8px', fontSize: '12px', border: '1px solid #ccc', borderRadius: '3px', fontFamily: 'inherit' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: '1 1 130px' }}>
+                        <label style={{ fontSize: '11px', color: '#666' }}>Etiqueta (fuente)</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Xataka"
+                          value={newFeedLabel}
+                          onChange={e => setNewFeedLabel(e.target.value)}
+                          style={{ padding: '5px 8px', fontSize: '12px', border: '1px solid #ccc', borderRadius: '3px', fontFamily: 'inherit' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: '1 1 130px' }}>
+                        <label style={{ fontSize: '11px', color: '#666' }}>Categoría por defecto</label>
+                        <select
+                          value={newFeedCategory}
+                          onChange={e => setNewFeedCategory(e.target.value)}
+                          style={{ padding: '5px 8px', fontSize: '12px', border: '1px solid #ccc', borderRadius: '3px', fontFamily: 'inherit' }}
+                        >
+                          {CATEGORIES.filter(c => c !== 'Todas').map(c => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={savingFeed}
+                        style={{ padding: '5px 14px', fontSize: '12px', background: '#1982d1', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: '700', whiteSpace: 'nowrap' }}
+                      >
+                        {savingFeed ? 'Añadiendo…' : '+ Añadir feed'}
+                      </button>
+                    </form>
+                  </div>
+                </details>
+              )}
+
               {/* Filtro por categoría */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                 {visibleCategoryOptions.map((cat) => (
@@ -452,6 +581,14 @@ export default function NoticiasPage({ siteVersion }) {
             </p>
           )}
 
+          {siteVersion !== '2014' && (
+            <iframe
+              src="https://rss.app/embed/v1/ticker/VIGykitWBlIEm69s"
+              style={{ width: '100%', height: '50px', border: 'none', display: 'block', marginBottom: '12px' }}
+              title="Ticker de noticias"
+            />
+          )}
+
           {(() => {
             let lastDateKey = null;
             return paginated.map((article, index) => {
@@ -505,11 +642,23 @@ export default function NoticiasPage({ siteVersion }) {
                         <span className="nw3-destacado-badge">★ Destacado</span>
                       )}
                       {article.date}
+                      {siteVersion !== '2014' && (
+                        <> · <span style={{ color: '#888' }}>⏱ {readingTime(article.body)} lectura</span></>
+                      )}
                       {article.source && (
                         <> · Fuente: <a href={article.source.url} target="_blank" rel="noopener noreferrer">{article.source.label}</a></>
                       )}
                     </div>
                     <div className="article-body">{article.body}</div>
+                    {siteVersion !== '2014' && (
+                      <div style={{ marginTop: '8px' }}>
+                        <ShareBar
+                          url={article.externalUrl || `${window.location.origin}/noticias/${article.slug}`}
+                          title={article.title}
+                          compact
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               );

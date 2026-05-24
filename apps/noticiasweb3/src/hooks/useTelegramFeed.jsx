@@ -5,6 +5,15 @@ const CHANNELS = [
   { channel: 'resistencia_censura', defaultCategory: 'Ciberseguridad' },
 ];
 
+// Añade feeds de rss.app aquí:
+// { url: 'https://rss.app/feeds/XXXX.xml', defaultCategory: 'Tecnología', label: 'Nombre fuente' }
+const RSS_APP_FEEDS = [
+  { url: 'https://rss.app/feeds/O0p1q9sUZa2wfaMo.xml',          defaultCategory: 'Ciberseguridad', label: 'NetBlocks' },
+  { url: 'https://rss.app/feeds/v1.1/2IXDCnAS3PkRh3bD.json',    defaultCategory: 'Ciberseguridad', label: 'Hispasec' },
+  { url: 'https://rss.app/feeds/v1.1/6dDuQLH543ORu2d9.json',    defaultCategory: 'Ciberseguridad', label: 'NIST' },
+  { url: 'https://rss.app/feeds/v1.1/ivImG3xZTTMBDaY8.json',    defaultCategory: 'Tecnología',     label: 'Portaltic' },
+];
+
 const CATEGORY_KEYWORDS = {
   'IA': [
     'inteligencia artificial', ' ia ', ' ai ', 'chatgpt', 'gpt', 'claude', 'gemini', 'llm',
@@ -25,6 +34,11 @@ const CATEGORY_KEYWORDS = {
     'vpn', 'cifrado', 'contraseña', 'datos robados', 'spyware', 'backdoor',
     'zero-day', '0-day', 'ddos', 'botnet', 'robo de datos',
     'censura', 'vigilancia', 'espionaje', 'nsa', 'gdpr', 'datos personales',
+    'apagón de internet', 'corte de internet', 'bloqueo de internet', 'internet bloqueado',
+    'netblocks', 'internet shutdown', 'conectividad a internet',
+    'escalada de privilegios', 'escalada local', 'acceso no autorizado', 'cadena de suministro',
+    'poc ', 'proof of concept', 'cve-', 'cvss', 'parcheado', 'sin parchear', 'ejecución remota',
+    'inyección', 'bypass', 'token robado', 'exfiltración', 'exfiltraci',
   ],
   'Espacio': [
     'nasa', 'espacio', 'cohete', 'satélite', 'órbita', 'astronauta', 'spacex',
@@ -33,7 +47,7 @@ const CATEGORY_KEYWORDS = {
     'agujero negro', 'esa ', 'cosmos', 'universo', 'supernova',
   ],
   'Móviles': [
-    'iphone', 'android', 'smartphone', 'móvil', 'samsung', 'pixel', 'oneplus',
+    'iphone', 'android', 'smartphone', ' móvil ', 'samsung', 'pixel', 'oneplus',
     'xiaomi', 'huawei', 'app store', 'google play', 'ios ', 'aplicación móvil',
     'tableta', 'tablet', 'wearable', 'smartwatch', 'apple watch', 'galaxy',
     'snapdragon', 'dimensity', 'batería móvil', '5g', 'telefono',
@@ -83,9 +97,12 @@ function detectCategory(text, defaultCategory) {
 
 const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
-function apiUrl(channel) {
-  const rss = `https://rsshub.app/telegram/channel/${channel}`;
-  return `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}&count=50`;
+function proxyUrl(rssUrl) {
+  return `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+}
+
+function telegramApiUrl(channel) {
+  return proxyUrl(`https://rsshub.app/telegram/channel/${channel}`);
 }
 
 function pubDateToDisplay(str) {
@@ -107,7 +124,12 @@ function stripHtml(html = '') {
     .trim();
 }
 
-function normalizeItems(items, channel, defaultCategory, excludeUrls) {
+function linkToId(link) {
+  return link.replace(/^https?:\/\//, '').replace(/[^a-zA-Z0-9]/g, '-').slice(0, 40);
+}
+
+// Telegram via RSSHub: no tiene título propio, lo extrae de la primera línea del cuerpo
+function normalizeTelegramItems(items, channel, defaultCategory, excludeUrls) {
   return items
     .filter(item => item.link && !excludeUrls.has(item.link))
     .map(item => {
@@ -133,25 +155,109 @@ function normalizeItems(items, channel, defaultCategory, excludeUrls) {
     });
 }
 
-export function useTelegramFeed(excludeUrls) {
+// rss.app y feeds RSS genéricos (XML vía rss2json): tienen título propio en item.title
+function normalizeRssItems(items, defaultCategory, label, excludeUrls) {
+  return items
+    .filter(item => item.link && !excludeUrls.has(item.link))
+    .map(item => {
+      const rawTitle = stripHtml(item.title || '');
+      const text = stripHtml(item.description || item.content || '');
+      const title = rawTitle
+        ? (rawTitle.length > 120 ? rawTitle.slice(0, 120) + '…' : rawTitle)
+        : (text.slice(0, 90) + '…');
+      const id = `rss-${linkToId(item.link)}`;
+      return {
+        id,
+        slug: id,
+        title,
+        date: pubDateToDisplay(item.pubDate),
+        category: detectCategory(title + ' ' + text, defaultCategory),
+        year: 2026,
+        destacado: false,
+        body: <p style={{ whiteSpace: 'pre-wrap' }}>{text}</p>,
+        source: label ? { url: item.link, label } : null,
+        externalUrl: item.link,
+      };
+    });
+}
+
+// JSON Feed v1.1 (rss.app *.json): fetch directo sin proxy
+function normalizeJsonFeedItems(items, defaultCategory, label, excludeUrls) {
+  return (items || [])
+    .filter(item => item.url && !excludeUrls.has(item.url))
+    .map(item => {
+      const rawTitle = item.title || '';
+      const text = stripHtml(item.content_html || item.content_text || '');
+      const title = rawTitle.length > 120 ? rawTitle.slice(0, 120) + '…' : rawTitle || text.slice(0, 90) + '…';
+      const id = `rss-${linkToId(item.url)}`;
+      return {
+        id,
+        slug: id,
+        title,
+        date: pubDateToDisplay(item.date_published),
+        category: detectCategory(title + ' ' + text, defaultCategory),
+        year: 2026,
+        destacado: false,
+        body: <p style={{ whiteSpace: 'pre-wrap' }}>{text}</p>,
+        source: label ? { url: item.url, label } : null,
+        externalUrl: item.url,
+      };
+    });
+}
+
+function fetchFeed(url, defaultCategory, label, excludeUrls) {
+  if (url.endsWith('.json')) {
+    return fetch(url)
+      .then(r => r.json())
+      .then(data => normalizeJsonFeedItems(data.items, defaultCategory, label, excludeUrls));
+  }
+  return fetch(proxyUrl(url))
+    .then(r => r.json())
+    .then(data => data.status === 'ok'
+      ? normalizeRssItems(data.items, defaultCategory, label, excludeUrls)
+      : []
+    );
+}
+
+// rssFeeds: array dinámico de { url, defaultCategory, label } cargado desde PocketBase
+export function useTelegramFeed(excludeUrls, rssFeeds = []) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const rssKey = JSON.stringify(rssFeeds);
+
   useEffect(() => {
-    Promise.allSettled(
-      CHANNELS.map(({ channel, defaultCategory }) =>
-        fetch(apiUrl(channel))
-          .then(r => r.json())
-          .then(data => data.status === 'ok'
-            ? normalizeItems(data.items, channel, defaultCategory, excludeUrls)
-            : []
-          )
-      )
-    ).then(results => {
-      const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
-      setPosts(all);
-    }).finally(() => setLoading(false));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    setLoading(true);
+    const allRssFeeds = [...RSS_APP_FEEDS, ...rssFeeds];
+
+    const telegramFetches = CHANNELS.map(({ channel, defaultCategory }) =>
+      fetch(telegramApiUrl(channel))
+        .then(r => r.json())
+        .then(data => data.status === 'ok'
+          ? normalizeTelegramItems(data.items, channel, defaultCategory, excludeUrls)
+          : []
+        )
+    );
+
+    const rssFetches = allRssFeeds.map(({ url, defaultCategory, label }) =>
+      fetchFeed(url, defaultCategory, label, excludeUrls)
+    );
+
+    Promise.allSettled([...telegramFetches, ...rssFetches])
+      .then(results => {
+        const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+        // Deduplicar por URL externa por si dos feeds traen el mismo artículo
+        const seenUrls = new Set();
+        const deduped = all.filter(p => {
+          const url = p.externalUrl || p.telegramUrl;
+          if (!url || seenUrls.has(url)) return false;
+          seenUrls.add(url);
+          return true;
+        });
+        setPosts(deduped);
+      })
+      .finally(() => setLoading(false));
+  }, [rssKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { posts, loading };
 }
