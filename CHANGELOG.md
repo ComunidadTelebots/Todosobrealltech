@@ -1,5 +1,31 @@
 # Changelog - TodoSobreAllTech
 
+## [0.1.30] - 2026-05-24
+### API — Endpoint RSS público
+- Nuevo endpoint `GET /noticias/rss` en el API Express que devuelve un feed RSS 2.0 válido.
+- Incluye los 75 artículos estáticos de noticiasweb3 (2014 y 2026) y todos los artículos publicados desde PocketBase, ordenados por fecha descendente.
+- Cada `<item>` contiene título, enlace canónico, GUID, categoría, extracto de 300 caracteres y fecha en formato RFC 822.
+- Implementado con `fetch` directo a PocketBase (colección pública) para evitar dependencias del cliente autenticado.
+- Datos estáticos extraídos en `apps/api/src/data/staticArticles.js` como módulo ES reutilizable.
+- `SITE_URL` configurable por variable de entorno (por defecto `https://noticiasweb3.todosobreall.tech`).
+
+## [0.1.29] - 2026-05-24
+### Infraestructura — API expuesta públicamente vía Traefik
+- Servicio `api` en `docker-compose.yml` añadido a la red `traefik` con labels de enrutamiento.
+- El API ahora es accesible en `https://api.todosobreall.tech` con certificado SSL automático via Let's Encrypt.
+- Permite que servicios externos (rss.app, webhooks, etc.) consuman el API sin pasar por la red interna Docker.
+
+## [0.1.28] - 2026-05-24
+### noticiasweb3 — Feeds RSS adicionales y widget Telegram en detalle
+- Añadidos feeds: **Hispasec** (`v1.1/2IXDCnAS3PkRh3bD.json`), **NIST** (`v1.1/6dDuQLH543ORu2d9.json`), **Portaltic** (`v1.1/ivImG3xZTTMBDaY8.json`) como JSON Feed v1.1 (fetch directo sin proxy).
+- Soporte completo para JSON Feed v1.1: función `normalizeJsonFeedItems` usando `item.url`, `item.title`, `item.date_published` y `item.content_html || item.content_text`.
+- `fetchFeed` detecta automáticamente el formato por extensión `.json` vs XML.
+- **Ticker de rss.app** embebido como `<iframe>` justo debajo del contador de artículos en `NoticiasPage`.
+- **Widget de Telegram** (`TelegramEmbed`) movido de la lista a la página de detalle de cada noticia: se inyecta dinámicamente con `useEffect` + `appendChild` (no se puede usar `<script>` en JSX directamente).
+- `getTelegramPost(article)` extrae `Canal/PostID` de cualquier URL `t.me/`.
+- Corrección: keyword `' móvil '` con espacio en ambos lados para evitar falsos positivos en "datos móviles".
+- Ampliadas keywords de Ciberseguridad con términos técnicos: CVE, CVSS, PoC, escalada de privilegios, bypass, exfiltración, ejecución remota, etc.
+
 ## [0.1.27] - 2026-05-24
 ### noticiasweb3 — Corrección de categorización RSS + keywords Ciberseguridad
 - Corregido bug por el que artículos de NetBlocks (apagones de internet) se clasificaban como **Móviles** en lugar de **Ciberseguridad**: la keyword `'móvil'` sin espacios coincidía con "datos móviles" y "red móvil" en el texto de los posts, ganando antes que el fallback de categoría.
