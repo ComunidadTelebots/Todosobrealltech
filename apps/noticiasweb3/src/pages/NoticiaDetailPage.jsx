@@ -5,6 +5,7 @@ import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { ShareBar, readingTime } from '../components/ShareBar.jsx';
 import { TelegramEmbed, getTelegramPost } from '../components/TelegramEmbed.jsx';
+import { trackArticleView } from '../utils/analytics.js';
 
 function setMeta(name, content) {
   let el = document.querySelector(`meta[name="${name}"]`);
@@ -55,6 +56,11 @@ export default function NoticiaDetailPage({ siteVersion }) {
       .then(d => { if (d.visitas !== undefined) setVisitas(d.visitas); })
       .catch(() => {});
   }, [pbRecord, slug]);
+
+  useEffect(() => {
+    if (!article) return;
+    trackArticleView(article.slug, article.title, article.category);
+  }, [article?.slug]);
 
   useEffect(() => {
     if (!article) return;
@@ -178,7 +184,7 @@ export default function NoticiaDetailPage({ siteVersion }) {
 
       <div style={{ marginTop: '24px', borderTop: '1px solid #ddd', paddingTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
         <Link to="/noticias">← Volver a noticias</Link>
-        <ShareBar url={window.location.href} title={article.title} />
+        <ShareBar url={window.location.href} title={article.title} slug={article.slug} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { trackShare } from '../utils/analytics.js';
 
 export function extractText(node) {
   if (!node) return '';
@@ -64,13 +65,14 @@ function btn(color, compact) {
   };
 }
 
-export function ShareBar({ url, title, compact = false }) {
+export function ShareBar({ url, title, slug, compact = false }) {
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      trackShare('copy', slug || url, title);
     });
   }
 
@@ -85,6 +87,7 @@ export function ShareBar({ url, title, compact = false }) {
         rel="noopener noreferrer"
         title="Compartir en Telegram"
         style={btn('#2aabee', compact)}
+        onClick={() => trackShare('telegram', slug || url, title)}
       >
         {TG_ICON}
         {!compact && <span>Telegram</span>}
@@ -95,6 +98,7 @@ export function ShareBar({ url, title, compact = false }) {
         rel="noopener noreferrer"
         title="Compartir en X (Twitter)"
         style={btn('#000', compact)}
+        onClick={() => trackShare('twitter', slug || url, title)}
       >
         {X_ICON}
         {!compact && <span>X</span>}
@@ -105,6 +109,7 @@ export function ShareBar({ url, title, compact = false }) {
         rel="noopener noreferrer"
         title="Compartir en WhatsApp"
         style={btn('#25d366', compact)}
+        onClick={() => trackShare('whatsapp', slug || url, title)}
       >
         {WA_ICON}
         {!compact && <span>WhatsApp</span>}

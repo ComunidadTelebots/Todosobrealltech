@@ -6,6 +6,7 @@ import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useTelegramFeed } from '../hooks/useTelegramFeed.jsx';
 import { ShareBar, readingTime } from '../components/ShareBar.jsx';
+import { trackCategoryFilter, trackSearch } from '../utils/analytics.js';
 
 // URLs de artículos estáticos ya publicados (para evitar duplicados con feeds RSS)
 const STATIC_ARTICLE_URLS = new Set(
@@ -446,6 +447,7 @@ export default function NoticiasPage({ siteVersion }) {
                     onClick={() => {
                       setActiveCategory(cat);
                       setQuery('');
+                      if (cat !== 'Todas') trackCategoryFilter(cat);
                       if (cat !== 'Todas' && EASTER_EGGS[cat]) {
                         clearTimeout(eggTimer.current);
                         setActiveEgg(cat);
@@ -547,7 +549,7 @@ export default function NoticiasPage({ siteVersion }) {
                   type="search"
                   placeholder="Buscar noticias..."
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => { setQuery(e.target.value); if (e.target.value.trim().length >= 3) trackSearch(e.target.value.trim()); }}
                   style={{
                     width: '100%',
                     padding: '7px 10px',
