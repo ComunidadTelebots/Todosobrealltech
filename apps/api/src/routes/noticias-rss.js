@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import pocketbaseClient from '../utils/pocketbaseClient.js';
 import staticArticles from '../data/staticArticles.js';
 
 const router = Router();
 
 const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech';
+const PB_HOST = process.env.POCKETBASE_HOST || 'http://localhost:8090';
 
 function escapeXml(str = '') {
   return String(str)
@@ -22,9 +22,10 @@ function toRfc822(dateStr) {
 
 router.get('/', async (req, res) => {
   try {
-    const pbRecords = await pocketbaseClient
-      .collection('nw3_noticias')
-      .getFullList({ sort: '-created', fields: 'id,slug,titulo,contenido,fecha,categoria,fuente_url,created' });
+    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&fields=id,slug,titulo,contenido,fecha,categoria,created`;
+    const pbRes = await fetch(url);
+    const pbData = await pbRes.json();
+    const pbRecords = pbData.items || [];
 
     const pbItems = pbRecords.map(r => ({
       slug: r.slug,
