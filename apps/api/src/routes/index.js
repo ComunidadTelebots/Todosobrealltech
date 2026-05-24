@@ -9,6 +9,7 @@ import freezeAccountRouter from './freeze-account.js';
 import blockedUsersRouter from './blocked-users.js';
 import botsRouter from './bots.js';
 import telegramChannelRouter from './telegram-channel.js';
+import noticiasRssRouter from './noticias-rss.js';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ export default () => {
     router.use('/blocked-users', blockedUsersRouter);
     router.use('/bots', botsRouter);
     router.use('/telegram-channel', telegramChannelRouter);
+    router.use('/noticias/rss', noticiasRssRouter);
 
     return router;
 };
