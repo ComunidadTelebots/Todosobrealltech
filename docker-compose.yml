@@ -36,6 +36,7 @@ services:
         VITE_ADSENSE_SLOT_INLINE: ${VITE_ADSENSE_SLOT_INLINE:-}
         VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
         VITE_POCKETBASE_URL: ${VITE_POCKETBASE_URL:-}
+        VITE_API_URL: https://api.${WEB_HOST:-todosobreall.tech}
     restart: unless-stopped
     networks:
       - default

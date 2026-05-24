@@ -10,6 +10,7 @@ import blockedUsersRouter from './blocked-users.js';
 import botsRouter from './bots.js';
 import telegramChannelRouter from './telegram-channel.js';
 import noticiasRssRouter from './noticias-rss.js';
+import noticiasViewRouter from './noticias-view.js';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ export default () => {
     router.use('/bots', botsRouter);
     router.use('/telegram-channel', telegramChannelRouter);
     router.use('/noticias/rss', noticiasRssRouter);
+    router.use('/noticias/view', noticiasViewRouter);
 
     return router;
 };

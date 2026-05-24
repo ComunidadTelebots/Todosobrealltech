@@ -21,12 +21,13 @@ export default function NoticiaDetailPage({ siteVersion }) {
   const [loadingPb, setLoadingPb] = useState(!staticArticle);
   const [eliminando, setEliminando] = useState(false);
   const [togglingDestacado, setTogglingDestacado] = useState(false);
+  const [visitas, setVisitas] = useState(null);
 
   useEffect(() => {
     if (staticArticle) return;
     setLoadingPb(true);
     pb.collection('nw3_noticias').getFirstListItem(`slug="${slug}"`)
-      .then(setPbRecord)
+      .then(r => { setPbRecord(r); setVisitas(r.visitas || 0); })
       .catch(() => setPbRecord(null))
       .finally(() => setLoadingPb(false));
   }, [slug, staticArticle]);
@@ -43,6 +44,17 @@ export default function NoticiaDetailPage({ siteVersion }) {
     source: pbRecord.fuente_url ? { url: pbRecord.fuente_url, label: pbRecord.fuente_label || pbRecord.fuente_url } : null,
     telegramUrl: pbRecord.telegram_url || null,
   } : null);
+
+  useEffect(() => {
+    if (!pbRecord) return;
+    const key = `nw3_view_${slug}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    fetch(`${import.meta.env.VITE_API_URL || 'https://api.todosobreall.tech'}/noticias/view/${slug}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(d => { if (d.visitas !== undefined) setVisitas(d.visitas); })
+      .catch(() => {});
+  }, [pbRecord, slug]);
 
   useEffect(() => {
     if (!article) return;
@@ -146,6 +158,9 @@ export default function NoticiaDetailPage({ siteVersion }) {
         {article.date}
         {' · '}
         <span style={{ color: '#888' }}>⏱ {readingTime(article.body)} lectura</span>
+        {visitas !== null && (
+          <> · <span style={{ color: '#888' }}>👁 {visitas.toLocaleString('es')} {visitas === 1 ? 'visita' : 'visitas'}</span></>
+        )}
         {article.source && (
           <> · Fuente: <a href={article.source.url} target="_blank" rel="noopener noreferrer">{article.source.label}</a></>
         )}
