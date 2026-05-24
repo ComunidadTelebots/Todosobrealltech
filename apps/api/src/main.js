@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import routes from './routes/index.js';
 import { errorMiddleware } from './middleware/index.js';
 import logger from './utils/logger.js';
+import { startTelegramSync } from './utils/telegramSync.js';
 
 
 const app = express();
@@ -60,6 +61,7 @@ const port = process.env.PORT || 3001;
 
 app.listen(port, () => {
 	logger.info(`🚀 API Server running on http://localhost:${port}`);
+	startTelegramSync();
 });
 
 export default app;
