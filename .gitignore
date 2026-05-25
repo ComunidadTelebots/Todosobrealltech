@@ -13,3 +13,5 @@ apps/pocketbase/pb_snapshots/
 *.log
 .DS_Store
 Thumbs.db
+*.env.bak*
+.env.bak*

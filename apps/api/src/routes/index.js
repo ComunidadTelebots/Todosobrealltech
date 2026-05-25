@@ -11,6 +11,7 @@ import botsRouter from './bots.js';
 import telegramChannelRouter from './telegram-channel.js';
 import noticiasRssRouter from './noticias-rss.js';
 import noticiasViewRouter from './noticias-view.js';
+import previewRouter from './preview.js';
 
 const router = Router();
 
@@ -27,6 +28,7 @@ export default () => {
     router.use('/telegram-channel', telegramChannelRouter);
     router.use('/noticias/rss', noticiasRssRouter);
     router.use('/noticias/view', noticiasViewRouter);
+    router.use('/preview', previewRouter);
 
     return router;
 };

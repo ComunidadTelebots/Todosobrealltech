@@ -1,0 +1,516 @@
+import { pocketbaseClient } from './pocketbaseClient.js';
+import logger from './logger.js';
+
+/**
+ * rssAutoPublisher
+ * ----------------
+ * Job periódico (cada 30 min) que, para cada feed RSS configurado:
+ *   1. Obtiene los artículos del feed.
+ *   2. Por cada artículo que no exista ya en nw3_noticias (dedup por fuente_url),
+ *      crea el registro en PocketBase.
+ *   3. Si el artículo proviene de un canal de Telegram (link t.me/...), edita el
+ *      mensaje original del canal vía Bot API añadiendo el enlace a NW3.
+ *   4. Guarda el telegram_url del post original en el registro.
+ *
+ * El token del bot se lee SIEMPRE desde process.env.BOT_TOKEN_NW3 (nunca hardcodeado).
+ * Si no está definido, los artículos se siguen creando pero se omite la edición en Telegram.
+ */
+
+// ── Config ───────────────────────────────────────────────────────────────────
+const BOT_TOKEN = process.env.BOT_TOKEN_NW3;
+const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech';
+const INTERVAL_MS = 30 * 60 * 1000;          // cada 30 minutos
+const TELEGRAM_CALL_DELAY_MS = 1200;          // pausa entre llamadas a la Bot API
+const MAX_NEW_PER_RUN = 25;                   // tope de seguridad: nuevos artículos por ejecución
+
+// Límites de la Bot API de Telegram para edición de mensajes:
+//   · máx. 30 mensajes editados por segundo en total,
+//   · máx. 1 mensaje por segundo y por chat (canal).
+// Con 1500 ms entre llamadas nos mantenemos holgadamente por debajo de ambos.
+const TELEGRAM_BACKFILL_DELAY_MS = 1500;
+const TELEGRAM_MAX_RETRIES = 3;               // reintentos por mensaje ante un 429 (Too Many Requests)
+
+// Canales de Telegram propios (vía RSSHub) — sus items traen link t.me/... editable.
+const CHANNELS = [
+  { channel: 'TodoSobreAllTech',    defaultCategory: 'Tecnología' },
+  { channel: 'resistencia_censura', defaultCategory: 'Ciberseguridad' },
+];
+
+// Feeds fijos de rss.app (espejo de RSS_APP_FEEDS en useTelegramFeed.jsx).
+const RSS_APP_FEEDS = [
+  { url: 'https://rss.app/feeds/O0p1q9sUZa2wfaMo.xml',       defaultCategory: 'Ciberseguridad', label: 'NetBlocks' },
+  { url: 'https://rss.app/feeds/v1.1/2IXDCnAS3PkRh3bD.json', defaultCategory: 'Ciberseguridad', label: 'Hispasec' },
+  { url: 'https://rss.app/feeds/v1.1/6dDuQLH543ORu2d9.json', defaultCategory: 'Ciberseguridad', label: 'NIST' },
+  { url: 'https://rss.app/feeds/v1.1/ivImG3xZTTMBDaY8.json', defaultCategory: 'Tecnología',     label: 'Portaltic' },
+  { url: 'https://rss.app/feeds/v1.1/VIGykitWBlIEm69s.json', defaultCategory: 'Tecnología',     label: '@TodoSobreAllTech' },
+];
+
+// Categorización por keywords — copiada de useTelegramFeed.jsx (misma lógica).
+const CATEGORY_KEYWORDS = {
+  'IA': [
+    'inteligencia artificial', ' ia ', ' ai ', 'chatgpt', 'gpt', 'claude', 'gemini', 'llm',
+    'openai', 'anthropic', 'deepseek', 'copilot', 'machine learning',
+    'aprendizaje automático', 'modelo de lenguaje', 'generativa', 'generativo',
+    'mistral', 'llama', 'stable diffusion', 'midjourney', 'sora', 'agente ia',
+    'neural', 'perplexity', 'grok', 'notebooklm',
+  ],
+  'Gaming': [
+    'gaming', 'videojuego', 'videogame', 'consola', 'ps5', 'playstation', 'xbox',
+    'nintendo', 'switch', 'steam', 'fortnite', 'minecraft', 'gamer', 'esport',
+    'pc gamer', 'metacritic', 'forza', 'call of duty', 'gta', 'valorant',
+    'twitch', 'streamer', 'gameplay', 'dlc', 'early access', 'pokemon',
+  ],
+  'Ciberseguridad': [
+    'hack', 'hacker', 'ciberseguridad', 'cybersecurity', 'vulnerabilidad', 'malware',
+    'ransomware', 'phishing', 'brecha', 'filtración', 'ciberataque', 'exploit',
+    'vpn', 'cifrado', 'contraseña', 'datos robados', 'spyware', 'backdoor',
+    'zero-day', '0-day', 'ddos', 'botnet', 'robo de datos',
+    'censura', 'vigilancia', 'espionaje', 'nsa', 'gdpr', 'datos personales',
+    'apagón de internet', 'corte de internet', 'bloqueo de internet', 'internet bloqueado',
+    'netblocks', 'internet shutdown', 'conectividad a internet',
+    'escalada de privilegios', 'escalada local', 'acceso no autorizado', 'cadena de suministro',
+    'poc ', 'proof of concept', 'cve-', 'cvss', 'parcheado', 'sin parchear', 'ejecución remota',
+    'inyección', 'bypass', 'token robado', 'exfiltración', 'exfiltraci',
+  ],
+  'Espacio': [
+    'nasa', 'espacio', 'cohete', 'satélite', 'órbita', 'astronauta', 'spacex',
+    'marte', 'luna', 'telescopio', 'hubble', 'james webb', 'iss', 'estación espacial',
+    'lanzamiento espacial', 'exoplaneta', 'asteroide', 'cometa', 'galaxia',
+    'agujero negro', 'esa ', 'cosmos', 'universo', 'supernova',
+  ],
+  'Móviles': [
+    'iphone', 'android', 'smartphone', ' móvil ', 'samsung', 'pixel', 'oneplus',
+    'xiaomi', 'huawei', 'app store', 'google play', 'ios ', 'aplicación móvil',
+    'tableta', 'tablet', 'wearable', 'smartwatch', 'apple watch', 'galaxy',
+    'snapdragon', 'dimensity', 'batería móvil', '5g', 'telefono',
+  ],
+  'Energía': [
+    'energía solar', 'panel solar', 'célula solar', 'fotovoltaica', 'renovable',
+    'eólica', 'batería', 'almacenamiento energía', 'hidrógeno', 'nuclear',
+    'fusión nuclear', 'carbono', 'emisiones', 'co2', 'cambio climático',
+    'electricidad', 'red eléctrica', 'cargador', 'coche eléctrico', 'tesla',
+    'perovskita', 'biomasa', 'geotérmica',
+  ],
+  'Redes Sociales': [
+    'twitter', 'x.com', 'instagram', 'facebook', 'meta ', 'tiktok', 'youtube',
+    'linkedin', 'reddit', 'snapchat', 'whatsapp', 'telegram', 'mastodon',
+    'bluesky', 'threads', 'influencer', 'viral', 'redes sociales', 'social media',
+    'moderación de contenido', 'desinformación', 'bulo', 'fake news',
+  ],
+  'Economía': [
+    'bolsa', 'wall street', 'nasdaq', 'cotización', 'inversión', 'startup',
+    'valoración', 'ipo', 'fusión', 'adquisición', 'despidos', 'ertes',
+    'inflación', 'banco', 'criptomoneda', 'bitcoin', 'ethereum', 'blockchain',
+    'economía', 'pib', 'recesión', 'beneficios', 'facturación', 'multa',
+    'regulación', 'ue tech', 'antitrust', 'monopolio',
+  ],
+  'Salud': [
+    'salud', 'médico', 'medicina', 'hospital', 'enfermedad', 'vacuna', 'virus',
+    'bacteria', 'cáncer', 'investigación médica', 'farmacéutica', 'tratamiento',
+    'estudio científico', 'longevidad', 'alzheimer', 'diabetes', 'cardio',
+    'mental', 'sueño', 'descanso', 'nutrición', 'dieta', 'ejercicio',
+  ],
+  'Ciencia': [
+    'científicos', 'investigadores', 'descubrimiento', 'estudio', 'universidad',
+    'laboratorio', 'experimento', 'física', 'química', 'biología', 'arqueología',
+    'fósil', 'evolución', 'genética', 'adn', 'crispr', 'cuántica', 'átomo',
+    'partícula', 'materia oscura', 'teoría', 'naturaleza', 'animal', 'especie',
+    'clima', 'océano', 'geología', 'volcán', 'terremoto',
+  ],
+};
+
+const MONTHS_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function detectCategory(text, defaultCategory) {
+  const lower = ` ${text.toLowerCase()} `;
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (keywords.some((kw) => lower.includes(kw))) return cat;
+  }
+  return defaultCategory;
+}
+
+function stripHtml(html = '') {
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+// Slug con el mismo formato que NuevaNoticiaPage.generarSlug.
+function generarSlug(titulo) {
+  return titulo
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 80);
+}
+
+// Hash corto y determinista a partir de la URL fuente, para sufijar el slug.
+function shortHash(str = '') {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h * 31 + str.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(36);
+}
+
+function pubDateToDisplay(str) {
+  const d = new Date(str);
+  if (isNaN(d)) {
+    const now = new Date();
+    return `${now.getDate()} de ${MONTHS_ES[now.getMonth()]} del ${now.getFullYear()}`;
+  }
+  return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]} del ${d.getFullYear()}`;
+}
+
+function yearOf(str) {
+  const d = new Date(str);
+  return isNaN(d) ? 2026 : d.getFullYear();
+}
+
+function proxyUrl(rssUrl) {
+  return `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+}
+
+// Detecta links a un post concreto de un canal (t.me/canal/123) — editables vía Bot API.
+function telegramPostUrl(url = '') {
+  return /t\.me\/(?:s\/)?[A-Za-z0-9_]+\/\d+/.test(url) ? url : null;
+}
+
+// Primer href incrustado en un bloque HTML, o null si no hay ninguno.
+function firstLinkInHtml(html = '') {
+  const m = String(html).match(/<a\b[^>]*\bhref=["']([^"']+)["']/i);
+  return m ? m[1] : null;
+}
+
+// ── Obtención de feeds → items normalizados ───────────────────────────────────
+// item: { title, sourceUrl, label, category, excerpt, fullText, pubDate, telegramUrl|null }
+
+async function fetchTelegramChannel({ channel, defaultCategory }) {
+  const res = await fetch(proxyUrl(`https://rsshub.app/telegram/channel/${channel}`));
+  const data = await res.json();
+  if (data.status !== 'ok') return [];
+
+  return (data.items || [])
+    .filter((item) => item.link)
+    .map((item) => {
+      const text = stripHtml(item.description || item.content || '');
+      const firstLine = text.split('\n').map((l) => l.trim()).find(Boolean) || 'Publicación del canal';
+      const title = firstLine.length > 90 ? `${firstLine.slice(0, 90)}…` : firstLine;
+      return {
+        title,
+        sourceUrl: item.link,
+        label: `@${channel} en Telegram`,
+        category: detectCategory(`${title} ${text}`, defaultCategory),
+        excerpt: text.slice(0, 8000),
+        fullText: text,
+        pubDate: item.pubDate,
+        telegramUrl: item.link,
+      };
+    });
+}
+
+async function fetchRssFeed({ url, defaultCategory, label }) {
+  // JSON Feed v1.1 (rss.app *.json): fetch directo.
+  if (url.endsWith('.json')) {
+    const res = await fetch(url);
+    const data = await res.json();
+    return (data.items || [])
+      .filter((item) => item.url)
+      .map((item) => {
+        const text = stripHtml(item.content_html || item.content_text || '');
+        const rawTitle = item.title || text.slice(0, 90);
+        const title = rawTitle.length > 120 ? `${rawTitle.slice(0, 120)}…` : rawTitle;
+        // URL real del artículo original: rss.app la expone en external_url; si
+        // falta, tomamos el primer enlace incrustado en el content_html. item.url
+        // suele ser el post de Telegram (t.me/...), que reservamos para telegramUrl,
+        // y solo se usa como último recurso si no hay URL del artículo.
+        const sourceUrl = item.external_url || firstLinkInHtml(item.content_html) || item.url;
+        return {
+          title,
+          sourceUrl,
+          label: label || url,
+          category: detectCategory(`${title} ${text}`, defaultCategory),
+          excerpt: text.slice(0, 8000),
+          fullText: text,
+          pubDate: item.date_published,
+          // telegramUrl = el post de Telegram original (t.me/canal/123), para que
+          // el job pueda editar el mensaje. Sigue siendo item.url.
+          telegramUrl: telegramPostUrl(item.url),
+        };
+      });
+  }
+
+  // RSS/Atom XML vía rss2json.
+  const res = await fetch(proxyUrl(url));
+  const data = await res.json();
+  if (data.status !== 'ok') return [];
+
+  return (data.items || [])
+    .filter((item) => item.link)
+    .map((item) => {
+      const text = stripHtml(item.description || item.content || '');
+      const rawTitle = stripHtml(item.title || '') || text.slice(0, 90);
+      const title = rawTitle.length > 120 ? `${rawTitle.slice(0, 120)}…` : rawTitle;
+      return {
+        title,
+        sourceUrl: item.link,
+        label: label || url,
+        category: detectCategory(`${title} ${text}`, defaultCategory),
+        excerpt: text.slice(0, 8000),
+        fullText: text,
+        pubDate: item.pubDate,
+        telegramUrl: null,
+      };
+    });
+}
+
+// Feeds dinámicos guardados en nw3_settings (key="rss_feeds").
+async function loadDynamicFeeds() {
+  try {
+    const record = await pocketbaseClient.collection('nw3_settings').getFirstListItem('key="rss_feeds"');
+    return Array.isArray(record.value?.feeds) ? record.value.feeds : [];
+  } catch {
+    return [];
+  }
+}
+
+// ── Telegram Bot API: editar el mensaje original del canal ─────────────────────
+async function telegramApi(method, body, retries = TELEGRAM_MAX_RETRIES) {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+
+    // 429 Too Many Requests → respetar el retry_after que indica Telegram y reintentar
+    // (hasta `retries` veces); pasado el límite, devolvemos el error para que lo logue el caller.
+    if (!data.ok && data.error_code === 429 && attempt < retries) {
+      const retryAfter = data.parameters?.retry_after ?? 1;
+      logger.warn(`[rssAutoPublisher] Telegram 429 en ${method}: espero ${retryAfter}s y reintento (${attempt + 1}/${retries}).`);
+      await sleep((retryAfter + 0.5) * 1000); // +0.5 s de margen sobre lo que pide Telegram
+      continue;
+    }
+
+    return data;
+  }
+}
+
+/**
+ * Añade "📰 Leer en NW3: <url>" al final del mensaje original del canal.
+ * Intenta editMessageText; si el mensaje es multimedia (sin texto) cae a editMessageCaption.
+ * Devuelve true si la edición se aplicó (o ya estaba aplicada), false en otro caso.
+ */
+async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText) {
+  const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
+  if (!match) return false;
+
+  const chatId = `@${match[1]}`;
+  const messageId = Number(match[2]);
+  const suffix = `\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${slug}`;
+  const base = (originalText || '').trim();
+
+  // editMessageText reemplaza el texto completo → reenviamos original + sufijo (límite 4096).
+  const text = `${base.slice(0, 4096 - suffix.length)}${suffix}`;
+  let result = await telegramApi('editMessageText', { chat_id: chatId, message_id: messageId, text });
+
+  if (result.ok) return true;
+
+  const desc = (result.description || '').toLowerCase();
+
+  // "message is not modified": el enlace ya estaba puesto → lo damos por bueno.
+  if (desc.includes('not modified')) return true;
+
+  // Mensaje multimedia sin texto → usar caption (límite 1024).
+  if (desc.includes('no text in the message') || desc.includes('caption')) {
+    const caption = `${base.slice(0, 1024 - suffix.length)}${suffix}`;
+    result = await telegramApi('editMessageCaption', { chat_id: chatId, message_id: messageId, caption });
+    if (result.ok) return true;
+    if ((result.description || '').toLowerCase().includes('not modified')) return true;
+  }
+
+  logger.warn(`[rssAutoPublisher] No se pudo editar ${telegramUrl}: ${result.description || 'error desconocido'}`);
+  return false;
+}
+
+// ── Backfill puntual ─────────────────────────────────────────────────────────
+/**
+ * backfillTelegramLinks
+ * ---------------------
+ * Recorre nw3_noticias buscando artículos que tengan telegram_url y cuyo
+ * `contenido` aún NO incluya "Leer en NW3", y edita el mensaje original del
+ * canal para añadirle el enlace. Pensado para ejecutarse una sola vez al
+ * arrancar (no es periódico).
+ */
+async function backfillTelegramLinks() {
+  try {
+    if (!BOT_TOKEN) {
+      logger.warn('[rssAutoPublisher] backfillTelegramLinks: BOT_TOKEN_NW3 no definido — se omite el backfill.');
+      return;
+    }
+
+    // PocketBase filtra solo por telegram_url no vacío; el descarte de los que ya
+    // contienen "Leer en NW3" se hace en JS (más robusto que el operador !~ del filtro).
+    const candidates = await pocketbaseClient.collection('nw3_noticias').getFullList({
+      filter: 'telegram_url != ""',
+    });
+    const records = candidates.filter((r) => !(r.contenido || '').includes('Leer en NW3'));
+
+    if (records.length === 0) {
+      logger.info('[rssAutoPublisher] backfillTelegramLinks: no hay artículos que actualizar.');
+      return;
+    }
+
+    logger.info(`[rssAutoPublisher] backfillTelegramLinks: ${records.length} artículos por procesar.`);
+
+    let edited = 0;
+    for (const record of records) {
+      // Texto final del mensaje (documenta el resultado). appendNw3LinkToTelegramPost
+      // ya añade por su cuenta el sufijo "📰 Leer en NW3: …", por eso a la llamada
+      // se le pasa solo el cuerpo base (título + contenido) y no este texto completo.
+      const messageText = `${record.titulo}\n\n${record.contenido}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${record.slug}`;
+
+      const ok = await appendNw3LinkToTelegramPost(
+        record.telegram_url,
+        record.slug,
+        `${record.titulo}\n\n${record.contenido}`,
+      );
+      if (ok) {
+        edited++;
+        logger.info(`[rssAutoPublisher] backfillTelegramLinks: enlace NW3 añadido a ${record.telegram_url}`);
+      }
+
+      await sleep(TELEGRAM_BACKFILL_DELAY_MS); // ≥1.5 s entre llamadas: respeta el límite de la Bot API
+    }
+
+    logger.info(`[rssAutoPublisher] backfillTelegramLinks: completado, ${edited}/${records.length} posts editados en Telegram.`);
+  } catch (err) {
+    logger.error('[rssAutoPublisher] backfillTelegramLinks error:', err.message);
+  }
+}
+
+// ── Núcleo ─────────────────────────────────────────────────────────────────────
+async function runAutoPublish() {
+  try {
+    if (!BOT_TOKEN) {
+      logger.warn('[rssAutoPublisher] BOT_TOKEN_NW3 no está definido en .env — se crearán artículos pero se omitirá la edición en Telegram.');
+    }
+
+    // 1. Reunir todos los feeds: canales Telegram + fijos + dinámicos.
+    const dynamicFeeds = await loadDynamicFeeds();
+    const settled = await Promise.allSettled([
+      ...CHANNELS.map(fetchTelegramChannel),
+      ...RSS_APP_FEEDS.map(fetchRssFeed),
+      ...dynamicFeeds.map((f) => fetchRssFeed({
+        url: f.url,
+        defaultCategory: f.defaultCategory || 'Tecnología',
+        label: f.label || f.url,
+      })),
+    ]);
+
+    const allItems = settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []));
+
+    // 2. Conjunto de URLs ya conocidas en nw3_noticias (fuente_url + telegram_url).
+    const existing = await pocketbaseClient.collection('nw3_noticias').getFullList({
+      fields: 'fuente_url,telegram_url,slug',
+    });
+    const knownUrls = new Set();
+    const knownSlugs = new Set();
+    for (const rec of existing) {
+      if (rec.fuente_url) knownUrls.add(rec.fuente_url);
+      if (rec.telegram_url) knownUrls.add(rec.telegram_url);
+      if (rec.slug) knownSlugs.add(rec.slug);
+    }
+
+    // 3. Filtrar nuevos y deduplicar por fuente_url dentro de la misma ejecución.
+    const seenThisRun = new Set();
+    const fresh = [];
+    for (const item of allItems) {
+      if (!item.sourceUrl || knownUrls.has(item.sourceUrl) || seenThisRun.has(item.sourceUrl)) continue;
+      seenThisRun.add(item.sourceUrl);
+      fresh.push(item);
+    }
+
+    if (fresh.length === 0) {
+      logger.info('[rssAutoPublisher] Sin artículos nuevos.');
+      return;
+    }
+
+    const batch = fresh.slice(0, MAX_NEW_PER_RUN);
+    if (fresh.length > MAX_NEW_PER_RUN) {
+      logger.info(`[rssAutoPublisher] ${fresh.length} nuevos; se procesan ${MAX_NEW_PER_RUN} en esta ejecución (resto, en la siguiente).`);
+    }
+
+    let created = 0;
+    let edited = 0;
+
+    // 4. Crear cada artículo y, si procede, editar el post original del canal.
+    for (const item of batch) {
+      try {
+        // Slug único: base + hash de la fuente; si colisiona, sufijo incremental.
+        let slug = `${generarSlug(item.title)}-${shortHash(item.sourceUrl)}`;
+        let n = 2;
+        while (knownSlugs.has(slug)) {
+          slug = `${generarSlug(item.title)}-${shortHash(item.sourceUrl)}-${n++}`;
+        }
+        knownSlugs.add(slug);
+
+        await pocketbaseClient.collection('nw3_noticias').create({
+          titulo: item.title.length > 200 ? `${item.title.slice(0, 199)}…` : item.title,
+          slug,
+          categoria: item.category,
+          fecha: pubDateToDisplay(item.pubDate),
+          contenido: item.excerpt,
+          fuente_label: item.label || '',
+          fuente_url: item.sourceUrl,
+          telegram_url: item.telegramUrl || '',
+          year: yearOf(item.pubDate),
+          destacado: false,
+        });
+        created++;
+        knownUrls.add(item.sourceUrl);
+        logger.info(`[rssAutoPublisher] Artículo creado: ${slug} (${item.label})`);
+
+        // Editar el mensaje original solo si es un post de Telegram y hay token.
+        if (BOT_TOKEN && item.telegramUrl) {
+          const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText);
+          if (ok) {
+            edited++;
+            logger.info(`[rssAutoPublisher] Enlace NW3 añadido al post: ${item.telegramUrl}`);
+          }
+          await sleep(TELEGRAM_CALL_DELAY_MS);
+        }
+      } catch (err) {
+        logger.error(`[rssAutoPublisher] Error procesando "${item.title}": ${err.message}`);
+      }
+    }
+
+    logger.info(`[rssAutoPublisher] Ejecución completada: ${created} artículos creados, ${edited} posts editados en Telegram.`);
+  } catch (err) {
+    logger.error('[rssAutoPublisher] Error:', err.message);
+  }
+}
+
+export function startRssAutoPublisher(intervalMs = INTERVAL_MS) {
+  runAutoPublish();
+  return setInterval(runAutoPublish, intervalMs);
+}
+
+export { backfillTelegramLinks };

@@ -1,0 +1,19 @@
+services:
+  gamergitbug:
+    build:
+      context: .
+      dockerfile: apps/comunidadtelebots/Dockerfile
+    container_name: gamergitbug
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gamergitbug.rule=Host(`gamergitbug.duckdns.org`)
+      - traefik.http.routers.gamergitbug.entrypoints=web
+      - traefik.http.services.gamergitbug.loadbalancer.server.port=80
+      - traefik.docker.network=traefik
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}
