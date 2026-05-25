@@ -43,8 +43,14 @@ const RSS_APP_FEEDS = [
   { url: 'https://rss.app/feeds/v1.1/2IXDCnAS3PkRh3bD.json', defaultCategory: 'Ciberseguridad', label: 'Hispasec' },
   { url: 'https://rss.app/feeds/v1.1/6dDuQLH543ORu2d9.json', defaultCategory: 'Ciberseguridad', label: 'NIST' },
   { url: 'https://rss.app/feeds/v1.1/ivImG3xZTTMBDaY8.json', defaultCategory: 'Tecnología',     label: 'Portaltic' },
-  { url: 'https://rss.app/feeds/v1.1/VIGykitWBlIEm69s.json', defaultCategory: 'Tecnología',     label: '@TodoSobreAllTech' },
+  // El feed del propio canal NO usa publishNew (publicaría posts nuevos a partir
+  // de sus propios posts → bucle): mantiene la edición del post original.
+  { url: 'https://rss.app/feeds/v1.1/VIGykitWBlIEm69s.json', defaultCategory: 'Tecnología',     label: '@TodoSobreAllTech', publishNew: false },
 ];
+
+// Canal propio donde se publican como posts NUEVOS los artículos de los feeds de
+// rss.app (a diferencia de los canales de Telegram, cuyo post original se edita).
+const PUBLISH_CHANNEL = '@TodoSobreAllTech';
 
 // Categorización por keywords — copiada de useTelegramFeed.jsx (misma lógica).
 const CATEGORY_KEYWORDS = {
@@ -233,7 +239,7 @@ async function fetchTelegramChannel({ channel, defaultCategory }) {
     });
 }
 
-async function fetchRssFeed({ url, defaultCategory, label }) {
+async function fetchRssFeed({ url, defaultCategory, label, publishNew = false }) {
   // JSON Feed v1.1 (rss.app *.json): fetch directo.
   if (url.endsWith('.json')) {
     const res = await fetch(url);
@@ -260,6 +266,9 @@ async function fetchRssFeed({ url, defaultCategory, label }) {
           // telegramUrl = el post de Telegram original (t.me/canal/123), para que
           // el job pueda editar el mensaje. Sigue siendo item.url.
           telegramUrl: telegramPostUrl(item.url),
+          // publishNew = se publica como post NUEVO en el canal (feeds rss.app),
+          // en lugar de editar un post existente.
+          publishNew,
         };
       });
   }
@@ -284,6 +293,7 @@ async function fetchRssFeed({ url, defaultCategory, label }) {
         fullText: text,
         pubDate: item.pubDate,
         telegramUrl: null,
+        publishNew,
       };
     });
 }
@@ -361,6 +371,44 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   return false;
 }
 
+/**
+ * publishToTelegram
+ * -----------------
+ * Publica un artículo como mensaje NUEVO en PUBLISH_CHANNEL (@TodoSobreAllTech)
+ * vía sendMessage, con el formato:
+ *
+ *   📰 [título]
+ *
+ *   [contenido reescrito]
+ *
+ *   #Categoria #NW3
+ *
+ *   🔗 Leer más: https://noticiasweb3.todosobreall.tech/noticias/[slug]
+ *
+ * `article` debe traer { titulo, contenido, categoria }.
+ * Devuelve el message_id del post publicado, o null si falla.
+ */
+async function publishToTelegram(article, slug) {
+  const header = `📰 ${article.titulo}`;
+  const footer = `${buildHashtags(article.categoria)}\n\n🔗 Leer más: ${SITE_URL}/noticias/${slug}`;
+
+  // Recortamos el cuerpo para no superar el límite de 4096 de sendMessage,
+  // conservando siempre la cabecera, los hashtags y el enlace.
+  const room = 4096 - header.length - footer.length - 4; // 4 = los dos "\n\n"
+  let body = (article.contenido || '').trim();
+  if (body.length > room) body = `${body.slice(0, Math.max(0, room - 1)).trimEnd()}…`;
+
+  const text = `${header}\n\n${body}\n\n${footer}`;
+
+  const result = await telegramApi('sendMessage', { chat_id: PUBLISH_CHANNEL, text });
+  if (result.ok && result.result?.message_id) {
+    return result.result.message_id;
+  }
+
+  logger.warn(`[rssAutoPublisher] publishToTelegram falló: ${result.description || 'error desconocido'}`);
+  return null;
+}
+
 // ── Backfill puntual ─────────────────────────────────────────────────────────
 /**
  * backfillTelegramLinks
@@ -429,7 +477,9 @@ async function runAutoPublish() {
     const dynamicFeeds = await loadDynamicFeeds();
     const settled = await Promise.allSettled([
       ...CHANNELS.map(fetchTelegramChannel),
-      ...RSS_APP_FEEDS.map(fetchRssFeed),
+      // publishNew: true por defecto para los feeds rss.app; cada feed puede
+      // desactivarlo con `publishNew: false` (p. ej. el del propio canal).
+      ...RSS_APP_FEEDS.map((f) => fetchRssFeed({ publishNew: true, ...f })),
       ...dynamicFeeds.map((f) => fetchRssFeed({
         url: f.url,
         defaultCategory: f.defaultCategory || 'Tecnología',
@@ -474,8 +524,10 @@ async function runAutoPublish() {
 
     let created = 0;
     let edited = 0;
+    let published = 0;
 
-    // 4. Crear cada artículo y, si procede, editar el post original del canal.
+    // 4. Crear cada artículo y, según su origen, publicar un post nuevo (feeds
+    //    rss.app) o editar el post original del canal (canales de Telegram).
     for (const item of batch) {
       try {
         // Slug único: base + hash de la fuente; si colisiona, sufijo incremental.
@@ -486,25 +538,43 @@ async function runAutoPublish() {
         }
         knownSlugs.add(slug);
 
+        const titulo = item.title.length > 200 ? `${item.title.slice(0, 199)}…` : item.title;
+        const contenidoReescrito = rewriteText(item.excerpt, item.category);
+
+        // Feeds rss.app: publicar como post NUEVO y usar su enlace como telegram_url.
+        let telegramUrl = item.telegramUrl || '';
+        if (BOT_TOKEN && item.publishNew) {
+          const messageId = await publishToTelegram(
+            { titulo, contenido: contenidoReescrito, categoria: item.category },
+            slug,
+          );
+          if (messageId) {
+            telegramUrl = `https://t.me/${PUBLISH_CHANNEL.replace(/^@/, '')}/${messageId}`;
+            published++;
+            logger.info(`[rssAutoPublisher] Publicado en Telegram: ${telegramUrl}`);
+          }
+          await sleep(TELEGRAM_CALL_DELAY_MS);
+        }
+
         await pocketbaseClient.collection('nw3_noticias').create({
-          titulo: item.title.length > 200 ? `${item.title.slice(0, 199)}…` : item.title,
+          titulo,
           slug,
           categoria: item.category,
           fecha: pubDateToDisplay(item.pubDate),
-          contenido: `${rewriteText(item.excerpt, item.category)}\n\n${buildHashtags(item.category)}`,
+          contenido: `${contenidoReescrito}\n\n${buildHashtags(item.category)}`,
           fuente_label: item.label || '',
           fuente_url: item.sourceUrl,
-          telegram_url: item.telegramUrl || '',
+          telegram_url: telegramUrl,
           year: yearOf(item.pubDate),
           destacado: false,
         });
         created++;
         knownUrls.add(item.sourceUrl);
-        if (item.telegramUrl) knownUrls.add(item.telegramUrl);
+        if (telegramUrl) knownUrls.add(telegramUrl);
         logger.info(`[rssAutoPublisher] Artículo creado: ${slug} (${item.label})`);
 
-        // Editar el mensaje original solo si es un post de Telegram y hay token.
-        if (BOT_TOKEN && item.telegramUrl) {
+        // Canales de Telegram: editar el post original añadiendo el enlace a NW3.
+        if (BOT_TOKEN && !item.publishNew && item.telegramUrl) {
           const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText, item.category);
           if (ok) {
             edited++;
@@ -517,7 +587,7 @@ async function runAutoPublish() {
       }
     }
 
-    logger.info(`[rssAutoPublisher] Ejecución completada: ${created} artículos creados, ${edited} posts editados en Telegram.`);
+    logger.info(`[rssAutoPublisher] Ejecución completada: ${created} artículos creados, ${published} posts publicados, ${edited} posts editados en Telegram.`);
   } catch (err) {
     logger.error('[rssAutoPublisher] Error:', err.message);
   }
