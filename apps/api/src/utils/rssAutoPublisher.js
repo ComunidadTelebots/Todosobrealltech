@@ -134,6 +134,13 @@ function detectCategory(text, defaultCategory) {
   return defaultCategory;
 }
 
+// Hashtags a partir de la categoría: "Ciberseguridad" → "#Ciberseguridad #NW3",
+// "IA" → "#IA #NW3", "Redes Sociales" → "#RedesSociales #NW3" (sin espacios en el tag).
+function buildHashtags(categoria) {
+  const cat = (categoria || '').trim().replace(/\s+/g, '');
+  return cat ? `#${cat} #NW3` : '#NW3';
+}
+
 function stripHtml(html = '') {
   return html
     .replace(/<br\s*\/?>/gi, '\n')
@@ -314,18 +321,21 @@ async function telegramApi(method, body, retries = TELEGRAM_MAX_RETRIES) {
 }
 
 /**
- * Añade "📰 Leer en NW3: <url>" al final del mensaje original del canal.
+ * Añade "#Categoria #NW3" y "📰 Leer en NW3: <url>" al final del mensaje original del canal.
  * Intenta editMessageText; si el mensaje es multimedia (sin texto) cae a editMessageCaption.
  * Devuelve true si la edición se aplicó (o ya estaba aplicada), false en otro caso.
  */
-async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText) {
+async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   if (!match) return false;
 
   const chatId = `@${match[1]}`;
   const messageId = Number(match[2]);
-  const suffix = `\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${slug}`;
+  const suffix = `\n\n${buildHashtags(categoria)}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${slug}`;
   const base = (originalText || '').trim();
+
+  // Si el mensaje original ya tiene el enlace NW3, no volver a editar.
+  if (base.includes('📰 Leer en NW3:')) return true;
 
   // editMessageText reemplaza el texto completo → reenviamos original + sufijo (límite 4096).
   const text = `${base.slice(0, 4096 - suffix.length)}${suffix}`;
@@ -383,14 +393,15 @@ async function backfillTelegramLinks() {
     let edited = 0;
     for (const record of records) {
       // Texto final del mensaje (documenta el resultado). appendNw3LinkToTelegramPost
-      // ya añade por su cuenta el sufijo "📰 Leer en NW3: …", por eso a la llamada
-      // se le pasa solo el cuerpo base (título + contenido) y no este texto completo.
-      const messageText = `${record.titulo}\n\n${record.contenido}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${record.slug}`;
+      // ya añade por su cuenta el sufijo "#Categoria #NW3 … 📰 Leer en NW3: …", por eso a la
+      // llamada se le pasa solo el cuerpo base (título + contenido) y no este texto completo.
+      const messageText = `${record.titulo}\n\n${record.contenido}\n\n${buildHashtags(record.categoria)}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${record.slug}`;
 
       const ok = await appendNw3LinkToTelegramPost(
         record.telegram_url,
         record.slug,
         `${record.titulo}\n\n${record.contenido}`,
+        record.categoria,
       );
       if (ok) {
         edited++;
@@ -444,6 +455,8 @@ async function runAutoPublish() {
     const fresh = [];
     for (const item of allItems) {
       if (!item.sourceUrl || knownUrls.has(item.sourceUrl) || seenThisRun.has(item.sourceUrl)) continue;
+      // Dedup también por telegram_url: si ya existe un artículo con ese post de Telegram, no crear otro.
+      if (item.telegramUrl && knownUrls.has(item.telegramUrl)) continue;
       seenThisRun.add(item.sourceUrl);
       fresh.push(item);
     }
@@ -477,7 +490,7 @@ async function runAutoPublish() {
           slug,
           categoria: item.category,
           fecha: pubDateToDisplay(item.pubDate),
-          contenido: item.excerpt,
+          contenido: `${item.excerpt}\n\n${buildHashtags(item.category)}`,
           fuente_label: item.label || '',
           fuente_url: item.sourceUrl,
           telegram_url: item.telegramUrl || '',
@@ -486,11 +499,12 @@ async function runAutoPublish() {
         });
         created++;
         knownUrls.add(item.sourceUrl);
+        if (item.telegramUrl) knownUrls.add(item.telegramUrl);
         logger.info(`[rssAutoPublisher] Artículo creado: ${slug} (${item.label})`);
 
         // Editar el mensaje original solo si es un post de Telegram y hay token.
         if (BOT_TOKEN && item.telegramUrl) {
-          const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText);
+          const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText, item.category);
           if (ok) {
             edited++;
             logger.info(`[rssAutoPublisher] Enlace NW3 añadido al post: ${item.telegramUrl}`);
