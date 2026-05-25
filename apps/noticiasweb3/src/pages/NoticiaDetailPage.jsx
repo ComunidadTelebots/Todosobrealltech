@@ -6,11 +6,44 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { ShareBar, readingTime } from '../components/ShareBar.jsx';
 import { TelegramEmbed, getTelegramPost } from '../components/TelegramEmbed.jsx';
 import { trackArticleView } from '../utils/analytics.js';
+import { getSiteInfo } from '../utils/site.js';
 
-function setMeta(name, content) {
-  let el = document.querySelector(`meta[name="${name}"]`);
-  if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
-  el.content = content;
+const DEFAULT_OG_IMAGE = 'https://noticiasweb3.todosobreall.tech/og-default.png';
+
+// Upserts a <meta>. OG/Article tags are keyed by `property`, the rest by `name`.
+function setMeta(key, content) {
+  if (content == null) return;
+  const attr = key.startsWith('og:') || key.startsWith('article:') ? 'property' : 'name';
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+
+function setCanonical(href) {
+  let el = document.head.querySelector('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement('link');
+    el.setAttribute('rel', 'canonical');
+    document.head.appendChild(el);
+  }
+  el.setAttribute('href', href);
+}
+
+// Best-effort ISO 8601 for article:published_time. PocketBase records carry an
+// ISO `created`; static articles only expose Spanish prose + year, so fall back
+// to the start of that year rather than emitting an unparseable string.
+function toIso(article, pbRecord) {
+  const raw = pbRecord?.created || pbRecord?.fecha;
+  if (raw) {
+    const d = new Date(raw);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  if (article?.year) return `${article.year}-01-01T00:00:00.000Z`;
+  return null;
 }
 
 export default function NoticiaDetailPage({ siteVersion }) {
@@ -64,17 +97,29 @@ export default function NoticiaDetailPage({ siteVersion }) {
 
   useEffect(() => {
     if (!article) return;
+    const { name: siteName } = getSiteInfo();
     const prev = document.title;
-    document.title = `${article.title} — NW3 Noticiasweb3`;
+    document.title = `${article.title} — ${siteName}`;
+
     const desc = typeof article.body?.props?.children === 'string'
       ? article.body.props.children.slice(0, 155)
       : article.title;
+    const url = window.location.origin + window.location.pathname;
+    const image = article.image || DEFAULT_OG_IMAGE;
+    const publishedTime = toIso(article, pbRecord);
+
     setMeta('description', desc);
+    setMeta('og:type', 'article');
     setMeta('og:title', article.title);
     setMeta('og:description', desc);
-    setMeta('og:url', window.location.href);
+    setMeta('og:url', url);
+    setMeta('og:image', image);
+    setMeta('og:site_name', siteName);
+    setMeta('article:published_time', publishedTime);
+    setCanonical(url);
+
     return () => { document.title = prev; };
-  }, [article]);
+  }, [article?.slug, pbRecord]);
 
   async function handleEliminar() {
     if (!pbRecord || !window.confirm('¿Eliminar esta noticia? Esta acción no se puede deshacer.')) return;

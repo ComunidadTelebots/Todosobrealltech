@@ -5,6 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NW3 - Noticiasweb3</title>
     <meta name="description" content="Las novedades de Internet a tu alcance." />
+
+    <!-- Canonical base (the inline script below rewrites it per-subdomain at runtime) -->
+    <link rel="canonical" href="https://noticiasweb3.todosobreall.tech/" />
+
+    <!-- Open Graph base tags for the home; per-article pages override these in JS -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NW3 - Noticiasweb3" />
+    <meta property="og:title" content="NW3 - Noticiasweb3" />
+    <meta property="og:description" content="Las novedades de Internet a tu alcance." />
+    <meta property="og:url" content="https://noticiasweb3.todosobreall.tech/" />
+    <meta property="og:image" content="https://noticiasweb3.todosobreall.tech/og-default.png" />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NW3 - Noticiasweb3" />
+    <meta name="twitter:description" content="Las novedades de Internet a tu alcance." />
+    <meta name="twitter:image" content="https://noticiasweb3.todosobreall.tech/og-default.png" />
+
+    <!-- Per-subdomain canonical / OG site name. The static HTML is shared across
+         every subdomain, so we resolve branding at runtime from the hostname.
+         Skipped on localhost and during the react-snap pre-render so the baked
+         snapshot keeps the clean production default. -->
+    <script>
+      (function () {
+        var SITES = {
+          'noticiasweb3.todosobreall.tech': 'NW3 - Noticiasweb3',
+          'resistenciaalacensura.todosobreall.tech': 'Resistencia a la Censura',
+          'gamergitbug.todosobreall.tech': 'GamerGitBug',
+          'todosobregameplays.todosobreall.tech': 'Todo Sobre Gameplays',
+          'comunidadtelebots.todosobreall.tech': 'Comunidad TeleBots'
+        };
+        var host = location.hostname;
+        var isSnap = / ReactSnap/.test(navigator.userAgent);
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
+        if (isSnap || isLocal || !SITES[host]) return;
+
+        var url = location.origin + location.pathname;
+        var setMeta = function (sel, attr, key, val) {
+          var el = document.head.querySelector(sel);
+          if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
+          el.setAttribute('content', val);
+        };
+        var canonical = document.head.querySelector('link[rel="canonical"]');
+        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+        canonical.setAttribute('href', url);
+
+        setMeta('meta[property="og:url"]', 'property', 'og:url', url);
+        setMeta('meta[property="og:site_name"]', 'property', 'og:site_name', SITES[host]);
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
