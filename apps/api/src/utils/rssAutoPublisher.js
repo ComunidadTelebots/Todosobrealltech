@@ -1,5 +1,6 @@
 import { pocketbaseClient } from './pocketbaseClient.js';
 import logger from './logger.js';
+import { rewriteText } from './textRewriter.js';
 
 /**
  * rssAutoPublisher
@@ -490,7 +491,7 @@ async function runAutoPublish() {
           slug,
           categoria: item.category,
           fecha: pubDateToDisplay(item.pubDate),
-          contenido: `${item.excerpt}\n\n${buildHashtags(item.category)}`,
+          contenido: `${rewriteText(item.excerpt, item.category)}\n\n${buildHashtags(item.category)}`,
           fuente_label: item.label || '',
           fuente_url: item.sourceUrl,
           telegram_url: item.telegramUrl || '',
