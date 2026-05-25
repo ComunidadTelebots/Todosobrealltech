@@ -1,5 +1,69 @@
 const articles = [
   {
+    id: 82,
+    slug: 'apple-ios-27-airpods-google-cast',
+    year: 2026,
+    category: 'Móviles',
+    title: 'Apple prepara iOS 27 con una renovación del panel de control de los AirPods y soporte para servicios como Google Cast',
+    date: '25 de Mayo del 2026',
+    telegramUrl: '',
+    source: { label: 'Europa Press', url: 'https://www.europapress.es/portaltic/software/noticia-apple-prepara-ios-27-renovacion-panel-control-airpods-soporte-servicios-google-cast-20260525125310.html' },
+    body: (
+      <>
+        <p>
+          La firma de Cupertino trabaja ya en iOS 27, una versión que incorporará por primera vez
+          compatibilidad nativa con plataformas de transmisión ajenas a Apple —Google Cast entre
+          ellas—, además de una pantalla de gestión rediseñada para los AirPods y avances en Genmoji
+          y en la creación de imágenes.
+        </p>
+        <p>
+          Fiel a su calendario habitual, la compañía desgranará todas estas funciones durante la
+          WWDC 2026, su cita anual con los desarrolladores, que arrancará el lunes 8 de junio.
+        </p>
+        <p><strong>Compatibilidad nativa con plataformas de streaming ajenas.</strong></p>
+        <p>
+          Aún antes del anuncio oficial ha trascendido que iOS 27 abrirá la puerta a los protocolos
+          de transmisión de otras empresas para adecuarse a lo que exige la Ley de Mercados Digitales
+          (DMA) europea. De este modo, el iPhone podrá enlazarse de serie con altavoces o televisores
+          que admitan estándares externos como Google Cast —y no solo AirPlay— para enviarles vídeo
+          o audio.
+        </p>
+        <p>
+          La información procede de Mark Gurman, redactor de Bloomberg, que cita a personas próximas
+          a la empresa. Según esas fuentes, se trata de otra concesión a Bruselas en la línea de la
+          que ya supuso habilitar tiendas de aplicaciones alternativas con iOS 17.4.
+        </p>
+        <p><strong>Nueva pantalla de ajustes para los AirPods.</strong></p>
+        <p>
+          Gurman apunta también que iOS 27 reorganizará los controles y la configuración de los
+          AirPods para que resulte más sencillo manejarlos y exprimir sus prestaciones recientes,
+          como su uso a modo de audífono o el reconocimiento de movimientos de cabeza para responder
+          o descartar llamadas y avisos.
+        </p>
+        <p>
+          Las fuentes no concretan los detalles, pero apuntan a un menú de configuración más práctico
+          en el que las opciones de uso más frecuente ganarán protagonismo, de forma que ajustar las
+          preferencias de audio sea más rápido. La renovación alcanzará igualmente a iPadOS 27 y
+          macOS 27.
+        </p>
+        <p><strong>Avances en Genmoji e Image Playground.</strong></p>
+        <p>
+          iOS 27 traerá asimismo mejoras de inteligencia artificial en Genmoji e Image Playground,
+          esta vez sostenidas por los modelos desarrollados internamente por Apple y no por terceros.
+          Genmoji estrenará la capacidad de proponer 'emojis' ya elaborados a partir de las frases y
+          las fotos más recurrentes en la galería del usuario, mientras que Image Playground lucirá
+          una interfaz renovada y entregará resultados de mayor calidad.
+        </p>
+        <p>
+          El propio Gurman ya había anticipado que la compañía ultima una revisión de sus
+          herramientas de retoque fotográfico apoyada en IA, con utilidades para ampliar, mejorar y
+          reencuadrar las imágenes. Todo ello debería desvelarse al detalle en la WWDC 2026, junto al
+          resto de novedades de iOS, iPadOS, watchOS y macOS.
+        </p>
+      </>
+    ),
+  },
+  {
     id: 1,
     slug: 'google-io-2026-gemini',
     year: 2026,
@@ -11,21 +75,22 @@ const articles = [
     body: (
       <>
         <p>
-          El Google I/O 2026 se celebra los días 19 y 20 de mayo en Mountain View, California, y
-          Google lo describe como "uno de los años más importantes para Android". El eje central es
-          la expansión de Gemini Intelligence a prácticamente todo el ecosistema: Android, ChromeOS
-          y los servicios de Google.
+          Entre el 19 y el 20 de mayo, Mountain View (California) acogió el Google I/O 2026, una
+          edición que la propia compañía calificó como uno de los ejercicios más decisivos para
+          Android. El hilo conductor fue llevar Gemini Intelligence a casi todos los rincones de su
+          ecosistema: Android, ChromeOS y sus servicios.
         </p>
-        <p><strong>Android Auto completamente renovado con navegación 3D en tiempo real.</strong></p>
+        <p><strong>Android Auto se reinventa con navegación 3D al instante.</strong></p>
         <p>
-          Gemini se integra en Android Auto con una nueva interfaz Material 3 Expressive y la función
-          Immersive Navigation: navegación 3D con señales de tráfico, visualización de carriles y
-          datos del entorno en tiempo real.
+          La plataforma para el coche estrena la estética Material 3 Expressive y suma Gemini junto a
+          Immersive Navigation, un modo de conducción en tres dimensiones que muestra la
+          señalización, los carriles y el entorno actualizados al momento.
         </p>
-        <p><strong>Googlebooks: una nueva categoría de laptops para Gemini.</strong></p>
+        <p><strong>Googlebooks, portátiles concebidos para Gemini.</strong></p>
         <p>
-          Google presentó Googlebooks, portátiles diseñadas desde cero para funcionar con Gemini
-          Intelligence. Acer, Asus, Dell, HP y Lenovo lanzarán los primeros modelos en otoño de 2026.
+          Google dio a conocer también los Googlebooks, equipos pensados de origen para sacar partido
+          a Gemini Intelligence. Acer, Asus, Dell, HP y Lenovo pondrán a la venta sus primeras
+          unidades en el otoño de 2026.
         </p>
       </>
     ),
@@ -42,16 +107,18 @@ const articles = [
     body: (
       <>
         <p>
-          En un hito histórico, Anthropic ha superado a OpenAI en adopción empresarial en Estados
-          Unidos. El 34,4 % de las empresas estadounidenses pagan por Claude frente al 32,3 % que
-          lo hacen por ChatGPT. En solo doce meses, Anthropic cuadruplicó su adopción: del 9 % en
-          mayo de 2025 al 34,4 % en abril de 2026.
+          Por primera vez, Anthropic ha dejado atrás a OpenAI en el terreno corporativo
+          estadounidense. Hoy un 34,4 % de las empresas del país abona una suscripción a Claude,
+          mientras que ChatGPT se queda en el 32,3 %. El avance ha sido vertiginoso: la cuota de
+          Anthropic pasó del 9 % en mayo de 2025 a ese 34,4 % en abril de 2026, multiplicándose por
+          cuatro en apenas doce meses.
         </p>
         <p>
-          El principal motor de este crecimiento ha sido Claude Code, la herramienta de programación
-          agéntica de Anthropic, descrita como el producto de crecimiento más rápido en la historia
-          de la compañía. Empresas de defensa como Lockheed Martin y fondos financieros como
-          Bridgewater han optado por Claude por sus capacidades de privacidad y cumplimiento normativo.
+          Detrás de ese empuje está sobre todo Claude Code, su asistente de programación agéntica, al
+          que la firma considera el lanzamiento de crecimiento más veloz que ha tenido nunca.
+          Compañías del sector defensa, como Lockheed Martin, y gestoras financieras, como
+          Bridgewater, se han decantado por Claude atraídas por sus garantías de privacidad y de
+          cumplimiento normativo.
         </p>
       </>
     ),
@@ -68,16 +135,16 @@ const articles = [
     body: (
       <>
         <p>
-          Google celebró "The Android Show: I/O Edition 2026" el 12 de mayo, donde anunció que
-          Android deja de ser un sistema operativo tradicional para convertirse en un "sistema de
-          inteligencia". El protagonista es Gemini Intelligence, capaz de entender el contexto de
-          la pantalla y completar tareas complejas de varios pasos de forma autónoma.
+          El 12 de mayo, durante "The Android Show: I/O Edition 2026", Google sostuvo que Android
+          abandona su condición de sistema operativo al uso para pasar a ser un "sistema de
+          inteligencia". La pieza clave vuelve a ser Gemini Intelligence, capaz de interpretar lo que
+          aparece en pantalla y de resolver por su cuenta encargos largos divididos en varios pasos.
         </p>
         <p>
-          Entre las novedades: emojis tridimensionales "Noto 3D", la herramienta de transcripción
-          Rambler que elimina muletillas y organiza frases automáticamente, y generación de widgets
-          personalizados para la pantalla de inicio mediante IA generativa. También llega Quick Share
-          para transferir archivos de Android a iOS mediante código QR.
+          El listado de estrenos incluye los emojis tridimensionales "Noto 3D"; Rambler, un
+          transcriptor que descarta las muletillas y ordena el discurso de manera automática; y la
+          posibilidad de fabricar widgets a medida para la pantalla de inicio con IA generativa. Se
+          suma además Quick Share, que permite pasar archivos de Android a iOS escaneando un código QR.
         </p>
       </>
     ),
@@ -94,20 +161,20 @@ const articles = [
     body: (
       <>
         <p>
-          Microsoft publicó el Patch Tuesday de mayo de 2026, que incluye parches para 120
-          vulnerabilidades, 17 de ellas clasificadas como Críticas (14 de ejecución remota de
-          código). En esta ocasión no se detectó ningún zero-day siendo explotado activamente.
+          El paquete de actualizaciones de mayo de 2026 de Microsoft corrige 120 fallos de
+          seguridad, de los que 17 figuran como Críticos y 14 permiten ejecución remota de código.
+          A diferencia de otras tandas, esta no incluye ningún zero-day bajo explotación activa.
         </p>
         <p>
-          La actualización también trae Xbox Mode para todos los usuarios de Windows 11: un panel
-          de juego a pantalla completa controlable con mando que convierte cualquier PC o laptop en
-          una consola. Además se añade soporte para formatear unidades FAT32 de hasta 2 TB, frente
-          al antiguo límite de 32 GB.
+          La remesa estrena también el Modo Xbox para todos los equipos con Windows 11: una capa de
+          juego a pantalla completa manejable con mando que transforma cualquier ordenador en una
+          consola. Otra novedad es la opción de dar formato FAT32 a discos de hasta 2 TB, muy por
+          encima del tope de 32 GB que regía hasta ahora.
         </p>
         <p>
-          <strong>Atención:</strong> los certificados originales de Secure Boot emitidos en 2011
-          caducan el 26 de junio de 2026. Los dispositivos que no reciban la actualización
-          entrarán en un estado de seguridad degradado.
+          <strong>Aviso:</strong> los certificados de Secure Boot expedidos en 2011 dejan de ser
+          válidos el 26 de junio de 2026. Los equipos que no instalen la actualización se quedarán
+          con una protección mermada.
         </p>
       </>
     ),
@@ -124,19 +191,20 @@ const articles = [
     body: (
       <>
         <p>
-          F5 publicó un aviso urgente sobre CVE-2026-42945, un fallo de desbordamiento de búfer
-          presente en NGINX desde 2008 —18 años— que permite la ejecución remota de código sin
-          autenticación. La vulnerabilidad recibió una puntuación CVSS de 9,2 sobre 10.
+          F5 ha emitido una alerta de máxima urgencia por CVE-2026-42945, un desbordamiento de búfer
+          que arrastra NGINX desde 2008 —dieciocho años— y que abre la puerta a ejecutar código en
+          remoto sin necesidad de autenticarse. Su gravedad se cifra en un 9,2 sobre 10 en la escala
+          CVSS.
         </p>
         <p>
-          Los administradores de sistemas deben actualizar a NGINX 1.30.1 o 1.31.0 de inmediato.
-          En paralelo, CISA añadió a su catálogo de vulnerabilidades conocidas un bypass de
-          autenticación crítico en Cisco Catalyst SD-WAN con puntuación CVSS de 10.0, con fecha
-          límite de remediación el 17 de mayo.
+          La recomendación es migrar sin demora a NGINX 1.30.1 o 1.31.0. Casi al mismo tiempo, CISA
+          sumó a su catálogo de fallos explotados un salto de autenticación en Cisco Catalyst SD-WAN
+          valorado con un CVSS de 10.0, y fijó el 17 de mayo como tope para parchearlo.
         </p>
         <p>
-          El informe M-Trends 2026 de Mandiant advierte que el 28,3 % de los CVEs publicados en
-          el último año fueron explotados activamente dentro de las primeras 24 horas de su divulgación.
+          El informe M-Trends 2026 de Mandiant aporta un dato inquietante: el 28,3 % de los CVE
+          aparecidos durante el último ejercicio empezaron a explotarse en las primeras 24 horas
+          desde que se hicieron públicos.
         </p>
       </>
     ),
@@ -153,15 +221,16 @@ const articles = [
     body: (
       <>
         <p>
-          Microsoft confirmó que la siguiente consola Xbox está "bien encaminada" y que la compañía
-          tiene planes concretos para 2026 y más allá. No se revelaron especificaciones ni fecha
-          de lanzamiento, pero el anuncio marca un punto de inflexión para la división Xbox.
+          Microsoft ha asegurado que el desarrollo de su próxima Xbox avanza a buen ritmo y que la
+          división dispone de una hoja de ruta trazada para 2026 y los años siguientes. La compañía
+          no soltó prenda sobre potencia ni fecha de salida, pero el simple reconocimiento supone un
+          giro relevante para la marca.
         </p>
         <p>
-          En el segmento portátil, el Nintendo Switch 2 sigue dominando el mercado como el
-          dispositivo más recomendado de 2026, gracias a su retrocompatibilidad con casi toda la
-          biblioteca del Switch original. Rumores apuntan a que Sony estaría retrasando la PS6
-          por problemas de suministro, con posible lanzamiento en Navidad de 2027.
+          En el apartado de las consolas portátiles, la Nintendo Switch 2 mantiene el trono como la
+          opción más aconsejable de 2026, en buena medida porque ejecuta prácticamente todo el
+          catálogo de la Switch original. Mientras tanto, distintos rumores sitúan a Sony retrasando
+          la PS6 por dificultades de abastecimiento, con un posible estreno en las Navidades de 2027.
         </p>
       </>
     ),
@@ -178,22 +247,22 @@ const articles = [
     body: (
       <>
         <p>
-          Apple planea lanzar sus primeras gafas inteligentes para finales de 2026, según reportes de
-          Mark Gurman de Bloomberg. El producto se enfocará en cámaras integradas, altavoces,
-          micrófonos y una versión mejorada de Siri con capacidades contextuales avanzadas, pero sin
-          pantalla integrada en su versión inicial. Llevará el chip interno N401, derivado de la
-          serie S del Apple Watch, y estará diseñado para funcionar como accesorio del iPhone.
+          De acuerdo con las filtraciones de Mark Gurman (Bloomberg), Apple aspira a estrenar a
+          finales de 2026 sus primeras gafas conectadas. El dispositivo prescindirá de pantalla en
+          esta primera hornada y girará en torno a cámaras, altavoces, micrófonos y una Siri reforzada
+          con un mayor dominio del contexto. En su interior latirá el chip N401, una evolución de la
+          serie S del Apple Watch, y operará a modo de complemento del iPhone.
         </p>
         <p>
-          Apple apuesta por un enfoque pragmático similar al de las Ray-Ban Meta: privilegiar el uso
-          cotidiano sobre las capacidades de realidad aumentada. Las opciones incluirán cuatro diseños
-          de montura en acetato en colores negro, azul océano y marrón claro. Las capacidades
-          esperadas incluyen captura de fotos y vídeo espacial, navegación por voz, traducción en
-          tiempo real e identificación de objetos mediante visión IA.
+          La estrategia recuerda a la de las Ray-Ban de Meta: anteponer la utilidad del día a día a la
+          realidad aumentada. Habrá cuatro monturas de acetato en negro, azul océano y marrón claro,
+          y entre sus prestaciones figurarían la captura de fotos y vídeo espacial, el control por
+          voz, la traducción instantánea y el reconocimiento de objetos mediante visión por IA.
         </p>
         <p>
-          La presentación oficial se espera para septiembre u octubre de 2026, durante el evento del
-          iPhone 18, con lanzamiento al público general en 2027.
+          El anuncio formal se prevé para septiembre u octubre de 2026, coincidiendo con la
+          presentación del iPhone 18, mientras que su llegada al gran público no se produciría hasta
+          2027.
         </p>
       </>
     ),
@@ -210,17 +279,17 @@ const articles = [
     body: (
       <>
         <p>
-          OpenAI lanzó el 5 de mayo GPT-5.5 Instant como el nuevo modelo predeterminado de ChatGPT,
-          reemplazando a GPT-5.3 Instant. La compañía afirma que el nuevo modelo reduce un 52,5 % las
-          afirmaciones alucinadas en áreas de alta sensibilidad como derecho, medicina y finanzas,
-          manteniendo la baja latencia de su predecesor. En benchmarks, alcanzó 81,2 puntos en
-          AIME 2025 (frente al 65,4 anterior).
+          El 5 de mayo OpenAI puso en marcha GPT-5.5 Instant como modelo por defecto de ChatGPT, en
+          sustitución de GPT-5.3 Instant. La empresa sostiene que recorta un 52,5 % las respuestas
+          inventadas en terrenos delicados como el jurídico, el sanitario o el financiero sin
+          sacrificar la rapidez que caracterizaba a la versión anterior. En la prueba AIME 2025 escaló
+          hasta los 81,2 puntos, frente a los 65,4 que lograba su antecesor.
         </p>
         <p>
-          Una de las novedades más destacadas es la personalización mejorada: el modelo puede acceder
-          a conversaciones previas, archivos subidos y datos de Gmail conectado para ofrecer
-          respuestas contextualizadas. Esta funcionalidad se lanza primero para usuarios Plus y Pro.
-          Las respuestas son un 30 % más concisas. En el API, el modelo está disponible como
+          Su gran baza es una personalización más profunda: el sistema puede apoyarse en charlas
+          previas, en los documentos que se le hayan subido y en el Gmail vinculado para afinar sus
+          contestaciones, algo que debutará antes para los abonados Plus y Pro. Sus respuestas son
+          además un 30 % más breves y, en la API, el modelo responde bajo el identificador
           <code> chat-latest</code>.
         </p>
       </>
@@ -238,17 +307,18 @@ const articles = [
     body: (
       <>
         <p>
-          xAI lanzó oficialmente Grok 4.3 el 6 de mayo, un modelo frontera que incluye contexto
-          nativo de 1 millón de tokens, entrada de vídeo, generación de diapositivas directamente
-          en el chat e integración con SharePoint. El modelo se posiciona agresivamente en precio:
-          1,25 dólares por millón de tokens de entrada, significativamente por debajo de modelos
-          comparables de OpenAI y Google.
+          xAI estrenó Grok 4.3 el 6 de mayo, un modelo de primera línea que maneja de forma nativa
+          un contexto de un millón de tokens, admite vídeo a la entrada, arma diapositivas dentro del
+          propio chat y se enlaza con SharePoint. Su tarifa es uno de sus mayores reclamos: 1,25
+          dólares por cada millón de tokens de entrada, bastante por debajo de propuestas equivalentes
+          de OpenAI o Google.
         </p>
         <p>
-          En benchmarks, Grok 4.3 alcanzó el primer lugar en CaseLaw v2 y CorpFin, posicionándose
-          especialmente para tareas legales y financieras. xAI también lanzó una Speech-to-Text API
-          en disponibilidad general, con soporte para 25 idiomas en modo batch y streaming e
-          identificación de múltiples hablantes con etiquetado temporal a nivel de palabra.
+          En las pruebas comparativas, Grok 4.3 encabezó las clasificaciones de CaseLaw v2 y CorpFin,
+          lo que lo perfila como una herramienta orientada al ámbito legal y financiero. La compañía
+          puso además a disposición general su API de voz a texto, que cubre 25 idiomas tanto por
+          lotes como en directo y distingue a varios interlocutores etiquetando cada palabra en el
+          tiempo.
         </p>
       </>
     ),
@@ -265,18 +335,18 @@ const articles = [
     body: (
       <>
         <p>
-          CISA agregó el 15 de mayo CVE-2026-20182 a su catálogo de Vulnerabilidades Conocidas
-          Explotadas, con puntuación CVSS de 10.0 — la máxima posible. El fallo afecta al Cisco
-          Catalyst SD-WAN Controller y permite a un atacante remoto no autenticado saltarse
-          completamente la autenticación y obtener privilegios administrativos. Las agencias
-          federales civiles tenían hasta el 17 de mayo para aplicar los parches.
+          El 15 de mayo CISA incluyó CVE-2026-20182 en su catálogo de vulnerabilidades explotadas,
+          con la puntuación más alta posible: un 10.0 en CVSS. El agujero reside en el Cisco Catalyst
+          SD-WAN Controller y deja que un atacante remoto y sin credenciales esquive por completo el
+          control de acceso y se haga con permisos de administrador. Los organismos civiles federales
+          disponían hasta el 17 de mayo para taparlo.
         </p>
         <p>
-          Cisco atribuyó la explotación activa al grupo UAT-8616, que ha intentado agregar claves
-          SSH, modificar configuraciones de red y escalar privilegios en infraestructuras afectadas.
-          Al menos 10 clusters de amenaza distintos han sido identificados explotando
-          vulnerabilidades relacionadas desde marzo de 2026, desplegando shells web, mineros XMRig
-          y herramientas de robo de credenciales.
+          La compañía señaló al grupo UAT-8616 como responsable de los ataques en curso, que han
+          buscado inyectar claves SSH, alterar la configuración de red y elevar privilegios en los
+          equipos comprometidos. Desde marzo de 2026 se han contabilizado al menos diez grupos de
+          amenaza diferentes aprovechando fallos del mismo tipo para instalar shells web, el minero
+          XMRig y utilidades de robo de credenciales.
         </p>
       </>
     ),
@@ -293,17 +363,17 @@ const articles = [
     body: (
       <>
         <p>
-          Microsoft divulgó CVE-2026-42897 (CVSS 8.1), una vulnerabilidad de suplantación en
-          versiones locales de Exchange Server. El fallo tiene su origen en XSS: un atacante envía
-          un correo especialmente manipulado que, al ser abierto en Outlook Web Access, ejecuta
-          código JavaScript arbitrario en el navegador. Afecta a Exchange Server 2016, 2019 y
-          Subscription Edition en instalaciones locales; Exchange Online no está impactado.
+          Microsoft ha hecho público CVE-2026-42897 (CVSS 8.1), un fallo de suplantación que afecta a
+          las instalaciones locales de Exchange Server. Su origen está en un XSS: basta con que la
+          víctima abra en Outlook Web Access un mensaje preparado al efecto para que se ejecute
+          JavaScript arbitrario en su navegador. Quedan expuestas las ediciones 2016, 2019 y
+          Subscription Edition desplegadas on-premises, mientras que Exchange Online se libra.
         </p>
         <p>
-          CISA incorporó esta vulnerabilidad a su catálogo KEV y fijó el 29 de mayo como fecha
-          límite para las agencias federales. El vector de ataque por correo electrónico sin
-          autenticación previa eleva el riesgo para cualquier organización con Exchange on-premises,
-          ya que no requiere que la víctima haga clic en ningún enlace externo.
+          CISA ya lo ha sumado a su catálogo de fallos explotados y ha dado de plazo hasta el 29 de
+          mayo a las agencias federales. Que el ataque llegue por correo y no exija autenticación
+          previa ni pulsar ningún enlace multiplica el peligro para cualquier organización que aún
+          conserve su Exchange en servidores propios.
         </p>
       </>
     ),
@@ -320,18 +390,18 @@ const articles = [
     body: (
       <>
         <p>
-          La Apache Software Foundation publicó actualizaciones de seguridad para corregir
-          CVE-2026-23918 (CVSS 8.8) en Apache HTTP Server. El fallo es un "double free y posible
-          RCE" en el manejo del protocolo HTTP/2: cuando un cliente envía un frame HEADERS seguido
-          de un RST_STREAM con código de error distinto de cero, se produce una doble liberación
-          de memoria. Afecta a Apache HTTP Server 2.4.66 y fue corregido en la versión 2.4.67.
+          La Apache Software Foundation ha lanzado parches para CVE-2026-23918 (CVSS 8.8) en su
+          servidor HTTP. Se trata de una doble liberación de memoria —con riesgo de ejecución
+          remota— en la gestión de HTTP/2: si un cliente manda un frame HEADERS y, acto seguido, un
+          RST_STREAM con un código de error distinto de cero, la memoria se libera dos veces. El
+          problema reside en la rama 2.4.66 y se resuelve en la 2.4.67.
         </p>
         <p>
-          La denegación de servicio es trivial de explotar en cualquier servidor con mod_http2
-          habilitado. La ejecución remota de código requiere que el servidor use Apache Portable
-          Runtime con asignador mmap, configuración predeterminada en sistemas Debian y en la
-          imagen oficial de Docker. Los administradores deben actualizar a la versión 2.4.67
-          de inmediato.
+          Provocar una caída del servicio resulta sencillo en cualquier servidor que tenga activo
+          mod_http2. Llegar a la ejecución de código, en cambio, exige que el servidor recurra a
+          Apache Portable Runtime con el asignador mmap, algo que viene de fábrica en Debian y en la
+          imagen oficial de Docker. La instrucción para los administradores es clara: pasar a la
+          2.4.67 cuanto antes.
         </p>
       </>
     ),
@@ -348,17 +418,17 @@ const articles = [
     body: (
       <>
         <p>
-          Subnautica 2 de Unknown Worlds Entertainment entró en Early Access el 14 de mayo a las
-          17:00 hora española, disponible en Steam, Epic Games Store, Windows Store y Xbox Series
-          X|S, incluyendo Xbox Game Pass. El precio de lanzamiento es de 29,99 dólares. La gran
-          novedad respecto al original es el modo cooperativo de hasta cuatro jugadores, la primera
-          vez que la serie incorpora multijugador.
+          Unknown Worlds Entertainment abrió el 14 de mayo, a las 17:00 (hora peninsular), el acceso
+          anticipado de Subnautica 2 en Steam, Epic Games Store, Windows Store y Xbox Series X|S,
+          incluido Xbox Game Pass, con un precio de salida de 29,99 dólares. Su mayor reclamo frente
+          a la primera entrega es el modo cooperativo para hasta cuatro participantes, estreno del
+          multijugador en la saga.
         </p>
         <p>
-          El juego incluye un planeta oceánico alien completamente nuevo con entornos más amplios,
-          nuevas criaturas, construcción de bases avanzada y mecánicas de exploración expandidas.
-          PS5 y Nintendo Switch 2 no forman parte del lanzamiento en Early Access. El estudio
-          estima que el juego permanecerá en acceso anticipado entre dos y tres años.
+          El título traslada la acción a un planeta oceánico alienígena inédito, con escenarios de
+          mayor tamaño, fauna nueva, un sistema de construcción de bases más completo y una
+          exploración más extensa. PS5 y Nintendo Switch 2 se quedan fuera de esta fase inicial, que
+          el estudio calcula que se prolongará entre dos y tres años.
         </p>
       </>
     ),
@@ -375,16 +445,16 @@ const articles = [
     body: (
       <>
         <p>
-          Forza Horizon 6 de Playground Games lanzó el 19 de mayo para Xbox Series X|S y PC con
-          aclamación universal: 92 en Metacritic y 91 en OpenCritic a partir de más de 60 reseñas,
-          convirtiéndose en el juego mejor valorado de 2026 hasta la fecha. IGN le otorgó un 10/10,
-          describiendo el mapa abierto de Japón como "un parque de atracciones para coches que
-          recompensa la exploración".
+          Playground Games publicó Forza Horizon 6 el 19 de mayo en Xbox Series X|S y PC, y la
+          crítica lo ha recibido con entusiasmo: un 92 en Metacritic y un 91 en OpenCritic sobre más
+          de sesenta análisis lo sitúan, por ahora, como el mejor valorado de 2026. IGN llegó a
+          concederle la nota máxima, un 10 sobre 10, y elogió su recreación abierta de Japón como un
+          enorme parque de atracciones a cuatro ruedas que premia al que se atreve a explorar.
         </p>
         <p>
-          El juego está disponible en Xbox Game Pass Ultimate desde el día de lanzamiento. Una
-          versión para PlayStation 5 fue confirmada pero sin fecha concreta. El éxito del título
-          refuerza la apuesta de Microsoft por las exclusivas de alto perfil en 2026.
+          El juego forma parte de Xbox Game Pass Ultimate desde su primer día. También se ha
+          confirmado una edición para PlayStation 5, aunque sin fecha definida. Su buena acogida
+          apuntala la estrategia de Microsoft de reforzar 2026 con grandes exclusivas.
         </p>
       </>
     ),
@@ -401,17 +471,17 @@ const articles = [
     body: (
       <>
         <p>
-          IO Interactive, desarrolladora de la saga Hitman, anunció que 007 First Light ha
-          alcanzado el estado "Gold" con lanzamiento fijado el 27 de mayo en PS5, Xbox Series X|S
-          y PC. Una versión para Nintendo Switch 2 llega más adelante. El título sigue a un James
-          Bond de 26 años en una narrativa original inspirada en las novelas de Ian Fleming,
-          explorando cómo el agente 006 se convierte en el legendario 007.
+          IO Interactive, el estudio tras la franquicia Hitman, ha comunicado que 007 First Light ya
+          es "Gold" y que llegará el 27 de mayo a PS5, Xbox Series X|S y PC, con una conversión para
+          Nintendo Switch 2 prevista para más adelante. La propuesta presenta a un James Bond de 26
+          años en una historia inédita que bebe de las novelas de Ian Fleming y relata el camino del
+          agente 006 hasta convertirse en el mítico 007.
         </p>
         <p>
-          La certificación Gold semanas antes del lanzamiento fue bien recibida, interpretándose
-          como señal de un desarrollo sin problemas técnicos de última hora. Con Forza Horizon 6
-          el 19 de mayo y 007 First Light el 27 de mayo, la segunda quincena de mayo es una de
-          las más cargadas en lanzamientos AAA del año.
+          Alcanzar la fase Gold con semanas de margen se ha leído como un buen augurio, indicio de un
+          desarrollo libre de sobresaltos de última hora. Unido a la salida de Forza Horizon 6 el 19
+          de mayo, ese 27 de mayo confirma la segunda mitad del mes como una de las más intensas del
+          año en grandes lanzamientos AAA.
         </p>
       </>
     ),
@@ -657,7 +727,7 @@ const articles = [
     date: '16 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224059',
     source: { label: 'Microsoft', url: 'https://share.google/kt67RlZEssnaSzp1G' },
-    body: (<p>La actualización KB5089549 de Windows 11 aborda problemas críticos relacionados con Secure Boot, los certificados originales de 2011 que caducan en junio de 2026, BitLocker y el módulo TPM. Microsoft recomienda instalarla de inmediato para evitar que los dispositivos entren en un estado de seguridad degradado.</p>),
+    body: (<p>La actualización KB5089549 para Windows 11 se centra en resolver fallos de calado en torno a Secure Boot, la caducidad en junio de 2026 de los certificados emitidos en 2011, BitLocker y el chip TPM. Desde Microsoft instan a aplicarla sin esperas para que los equipos no acaben con su seguridad mermada.</p>),
   },
   {
     id: 48,
@@ -668,7 +738,7 @@ const articles = [
     date: '16 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224060',
     source: { label: 'Seguridad', url: 'https://share.google/NuTIQe9zX9YVeSxax' },
-    body: (<p>Una nueva herramienta llamada BitUnlocker demuestra que es posible saltarse las protecciones de BitLocker y TPM en Windows 11 sin necesidad de credenciales. El hallazgo pone en entredicho la principal capa de cifrado de disco que millones de usuarios dan por segura.</p>),
+    body: (<p>Una herramienta bautizada como BitUnlocker ha probado que se puede burlar la protección de BitLocker y del TPM en Windows 11 sin disponer de ninguna credencial. El descubrimiento siembra dudas sobre la capa de cifrado de disco que millones de personas asumen como infranqueable.</p>),
   },
   {
     id: 49,
@@ -679,7 +749,7 @@ const articles = [
     date: '16 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224061',
     source: { label: 'Seguridad', url: 'https://share.google/h7PShod4SgmUgICUn' },
-    body: (<p>Europol y varias agencias de inteligencia europeas han desmantelado una célula de ciberespionaje alineada con Rusia que llevaba meses intentando comprometer los sistemas de navegación y comunicaciones de embarcaciones mercantes y militares europeas en el Mar Báltico.</p>),
+    body: (<p>Europol, junto a varios servicios de inteligencia del continente, ha desarticulado un grupo de ciberespionaje afín a Rusia que durante meses trató de tomar el control de los sistemas de navegación y comunicación de buques mercantes y militares europeos en el mar Báltico.</p>),
   },
   {
     id: 50,
@@ -932,7 +1002,7 @@ const articles = [
     date: '24 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224346',
     source: { label: 'Xataka', url: 'https://www.xataka.com/energia/fin-tejados-llenos-paneles-singapur-logra-celula-solar-casi-invisible-que-genera-energia-sombra' },
-    body: (<p>Científicos de la Universidad Tecnológica de Nanyang en Singapur han desarrollado células solares ultradelgadas basadas en perovskita de apenas 10 nanómetros de grosor, prácticamente invisibles al ojo humano. A diferencia de los paneles convencionales, estas células generan electricidad bajo luz indirecta y difusa, funcionando incluso en sombra, lo que las hace ideales para fachadas urbanas. Con eficiencias del 7,6 % en versiones semitransparentes que dejan pasar el 41 % de luz visible, podrían convertir millones de metros cuadrados de cristal en edificios en generadores de energía.</p>),
+    body: (<p>Un equipo de la Universidad Tecnológica de Nanyang, en Singapur, ha creado células solares de perovskita extremadamente finas —en torno a 10 nanómetros— que apenas se aprecian a simple vista. Frente a los paneles tradicionales, son capaces de producir electricidad con luz indirecta y dispersa, e incluso a la sombra, lo que las hace idóneas para revestir fachadas en las ciudades. Sus variantes semitransparentes alcanzan un 7,6 % de eficiencia dejando pasar el 41 % de la luz visible, de modo que podrían transformar en pequeñas centrales los millones de metros cuadrados de vidrio de los edificios.</p>),
   },
   {
     id: 73,
@@ -943,7 +1013,7 @@ const articles = [
     date: '24 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224353',
     source: { label: 'Xataka', url: 'https://www.xataka.com/seguridad/miles-familias-usaban-estos-vigilabebes-para-sentirse-seguras-problema-que-podia-mirar' },
-    body: (<p>Un investigador de seguridad descubrió que las cámaras de vigilancia de la marca china Meari —que fabrica para más de 300 marcas como Wyze, Petcube y Arenti— tenían fallos graves que permitían a cualquiera acceder a más de un millón de dispositivos en 118 países. El sistema utilizaba contraseñas por defecto, almacenaba imágenes sin cifrado en servidores accesibles y compartía credenciales entre diferentes marcas. La empresa respondió con lentitud y solo actuó cuando sus propios datos de empleados fueron expuestos.</p>),
+    body: (<p>Un analista de seguridad halló deficiencias serias en las cámaras de la firma china Meari —proveedora de más de 300 marcas, entre ellas Wyze, Petcube o Arenti— que dejaban al alcance de cualquiera más de un millón de equipos repartidos por 118 países. El fabricante recurría a contraseñas de fábrica, guardaba las grabaciones sin cifrar en servidores expuestos y reutilizaba las mismas credenciales en distintas marcas. Su reacción fue tardía y solo se puso manos a la obra cuando quedaron al descubierto los datos de su propia plantilla.</p>),
   },
   {
     id: 74,
@@ -954,7 +1024,7 @@ const articles = [
     date: '24 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224345',
     source: { label: 'Xataka', url: 'https://www.xataka.com/movilidad/primer-aeropuerto-pokemon-mundo-esta-japon-no-capricho-estrategia-supervivencia' },
-    body: (<p>El aeropuerto de Noto Satoyama en la prefectura de Ishikawa reabrirá el 7 de julio como "Aeropuerto Noto Satoyama Pokémon With You", convirtiéndose en el primer aeropuerto temático de Pokémon del mundo. La transformación incluirá un gigantesco globo de Pikachu, representaciones de 111 especies de Pokémon voladores y productos exclusivos. Esta iniciativa forma parte de la estrategia de recuperación económica regional tras el devastador terremoto de enero de 2024, que causó 228 muertes y daños estimados en 17.600 millones de dólares.</p>),
+    body: (<p>La terminal de Noto Satoyama, en la prefectura de Ishikawa, volverá a abrir el 7 de julio rebautizada como "Aeropuerto Noto Satoyama Pokémon With You", el primero del planeta dedicado a la franquicia. Entre sus atractivos habrá un enorme globo de Pikachu, figuras de 111 especies de Pokémon voladores y artículos que no se venderán en ningún otro sitio. La apuesta se enmarca en el plan para reactivar la economía de la zona tras el grave seísmo de enero de 2024, que dejó 228 fallecidos y unos daños valorados en 17.600 millones de dólares.</p>),
   },
   {
     id: 75,
@@ -965,7 +1035,73 @@ const articles = [
     date: '24 de Mayo del 2026',
     telegramUrl: 'https://t.me/TodoSobreAllTech/224350',
     source: { label: 'Xataka', url: 'https://www.xataka.com/magnet/electrico-gasolina-hibrido-proximo-modelo-mercedes-benz-apunta-como-misil-para-entrar-lleno-guerra' },
-    body: (<p>Mercedes-Benz ha declarado su disposición a entrar en la industria de defensa, según el CEO Ola Källenius en una entrevista con el Wall Street Journal. La estrategia responde a la crisis económica de la industria automovilística alemana —caída de beneficios y competencia china— contrastada con el auge del sector militar europeo tras la guerra de Ucrania. La compañía reconoce que sus capacidades en metalurgia, electrónica y robótica pueden aplicarse tanto a vehículos civiles como a sistemas de defensa.</p>),
+    body: (<p>Mercedes-Benz se ha mostrado dispuesta a dar el salto al negocio armamentístico, según reconoció su consejero delegado, Ola Källenius, en una entrevista con The Wall Street Journal. El movimiento llega en plena travesía complicada para la automoción alemana —con beneficios a la baja y una fuerte presión de los fabricantes chinos—, justo cuando el gasto militar europeo se dispara tras la guerra de Ucrania. La marca admite que su experiencia en metalurgia, electrónica y robótica sirve tanto para sus coches como para equipos de defensa.</p>),
+  },
+  {
+    id: 76,
+    slug: 'cambio-climatico-especies-plantas',
+    year: 2026,
+    category: 'Ciencia',
+    title: 'El cambio climático podría destruir miles de especies de plantas a finales de siglo',
+    date: '24 de Mayo del 2026',
+    telegramUrl: 'https://t.me/TodoSobreAllTech/224456',
+    source: { label: 'UNN', url: 'https://unn.ua/en/news/climate-change-could-destroy-thousands-of-plant-species-by-the-end-of-the-century-scientists' },
+    body: (<p>Una investigación que abarcó 67.000 especies concluye que hasta un 16 % de las plantas se quedará sin hábitat antes de que termine el siglo, lo que desencadenaría una reorganización de los ecosistemas a escala mundial.</p>),
+  },
+  {
+    id: 77,
+    slug: 'china-shenzhou-23-astronauta-hong-kong',
+    year: 2026,
+    category: 'Espacio',
+    title: 'China lanza Shenzhou-23 con el primer astronauta de Hong Kong en una misión de un año',
+    date: '24 de Mayo del 2026',
+    telegramUrl: 'https://t.me/TodoSobreAllTech/224448',
+    source: { label: 'Space.com', url: 'https://www.space.com/space-exploration/human-spaceflight/china-reveals-3-person-shenzhou-23-crew-including-hong-kongs-1st-astronaut' },
+    body: (<p>China ha dado a conocer la tripulación de tres miembros de la Shenzhou 23, en la que viaja el primer astronauta originario de Hong Kong. Uno de ellos encadenará doce meses a bordo de la estación Tiangong, algo sin precedentes en el programa espacial del país.</p>),
+  },
+  {
+    id: 78,
+    slug: 'grafana-token-github-actions-tanstack',
+    year: 2026,
+    category: 'Ciberseguridad',
+    title: 'Grafana atribuye el acceso a repositorios privados a un token de GitHub Actions no rotado tras el ataque a TanStack',
+    date: '21 de Mayo del 2026',
+    telegramUrl: 'https://t.me/TodoSobreAllTech/224441',
+    source: { label: 'Hispasec', url: 'https://unaaldia.hispasec.com/grafana-atribuye-el-acceso-a-repositorios-privados-a-un-token-de-github-actions-que-no-se-roto-tras-el-ataque-a-tanstack/' },
+    body: (<p>Grafana ha reconocido que alguien accedió sin permiso a varios de sus repositorios privados después de que la empresa no renovara un token de GitHub Actions que había quedado al descubierto durante el ataque a la cadena de suministro de TanStack en npm. Los intrusos se llevaron código fuente y datos operativos y de contacto, aunque no consta que alteraran el código ni que la producción se viera afectada.</p>),
+  },
+  {
+    id: 79,
+    slug: 'github-exfiltracion-3800-repositorios-vscode',
+    year: 2026,
+    category: 'Ciberseguridad',
+    title: 'GitHub confirma la exfiltración de 3.800 repositorios internos tras una extensión maliciosa de VS Code',
+    date: '20 de Mayo del 2026',
+    telegramUrl: 'https://t.me/TodoSobreAllTech/224440',
+    source: { label: 'Hispasec', url: 'https://unaaldia.hispasec.com/github-confirma-la-exfiltracion-de-3-800-repositorios-internos-tras-una-extension-maliciosa-de-vs-code/' },
+    body: (<p>GitHub ha confirmado que el origen del incidente estuvo en el equipo de un empleado que instaló una extensión maliciosa de Visual Studio Code, lo que terminó con la fuga de cerca de 3.800 repositorios internos. La compañía eliminó la versión fraudulenta, dejó aislado el dispositivo afectado y renovó las credenciales más sensibles.</p>),
+  },
+  {
+    id: 80,
+    slug: 'miniplasma-escalada-system-windows-11',
+    year: 2026,
+    category: 'Ciberseguridad',
+    title: 'MiniPlasma: un PoC reabre una escalada local a SYSTEM en Windows 11 pese a estar parcheado',
+    date: '19 de Mayo del 2026',
+    telegramUrl: 'https://t.me/TodoSobreAllTech/224438',
+    source: { label: 'Hispasec', url: 'https://unaaldia.hispasec.com/miniplasma-un-poc-reabre-una-escalada-local-a-system-en-windows-11-pese-a-estar-parcheado/' },
+    body: (<p>Ha visto la luz una prueba de concepto llamada MiniPlasma, una escalada local de privilegios que consigue permisos de SYSTEM hasta en equipos con Windows 11 al día con los parches de mayo de 2026. El método se apoya en el controlador cldflt.sys y en un comportamiento vinculado a CVE-2020-17103, que se daba por solucionado desde 2020.</p>),
+  },
+  {
+    id: 81,
+    slug: 'cisco-sd-wan-bypass-autenticacion-critico',
+    year: 2026,
+    category: 'Ciberseguridad',
+    title: 'Cisco corrige un bypass de autenticación crítico en Catalyst SD-WAN (CVE-2026-20182)',
+    date: '18 de Mayo del 2026',
+    telegramUrl: 'https://t.me/TodoSobreAllTech/224437',
+    source: { label: 'Hispasec', url: 'https://unaaldia.hispasec.com/cisco-corrige-un-bypass-de-autenticacion-critico-en-catalyst-sd-wan/' },
+    body: (<p>Cisco ha distribuido las correcciones de CVE-2026-20182, un fallo crítico de Catalyst SD-WAN que permite a un atacante remoto y sin autenticar hacerse con privilegios de administrador y alterar la configuración del sistema. La única vía de protección es actualizar, ya que no hay medidas alternativas.</p>),
   },
   {
     id: 7,
