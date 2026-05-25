@@ -15,3 +15,4 @@ apps/pocketbase/pb_snapshots/
 Thumbs.db
 *.env.bak*
 .env.bak*
+.env.example.bak*
