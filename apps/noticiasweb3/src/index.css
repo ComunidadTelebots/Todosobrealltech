@@ -2967,29 +2967,27 @@ body:has(#stage.version-2012) {
     font-size: 0.92em;
   }
 
-  /* — Una sola columna: contenido arriba, sidebar movida al final — */
+  /* — Una sola columna a todo el ancho; la sidebar se oculta en móvil — */
+  body { overflow-x: hidden; }       /* evita scroll horizontal */
+
+  #sidebar { display: none !important; }   /* oculta completamente la sidebar */
+
   #content {
-    display: flex !important;
-    flex-direction: column !important;
+    display: block !important;
     padding: 10px 12px 0 !important;
-    box-sizing: border-box;
+  }
+  #content, #main, .version-shell {
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
   }
   .version-shell {
-    order: 1;
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
   #content #main {
-    width: auto !important;
-    float: none !important;
     margin: 0 !important;
     padding-top: 0 !important;
-  }
-  #sidebar {
-    order: 2;            /* siempre tras el contenido principal */
-    float: none !important;
-    width: auto !important;
-    margin: 16px 0 0 !important;
   }
 
   /* — Filtros de fecha: lista de días oculta, selector de mes visible — */
