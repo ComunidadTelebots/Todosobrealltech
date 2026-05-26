@@ -219,3 +219,111 @@
   .platform-android .bottom-nav { display: none; }
   .platform-android .fab { display: none; }
 }
+
+/* ============================================
+   Material You aplicado al MARKUP REAL de Noticiasweb3
+   --------------------------------------------
+   Los selectores .card/.chip/.navbar de arriba no existen en el DOM.
+   El markup real usa #stage, #masthead, .article, #access, etc.
+   Se apunta a esos selectores bajo #stage.platform-android: el id de
+   #stage da especificidad (1,x,0), que gana tanto a .platform-android
+   (0,1,0) como a las reglas .version-2026.platform-android (0,2,0) de
+   index.css. Por eso casi no hace falta !important.
+   ============================================ */
+
+/* Paleta: se redeclara la Material You oscura (mismos valores que el
+   bloque .platform-android de arriba) elevando su especificidad a
+   #stage.platform-android, para que NO la machaquen los --md-* que
+   index.css redefine en .version-2026.platform-android (paleta verde). */
+#stage.platform-android {
+  --md-primary: #d0bcff;
+  --md-on-primary: #381e72;
+  --md-primary-container: #4f378b;
+  --md-on-primary-container: #eaddff;
+  --md-surface: #141218;
+  --md-surface-variant: #2d2d3a;
+  --md-on-surface: #e6e1e5;
+  --md-on-surface-variant: #cac4d0;
+  --md-background: #141218;
+  --md-on-background: #e6e1e5;
+  --md-outline: #938f99;
+  --md-outline-variant: #49454f;
+
+  background-color: var(--md-background);
+  color: var(--md-on-background);
+}
+
+/* ---- Contenedores transparentes sobre el fondo Material ---- */
+#stage.platform-android #container,
+#stage.platform-android #content,
+#stage.platform-android #content #main,
+#stage.platform-android .version-shell {
+  background: transparent;
+  color: var(--md-on-surface);
+}
+
+/* ---- Cabecera (masthead) ---- */
+#stage.platform-android #masthead {
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  box-shadow: none;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+#stage.platform-android .site-title { color: var(--md-on-surface); }
+#stage.platform-android .site-description { color: var(--md-on-surface-variant); }
+
+/* ---- Barra/menú de navegación ---- */
+#stage.platform-android #access {
+  background: var(--md-surface-variant);
+  box-shadow: none;
+  border-radius: 16px;
+}
+#stage.platform-android #access > ul > li > a {
+  color: var(--md-on-surface-variant);
+}
+#stage.platform-android #access > ul > li.active > a,
+#stage.platform-android #access > ul > li:hover > a {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+#stage.platform-android #access ul ul {
+  background: var(--md-surface-variant);
+  border: 1px solid var(--md-outline-variant);
+}
+#stage.platform-android #access ul ul a {
+  color: var(--md-on-surface-variant);
+}
+#stage.platform-android #access ul ul a:hover {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+/* ---- Tarjetas de noticia (.article) ---- */
+#stage.platform-android .article {
+  background: var(--md-surface-variant);
+  border: none;
+  border-radius: 16px;
+  box-shadow: none;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+#stage.platform-android .article-meta { color: var(--md-on-surface-variant); }
+#stage.platform-android .article-body { color: var(--md-on-surface-variant); }
+
+/* ---- Etiqueta de categoría de cada tarjeta ----
+   Es un <span> con estilo inline (background:#1982d1) y SIN clase propia
+   (NoticiasPage.jsx). Se renderiza como primer hijo de .article-meta.
+   Solo aquí hace falta !important: el estilo inline gana por especificidad. */
+#stage.platform-android .article-meta > span:first-child {
+  background: var(--md-primary) !important;
+  color: var(--md-on-primary) !important;
+}
+
+/* ---- Títulos y enlaces en color primario ---- */
+#stage.platform-android a,
+#stage.platform-android h1,
+#stage.platform-android h1 a,
+#stage.platform-android h2,
+#stage.platform-android h2 a {
+  color: var(--md-primary);
+}
