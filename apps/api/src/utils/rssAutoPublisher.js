@@ -8,7 +8,9 @@ import { rewriteText } from './textRewriter.js';
  * Job periódico (cada 30 min) que, para cada feed RSS configurado:
  *   1. Obtiene los artículos del feed.
  *   2. Por cada artículo que no exista ya en nw3_noticias (dedup por fuente_url),
- *      crea el registro en PocketBase.
+ *      descarga la página fuente para extraer el cuerpo completo (fetchArticleContent),
+ *      recalcula la categoría y los hashtags sobre ese texto, y crea el registro en
+ *      PocketBase (guardando la imagen del feed en el campo `imagen` si la trae).
  *   3. Si el artículo proviene de un canal de Telegram (link t.me/...), edita el
  *      mensaje original del canal vía Bot API añadiendo el enlace a NW3.
  *   4. Guarda el telegram_url del post original en el registro.
@@ -23,6 +25,12 @@ const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech
 const INTERVAL_MS = 30 * 60 * 1000;          // cada 30 minutos
 const TELEGRAM_CALL_DELAY_MS = 1200;          // pausa entre llamadas a la Bot API
 const MAX_NEW_PER_RUN = 25;                   // tope de seguridad: nuevos artículos por ejecución
+
+// Extracción del cuerpo completo del artículo original (fetchArticleContent):
+const MIN_ARTICLE_CHARS = 200;                // mínimo de texto extraído para darlo por válido
+const FETCH_TIMEOUT_MS = 10000;               // timeout al descargar la página fuente
+const FETCH_USER_AGENT = 'Mozilla/5.0 (compatible; NW3Bot/1.0; +https://noticiasweb3.todosobreall.tech)';
+const MAX_HASHTAGS = 5;                        // tope total de hashtags por artículo
 
 // Límites de la Bot API de Telegram para edición de mensajes:
 //   · máx. 30 mensajes editados por segundo en total,
@@ -148,6 +156,139 @@ function buildHashtags(categoria) {
   return cat ? `#${cat} #NW3` : '#NW3';
 }
 
+// Entidades conocidas (tecnologías, empresas, productos) → hashtag canónico.
+// Se detectan con límites de palabra para evitar falsos positivos (p. ej.
+// "intel" dentro de "inteligencia"). Se omiten términos ambiguos en español
+// como "meta" (objetivo) o "llama" (animal/verbo).
+const KNOWN_ENTITIES = [
+  ['OpenAI', /\bopenai\b/i],
+  ['ChatGPT', /\bchat\s?gpt\b/i],
+  ['Anthropic', /\banthropic\b/i],
+  ['Claude', /\bclaude\b/i],
+  ['Gemini', /\bgemini\b/i],
+  ['DeepSeek', /\bdeepseek\b/i],
+  ['Copilot', /\bcopilot\b/i],
+  ['Mistral', /\bmistral\b/i],
+  ['Grok', /\bgrok\b/i],
+  ['Perplexity', /\bperplexity\b/i],
+  ['Midjourney', /\bmidjourney\b/i],
+  ['Google', /\bgoogle\b/i],
+  ['Microsoft', /\bmicrosoft\b/i],
+  ['Apple', /\bapple\b/i],
+  ['Amazon', /\bamazon\b/i],
+  ['Nvidia', /\bnvidia\b/i],
+  ['Intel', /\bintel\b/i],
+  ['AMD', /\bamd\b/i],
+  ['Qualcomm', /\bqualcomm\b/i],
+  ['Samsung', /\bsamsung\b/i],
+  ['Xiaomi', /\bxiaomi\b/i],
+  ['Huawei', /\bhuawei\b/i],
+  ['Sony', /\bsony\b/i],
+  ['Tesla', /\btesla\b/i],
+  ['SpaceX', /\bspacex\b/i],
+  ['NASA', /\bnasa\b/i],
+  ['Android', /\bandroid\b/i],
+  ['iPhone', /\biphone\b/i],
+  ['iOS', /\bios\b/i],
+  ['Windows', /\bwindows\b/i],
+  ['Linux', /\blinux\b/i],
+  ['Bitcoin', /\bbitcoin\b/i],
+  ['Ethereum', /\bethereum\b/i],
+  ['Telegram', /\btelegram\b/i],
+  ['WhatsApp', /\bwhatsapp\b/i],
+  ['TikTok', /\btiktok\b/i],
+  ['Instagram', /\binstagram\b/i],
+  ['Facebook', /\bfacebook\b/i],
+  ['YouTube', /\byoutube\b/i],
+  ['Twitter', /\b(?:twitter|x\.com)\b/i],
+  ['Ransomware', /\bransomware\b/i],
+  ['Phishing', /\bphishing\b/i],
+  ['Malware', /\bmalware\b/i],
+];
+
+// Palabras capitalizadas frecuentes que NO son nombres propios (arranques de
+// frase, determinantes, conectores) — se excluyen al inferir entidades del texto.
+const CAP_STOPWORDS = new Set([
+  'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'lo', 'al', 'del', 'de',
+  'en', 'por', 'con', 'para', 'que', 'como', 'más', 'mas', 'este', 'esta', 'estos',
+  'estas', 'ese', 'esa', 'esos', 'esas', 'aquel', 'su', 'sus', 'mi', 'tu', 'nuestro',
+  'pero', 'según', 'tras', 'sin', 'desde', 'hasta', 'sobre', 'entre', 'cuando',
+  'donde', 'aunque', 'mientras', 'también', 'además', 'asimismo', 'ahora', 'hoy',
+  'ayer', 'mañana', 'son', 'fue', 'fueron', 'han', 'hay', 'esto', 'esta', 'aquí',
+  'allí', 'sí', 'tan', 'todo', 'toda', 'todos', 'todas', 'otro', 'otra', 'cada',
+]);
+
+// Convierte una palabra en una etiqueta de hashtag: conserva letras (con acentos)
+// y dígitos, eliminando espacios y signos. "Redes Sociales" → "RedesSociales".
+function tagify(word = '') {
+  return String(word).replace(/[^\p{L}\p{N}]/gu, '');
+}
+
+// Nombres propios recurrentes del texto: tokens capitalizados de ≥4 letras que
+// aparecen 2+ veces (más probable que sean entidades reales y no inicios de
+// frase), ordenados por frecuencia.
+function frequentProperNouns(text = '') {
+  const counts = new Map();
+  const re = /\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]{3,})\b/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const word = m[1];
+    if (CAP_STOPWORDS.has(word.toLowerCase())) continue;
+    counts.set(word, (counts.get(word) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .map(([w]) => w);
+}
+
+// Entidades del texto: primero las del diccionario conocido (en su orden), luego
+// nombres propios recurrentes. Sin duplicados (case-insensitive).
+function detectEntities(text = '') {
+  const out = [];
+  const used = new Set();
+  for (const [tag, re] of KNOWN_ENTITIES) {
+    if (used.has(tag.toLowerCase())) continue;
+    if (re.test(text)) { out.push(tag); used.add(tag.toLowerCase()); }
+  }
+  for (const noun of frequentProperNouns(text)) {
+    if (used.has(noun.toLowerCase())) continue;
+    out.push(noun); used.add(noun.toLowerCase());
+  }
+  return out;
+}
+
+/**
+ * buildHashtagsFromContent
+ * ------------------------
+ * Hashtags del artículo: "#Categoria #NW3" más entidades detectadas en el
+ * contenido (tecnologías, empresas, nombres propios), hasta MAX_HASHTAGS (5)
+ * etiquetas en total. Devuelve la cadena "#A #B #C …".
+ */
+function buildHashtagsFromContent(categoria, text = '') {
+  const tags = [];
+  const seen = new Set();
+  // push devuelve true cuando se alcanza el tope (para cortar el bucle).
+  const push = (raw) => {
+    const t = tagify(raw);
+    if (!t) return false;
+    const key = t.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    tags.push(`#${t}`);
+    return tags.length >= MAX_HASHTAGS;
+  };
+
+  const cat = (categoria || '').trim().replace(/\s+/g, '');
+  if (cat) push(cat);
+  push('NW3');
+
+  for (const entity of detectEntities(text)) {
+    if (push(entity)) break;
+  }
+  return tags.join(' ');
+}
+
 function stripHtml(html = '') {
   return html
     .replace(/<br\s*\/?>/gi, '\n')
@@ -161,6 +302,68 @@ function stripHtml(html = '') {
     .replace(/&nbsp;/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+// Boilerplate típico de páginas de noticias que se cuela en párrafos <p>
+// (avisos de cookies, llamadas a suscribirse/compartir, créditos, etc.).
+function isBoilerplate(text = '') {
+  return /\b(cookies?|política de privacidad|newsletter|suscr[ií]bete|publicidad|advertisement|patrocinad|síguenos|comparte|compartir en|todos los derechos reservados|lee también|leer más|seguir leyendo|aceptar y continuar)\b/i.test(text);
+}
+
+// Extrae el cuerpo principal de un documento HTML: descarta bloques no
+// informativos (scripts, estilos, nav, header, footer, aside, formularios y
+// figuras) y devuelve el texto de los párrafos <p> relevantes, separados por
+// líneas en blanco. Filtra párrafos muy cortos y boilerplate.
+function extractMainText(html = '') {
+  const stripped = String(html)
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<(script|style|noscript|template|svg)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<(nav|header|footer|aside|form|figure|figcaption)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ');
+
+  const paragraphs = [];
+  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let m;
+  while ((m = re.exec(stripped)) !== null) {
+    const text = stripHtml(m[1]);
+    if (text.length < 40) continue;        // descarta pies de foto, botones, créditos cortos
+    if (isBoilerplate(text)) continue;     // descarta cookies/publicidad/compartir
+    paragraphs.push(text);
+  }
+  return paragraphs.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/**
+ * fetchArticleContent
+ * -------------------
+ * Descarga la URL del artículo original y extrae el texto principal del HTML
+ * (párrafos <p>, eliminando nav, footer, ads, scripts y headers).
+ * Devuelve el texto limpio solo si alcanza MIN_ARTICLE_CHARS (200) caracteres;
+ * en caso contrario devuelve '' para que el caller recurra al extracto del feed.
+ * Nunca lanza: ante cualquier error de red/parseo devuelve ''.
+ */
+async function fetchArticleContent(url) {
+  if (!url || !/^https?:\/\//i.test(url)) return '';
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': FETCH_USER_AGENT, Accept: 'text/html,application/xhtml+xml' },
+      redirect: 'follow',
+      signal: controller.signal,
+    });
+    if (!res.ok) return '';
+    if (!/text\/html|xml/i.test(res.headers.get('content-type') || '')) return '';
+
+    const html = await res.text();
+    const text = extractMainText(html);
+    return text.length >= MIN_ARTICLE_CHARS ? text : '';
+  } catch (err) {
+    logger.warn(`[rssAutoPublisher] No se pudo extraer el contenido de ${url}: ${err.message}`);
+    return '';
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // Slug con el mismo formato que NuevaNoticiaPage.generarSlug.
@@ -212,8 +415,26 @@ function firstLinkInHtml(html = '') {
   return m ? m[1] : null;
 }
 
+// Primer src de <img> incrustado en un bloque HTML, o null si no hay ninguno.
+function firstImageInHtml(html = '') {
+  const m = String(html).match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i);
+  return m ? m[1] : null;
+}
+
+// Normaliza una URL de imagen para el campo `imagen` (tipo url en PocketBase):
+// devuelve la URL solo si es http(s) y válida, o '' en caso contrario (así una
+// URL malformada nunca aborta el create del artículo).
+function safeImageUrl(raw = '') {
+  try {
+    const u = new URL(String(raw));
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+  } catch {
+    return '';
+  }
+}
+
 // ── Obtención de feeds → items normalizados ───────────────────────────────────
-// item: { title, sourceUrl, label, category, excerpt, fullText, pubDate, telegramUrl|null }
+// item: { title, sourceUrl, label, category, excerpt, fullText, image, pubDate, telegramUrl|null }
 
 async function fetchTelegramChannel({ channel, defaultCategory }) {
   const res = await fetch(proxyUrl(`https://rsshub.app/telegram/channel/${channel}`));
@@ -233,6 +454,7 @@ async function fetchTelegramChannel({ channel, defaultCategory }) {
         category: detectCategory(`${title} ${text}`, defaultCategory),
         excerpt: text.slice(0, 8000),
         fullText: text,
+        image: item.thumbnail || item.enclosure?.link || firstImageInHtml(item.description || item.content || '') || '',
         pubDate: item.pubDate,
         telegramUrl: item.link,
       };
@@ -262,6 +484,7 @@ async function fetchRssFeed({ url, defaultCategory, label, publishNew = false })
           category: detectCategory(`${title} ${text}`, defaultCategory),
           excerpt: text.slice(0, 8000),
           fullText: text,
+          image: item.image || item.banner_image || firstImageInHtml(item.content_html || '') || '',
           pubDate: item.date_published,
           // telegramUrl = el post de Telegram original (t.me/canal/123), para que
           // el job pueda editar el mensaje. Sigue siendo item.url.
@@ -291,6 +514,7 @@ async function fetchRssFeed({ url, defaultCategory, label, publishNew = false })
         category: detectCategory(`${title} ${text}`, defaultCategory),
         excerpt: text.slice(0, 8000),
         fullText: text,
+        image: item.thumbnail || item.enclosure?.link || firstImageInHtml(item.description || item.content || '') || '',
         pubDate: item.pubDate,
         telegramUrl: null,
         publishNew,
@@ -336,13 +560,13 @@ async function telegramApi(method, body, retries = TELEGRAM_MAX_RETRIES) {
  * Intenta editMessageText; si el mensaje es multimedia (sin texto) cae a editMessageCaption.
  * Devuelve true si la edición se aplicó (o ya estaba aplicada), false en otro caso.
  */
-async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria) {
+async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   if (!match) return false;
 
   const chatId = `@${match[1]}`;
   const messageId = Number(match[2]);
-  const suffix = `\n\n${buildHashtags(categoria)}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${slug}`;
+  const suffix = `\n\n${hashtags || buildHashtags(categoria)}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${slug}`;
   const base = (originalText || '').trim();
 
   // Si el mensaje original ya tiene el enlace NW3, no volver a editar.
@@ -385,12 +609,13 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
  *
  *   🔗 Leer más: https://noticiasweb3.todosobreall.tech/noticias/[slug]
  *
- * `article` debe traer { titulo, contenido, categoria }.
- * Devuelve el message_id del post publicado, o null si falla.
+ * `article` debe traer { titulo, contenido, categoria, hashtags? }.
+ * Si trae `hashtags` (cadena ya construida) se usan tal cual; si no, se derivan
+ * de la categoría. Devuelve el message_id del post publicado, o null si falla.
  */
 async function publishToTelegram(article, slug) {
   const header = `📰 ${article.titulo}`;
-  const footer = `${buildHashtags(article.categoria)}\n\n🔗 Leer más: ${SITE_URL}/noticias/${slug}`;
+  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 Leer más: ${SITE_URL}/noticias/${slug}`;
 
   // Recortamos el cuerpo para no superar el límite de 4096 de sendMessage,
   // conservando siempre la cabecera, los hashtags y el enlace.
@@ -539,13 +764,29 @@ async function runAutoPublish() {
         knownSlugs.add(slug);
 
         const titulo = item.title.length > 200 ? `${item.title.slice(0, 199)}…` : item.title;
-        const contenidoReescrito = rewriteText(item.excerpt, item.category);
+
+        // Enriquecer con el cuerpo completo del artículo original: si se puede
+        // descargar y extraer ≥200 caracteres, se usa como base de la reescritura;
+        // si no, se recurre al extracto del feed.
+        const fullContent = await fetchArticleContent(item.sourceUrl);
+        const baseText = fullContent || item.excerpt;
+
+        // Con el texto completo recalculamos la categoría (tiene más señal que el extracto).
+        const categoria = fullContent
+          ? detectCategory(`${titulo} ${fullContent}`, item.category)
+          : item.category;
+
+        const contenidoReescrito = rewriteText(baseText, categoria);
+        // Hashtags: categoría + #NW3 + entidades del contenido (máx. 5 en total).
+        const hashtags = buildHashtagsFromContent(categoria, `${titulo}\n${baseText}`);
+        // Imagen del feed (URL remota válida), si el artículo la trae.
+        const imagen = safeImageUrl(item.image);
 
         // Feeds rss.app: publicar como post NUEVO y usar su enlace como telegram_url.
         let telegramUrl = item.telegramUrl || '';
         if (BOT_TOKEN && item.publishNew) {
           const messageId = await publishToTelegram(
-            { titulo, contenido: contenidoReescrito, categoria: item.category },
+            { titulo, contenido: contenidoReescrito, categoria, hashtags },
             slug,
           );
           if (messageId) {
@@ -559,11 +800,12 @@ async function runAutoPublish() {
         await pocketbaseClient.collection('nw3_noticias').create({
           titulo,
           slug,
-          categoria: item.category,
+          categoria,
           fecha: pubDateToDisplay(item.pubDate),
-          contenido: `${contenidoReescrito}\n\n${buildHashtags(item.category)}`,
+          contenido: `${contenidoReescrito}\n\n${hashtags}`,
           fuente_label: item.label || '',
           fuente_url: item.sourceUrl,
+          imagen,
           telegram_url: telegramUrl,
           year: yearOf(item.pubDate),
           destacado: false,
@@ -575,7 +817,7 @@ async function runAutoPublish() {
 
         // Canales de Telegram: editar el post original añadiendo el enlace a NW3.
         if (BOT_TOKEN && !item.publishNew && item.telegramUrl) {
-          const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText, item.category);
+          const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText, categoria, hashtags);
           if (ok) {
             edited++;
             logger.info(`[rssAutoPublisher] Enlace NW3 añadido al post: ${item.telegramUrl}`);
@@ -598,4 +840,4 @@ export function startRssAutoPublisher(intervalMs = INTERVAL_MS) {
   return setInterval(runAutoPublish, intervalMs);
 }
 
-export { backfillTelegramLinks };
+export { backfillTelegramLinks, fetchArticleContent, detectCategory, buildHashtagsFromContent };
