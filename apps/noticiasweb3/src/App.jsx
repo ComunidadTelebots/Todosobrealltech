@@ -101,7 +101,14 @@ function Layout({ children }) {
   });
   const [appPlatform, setAppPlatform] = useState(() => {
     if (typeof window === 'undefined') return 'windows';
-    return localStorage.getItem('nw3-platform') || 'windows';
+    const stored = localStorage.getItem('nw3-platform');
+    if (stored) return stored;
+    // Por defecto en móvil: detectar el SO del dispositivo para aplicar su tema
+    // (Android → Material, iOS → tema iOS). Escritorio u otros → Windows.
+    const ua = navigator.userAgent || '';
+    if (/android/i.test(ua)) return 'android';
+    if (/iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'ios';
+    return 'windows';
   });
   const [autoNightMode, setAutoNightMode] = useState(() => {
     const hour = new Date().getHours();

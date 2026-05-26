@@ -1,0 +1,221 @@
+/* ============================================
+   TEMA: Material You (Android)
+   Basado en Material Design 3
+   Se aplica vía la clase "platform-android" que el selector de plataforma
+   añade a #stage (App.jsx). Por defecto se activa en móviles Android.
+   ============================================ */
+
+.platform-android {
+  /* Paleta base Material You - morado dinámico */
+  --md-primary: #d0bcff;
+  --md-on-primary: #381e72;
+  --md-primary-container: #4f378b;
+  --md-on-primary-container: #eaddff;
+
+  --md-secondary: #ccc2dc;
+  --md-on-secondary: #332d41;
+  --md-secondary-container: #4a4458;
+  --md-on-secondary-container: #e8def8;
+
+  --md-surface: #141218;
+  --md-surface-variant: #2d2d3a;
+  --md-on-surface: #e6e1e5;
+  --md-on-surface-variant: #cac4d0;
+
+  --md-background: #141218;
+  --md-on-background: #e6e1e5;
+
+  --md-error: #f2b8b8;
+  --md-on-error: #601410;
+
+  --md-outline: #938f99;
+  --md-outline-variant: #49454f;
+
+  --md-success: #6dd58c;
+  --md-info: #7dd3fc;
+  --md-warning: #ffd60a;
+
+  /* Tipografía Material */
+  font-family: 'Roboto', 'Google Sans', system-ui, sans-serif;
+  background-color: var(--md-background);
+  color: var(--md-on-background);
+}
+
+/* ---- Elevaciones (sin sombras, con tinte de color) ---- */
+.platform-android .card,
+.platform-android .article-card {
+  background: var(--md-surface-variant);
+  border-radius: 16px;
+  border: none;
+  padding: 12px;
+}
+
+.platform-android .card-featured {
+  background: var(--md-surface-variant);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ---- Navigation Bar ---- */
+.platform-android .navbar,
+.platform-android nav,
+.platform-android header {
+  background: var(--md-surface-variant);
+  border-bottom: 1px solid var(--md-outline-variant);
+  color: var(--md-on-surface);
+}
+
+/* ---- Bottom Navigation ---- */
+.platform-android .bottom-nav {
+  background: var(--md-surface-variant);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 16px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.platform-android .bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--md-outline);
+  font-size: 12px;
+}
+
+.platform-android .bottom-nav-item.active {
+  color: var(--md-primary);
+}
+
+/* ---- FAB (Floating Action Button) ---- */
+.platform-android .fab {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  z-index: 101;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+/* ---- Chips de categoría ---- */
+.platform-android .chip {
+  background: var(--md-surface-variant);
+  color: var(--md-on-surface-variant);
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.platform-android .chip.active {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+/* ---- Categorías con colores ---- */
+.platform-android .badge-ia { color: var(--md-success); }
+.platform-android .badge-ciberseguridad { color: var(--md-primary); }
+.platform-android .badge-espacio { color: var(--md-primary); }
+.platform-android .badge-moviles { color: var(--md-info); }
+.platform-android .badge-gaming { color: var(--md-warning); }
+.platform-android .badge-tecnologia { color: var(--md-on-surface-variant); }
+
+/* ---- Tipografía Material ---- */
+.platform-android h1 { font-size: 22px; font-weight: 400; color: var(--md-on-surface); letter-spacing: -0.3px; }
+.platform-android h2 { font-size: 18px; font-weight: 500; color: var(--md-on-surface); }
+.platform-android h3 { font-size: 15px; font-weight: 500; color: var(--md-on-surface); }
+.platform-android p { font-size: 14px; color: var(--md-on-surface-variant); line-height: 1.5; }
+.platform-android .text-muted { color: var(--md-outline); font-size: 12px; }
+
+/* ---- Inputs y búsqueda ---- */
+.platform-android input,
+.platform-android .search-bar {
+  background: var(--md-surface-variant);
+  border: none;
+  border-radius: 28px;
+  padding: 10px 20px;
+  color: var(--md-on-surface);
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+}
+
+.platform-android input::placeholder {
+  color: var(--md-outline);
+}
+
+/* ---- Botones ---- */
+.platform-android .btn-primary {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border-radius: 20px;
+  padding: 10px 24px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.platform-android .btn-secondary {
+  background: transparent;
+  color: var(--md-primary);
+  border: 1px solid var(--md-outline);
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ---- Sidebar / Drawer ---- */
+.platform-android .sidebar {
+  background: var(--md-surface);
+  border-right: 1px solid var(--md-outline-variant);
+}
+
+/* ---- Links ---- */
+.platform-android a { color: var(--md-primary); text-decoration: none; }
+.platform-android a:hover { color: var(--md-on-primary-container); }
+
+/* ---- Dividers ---- */
+.platform-android hr,
+.platform-android .divider {
+  border: none;
+  border-top: 1px solid var(--md-outline-variant);
+  margin: 8px 0;
+}
+
+/* ---- Responsive móvil ---- */
+@media (max-width: 768px) {
+  .platform-android .sidebar { display: none; }
+  .platform-android .bottom-nav { display: flex; }
+  .platform-android .content { padding-bottom: 80px; }
+  .platform-android .date-list { display: none; }
+  .platform-android .nav-links { display: none; }
+  .platform-android .hamburger { display: block; }
+  .platform-android .article-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (min-width: 769px) {
+  .platform-android .bottom-nav { display: none; }
+  .platform-android .fab { display: none; }
+}
