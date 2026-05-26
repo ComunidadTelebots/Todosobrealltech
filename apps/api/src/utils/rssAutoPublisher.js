@@ -25,6 +25,7 @@ const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech
 const INTERVAL_MS = 30 * 60 * 1000;          // cada 30 minutos
 const TELEGRAM_CALL_DELAY_MS = 1200;          // pausa entre llamadas a la Bot API
 const MAX_NEW_PER_RUN = 25;                   // tope de seguridad: nuevos artículos por ejecución
+const MAX_TELEGRAM_BODY_CHARS = 300;          // resumen del cuerpo en el post de Telegram (2-3 frases)
 
 // Extracción del cuerpo completo del artículo original (fetchArticleContent):
 const MIN_ARTICLE_CHARS = 200;                // mínimo de texto extraído para darlo por válido
@@ -638,6 +639,27 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   return false;
 }
 
+// Resumen breve para el cuerpo del post de Telegram: las primeras frases del
+// texto hasta `maxLen` caracteres (≈2-3 frases). Acumula frases completas
+// (terminadas en . ! ? …) mientras quepan; si ni la primera frase cabe, recorta
+// por carácter añadiendo «…». El artículo completo queda en la web.
+function summarize(text = '', maxLen = MAX_TELEGRAM_BODY_CHARS) {
+  const clean = String(text).replace(/\s+/g, ' ').trim();
+  if (clean.length <= maxLen) return clean;
+
+  const sentences = clean.match(/[^.!?…]+[.!?…]+(?:\s|$)/g) || [];
+  let out = '';
+  for (const s of sentences) {
+    if ((out + s).trim().length > maxLen) break;
+    out += s;
+  }
+  out = out.trim();
+
+  // Si la primera frase ya excede maxLen (o no hay puntuación), recorte duro.
+  if (!out) out = `${clean.slice(0, maxLen - 1).trimEnd()}…`;
+  return out;
+}
+
 /**
  * publishToTelegram
  * -----------------
@@ -646,24 +668,31 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
  *
  *   📰 [título]
  *
- *   [contenido reescrito]
+ *   [resumen breve: 2-3 frases, máx. 300 caracteres]
  *
  *   #Categoria #NW3
  *
  *   🔗 Leer más: https://noticiasweb3.todosobreall.tech/noticias/[slug]
  *
- * `article` debe traer { titulo, contenido, categoria, hashtags? }.
- * Si trae `hashtags` (cadena ya construida) se usan tal cual; si no, se derivan
- * de la categoría. Devuelve el message_id del post publicado, o null si falla.
+ * `article` debe traer { titulo, contenido, categoria, hashtags?, excerpt? }.
+ * El cuerpo del mensaje NO es el contenido completo: se resume a 2-3 frases
+ * (máx. MAX_TELEGRAM_BODY_CHARS) tomando el excerpt del feed o, en su defecto,
+ * las primeras frases del contenido reescrito; el artículo completo queda en la
+ * web (enlace "Leer más"). Si trae `hashtags` (cadena ya construida) se usan tal
+ * cual; si no, se derivan de la categoría. Devuelve el message_id del post
+ * publicado, o null si falla.
  */
 async function publishToTelegram(article, slug) {
   const header = `📰 ${article.titulo}`;
   const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 Leer más: ${SITE_URL}/noticias/${slug}`;
 
-  // Recortamos el cuerpo para no superar el límite de 4096 de sendMessage,
-  // conservando siempre la cabecera, los hashtags y el enlace.
+  // Cuerpo = resumen breve (2-3 frases, máx. 300 caracteres), no el contenido
+  // completo. Preferimos el excerpt del feed y caemos al contenido reescrito.
+  let body = summarize(article.excerpt || article.contenido, MAX_TELEGRAM_BODY_CHARS);
+
+  // Salvaguarda del límite de 4096 de sendMessage (en la práctica el resumen ya
+  // está muy por debajo), conservando cabecera, hashtags y enlace.
   const room = 4096 - header.length - footer.length - 4; // 4 = los dos "\n\n"
-  let body = (article.contenido || '').trim();
   if (body.length > room) body = `${body.slice(0, Math.max(0, room - 1)).trimEnd()}…`;
 
   const text = `${header}\n\n${body}\n\n${footer}`;
@@ -836,7 +865,7 @@ async function runAutoPublish() {
         let telegramUrl = item.telegramUrl || '';
         if (BOT_TOKEN && item.publishNew) {
           const messageId = await publishToTelegram(
-            { titulo, contenido: contenidoReescrito, categoria, hashtags },
+            { titulo, contenido: contenidoReescrito, categoria, hashtags, excerpt: item.excerpt },
             slug,
           );
           if (messageId) {

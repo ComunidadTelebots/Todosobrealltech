@@ -179,6 +179,19 @@ services:
       - pocketbase_data:/data
     ports:
       - "8090:8090"
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.pocketbase.rule=Host(`${WEB_HOST:-todosobreall.tech}`) && PathPrefix(`/hcgi/platform`)"
+      - "traefik.http.routers.pocketbase.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.pocketbase.tls=true"
+      - "traefik.http.routers.pocketbase.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.pocketbase.middlewares=pocketbase-stripprefix"
+      - "traefik.http.middlewares.pocketbase-stripprefix.stripprefix.prefixes=/hcgi/platform"
+      - "traefik.http.services.pocketbase.loadbalancer.server.port=8090"
 
 volumes:
   pocketbase_data:

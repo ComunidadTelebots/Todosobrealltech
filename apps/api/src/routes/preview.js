@@ -131,6 +131,48 @@ async function findRelated(category, excludeSlug, limit = 3) {
     .map((a) => ({ slug: a.slug, title: a.title || '' }));
 }
 
+const SECTION_SIZE = 3;
+
+// Generic <h2> labels for the body sections. The opening section is always
+// "Contexto" and the closing one "Conclusión"; middle sections cycle through a
+// generic pool and, for long articles, fall back to the article category.
+const MIDDLE_SECTION_TITLES = ['Detalles', 'Análisis', 'Claves'];
+
+function sectionTitle(index, total, category) {
+  if (index === 0) return 'Contexto';
+  if (index === total - 1) return 'Conclusión';
+  const pos = index - 1;
+  if (pos < MIDDLE_SECTION_TITLES.length) return MIDDLE_SECTION_TITLES[pos];
+  return category ? `Más sobre ${category}` : 'Más detalles';
+}
+
+// Group paragraphs into sections of 3–4 and prepend an <h2> to each so Telegram's
+// Instant View can build a table of contents (it derives the TOC from headings).
+// A trailing group of 4 is kept whole instead of split into 3+1, avoiding a
+// one-paragraph "Conclusión". Articles short enough to be a single section are
+// left as plain paragraphs.
+function renderBody(paras, category) {
+  const chunks = [];
+  for (let i = 0; i < paras.length; ) {
+    const remaining = paras.length - i;
+    const size = remaining === 4 ? 4 : Math.min(SECTION_SIZE, remaining);
+    chunks.push(paras.slice(i, i + size));
+    i += size;
+  }
+
+  if (chunks.length < 2) {
+    return paras.map((p) => `      <p>${escapeHtml(p)}</p>`).join('\n');
+  }
+
+  return chunks
+    .map((chunk, index) => {
+      const heading = `      <h2>${escapeHtml(sectionTitle(index, chunks.length, category))}</h2>`;
+      const body = chunk.map((p) => `      <p>${escapeHtml(p)}</p>`).join('\n');
+      return `${heading}\n${body}`;
+    })
+    .join('\n');
+}
+
 function renderArticleHtml(article, related = []) {
   const webUrl = `${SITE_URL}/noticias/${encodeURIComponent(article.slug)}`;
   const image = article.image || DEFAULT_OG_IMAGE;
@@ -149,7 +191,7 @@ function renderArticleHtml(article, related = []) {
     : '';
 
   const bodyHtml = article.bodyParas.length
-    ? article.bodyParas.map((p) => `      <p>${escapeHtml(p)}</p>`).join('\n')
+    ? renderBody(article.bodyParas, article.category)
     : `      <p>${description}</p>`;
 
   const sourceHtml = article.source
@@ -193,6 +235,7 @@ function renderArticleHtml(article, related = []) {
     <style>
       body { font-family: -apple-system, system-ui, "PT Sans", Arial, sans-serif; line-height: 1.6; color: #222; max-width: 720px; margin: 0 auto; padding: 24px 16px; }
       h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 8px; }
+      h2 { font-size: 1.25rem; line-height: 1.3; margin: 28px 0 12px; }
       figure { margin: 0 0 20px; }
       figure img { max-width: 100%; height: auto; display: block; }
       p { margin: 0 0 16px; }
