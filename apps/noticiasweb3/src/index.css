@@ -2861,3 +2861,143 @@ body:has(#stage.version-2012) {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* =Responsive móvil (< 768px)
+   Hamburguesa + drawer lateral, sidebar al final, selector de mes compacto.
+----------------------------------------------- */
+
+/* Hamburguesa, backdrop y selector de mes: ocultos por defecto (escritorio);
+   se activan dentro del media query móvil. */
+.nav-toggle { display: none; }
+.nav-backdrop { display: none; }
+.date-filter-months { display: none; }
+
+@media (max-width: 767px) {
+  /* — Botón hamburguesa (barra superior a todo lo ancho) — */
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 18px;
+    border: none;
+    background: #b50433;
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+  }
+  .nav-toggle__icon { font-size: 20px; line-height: 1; }
+
+  /* — Backdrop que cierra el drawer al tocar fuera — */
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 1998;
+  }
+  .nav-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  /* — Menú #access convertido en drawer lateral izquierdo — */
+  #access {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 82% !important;
+    max-width: 320px;
+    margin: 0 !important;
+    padding: 0 !important;
+    float: none !important;
+    background: #fff;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.4);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    z-index: 1999;
+  }
+  #access.nav-open { transform: translateX(0); }
+
+  /* Lista vertical a lo ancho del drawer */
+  #access > ul {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #access li {
+    display: block !important;
+    float: none !important;
+    width: 100% !important;
+    position: static !important;
+    margin: 0 !important;
+  }
+  #access > ul > li > a {
+    display: block;
+    padding: 13px 18px;
+    border-bottom: 1px solid #ececec;
+    transform: none !important;
+  }
+
+  /* Submenús: estáticos y plegables (se abren al tocar el padre → .open) */
+  #access ul ul {
+    position: static !important;
+    display: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    transform: none !important;
+    background: #f6f6f6;
+  }
+  #access ul li.open > ul { display: block !important; }
+  #access ul ul a {
+    display: block;
+    padding: 11px 18px 11px 34px;
+    border-bottom: 1px solid #ececec;
+    font-size: 0.92em;
+  }
+
+  /* — Una sola columna: contenido arriba, sidebar movida al final — */
+  #content {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px 12px 0 !important;
+    box-sizing: border-box;
+  }
+  .version-shell {
+    order: 1;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  #content #main {
+    width: auto !important;
+    float: none !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
+  }
+  #sidebar {
+    order: 2;            /* siempre tras el contenido principal */
+    float: none !important;
+    width: auto !important;
+    margin: 16px 0 0 !important;
+  }
+
+  /* — Filtros de fecha: lista de días oculta, selector de mes visible — */
+  .date-filter-days { display: none !important; }
+  .date-filter-months {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+}

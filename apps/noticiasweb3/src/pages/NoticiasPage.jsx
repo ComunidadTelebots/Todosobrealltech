@@ -34,6 +34,9 @@ const MONTHS_ES = {
   julio: 6, agosto: 7, septiembre: 8, octubre: 9, noviembre: 10, diciembre: 11,
 };
 
+const MONTH_NAMES_ES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
 function parseDate(str) {
   if (!str) return new Date(0);
   const m = str.match(/(\d+)\s+de\s+(\w+)\s+del?\s+(\d+)/i);
@@ -46,6 +49,20 @@ function toDateKey(str) {
   const d = parseDate(str);
   if (!d || isNaN(d)) return str;
   return d.toISOString().slice(0, 10);
+}
+
+// Clave de mes "YYYY-MM" (vacía si la fecha no es parseable o cae en el epoch,
+// que es lo que parseDate devuelve cuando no reconoce el formato).
+function toMonthKey(str) {
+  const d = parseDate(str);
+  if (!d || isNaN(d) || d.getTime() === 0) return '';
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function toMonthLabel(str) {
+  const d = parseDate(str);
+  if (!d || isNaN(d) || d.getTime() === 0) return str;
+  return `${MONTH_NAMES_ES[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 const PER_PAGE = 20;
@@ -97,6 +114,7 @@ export default function NoticiasPage({ siteVersion }) {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
   const [activeDateKey, setActiveDateKey] = useState('');
+  const [activeMonthKey, setActiveMonthKey] = useState('');
   const [pbArticles, setPbArticles] = useState([]);
   const [hiddenCategories, setHiddenCategories] = useState([]);
   const [settingsId, setSettingsId] = useState(null);
@@ -199,6 +217,7 @@ export default function NoticiasPage({ siteVersion }) {
     setQuery('');
     setActiveCategory('Todas');
     setActiveDateKey('');
+    setActiveMonthKey('');
     setSearchParams(tab === 'blog' ? { tab: 'blog' } : {});
   };
 
@@ -241,6 +260,18 @@ export default function NoticiasPage({ siteVersion }) {
     return dates;
   }, [visible, siteVersion]);
 
+  // Meses únicos disponibles (solo 2026) — para el selector compacto en móvil.
+  const availableMonths = useMemo(() => {
+    if (siteVersion !== '2026') return [];
+    const seen = new Set();
+    const months = [];
+    for (const a of visible) {
+      const key = toMonthKey(a.date);
+      if (key && !seen.has(key)) { seen.add(key); months.push({ key, label: toMonthLabel(a.date) }); }
+    }
+    return months;
+  }, [visible, siteVersion]);
+
   const visibleCategoryOptions = isAuthenticated
     ? CATEGORIES
     : CATEGORIES.filter((c) => c === 'Todas' || !hiddenCategories.includes(c));
@@ -249,9 +280,12 @@ export default function NoticiasPage({ siteVersion }) {
     ? visible.filter((a) => isAuthenticated || !hiddenCategories.includes(a.category))
     : visible.filter((a) => a.category === activeCategory);
 
+  // Filtro por día (lista de fechas, escritorio) o por mes (selector móvil).
   const byDate = activeDateKey
     ? byCat.filter((a) => toDateKey(a.date) === activeDateKey)
-    : byCat;
+    : activeMonthKey
+      ? byCat.filter((a) => toMonthKey(a.date) === activeMonthKey)
+      : byCat;
 
   const filtered = query.trim()
     ? byDate.filter((a) =>
@@ -265,7 +299,7 @@ export default function NoticiasPage({ siteVersion }) {
   const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
   // Reset to page 1 when filters change
-  useEffect(() => { setPage(1); }, [activeCategory, activeDateKey, query, activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setPage(1); }, [activeCategory, activeDateKey, activeMonthKey, query, activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div id="main">
@@ -498,9 +532,36 @@ export default function NoticiasPage({ siteVersion }) {
                 );
               })()}
 
-              {/* Filtro por fecha */}
+              {/* Filtro por mes (compacto) — solo visible en móvil vía CSS */}
+              {availableMonths.length > 0 && (
+                <div className="date-filter-months">
+                  <label htmlFor="nw3-month-select" style={{ fontSize: '11px', color: '#888' }}>Mes:</label>
+                  <select
+                    id="nw3-month-select"
+                    value={activeMonthKey}
+                    onChange={(e) => { setActiveMonthKey(e.target.value); setActiveDateKey(''); setQuery(''); }}
+                    style={{
+                      flex: 1,
+                      padding: '6px 10px',
+                      fontSize: '13px',
+                      border: '1px solid #ccc',
+                      borderRadius: '3px',
+                      fontFamily: 'inherit',
+                      background: '#fff',
+                      color: '#333',
+                    }}
+                  >
+                    <option value="">Todos los meses</option>
+                    {availableMonths.map(({ key, label }) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Filtro por fecha (lista de días) — se oculta en móvil vía CSS */}
               {availableDates.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '14px', alignItems: 'center' }}>
+                <div className="date-filter-days" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '14px', alignItems: 'center' }}>
                   <span style={{ fontSize: '11px', color: '#888', marginRight: 2 }}>Día:</span>
                   <button
                     type="button"
@@ -523,7 +584,7 @@ export default function NoticiasPage({ siteVersion }) {
                     <button
                       key={key}
                       type="button"
-                      onClick={() => { setActiveDateKey(key); setQuery(''); }}
+                      onClick={() => { setActiveDateKey(key); setActiveMonthKey(''); setQuery(''); }}
                       style={{
                         padding: '3px 10px',
                         fontSize: '11px',
@@ -578,6 +639,7 @@ export default function NoticiasPage({ siteVersion }) {
               {filtered.length} noticia{filtered.length !== 1 ? 's' : ''}
               {activeCategory !== 'Todas' ? ` en ${activeCategory}` : ''}
               {activeDateKey ? ` · ${filtered[0]?.date}` : ''}
+              {activeMonthKey ? ` · ${availableMonths.find((m) => m.key === activeMonthKey)?.label || ''}` : ''}
               {query ? ` para "${query}"` : ''}
               {totalPages > 1 ? ` · página ${safePage} de ${totalPages}` : ''}
             </p>

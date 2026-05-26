@@ -90,11 +90,14 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [openItem, setOpenItem] = useState(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [hiddenNavPaths, setHiddenNavPaths] = useState([]);
   const [customNavItems, setCustomNavItems] = useState([]);
 
+  // Al navegar: cierra el drawer móvil y colapsa cualquier submenú abierto.
   useEffect(() => {
     setOpenItem(null);
+    setMobileNavOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -108,6 +111,26 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
 
   return (
     <div>
+      {/* Botón hamburguesa — solo visible en móvil (< 768px), vía CSS */}
+      <button
+        type="button"
+        className="nav-toggle"
+        aria-label={mobileNavOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={mobileNavOpen}
+        aria-controls="access"
+        onClick={() => setMobileNavOpen((v) => !v)}
+      >
+        <span className="nav-toggle__icon">{mobileNavOpen ? '✕' : '☰'}</span>
+        <span className="nav-toggle__label">Menú</span>
+      </button>
+
+      {/* Fondo oscuro que cierra el drawer al tocar fuera */}
+      <div
+        className={`nav-backdrop ${mobileNavOpen ? 'open' : ''}`}
+        onClick={() => setMobileNavOpen(false)}
+        aria-hidden="true"
+      />
+
       <div id="masthead">
         <div id="inner-masthead">
           <div id="claim">
@@ -186,7 +209,7 @@ export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, 
         </div>
       </div>
 
-      <div id="access">
+      <div id="access" className={mobileNavOpen ? 'nav-open' : ''}>
         <ul>
           {[...navItems, ...customNavItems]
             .filter((item) => !item.version2026Only || siteVersion === '2026')
