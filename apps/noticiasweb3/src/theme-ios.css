@@ -1,341 +1,107 @@
 /* ============================================
    TEMA: iOS Modern
-   Basado en Apple Human Interface Guidelines
-   Se aplica vía la clase "platform-ios" que el selector de plataforma
-   añade a #stage (App.jsx). Por defecto se activa en dispositivos iOS.
+   --------------------------------------------
+   Solo aplica a la version 2026 con plataforma iOS. Por eso TODOS los
+   selectores van prefijados con .version-2026.platform-ios: asi nunca afecta
+   a las versiones 2012 / 2014 (que no llevan la clase version-2026).
+
+   Reutiliza las variables --ios-* que index.css define en
+   .version-2026.platform-ios (y reescribe en .night-mode), de modo que el
+   modo oscuro sigue funcionando sin tocar nada aqui.
+
+   Selectores: solo elementos reales del DOM (#masthead, #access, #content,
+   .version-shell, .article, #sidebar, .widget, #footer...).
    ============================================ */
 
-.platform-ios {
-  /* Paleta iOS - azul sistema */
-  --ios-blue: #007aff;
-  --ios-blue-light: rgba(0, 122, 255, 0.12);
-  --ios-green: #34c759;
-  --ios-orange: #ff9500;
-  --ios-red: #ff3b30;
-  --ios-purple: #af52de;
-  --ios-gray: #8e8e93;
-  --ios-gray2: #aeaeb2;
-  --ios-gray3: #c7c7cc;
-  --ios-gray4: #d1d1d6;
-  --ios-gray5: #e5e5ea;
-  --ios-gray6: #f2f2f7;
-
-  --ios-label: #000000;
-  --ios-label-secondary: rgba(60, 60, 67, 0.6);
-  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
-  --ios-separator: rgba(60, 60, 67, 0.29);
-  --ios-bg: #f2f2f7;
-  --ios-bg-grouped: #f2f2f7;
-  --ios-bg-secondary: #ffffff;
-  --ios-bg-tertiary: #f2f2f7;
-
-  /* Tipografía SF Pro */
+.version-2026.platform-ios {
   font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
-  background-color: var(--ios-bg);
-  color: var(--ios-label);
   -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
-/* ---- Navigation Bar iOS ---- */
-.platform-ios .navbar,
-.platform-ios nav,
-.platform-ios header {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 0.5px solid var(--ios-separator);
-  padding: 12px 16px;
+/* ---- Transiciones suaves al estilo iOS ---- */
+.version-2026.platform-ios #masthead,
+.version-2026.platform-ios #access > ul > li > a,
+.version-2026.platform-ios .version-shell,
+.version-2026.platform-ios .article,
+.version-2026.platform-ios #sidebar .widget {
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
-.platform-ios .navbar-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--ios-label);
-  text-align: center;
-}
-
-.platform-ios .navbar-large-title {
-  font-size: 34px;
+/* ---- Cabecera ---- */
+.version-2026.platform-ios .site-title {
   font-weight: 700;
-  color: var(--ios-label);
-  letter-spacing: -0.5px;
-  padding: 0 16px 8px;
+  letter-spacing: -0.4px;
+}
+.version-2026.platform-ios .site-description {
+  letter-spacing: -0.1px;
 }
 
-/* ---- Tab Bar (Bottom) ---- */
-.platform-ios .bottom-nav {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-top: 0.5px solid var(--ios-separator);
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0 20px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+/* ---- Navegacion: foco accesible y respuesta al pulsar ---- */
+.version-2026.platform-ios #access > ul > li > a:focus-visible {
+  outline: 2px solid var(--ios-blue);
+  outline-offset: 2px;
+}
+.version-2026.platform-ios #access > ul > li > a:active {
+  transform: scale(0.96);
+  opacity: 0.85;
 }
 
-.platform-ios .bottom-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  color: var(--ios-gray);
-  font-size: 10px;
-  font-weight: 500;
-  min-width: 50px;
+/* ---- Contenido ---- */
+.version-2026.platform-ios #content #main {
+  scroll-margin-top: 16px;
 }
-
-.platform-ios .bottom-nav-item.active {
+.version-2026.platform-ios #content a {
   color: var(--ios-blue);
+  text-decoration: none;
+}
+.version-2026.platform-ios #content a:active {
+  opacity: 0.6;
 }
 
-.platform-ios .bottom-nav-item svg,
-.platform-ios .bottom-nav-item i {
-  font-size: 22px;
+/* ---- Tarjetas de noticia: leve elevacion al pasar el cursor ---- */
+.version-2026.platform-ios .article:hover {
+  box-shadow: var(--ios-shadow);
+  transform: translateY(-1px);
+}
+.version-2026.platform-ios .article-body p {
+  line-height: 1.5;
 }
 
-/* ---- Cards iOS ---- */
-.platform-ios .card,
-.platform-ios .article-card {
-  background: var(--ios-bg-secondary);
-  border-radius: 14px;
-  overflow: hidden;
-  border: none;
+/* ---- Etiqueta de categoria (span con estilo inline en NoticiasPage) ----
+   Primer hijo de .article-meta, con background/color inline; de ahi el
+   !important. Se convierte en un chip iOS con tinte azul del sistema. */
+.version-2026.platform-ios .article-meta > span:first-child {
+  background: rgba(0, 122, 255, 0.12) !important;
+  color: var(--ios-blue) !important;
+  border-radius: 980px !important;
+  padding: 2px 10px !important;
 }
 
-.platform-ios .card-featured {
-  background: var(--ios-bg-secondary);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-/* ---- Grouped lists (estilo Configuración iOS) ---- */
-.platform-ios .list-section {
-  background: var(--ios-bg-secondary);
-  border-radius: 10px;
-  margin: 8px 16px;
-  overflow: hidden;
-}
-
-.platform-ios .list-item {
-  padding: 11px 16px;
-  display: flex;
-  align-items: center;
-  border-bottom: 0.5px solid var(--ios-separator);
-  font-size: 17px;
-  color: var(--ios-label);
-}
-
-.platform-ios .list-item:last-child {
-  border-bottom: none;
-}
-
-.platform-ios .list-item-chevron::after {
-  content: '›';
-  color: var(--ios-gray3);
-  margin-left: auto;
-  font-size: 20px;
-}
-
-/* ---- Segmented Control (filtros) ---- */
-.platform-ios .segmented-control {
-  background: var(--ios-gray5);
-  border-radius: 9px;
-  padding: 2px;
-  display: flex;
-  gap: 2px;
-}
-
-.platform-ios .segment {
-  flex: 1;
-  padding: 6px 12px;
-  border-radius: 7px;
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-  color: var(--ios-label);
-  cursor: pointer;
-}
-
-.platform-ios .segment.active {
-  background: white;
-  color: var(--ios-label);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-}
-
-/* ---- Chips de categoría iOS ---- */
-.platform-ios .chip {
-  background: var(--ios-blue-light);
-  color: var(--ios-blue);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.platform-ios .chip.active {
-  background: var(--ios-blue);
-  color: white;
-}
-
-/* ---- Categorías con colores iOS ---- */
-.platform-ios .badge-ia { color: var(--ios-green); }
-.platform-ios .badge-ciberseguridad { color: var(--ios-red); }
-.platform-ios .badge-espacio { color: var(--ios-purple); }
-.platform-ios .badge-moviles { color: var(--ios-blue); }
-.platform-ios .badge-gaming { color: var(--ios-orange); }
-.platform-ios .badge-tecnologia { color: var(--ios-gray); }
-
-/* ---- Tipografía iOS ---- */
-.platform-ios h1 { font-size: 28px; font-weight: 700; color: var(--ios-label); letter-spacing: -0.5px; }
-.platform-ios h2 { font-size: 22px; font-weight: 700; color: var(--ios-label); }
-.platform-ios h3 { font-size: 17px; font-weight: 600; color: var(--ios-label); }
-.platform-ios p { font-size: 15px; color: var(--ios-label); line-height: 1.5; }
-.platform-ios .text-muted { color: var(--ios-label-secondary); font-size: 13px; }
-
-/* ---- Inputs y búsqueda iOS ---- */
-.platform-ios .search-bar {
-  background: var(--ios-gray5);
-  border: none;
-  border-radius: 10px;
-  padding: 8px 12px 8px 34px;
-  font-size: 15px;
-  color: var(--ios-label);
-  width: 100%;
-  outline: none;
-}
-
-.platform-ios input {
-  background: var(--ios-gray5);
-  border: none;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 15px;
-  color: var(--ios-label);
-  outline: none;
-}
-
-.platform-ios input::placeholder {
-  color: var(--ios-label-tertiary);
-}
-
-/* ---- Botones iOS ---- */
-.platform-ios .btn-primary {
-  background: var(--ios-blue);
-  color: white;
-  border-radius: 12px;
-  padding: 14px 24px;
-  border: none;
-  font-size: 17px;
+/* ---- Barra lateral / widgets: cabeceras estilo "agrupado" iOS ---- */
+.version-2026.platform-ios .widget-title {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
   font-weight: 600;
-  cursor: pointer;
-  width: 100%;
 }
 
-.platform-ios .btn-secondary {
-  background: transparent;
-  color: var(--ios-blue);
-  border: none;
-  font-size: 17px;
-  font-weight: 400;
-  cursor: pointer;
+/* ---- Selectores de version / plataforma / modo ---- */
+.version-2026.platform-ios .mode-toggle-btn {
+  border-radius: 980px;
+}
+.version-2026.platform-ios .platform-caption {
+  color: #8e8e93;
 }
 
-.platform-ios .btn-destructive {
-  background: var(--ios-red);
-  color: white;
-  border-radius: 12px;
-  padding: 14px 24px;
-  border: none;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* ---- Action Sheets / Modals ---- */
-.platform-ios .modal {
-  background: var(--ios-bg-secondary);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-/* ---- Notificación badge ---- */
-.platform-ios .badge {
-  background: var(--ios-red);
-  color: white;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 6px;
-  min-width: 18px;
+/* ---- Pie de pagina ---- */
+.version-2026.platform-ios #footer {
+  color: #8e8e93;
   text-align: center;
 }
 
-/* ---- Links ---- */
-.platform-ios a { color: var(--ios-blue); text-decoration: none; }
-
-/* ---- Separadores ---- */
-.platform-ios hr,
-.platform-ios .divider {
-  border: none;
-  border-top: 0.5px solid var(--ios-separator);
-  margin: 0 16px;
-}
-
-/* ---- Switch toggle iOS ---- */
-.platform-ios .toggle {
-  width: 51px;
-  height: 31px;
-  background: var(--ios-gray4);
-  border-radius: 16px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.platform-ios .toggle.on {
-  background: var(--ios-green);
-}
-
-.platform-ios .toggle-thumb {
-  width: 27px;
-  height: 27px;
-  background: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: left 0.2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-
-.platform-ios .toggle.on .toggle-thumb {
-  left: 22px;
-}
-
-/* ---- Responsive móvil ---- */
+/* ---- Responsive movil ---- */
 @media (max-width: 768px) {
-  .platform-ios .sidebar { display: none; }
-  .platform-ios .bottom-nav { display: flex; }
-  .platform-ios .content { padding-bottom: 90px; }
-  .platform-ios .date-list { display: none; }
-  .platform-ios .nav-links { display: none; }
-  .platform-ios .hamburger { display: none; }
-  .platform-ios .article-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 0 16px;
+  .version-2026.platform-ios .article {
+    border-radius: 22px;
   }
-}
-
-@media (min-width: 769px) {
-  .platform-ios .bottom-nav { display: none; }
 }
