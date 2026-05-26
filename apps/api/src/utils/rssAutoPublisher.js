@@ -283,14 +283,35 @@ function buildHashtagsFromContent(categoria, text = '') {
   if (cat) push(cat);
   push('NW3');
 
-  for (const entity of detectEntities(text)) {
+  // Entidades solo del texto ya limpio (sin enlaces de IFTTT ni líneas de
+  // atribución), para no derivar hashtags de ese ruido.
+  for (const entity of detectEntities(stripFeedNoise(text))) {
     if (push(entity)) break;
   }
   return tags.join(' ');
 }
 
+// Ruido recurrente en los cuerpos de los feeds: enlaces de IFTTT
+// (https://ift.tt/...) y líneas de atribución tipo "Fuente | dominio.com • fecha".
+function stripFeedNoise(text = '') {
+  return String(text)
+    .replace(/https?:\/\/ift\.tt\/\S+/gi, '')          // enlaces de IFTTT
+    .replace(/^[ \t]*Fuente[ \t]*\|[^\n]*$/gim, '');    // atribución "Fuente | dominio • fecha"
+}
+
+// Elimina el título repetido al inicio del cuerpo: los feeds JSON de rss.app
+// suelen reproducir el titular como primera línea del content_text.
+function stripLeadingTitle(text = '', title = '') {
+  const body = String(text).trim();
+  const t = String(title).trim();
+  if (t && body.toLowerCase().startsWith(t.toLowerCase())) {
+    return body.slice(t.length).replace(/^[\s\-–—:.|·•]+/, '').trim();
+  }
+  return body;
+}
+
 function stripHtml(html = '') {
-  return html
+  const text = html
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n')
     .replace(/<[^>]+>/g, '')
@@ -299,7 +320,8 @@ function stripHtml(html = '') {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
+    .replace(/&nbsp;/g, ' ');
+  return stripFeedNoise(text)
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
@@ -308,6 +330,24 @@ function stripHtml(html = '') {
 // (avisos de cookies, llamadas a suscribirse/compartir, créditos, etc.).
 function isBoilerplate(text = '') {
   return /\b(cookies?|política de privacidad|newsletter|suscr[ií]bete|publicidad|advertisement|patrocinad|síguenos|comparte|compartir en|todos los derechos reservados|lee también|leer más|seguir leyendo|aceptar y continuar)\b/i.test(text);
+}
+
+// Marcadores de contenido patrocinado/publicitario. Si se detecta alguno en el
+// título o el cuerpo, el artículo se descarta (no se crea ni se publica).
+// "publi" se ancla con \b para no confundirlo con "publicado"/"público".
+const SPONSORED_PATTERNS = [
+  /patrocinad/i,             // patrocinado / patrocinada / patrocinados
+  /sponsored/i,
+  /\bpubli\b/i,              // "la publi" (coloquial)
+  /publicidad/i,
+  /en colaboraci[óo]n con/i,
+  /branded content/i,
+  /en partnership/i,
+];
+
+function isSponsored(title = '', text = '') {
+  const hay = `${title}\n${text}`;
+  return SPONSORED_PATTERNS.some((re) => re.test(hay));
 }
 
 // Extrae el cuerpo principal de un documento HTML: descarta bloques no
@@ -469,7 +509,10 @@ async function fetchRssFeed({ url, defaultCategory, label, publishNew = false })
     return (data.items || [])
       .filter((item) => item.url)
       .map((item) => {
-        const text = stripHtml(item.content_html || item.content_text || '');
+        // El content_text de los feeds JSON arrastra el titular repetido al
+        // inicio, enlaces de IFTTT y líneas de atribución: stripHtml limpia
+        // IFTTT/atribución y stripLeadingTitle quita el título duplicado.
+        const text = stripLeadingTitle(stripHtml(item.content_html || item.content_text || ''), item.title || '');
         const rawTitle = item.title || text.slice(0, 90);
         const title = rawTitle.length > 120 ? `${rawTitle.slice(0, 120)}…` : rawTitle;
         // URL real del artículo original: rss.app la expone en external_url; si
@@ -755,6 +798,13 @@ async function runAutoPublish() {
     //    rss.app) o editar el post original del canal (canales de Telegram).
     for (const item of batch) {
       try {
+        // Descarta contenido patrocinado/publicitario: ni se crea en PocketBase
+        // ni se publica/edita en Telegram.
+        if (isSponsored(item.title, item.fullText || item.excerpt)) {
+          logger.warn(`[rssAutoPublisher] Contenido patrocinado descartado: "${item.title}" (${item.label})`);
+          continue;
+        }
+
         // Slug único: base + hash de la fuente; si colisiona, sufijo incremental.
         let slug = `${generarSlug(item.title)}-${shortHash(item.sourceUrl)}`;
         let n = 2;
