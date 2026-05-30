@@ -1,0 +1,31 @@
+services:
+  assets:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./apps/assets:/usr/share/nginx/html:ro
+    networks: [default, traefik]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.assets.rule=Host(`assets.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.assets.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.assets.tls=true"
+      - "traefik.http.routers.assets.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.assets.loadbalancer.server.port=80"
+      - "traefik.http.services.assets.loadbalancer.passHostHeader=true"
+  chat:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./apps/chat:/usr/share/nginx/html:ro
+    networks: [default, traefik]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.chat.rule=Host(`chat.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.chat.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.chat.tls=true"
+      - "traefik.http.routers.chat.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.chat.loadbalancer.server.port=80"
+      - "traefik.http.services.chat.loadbalancer.passHostHeader=true"

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram Web · ComunidadTelebots</title>
+<meta name="description" content="Cliente web de Telegram, open source. Corre en el navegador con TDLib + WebAssembly. Cinco diseños conmutables, modo oscuro y soporte de proxy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0b1220;
+    --ink:#e9f0fb; --muted:#8794ad;
+    --teal:#3ee0c7; --cyan:#36b6f0; --blue:#5b8af1; --violet:#9b6cf0; --green:#6de08c;
+    --card:rgba(255,255,255,.04); --line:rgba(255,255,255,.09);
+    --display:'Bricolage Grotesque',sans-serif;
+    --body:'Hanken Grotesk',sans-serif;
+    --mono:'JetBrains Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--body);background:var(--bg);color:var(--ink);
+    line-height:1.6;overflow-x:hidden;position:relative;min-height:100vh;
+  }
+  .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;}
+  .aurora::before,.aurora::after{
+    content:'';position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;will-change:transform;
+  }
+  .aurora::before{
+    width:60vw;height:60vw;top:-20vw;left:-10vw;
+    background:radial-gradient(circle,var(--teal),transparent 60%);animation:drift1 22s ease-in-out infinite;
+  }
+  .aurora::after{
+    width:55vw;height:55vw;bottom:-25vw;right:-10vw;
+    background:radial-gradient(circle,var(--violet),transparent 60%);animation:drift2 26s ease-in-out infinite;
+  }
+  .aurora i{
+    position:absolute;width:45vw;height:45vw;border-radius:50%;filter:blur(100px);opacity:.38;top:20%;left:35%;
+    background:radial-gradient(circle,var(--cyan),transparent 60%);animation:drift3 30s ease-in-out infinite;
+  }
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,6vh) scale(1.15)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-7vw,-5vh) scale(1.1)}}
+  @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(-6vw,4vh)}66%{transform:translate(5vw,-6vh)}}
+  body::after{
+    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    text-align:center;font-size:12.5px;font-weight:600;letter-spacing:.02em;color:#ffd479;
+    background:rgba(255,180,60,.08);border-bottom:1px solid rgba(255,180,60,.22);padding:8px 16px;backdrop-filter:blur(8px);
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+  .netbar{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border-bottom:1px solid var(--line);font-size:12.5px;backdrop-filter:blur(8px);}
+  .netbar-inner{max-width:1120px;margin:0 auto;padding:9px 28px;display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap;}
+  .netbar-label{display:flex;align-items:center;gap:8px;color:var(--teal);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding-right:16px;margin-right:2px;border-right:1px solid var(--line);}
+  .netbar-label::before{content:'';width:7px;height:7px;border-radius:2px;background:linear-gradient(135deg,var(--cyan),var(--blue));}
+  .netbar a{color:var(--muted);text-decoration:none;transition:.2s;font-weight:500;}
+  .netbar a:hover{color:var(--ink);}
+  .netbar a.cur{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:7px;}
+  .netbar a.cur::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 9px var(--teal);}
+  .site-header{position:sticky;top:0;z-index:50;background:rgba(8,12,22,.78);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);box-shadow:0 10px 30px -20px rgba(0,0,0,.85);}
+  .sh-inner{max-width:1120px;margin:0 auto;padding:15px 28px;display:flex;align-items:center;gap:24px;}
+  .nav-links{display:flex;align-items:center;gap:28px;margin:0 auto;}
+  .nav-links a{position:relative;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:.2s;padding:4px 0;}
+  .nav-links a::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a:hover::after{transform:scaleX(1);}
+  .sh-right{display:flex;align-items:center;gap:13px;}
+  .nav-access{font-size:14px;font-weight:600;text-decoration:none;color:#04121f;background:linear-gradient(120deg,var(--teal),var(--cyan));padding:9px 17px;border-radius:999px;transition:.25s;display:inline-flex;align-items:center;gap:7px;box-shadow:0 6px 18px -8px var(--cyan);}
+  .nav-access:hover{transform:translateY(-1px);}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em;}
+  .logo{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--blue));box-shadow:0 6px 22px -6px var(--blue);}
+  .logo svg{transform:translateX(-1px);}
+  .brand small{display:block;font-family:var(--body);font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.04em;}
+  .ghlink{font-size:14px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--line);border-radius:999px;transition:.25s;}
+  .ghlink:hover{border-color:var(--cyan);color:var(--cyan);}
+  header{padding:60px 0 40px;display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:22px;display:inline-flex;align-items:center;gap:9px;opacity:0;animation:rise .7s .1s forwards;}
+  .kicker::before{content:'';width:26px;height:1px;background:var(--teal);}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,180,60,.55)}70%{box-shadow:0 0 0 8px rgba(255,180,60,0)}100%{box-shadow:0 0 0 0 rgba(255,180,60,0)}}
+  .pulse{width:8px;height:8px;border-radius:50%;background:#ffb43c;animation:pulse 2s infinite;}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,6vw,68px);line-height:1.02;letter-spacing:-.03em;margin-bottom:22px;opacity:0;animation:rise .7s .2s forwards;}
+  h1 .grad{background:linear-gradient(100deg,var(--teal),var(--cyan) 40%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lead{font-size:18px;color:var(--muted);max-width:30rem;margin-bottom:32px;opacity:0;animation:rise .7s .3s forwards;}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:rise .7s .4s forwards;}
+  .btn{font-family:var(--body);font-weight:600;font-size:15px;text-decoration:none;padding:14px 26px;border-radius:14px;display:inline-flex;align-items:center;gap:10px;transition:.25s;}
+  .btn-primary{color:#04121f;background:linear-gradient(120deg,var(--teal),var(--cyan));box-shadow:0 10px 30px -8px var(--cyan);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px -8px var(--cyan);}
+  .btn-ghost{color:var(--ink);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .mock{position:relative;opacity:0;animation:rise .8s .45s forwards;border:1px solid var(--line);border-radius:24px;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));backdrop-filter:blur(12px);box-shadow:0 40px 80px -30px rgba(0,0,0,.7);}
+  .mock-head{display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .mock-ava{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--blue));display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:15px;color:#fff;}
+  .mock-head b{font-size:15px;}
+  .mock-head span{font-size:12px;color:var(--teal);}
+  .bubbles{display:flex;flex-direction:column;gap:9px;}
+  .b{max-width:74%;padding:9px 14px;font-size:14px;border-radius:16px;}
+  .b.in{align-self:flex-start;background:rgba(255,255,255,.07);border-bottom-left-radius:5px;}
+  .b.out{align-self:flex-end;color:#04121f;background:linear-gradient(120deg,var(--teal),var(--cyan));border-bottom-right-radius:5px;}
+  .b small{display:block;font-size:10px;opacity:.65;text-align:right;margin-top:2px;}
+  section{padding:54px 0;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .sec-title{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,38px);letter-spacing:-.02em;margin-bottom:10px;}
+  .sec-sub{color:var(--muted);max-width:34rem;margin-bottom:34px;}
+  .skins{display:flex;gap:14px;flex-wrap:wrap;}
+  .skin{flex:1 1 160px;border:1px solid var(--line);border-radius:18px;padding:18px;background:var(--card);transition:.3s;position:relative;overflow:hidden;}
+  .skin:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);}
+  .skin b{font-family:var(--display);font-weight:600;font-size:16px;display:block;}
+  .skin p{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .preview{border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid var(--line);}
+  .pv-head{height:34px;display:flex;align-items:center;gap:7px;padding:0 11px;font-size:11px;font-weight:600;background:var(--ph);color:var(--pt);}
+  .pv-ava{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);flex:0 0 20px;}
+  .pv-head .st{font-size:9px;opacity:.85;font-weight:400;margin-left:auto;}
+  .pv-body{padding:11px;display:flex;flex-direction:column;gap:6px;min-height:84px;background:var(--pbg);}
+  .pv-b{font-size:10px;padding:5px 9px;border-radius:11px;max-width:80%;line-height:1.35;}
+  .pv-b.in{align-self:flex-start;border-bottom-left-radius:3px;background:var(--pin);color:var(--pinc);}
+  .pv-b.out{align-self:flex-end;border-bottom-right-radius:3px;background:var(--pout);color:var(--poutc);}
+  .s-web    {--ph:#5b8af1;--pt:#fff;--pbg:#eef1f5;--pin:#fff;--pinc:#1f2937;--pout:#eeffde;--poutc:#1f2937;}
+  .s-desktop{--ph:#40a7e3;--pt:#fff;--pbg:#e7edf0;--pin:#fff;--pinc:#1f2937;--pout:#eeffde;--poutc:#1f2937;}
+  .s-android{--ph:#2aabee;--pt:#fff;--pbg:#d2e0ea;--pin:#fff;--pinc:#1f2937;--pout:#e4fdd2;--poutc:#1f2937;}
+  .s-unigram{--ph:#2b7fe0;--pt:#fff;--pbg:#edf1f6;--pin:#fff;--pinc:#1f2937;--pout:#d7e9ff;--poutc:#0b3a66;}
+  .s-aurora {--ph:#161b22;--pt:#e6edf3;--pbg:#0d1117;--pin:#21262d;--pinc:#e6edf3;--pout:#1f6feb;--poutc:#fff;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .feat{border:1px solid var(--line);border-radius:18px;padding:24px;background:var(--card);transition:.3s;}
+  .feat:hover{border-color:var(--cyan);background:rgba(54,182,240,.06);}
+  .feat .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.05);margin-bottom:16px;color:var(--teal);}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:17px;margin-bottom:7px;letter-spacing:-.01em;}
+  .feat p{font-size:14px;color:var(--muted);}
+  .band{text-align:center;border:1px solid var(--line);border-radius:28px;padding:56px 28px;background:linear-gradient(135deg,rgba(62,224,199,.10),rgba(155,108,240,.10));backdrop-filter:blur(10px);}
+  .band h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;margin-bottom:14px;}
+  .band p{color:var(--muted);margin-bottom:28px;}
+  footer{border-top:1px solid var(--line);padding:30px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:13px;}
+  footer a{color:var(--muted);text-decoration:none;}
+  footer a:hover{color:var(--ink);}
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @media(max-width:860px){
+    header{grid-template-columns:1fr;gap:34px;}
+    .grid{grid-template-columns:1fr;}
+    .brand small{display:none;}
+    .nav-links{display:none;}
+    .ghlink{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="aurora"><i></i></div>
+
+<div class="netbar">
+  <div class="netbar-inner">
+    <span class="netbar-label">Red Todo Sobre AllTech</span>
+    <a href="https://todosobreall.tech">Inicio</a>
+    <a href="https://noticiasweb3.todosobreall.tech">Noticias Web3</a>
+    <a href="https://gamergitbug.todosobreall.tech">GamerGitBug</a>
+    <a href="https://todosobregameplays.todosobreall.tech">Gameplays</a>
+    <a href="https://resistenciaalacensura.todosobreall.tech">Resistencia Censura</a>
+    <a href="https://comunidadtelebots.todosobreall.tech">ComunidadTelebots</a>
+    <a class="cur" href="#">Telegram Web</a>
+  </div>
+</div>
+
+<div class="topbar"><span class="pulse"></span>Beta · pueden faltar funciones</div>
+
+<div class="site-header">
+  <div class="sh-inner">
+    <div class="brand">
+      <span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M22 3 2.5 10.6c-1.1.4-1 1 .1 1.3l4.9 1.5L20 5.3c.5-.4.9-.2.5.2L9.9 15.4l-.4 5.1c.5 0 .7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8L23.9 4.2c.3-1.3-.5-1.8-1.9-1.2Z"/></svg></span>
+      <div>Telegram Web<small>ComunidadTelebots</small></div>
+    </div>
+    <nav class="nav-links">
+      <a href="#disenos">Diseños</a>
+      <a href="#caracteristicas">Características</a>
+    </nav>
+    <div class="sh-right">
+      <a class="ghlink" href="https://github.com/ComunidadTelebots/telegram-react" target="_blank" rel="noopener">GitHub</a>
+      <a class="nav-access" href="https://t.me/cintiaandrea_bot" target="_blank" rel="noopener">Pedir acceso</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header>
+    <div>
+      <span class="kicker">Cliente web · TDLib + WebAssembly</span>
+      <h1>Tu Telegram,<br><span class="grad">cinco formas de verlo.</span></h1>
+      <p class="lead">Un cliente web de Telegram open source que corre entero en tu navegador. Cinco diseños conmutables, modo oscuro y soporte de proxy. Sin instalar nada.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://t.me/cintiaandrea_bot" target="_blank" rel="noopener">Pedir acceso</a>
+        <a class="btn btn-ghost" href="#disenos">Ver los diseños</a>
+      </div>
+    </div>
+    <div class="mock">
+      <div class="mock-head">
+        <div class="mock-ava">NW</div>
+        <div><b>Todo Sobre AllTech</b><span>en línea</span></div>
+      </div>
+      <div class="bubbles">
+        <div class="b in">¿Ya probaste el cliente web nuevo? 👀</div>
+        <div class="b out">Sí, va fluido y puedo cambiar el diseño<small>13:04</small></div>
+        <div class="b in">Brutal lo de los cinco skins</div>
+        <div class="b out">Y modo oscuro y proxy incluidos 🔒<small>13:05</small></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="disenos">
+    <div class="eyebrow">Diseños</div>
+    <h2 class="sec-title">Un cliente, cinco pieles</h2>
+    <p class="sec-sub">Cambia el aspecto al vuelo desde los ajustes. Cada skin reinterpreta el mismo Telegram con su propia identidad.</p>
+    <div class="skins">
+      <div class="skin s-web"><div class="preview"><div class="pv-head"><span class="pv-ava"></span>Telegram<span class="st">en línea</span></div><div class="pv-body"><div class="pv-b in">¡Hola! 👋</div><div class="pv-b out">Mira este diseño</div></div></div><b>Web</b><p>Clásico, limpio y neutro.</p></div>
+      <div class="skin s-desktop"><div class="preview"><div class="pv-head"><span class="pv-ava"></span>Telegram<span class="st">en línea</span></div><div class="pv-body"><div class="pv-b in">¿Qué tal el Desktop?</div><div class="pv-b out">Igual que la app</div></div></div><b>Desktop</b><p>Estilo Telegram Desktop.</p></div>
+      <div class="skin s-android"><div class="preview"><div class="pv-head"><span class="pv-ava"></span>Telegram<span class="st">escribiendo…</span></div><div class="pv-body"><div class="pv-b in">Header azul Material</div><div class="pv-b out">Muy nativo 💙</div></div></div><b>Android</b><p>Material, header azul.</p></div>
+      <div class="skin s-unigram"><div class="preview"><div class="pv-head"><span class="pv-ava"></span>Telegram<span class="st">en línea</span></div><div class="pv-body"><div class="pv-b in">Aire de Windows</div><div class="pv-b out">Limpio y sobrio</div></div></div><b>Unigram</b><p>Inspirado en Windows.</p></div>
+      <div class="skin s-aurora"><div class="preview"><div class="pv-head"><span class="pv-ava"></span>Telegram<span class="st">en línea</span></div><div class="pv-body"><div class="pv-b in">Modo oscuro propio</div><div class="pv-b out">Aurora ✨</div></div></div><b>Aurora</b><p>Diseño propio, oscuro.</p></div>
+    </div>
+  </section>
+
+  <section id="caracteristicas">
+    <div class="eyebrow">Por qué</div>
+    <h2 class="sec-title">Hecho con cabeza</h2>
+    <p class="sec-sub">Software libre, sin instalación y pensado para la privacidad.</p>
+    <div class="grid">
+      <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div><h3>Código abierto</h3><p>Todo el cliente es libre y auditable en GitHub.</p></div>
+      <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div><h3>Sin instalar nada</h3><p>Corre en el navegador. Abres la URL y listo.</p></div>
+      <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14l-2 9H7zM7 12l-2 9M17 12l2 9M4 21h16"/></svg></div><h3>TDLib + WASM</h3><p>El motor oficial de Telegram compilado a WebAssembly.</p></div>
+      <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></div><h3>Modo oscuro</h3><p>Claro y oscuro completos, consistentes en cada skin.</p></div>
+      <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Privacidad</h3><p>Soporte de proxy (incl. MTProxy) para conectar libremente.</p></div>
+      <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><h3>Cinco diseños</h3><p>Web, Desktop, Android, Unigram y Aurora, conmutables.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <h2>Únete a la beta</h2>
+      <p>Mientras está en desarrollo, el acceso es por invitación. Pide el tuyo y te avisamos.</p>
+      <a class="btn btn-primary" href="https://t.me/cintiaandrea_bot" target="_blank" rel="noopener" style="margin:0 auto;">Pedir acceso</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="y"></span> ComunidadTelebots · Telegram Web</span>
+    <span><a href="https://github.com/ComunidadTelebots/telegram-react" target="_blank" rel="noopener">GitHub</a> · Software libre basado en telegram-react · En desarrollo</span>
+  </footer>
+
+</div>
+<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
+</html>
