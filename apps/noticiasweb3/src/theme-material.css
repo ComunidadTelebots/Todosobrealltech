@@ -102,4 +102,127 @@
   .version-2026.platform-android .article {
     border-radius: 20px;
   }
+
+  /* Oculta la franja roja del hamburguesa: ahora el menu se abre desde
+     la pestaña "Mas" del bottom nav. Solo afecta a Android/2026. */
+  .version-2026.platform-android .nav-toggle {
+    display: none !important;
+  }
+
+  /* AdSense en movil:
+     - #banner-right desaparece (la columna lateral de 160px no cabe).
+     - #banner-top se ajusta al ancho disponible sin desbordar.
+     - #stage corta el scroll horizontal residual que provocaba el
+       position:absolute base de #banner-right. */
+  .version-2026.platform-android #banner-right {
+    display: none !important;
+  }
+  .version-2026.platform-android #banner-top {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    margin: 8px 0 !important;
+    padding: 0 12px;
+    overflow: hidden;
+  }
+  .version-2026.platform-android #stage {
+    overflow-x: hidden;
+  }
+
+  /* ============================================
+     Barra de navegacion inferior (Android, Material)
+     - Solo visible en movil y solo bajo .version-2026.platform-android.
+     - Pildora detras del icono activo usando --md-primary-container.
+     - Reserva espacio inferior en #stage para que el contenido no quede
+       oculto tras la barra.
+     ============================================ */
+  .version-2026.platform-android #stage {
+    padding-bottom: 72px;
+  }
+
+  .version-2026.platform-android .nw3-bottomnav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1900;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    height: 64px;
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
+    background: var(--md-surface);
+    border-top: 1px solid var(--md-outline);
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.08);
+    font-family: 'Roboto', 'Google Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  .version-2026.platform-android .nw3-bottomnav__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 2px;
+    border: none;
+    background: transparent;
+    color: var(--md-secondary);
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .version-2026.platform-android .nw3-bottomnav__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    height: 28px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 18px;
+    line-height: 1;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .version-2026.platform-android .nw3-bottomnav__item.is-active {
+    color: var(--md-primary);
+  }
+  .version-2026.platform-android .nw3-bottomnav__item.is-active .nw3-bottomnav__icon {
+    background: var(--md-primary-container);
+    color: var(--md-primary);
+  }
+
+  /* ============================================
+     FAB (Android, Material) — scroll-to-top
+     ============================================ */
+  .version-2026.platform-android .nw3-fab {
+    position: fixed;
+    right: 16px;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    z-index: 1950;
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 18px;
+    background: #6750A4;
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(103, 80, 164, 0.42), 0 2px 4px rgba(0,0,0,0.18);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .version-2026.platform-android .nw3-fab:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(103, 80, 164, 0.5), 0 3px 6px rgba(0,0,0,0.22);
+  }
+  .version-2026.platform-android .nw3-fab:active {
+    transform: scale(0.96);
+  }
 }

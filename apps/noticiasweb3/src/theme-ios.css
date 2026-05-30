@@ -104,4 +104,96 @@
   .version-2026.platform-ios .article {
     border-radius: 22px;
   }
+
+  /* Oculta la franja roja del hamburguesa: ahora el menu se abre desde
+     la pestaña "Mas" del bottom nav. Solo afecta a iOS/2026. */
+  .version-2026.platform-ios .nav-toggle {
+    display: none !important;
+  }
+
+  /* AdSense en movil:
+     - #banner-right desaparece (la columna lateral de 160px no cabe).
+     - #banner-top se ajusta al ancho disponible sin desbordar.
+     - #stage corta el scroll horizontal residual que provocaba el
+       position:absolute base de #banner-right. */
+  .version-2026.platform-ios #banner-right {
+    display: none !important;
+  }
+  .version-2026.platform-ios #banner-top {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    margin: 8px 0 !important;
+    padding: 0 12px;
+    overflow: hidden;
+  }
+  .version-2026.platform-ios #stage {
+    overflow-x: hidden;
+  }
+
+  /* ============================================
+     Tab bar inferior (iOS)
+     - Solo visible en movil y solo bajo .version-2026.platform-ios.
+     - Backdrop-filter blur sobre --ios-surface (ya semitransparente).
+     - Sin FAB: la guideline iOS no usa botones flotantes.
+     - Reserva espacio inferior en #stage para que el contenido no quede
+       oculto tras la barra.
+     ============================================ */
+  .version-2026.platform-ios #stage {
+    padding-bottom: 64px;
+  }
+
+  .version-2026.platform-ios .nw3-bottomnav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1900;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    height: 56px;
+    padding: 2px 4px calc(2px + env(safe-area-inset-bottom, 0px));
+    background: var(--ios-surface);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    backdrop-filter: saturate(180%) blur(22px);
+    border-top: 1px solid var(--ios-separator);
+    font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  }
+
+  .version-2026.platform-ios .nw3-bottomnav__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 2px;
+    border: none;
+    background: transparent;
+    color: #8e8e93;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    cursor: pointer;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .version-2026.platform-ios .nw3-bottomnav__icon {
+    font-size: 20px;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  .version-2026.platform-ios .nw3-bottomnav__item.is-active {
+    color: var(--ios-blue);
+  }
+  .version-2026.platform-ios .nw3-bottomnav__item.is-active .nw3-bottomnav__icon {
+    color: var(--ios-blue);
+  }
+  .version-2026.platform-ios .nw3-bottomnav__item:active {
+    opacity: 0.6;
+  }
 }

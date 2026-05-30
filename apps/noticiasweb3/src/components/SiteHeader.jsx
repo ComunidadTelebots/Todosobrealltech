@@ -86,19 +86,25 @@ export const navItems = [
   { label: 'gol television', path: 'http://www.goltelevision.com/', external: true },
 ];
 
-export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, onPlatformChange, isNightMode, onModeToggle }) {
+export default function SiteHeader({ siteVersion, onVersionChange, appPlatform, onPlatformChange, isNightMode, onModeToggle, mobileNavOpen = false, onMobileNavToggle }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [openItem, setOpenItem] = useState(null);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [hiddenNavPaths, setHiddenNavPaths] = useState([]);
   const [customNavItems, setCustomNavItems] = useState([]);
 
-  // Al navegar: cierra el drawer móvil y colapsa cualquier submenú abierto.
+  // Al navegar, colapsa cualquier submenú abierto. El drawer móvil se cierra
+  // desde Layout (App.jsx) porque su estado se levantó allí para que BottomNav
+  // pueda abrirlo sin duplicarlo.
   useEffect(() => {
     setOpenItem(null);
-    setMobileNavOpen(false);
   }, [location.pathname]);
+
+  const setMobileNavOpen = (v) => {
+    if (typeof onMobileNavToggle !== 'function') return;
+    if (typeof v === 'function') onMobileNavToggle(v(mobileNavOpen));
+    else onMobileNavToggle(v);
+  };
 
   useEffect(() => {
     pb.collection('nw3_settings').getFirstListItem('key="nav"')

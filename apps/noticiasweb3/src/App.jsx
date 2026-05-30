@@ -63,6 +63,8 @@ function PageTracker() {
 import SiteHeader from './components/SiteHeader.jsx';
 import AdSense from './components/AdSense.jsx';
 import Sidebar from './components/Sidebar.jsx';
+import BottomNav from './components/BottomNav.jsx';
+import Fab from './components/Fab.jsx';
 import BienvenidoPage from './pages/HomePage.jsx';
 import NoticiasPage from './pages/NoticiasPage.jsx';
 import NoticiaDetailPage from './pages/NoticiaDetailPage.jsx';
@@ -95,6 +97,8 @@ import EditarNoticiaPage from './pages/EditarNoticiaPage.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 
 function Layout({ children }) {
+  const location = useLocation();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [siteVersion, setSiteVersion] = useState(() => {
     if (typeof window === 'undefined') return '2014';
     return localStorage.getItem('nw3-version') || '2014';
@@ -156,6 +160,11 @@ function Layout({ children }) {
     };
   }, [isNightMode]);
 
+  // Cierra el drawer al navegar (estado lifted desde SiteHeader).
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
+
   return (
     <>
       <div id="banner-top">
@@ -172,6 +181,8 @@ function Layout({ children }) {
         onPlatformChange={setAppPlatform}
         isNightMode={isNightMode}
         onModeToggle={toggleMode}
+        mobileNavOpen={mobileNavOpen}
+        onMobileNavToggle={setMobileNavOpen}
       />
       <div id="container">
         <div id="content">
@@ -188,6 +199,12 @@ function Layout({ children }) {
       <div id="footer">
         <p>© {new Date().getFullYear()} NW3 - Noticiasweb3</p>
       </div>
+      <BottomNav
+        siteVersion={siteVersion}
+        appPlatform={appPlatform}
+        onOpenDrawer={() => setMobileNavOpen(true)}
+      />
+      <Fab siteVersion={siteVersion} appPlatform={appPlatform} />
     </div>
     </>
   );
