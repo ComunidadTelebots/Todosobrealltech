@@ -143,7 +143,141 @@
     .nav-links{display:none;}
     .ghlink{display:none;}
   }
+  /* ── Próximas funciones ── */
+  .nx-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .nx-card{border:1px solid var(--line);border-radius:18px;background:var(--card);overflow:hidden;transition:.3s;}
+  .nx-card:hover{border-color:var(--violet);background:rgba(155,108,240,.06);}
+  .nx-card h3{font-family:var(--display);font-weight:600;font-size:17px;margin:16px 20px 6px;letter-spacing:-.01em;}
+  .nx-card p{font-size:14px;color:var(--muted);margin:0 20px 14px;}
+  .nx-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 20px 18px;display:inline-block;}
+  .nx-mock{height:150px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:18px;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));}
+  /* 1 · historias: anillos */
+  .nx-ring{width:54px;height:54px;border-radius:50%;padding:4px;background:conic-gradient(var(--teal),var(--cyan) 35%,var(--violet) 70%,rgba(255,255,255,.14) 70% 82%,var(--teal) 82%);animation:nx-spin 3.5s linear infinite;}
+  .nx-ring i{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--bg2);font-style:normal;font-weight:700;font-family:var(--display);font-size:15px;animation:nx-spin 3.5s linear infinite reverse;}
+  .nx-ring.r2,.nx-ring.r2 i{animation-delay:-1.2s} .nx-ring.r3,.nx-ring.r3 i{animation-delay:-2.4s}
+  @keyframes nx-spin{to{transform:rotate(360deg)}}
+  /* 2 · skins 5→9: chat que muda de piel */
+  .nx-skinchat{width:76%;max-width:230px;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
+  .nx-sc-head{height:26px;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:10px;font-weight:600;animation:nx-skinhead 9s steps(1) infinite;}
+  .nx-sc-head em{font-style:normal;margin-left:auto;font-size:8px;opacity:.8;}
+  .nx-sc-body{padding:8px;display:flex;flex-direction:column;gap:5px;animation:nx-skinbody 9s steps(1) infinite;}
+  .nx-sc-b{font-size:9px;padding:4px 8px;border-radius:9px;max-width:78%;line-height:1.3;}
+  .nx-sc-b.in{align-self:flex-start;border-bottom-left-radius:3px;animation:nx-skinin 9s steps(1) infinite;}
+  .nx-sc-b.out{align-self:flex-end;border-bottom-right-radius:3px;animation:nx-skinout 9s steps(1) infinite;}
+  @keyframes nx-skinhead{0%,100%{background:#5b8af1;color:#fff}25%{background:#2aabee;color:#fff}50%{background:#2b7fe0;color:#fff}75%{background:#161b22;color:#e6edf3}}
+  @keyframes nx-skinbody{0%,100%{background:#eef1f5}25%{background:#d2e0ea}50%{background:#edf1f6}75%{background:#0d1117}}
+  @keyframes nx-skinin{0%,50%,100%{background:#fff;color:#1f2937}75%{background:#21262d;color:#e6edf3}}
+  @keyframes nx-skinout{0%,100%{background:#eeffde;color:#1f2937}25%{background:#e4fdd2;color:#1f2937}50%{background:#d7e9ff;color:#0b3a66}75%{background:#1f6feb;color:#fff}}
+  .nx-count{position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:10px;color:var(--violet);letter-spacing:.1em;}
+  /* 3 · galería: celdas que aparecen */
+  .nx-gal{display:grid;grid-template-columns:repeat(4,34px);gap:7px;}
+  .nx-gal i{width:34px;height:34px;border-radius:9px;opacity:0;animation:nx-pop 5.2s ease infinite;background:linear-gradient(135deg,var(--cyan),var(--blue));}
+  .nx-gal i:nth-child(3n){background:linear-gradient(135deg,var(--teal),var(--green));}
+  .nx-gal i:nth-child(4n){background:linear-gradient(135deg,var(--violet),var(--blue));}
+  .nx-gal i:nth-child(2){animation-delay:.35s}.nx-gal i:nth-child(3){animation-delay:.7s}.nx-gal i:nth-child(4){animation-delay:1.05s}
+  .nx-gal i:nth-child(5){animation-delay:1.4s}.nx-gal i:nth-child(6){animation-delay:1.75s}.nx-gal i:nth-child(7){animation-delay:2.1s}.nx-gal i:nth-child(8){animation-delay:2.45s}
+  @keyframes nx-pop{0%{opacity:0;transform:scale(.55)}9%,72%{opacity:1;transform:scale(1)}88%,100%{opacity:0;transform:scale(.55)}}
+  /* 4 · stack: versiones que se actualizan */
+  .nx-stack{font-family:var(--mono);font-size:11px;width:76%;max-width:230px;display:flex;flex-direction:column;gap:7px;}
+  .nx-row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:9px;padding:6px 10px;background:rgba(0,0,0,.28);color:var(--muted);}
+  .nx-flip{height:16px;overflow:hidden;text-align:right;}
+  .nx-flip div{animation:nx-roll 4.2s cubic-bezier(.5,0,.2,1) infinite;}
+  .nx-row:nth-child(2) .nx-flip div{animation-delay:.5s}
+  .nx-row:nth-child(3) .nx-flip div{animation-delay:1s}
+  .nx-flip span{display:block;height:16px;line-height:16px;}
+  .nx-flip .old{text-decoration:line-through;opacity:.65;}
+  .nx-flip .new{color:var(--green);}
+  @keyframes nx-roll{0%,42%{transform:translateY(0)}58%,100%{transform:translateY(-16px)}}
+  @media(max-width:860px){.nx-grid{grid-template-columns:1fr;}}
+  /* accesibilidad: sin movimiento */
+  @media (prefers-reduced-motion: reduce){
+    .nx-ring,.nx-ring i,.nx-sc-head,.nx-sc-body,.nx-sc-b.in,.nx-sc-b.out,
+    .nx-gal i,.nx-flip div,.aurora::before,.aurora::after,.aurora i,.pulse{animation:none;}
+    .nx-gal i{opacity:1;transform:none;}
+    .nx-flip div{transform:translateY(-16px);}
+  }
+
+  /* ── Timeline con maquetas (.tl-*) ── */
+  .tl-line{max-width:640px;margin:26px auto 0;position:relative;padding-left:28px;}
+  .tl-line::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--teal),var(--cyan),var(--violet));}
+  .tl-v{position:relative;margin-bottom:14px;}
+  .tl-v::before{content:"";position:absolute;left:-28px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 0 4px rgba(54,182,240,.1);}
+  .tl-v.tl-now::before{background:var(--teal);border-color:var(--teal);box-shadow:0 0 0 5px rgba(62,224,199,.18);}
+  .tl-v.tl-base::before{border-color:var(--violet);box-shadow:0 0 0 4px rgba(155,108,240,.12);}
+  .tl-card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;display:flex;gap:12px;align-items:center;transition:border-color .25s;}
+  .tl-card:hover{border-color:var(--cyan);}
+  .tl-txt{flex:1;min-width:0;}
+  .tl-h{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+  .tl-n{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink);}
+  .tl-d{font-family:var(--mono);font-size:10px;color:var(--muted);}
+  .tl-now-tag{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#06101c;background:var(--teal);border-radius:20px;padding:2px 7px;font-weight:700;}
+  .tl-t{font-family:var(--display);font-weight:600;font-size:13px;margin:0 0 3px;}
+  .tl-ds{font-size:11.5px;color:var(--muted);margin:0;line-height:1.4;}
+  .tl-mk{width:104px;height:64px;flex:none;border-radius:9px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));display:flex;align-items:center;justify-content:center;gap:7px;overflow:hidden;position:relative;}
+  @media(max-width:540px){.tl-card{flex-direction:column-reverse;align-items:stretch;}.tl-mk{width:100%;height:72px;}}
+
+  @keyframes tlx-spin{to{transform:rotate(360deg)}}
+  .tlx-tut{position:relative;width:84px;height:42px;border-radius:6px;border:1px solid var(--line);background:var(--bg2);}
+  .tlx-tut .tlx-dot{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--teal);top:24px;animation:tlx-tutm 4s ease-in-out infinite;}
+  .tlx-tut .tlx-tip{position:absolute;top:5px;left:6px;font-size:7px;color:var(--ink);background:rgba(62,224,199,.15);border:1px solid rgba(62,224,199,.3);border-radius:4px;padding:1px 4px;}
+  @keyframes tlx-tutm{0%{left:8px}33%{left:36px}66%{left:66px}100%{left:8px}}
+  .tlx-ring{width:34px;height:34px;border-radius:50%;padding:3px;background:conic-gradient(var(--teal),var(--cyan) 35%,var(--violet) 70%,rgba(255,255,255,.18) 70% 82%,var(--teal) 82%);animation:tlx-spin 3s linear infinite;}
+  .tlx-ring i{display:block;width:100%;height:100%;border-radius:50%;background:var(--bg2);border:2px solid var(--bg);}
+  .tlx-emo{font-size:18px;animation:tlx-emob 1.8s ease-in-out infinite;}
+  @keyframes tlx-emob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.15)}}
+  .tlx-skinx{width:74px;border-radius:7px;overflow:hidden;border:1px solid var(--line);animation:tlx-xpul 3s ease-in-out infinite;}
+  .tlx-skinx .tlx-h{height:13px;background:linear-gradient(90deg,#50a8eb,#3b82f6);}
+  .tlx-skinx .tlx-b{background:#eff3f8;padding:4px;display:flex;flex-direction:column;gap:3px;}
+  .tlx-skinx .tlx-bub{height:6px;border-radius:3px;width:60%;background:#50a8eb;}
+  .tlx-skinx .tlx-bub.l{background:#dbe6f0;align-self:flex-start;}
+  @keyframes tlx-xpul{0%,100%{box-shadow:0 0 0 0 rgba(80,168,235,0)}50%{box-shadow:0 0 10px 0 rgba(80,168,235,.5)}}
+  .tlx-skg{display:grid;grid-template-columns:repeat(3,15px);grid-auto-rows:15px;gap:4px;}
+  .tlx-skg i{width:15px;height:15px;border-radius:4px;display:block;animation:tlx-skg 4.5s ease-in-out infinite;}
+  .tlx-skg i:nth-child(1){background:#3b82f6}.tlx-skg i:nth-child(2){background:#34d399;animation-delay:.5s}.tlx-skg i:nth-child(3){background:#50a8eb;animation-delay:1s}
+  .tlx-skg i:nth-child(4){background:#a78bfa;animation-delay:1.5s}.tlx-skg i:nth-child(5){background:#f59e0b;animation-delay:2s}.tlx-skg i:nth-child(6){background:#ec4899;animation-delay:2.5s}
+  .tlx-skg i:nth-child(7){background:#14b8a6;animation-delay:3s}.tlx-skg i:nth-child(8){background:#6366f1;animation-delay:3.5s}.tlx-skg i:nth-child(9){background:#ef4444;animation-delay:4s}
+  @keyframes tlx-skg{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.15);filter:brightness(1.5)}}
+  .tlx-fmt{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:left;line-height:1.7;}
+  .tlx-fmt b{color:var(--ink)}.tlx-fmt em{color:var(--cyan)}.tlx-fmt s{color:var(--violet)}
+  .tlx-cur{animation:tlx-blink 1s steps(1) infinite;}
+  @keyframes tlx-blink{50%{opacity:0}}
+  .tlx-typ{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);}
+  .tlx-typ .tlx-td{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:tlx-typ 1.4s ease-in-out infinite;}
+  .tlx-typ .tlx-td:nth-child(2){animation-delay:.2s}.tlx-typ .tlx-td:nth-child(3){animation-delay:.4s}
+  @keyframes tlx-typ{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+  .tlx-iv{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:#06101c;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:6px;padding:5px 9px;position:relative;overflow:hidden;}
+  .tlx-iv::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:tlx-sheen 2.4s ease-in-out infinite;}
+  @keyframes tlx-sheen{0%{left:-60%}60%,100%{left:120%}}
+  .tlx-rr{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
+  .tlx-rr .tlx-rb{background:#1f6feb;border-radius:8px 8px 2px 8px;height:13px;width:50px;}
+  .tlx-rr .tlx-chk{font-size:11px;color:var(--cyan);animation:tlx-chk 3s ease-in-out infinite;}
+  @keyframes tlx-chk{0%,40%{color:var(--muted)}55%,100%{color:var(--cyan)}}
+  .tlx-keys{display:flex;gap:4px;}
+  .tlx-key{font-family:var(--mono);font-size:9px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:4px 7px;background:var(--bg2);animation:tlx-press 2.5s ease-in-out infinite;}
+  .tlx-key:nth-child(2){animation-delay:.15s}
+  @keyframes tlx-press{0%,80%,100%{transform:translateY(0);border-bottom-width:2px}85%{transform:translateY(1px);border-bottom-width:1px}}
+  .tlx-qr{width:42px;height:42px;border-radius:4px;background:linear-gradient(90deg,var(--ink) 50%,transparent 50%),linear-gradient(var(--ink) 50%,transparent 50%);background-size:8px 8px;background-color:var(--bg2);border:3px solid var(--bg2);opacity:.85;animation:tlx-qrf 2.5s ease-in-out infinite;}
+  @keyframes tlx-qrf{0%,100%{opacity:.4}50%{opacity:.9}}
+  .tlx-gift{font-size:26px;animation:tlx-gift 2s ease-in-out infinite;}
+  @keyframes tlx-gift{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.1)}}
+  .tlx-fork{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--violet);}
+  .tlx-fork svg{width:26px;height:26px;}
+  .tlx-fork span{font-family:var(--mono);font-size:7px;color:var(--muted);}
+
+  /* accesibilidad: sin movimiento */
+  @media (prefers-reduced-motion: reduce){
+    .tlx-dot,.tlx-ring,.tlx-emo,.tlx-skinx,.tlx-skg i,.tlx-cur,.tlx-typ .tlx-td,
+    .tlx-iv::after,.tlx-rr .tlx-chk,.tlx-key,.tlx-qr,.tlx-gift{animation:none;}
+    .tlx-rr .tlx-chk{color:var(--cyan);}
+  }
 </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F5P08EW3SV');
+</script>
 </head>
 <body>
 <div class="aurora"><i></i></div>
@@ -175,7 +309,7 @@
     </nav>
     <div class="sh-right">
       <a class="ghlink" href="https://github.com/ComunidadTelebots/telegram-react" target="_blank" rel="noopener">GitHub</a>
-      <a class="nav-access" href="https://t.me/cintiaandrea_bot" target="_blank" rel="noopener">Pedir acceso</a>
+      <a class="nav-access" href="https://t.me/comunidadtelebots" target="_blank" rel="noopener">Pedir acceso</a>
     </div>
   </div>
 </div>
@@ -188,7 +322,7 @@
       <h1>Tu Telegram,<br><span class="grad">cinco formas de verlo.</span></h1>
       <p class="lead">Un cliente web de Telegram open source que corre entero en tu navegador. Cinco diseños conmutables, modo oscuro y soporte de proxy. Sin instalar nada.</p>
       <div class="cta">
-        <a class="btn btn-primary" href="https://t.me/cintiaandrea_bot" target="_blank" rel="noopener">Pedir acceso</a>
+        <a class="btn btn-primary" href="https://t.me/comunidadtelebots" target="_blank" rel="noopener">Pedir acceso</a>
         <a class="btn btn-ghost" href="#disenos">Ver los diseños</a>
       </div>
     </div>
@@ -233,11 +367,98 @@
     </div>
   </section>
 
+  <section id="proximas">
+    <div class="eyebrow">Hoja de ruta</div>
+    <h2 class="sec-title">Próximas funciones</h2>
+    <p class="sec-sub">En lo que estamos trabajando para las siguientes versiones de la beta.</p>
+    <div class="nx-grid">
+      <article class="nx-card">
+        <div class="nx-mock">
+          <div class="nx-ring"><i>NW</i></div>
+          <div class="nx-ring r2"><i>CT</i></div>
+          <div class="nx-ring r3"><i>+</i></div>
+        </div>
+        <h3>Publicar historias</h3>
+        <p>Mira y publica historias desde el navegador, con anillos de estado como en la app.</p>
+        <span class="nx-tag">Próximamente</span>
+      </article>
+      <article class="nx-card">
+        <div class="nx-mock">
+          <span class="nx-count">5 → 9 diseños</span>
+          <div class="nx-skinchat">
+            <div class="nx-sc-head">Telegram<em>en línea</em></div>
+            <div class="nx-sc-body">
+              <div class="nx-sc-b in">Nueva piel cada temporada</div>
+              <div class="nx-sc-b out">Mira cómo cambia ✨</div>
+            </div>
+          </div>
+        </div>
+        <h3>Más diseños: de 5 a 9</h3>
+        <p>Cuatro pieles nuevas en camino. El mismo chat, más formas de verlo.</p>
+        <span class="nx-tag">En desarrollo</span>
+      </article>
+      <article class="nx-card">
+        <div class="nx-mock">
+          <div class="nx-gal"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <h3>Galería de medios</h3>
+        <p>Fotos, vídeos y archivos del chat en una cuadrícula rápida y filtrable.</p>
+        <span class="nx-tag">Próximamente</span>
+      </article>
+      <article class="nx-card">
+        <div class="nx-mock">
+          <div class="nx-stack">
+            <div class="nx-row">react <span class="nx-flip"><div><span class="old">16.x</span><span class="new">18.x</span></div></span></div>
+            <div class="nx-row">material-ui <span class="nx-flip"><div><span class="old">4</span><span class="new">5</span></div></span></div>
+            <div class="nx-row">calidad <span class="nx-flip"><div><span class="old">—</span><span class="new">eslint + prettier</span></div></span></div>
+          </div>
+        </div>
+        <h3>Stack modernizado</h3>
+        <p>Migración del núcleo a dependencias actuales: más rápido y más mantenible.</p>
+        <span class="nx-tag">En curso</span>
+      </article>
+    </div>
+  </section>
+
+<section id="historial">
+  <div class="eyebrow">Historial</div>
+  <h2 class="sec-title">Qué hay de nuevo</h2>
+  <p class="sec-sub">Cada versión, con una muestra de lo añadido — desde la base del fork.</p>
+
+  <div class="tl-line">
+
+    <div class="tl-v tl-now"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.12</span><span class="tl-d">· 31 May 2026</span><span class="tl-now-tag">actual</span></div><p class="tl-t">Tutorial y pulido</p><p class="tl-ds">Tutorial interactivo con demos visuales · scroll de chats más fluido</p></div><div class="tl-mk"><div class="tlx-tut"><span class="tlx-tip">Paso 1</span><span class="tlx-dot"></span></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.11</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Historias y emoji animado</p><p class="tl-ds">Stories con anillos y visor a pantalla completa · emoji animado en el texto</p></div><div class="tl-mk"><div class="tlx-ring"><i></i></div><span class="tlx-emo">😄</span></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.10</span><span class="tl-d">· 30 May 2026</span></div><p class="tl-t">Diseños Android y Telegram X</p><p class="tl-ds">Nuevo skin Telegram X independiente · eras Android históricas</p></div><div class="tl-mk"><div class="tlx-skinx"><div class="tlx-h"></div><div class="tlx-b"><div class="tlx-bub l"></div><div class="tlx-bub"></div></div></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.9</span><span class="tl-d">· 30 May 2026</span></div><p class="tl-t">El sistema de diseños</p><p class="tl-ds">9 skins conmutables, cada uno con su acento, tipografía y modo oscuro</p></div><div class="tl-mk"><div class="tlx-skg"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.8</span><span class="tl-d">· 21 May 2026</span></div><p class="tl-t">Tiempo real y formato</p><p class="tl-ds">Formato al enviar mensajes · nombre y foto al instante · votos reales</p></div><div class="tl-mk"><div class="tlx-fmt"><b>negrita</b><br><em>cursiva</em> <s>spoiler</s><span class="tlx-cur">▋</span></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.7</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Chats al día</p><p class="tl-ds">Fijar chats y borradores al instante · indicadores de escritura completos</p></div><div class="tl-mk"><div class="tlx-typ"><span class="tlx-td"></span><span class="tlx-td"></span><span class="tlx-td"></span><span style="margin-left:3px">escribiendo</span></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.6</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Instant View y AMP</p><p class="tl-ds">Lector integrado para páginas rápidas, sin salir de la app</p></div><div class="tl-mk"><span class="tlx-iv">⚡ Instant View</span></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.5</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Mensajería en tiempo real</p><p class="tl-ds">Editar/borrar, búsqueda global, notas de voz y vídeo, ubicación</p></div><div class="tl-mk"><div class="tlx-rr"><div class="tlx-rb"></div><span class="tlx-chk">✓✓</span></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.4</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Herramientas y atajos</p><p class="tl-ds">Sesiones activas, admin, read receipts, Picture-in-Picture, Ctrl+K</p></div><div class="tl-mk"><div class="tlx-keys"><span class="tlx-key">Ctrl</span><span class="tlx-key">K</span></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.3</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Login QR y visor</p><p class="tl-ds">Inicio de sesión por código QR · copiar imagen e info de archivo</p></div><div class="tl-mk"><div class="tlx-qr"></div></div></div></div>
+
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.2</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Primeros tipos de mensaje</p><p class="tl-ds">Sorteos y alertas con tarjeta visual · enviar sin notificación</p></div><div class="tl-mk"><span class="tlx-gift">🎁</span></div></div></div>
+
+    <div class="tl-v tl-base"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.1</span><span class="tl-d">· base del fork</span></div><p class="tl-t">Punto de partida</p><p class="tl-ds">Fork de telegram-react (evgeny-nadymov): TDLib + WebAssembly + React. Heredado: reacciones, carpetas, multicuenta, chats secretos, stickers TGS.</p></div><div class="tl-mk"><div class="tlx-fork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V9"/><path d="M12 15v3"/></svg><span>fork</span></div></div></div></div>
+
+  </div>
+</section>
+
   <section>
     <div class="band">
       <h2>Únete a la beta</h2>
       <p>Mientras está en desarrollo, el acceso es por invitación. Pide el tuyo y te avisamos.</p>
-      <a class="btn btn-primary" href="https://t.me/cintiaandrea_bot" target="_blank" rel="noopener" style="margin:0 auto;">Pedir acceso</a>
+      <a class="btn btn-primary" href="https://t.me/comunidadtelebots" target="_blank" rel="noopener" style="margin:0 auto;">Pedir acceso</a>
     </div>
   </section>
 
