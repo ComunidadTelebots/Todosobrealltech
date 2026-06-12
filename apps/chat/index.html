@@ -290,11 +290,93 @@
   .tlx-mini.m4{background:linear-gradient(135deg,var(--violet),var(--teal));}
   .tlx-mini.m5{background:linear-gradient(135deg,var(--teal),var(--violet));grid-column:span 2;}
 
+  .tl-feat{grid-template-columns:14px 1fr 60px;align-items:center;}
+  .tl-feat .ft-body{min-width:0;}
+  .tl-feat .ft-t{font-family:var(--display);font-weight:600;font-size:12px;color:var(--ink);margin:0 0 1px;}
+  .tl-feat .ft-d{font-size:10px;color:var(--muted);line-height:1.35;margin:0;}
+  .tl-feat .ft-h{font-family:var(--mono);font-size:8.5px;color:var(--muted);margin-left:5px;background:rgba(255,255,255,.04);padding:1px 4px;border-radius:3px;}
+  .ft-mk{width:60px;height:38px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);display:flex;align-items:center;justify-content:center;padding:4px;overflow:hidden;}
+  .d6{background:linear-gradient(135deg,var(--teal),var(--green));}
+  .d7{background:linear-gradient(135deg,var(--green),var(--cyan));}
+  .d8{background:linear-gradient(135deg,#fba76f,var(--violet));}
+  .d9{background:linear-gradient(135deg,var(--violet),#fba76f);}
+  .d10{background:linear-gradient(135deg,var(--teal),#fba76f);}
+  .d11{background:linear-gradient(135deg,#fba76f,var(--teal));}
+  .d12{background:linear-gradient(135deg,var(--cyan),#fba76f);}
+
+  .mk-voice{display:flex;align-items:center;gap:1.5px;height:100%;}
+  .mk-voice i{width:2px;border-radius:1px;background:var(--teal);animation:mk-voice 1.4s ease-in-out infinite;}
+  .mk-voice i:nth-child(1){height:30%}.mk-voice i:nth-child(2){height:55%;animation-delay:.1s}
+  .mk-voice i:nth-child(3){height:80%;animation-delay:.2s}.mk-voice i:nth-child(4){height:100%;animation-delay:.3s}
+  .mk-voice i:nth-child(5){height:65%;animation-delay:.4s}.mk-voice i:nth-child(6){height:45%;animation-delay:.5s}
+  .mk-voice i:nth-child(7){height:75%;animation-delay:.6s}.mk-voice i:nth-child(8){height:90%;animation-delay:.7s}
+  .mk-voice i:nth-child(9){height:50%;animation-delay:.8s}.mk-voice i:nth-child(10){height:35%;animation-delay:.9s}
+  @keyframes mk-voice{0%,100%{opacity:.4}50%{opacity:1}}
+
+  .mk-typ{display:flex;gap:3px;}
+  .mk-typ i{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:mk-typ 1.4s ease-in-out infinite;}
+  .mk-typ i:nth-child(2){animation-delay:.2s}.mk-typ i:nth-child(3){animation-delay:.4s}
+  @keyframes mk-typ{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+
+  .mk-search{display:flex;align-items:center;gap:3px;width:90%;}
+  .mk-search .ph{flex:1;height:3px;border-radius:1px;background:var(--muted);opacity:.4;}
+  .mk-link{display:flex;gap:3px;width:100%;height:100%;}
+  .mk-link .ll{width:3px;border-radius:2px;background:var(--cyan);}
+  .mk-link .lt{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+  .mk-link .lt b{height:3px;border-radius:1px;background:var(--ink);width:80%;display:block;}
+  .mk-link .lt span{height:2px;border-radius:1px;background:var(--muted);width:60%;display:block;}
+  .mk-pin,.mk-mute,.mk-block,.mk-dl{font-size:16px;line-height:1;}
+  .mk-pin{color:var(--teal);}.mk-block{color:#fba76f;}
+  .mk-poll{width:100%;display:flex;flex-direction:column;gap:2px;}
+  .mk-poll i{height:3px;border-radius:2px;background:rgba(54,182,240,.25);position:relative;overflow:hidden;display:block;}
+  .mk-poll i::after{content:"";position:absolute;left:0;top:0;height:100%;background:var(--cyan);border-radius:2px;}
+  .mk-poll i:nth-child(1)::after{width:75%}.mk-poll i:nth-child(2)::after{width:40%}.mk-poll i:nth-child(3)::after{width:20%}
+  .mk-edit{font-family:var(--mono);font-size:8px;color:var(--cyan);line-height:1.4;}
+  .mk-edit span{color:#fba76f;}
+  .mk-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:2px;width:100%;height:100%;}
+  .mk-grid i{border-radius:2px;animation:mk-gpop 5.2s ease infinite;opacity:0;}
+  .mk-grid i:nth-child(1){background:var(--teal)}.mk-grid i:nth-child(2){background:var(--cyan);animation-delay:.3s}
+  .mk-grid i:nth-child(3){background:var(--violet);animation-delay:.6s}.mk-grid i:nth-child(4){background:var(--blue);animation-delay:.9s}
+  .mk-grid i:nth-child(5){background:var(--green);animation-delay:1.2s}.mk-grid i:nth-child(6){background:#fba76f;animation-delay:1.5s}
+  @keyframes mk-gpop{0%{opacity:0;transform:scale(.5)}10%,80%{opacity:1;transform:scale(1)}90%,100%{opacity:0;transform:scale(.5)}}
+  .mk-fork{font-size:14px;color:var(--violet);line-height:1;}
+  .mk-folder{font-size:14px;}.mk-stickers{font-size:14px;}.mk-secret{font-size:14px;color:var(--green);}
+  .mk-spoiler{width:100%;height:60%;background:repeating-linear-gradient(45deg,var(--violet),var(--violet) 2px,transparent 2px,transparent 4px);border-radius:2px;animation:mk-spl 2s ease-in-out infinite;}
+  @keyframes mk-spl{0%,100%{opacity:.5}50%{opacity:1}}
+  .mk-multi{display:flex;align-items:center;}
+  .mk-multi i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--bg);margin-left:-3px;display:block;}
+  .mk-multi i:nth-child(1){background:var(--teal);margin-left:0}
+  .mk-multi i:nth-child(2){background:var(--cyan)}.mk-multi i:nth-child(3){background:var(--violet)}
+  .mk-qr{width:30px;height:30px;border-radius:3px;background:linear-gradient(90deg,var(--ink) 50%,transparent 50%),linear-gradient(var(--ink) 50%,transparent 50%);background-size:6px 6px;background-color:var(--bg2);border:2px solid var(--bg2);}
+  .mk-gift,.mk-dice,.mk-pip{font-size:14px;line-height:1;}
+  .mk-ses{display:flex;flex-direction:column;gap:2px;width:100%;}
+  .mk-ses i{height:4px;border-radius:1px;background:rgba(62,224,199,.06);border:1px solid rgba(62,224,199,.3);display:block;}
+  .mk-keys{display:flex;gap:2px;}
+  .mk-keys span{font-family:var(--mono);font-size:7px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:2px 4px;background:var(--bg2);color:var(--ink);}
+  .mk-iv-s{display:inline-flex;align-items:center;gap:2px;font-size:8px;font-weight:700;color:#06101c;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:4px;padding:3px 5px;}
+  .mk-amp{font-family:var(--mono);font-size:8px;color:var(--teal);}
+  .mk-skin-s{width:30px;height:24px;border-radius:3px;overflow:hidden;border:1px solid var(--line);animation:mk-skin 6s steps(1) infinite;}
+  .mk-skin-s div{height:50%;}
+  @keyframes mk-skin{0%,25%{background:#5b8af1}25%,50%{background:#2aabee}50%,75%{background:#161b22}75%,100%{background:#5b8af1}}
+  .mk-tut-s{position:relative;width:100%;height:80%;border-radius:3px;border:1px solid var(--line);background:var(--bg2);}
+  .mk-tut-s .d{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--teal);top:50%;animation:mk-tutd 3s ease-in-out infinite;}
+  @keyframes mk-tutd{0%{left:10%}50%{left:75%}100%{left:10%}}
+  .mk-ring-s{width:22px;height:22px;border-radius:50%;padding:2px;background:conic-gradient(var(--teal),var(--violet));animation:tlx-spin 3s linear infinite;}
+  .mk-ring-s i{display:block;width:100%;height:100%;border-radius:50%;background:var(--bg2);}
+  .mk-emo-s{font-size:14px;animation:tlx-emob 1.8s ease-in-out infinite;}
+  .mk-live{display:flex;align-items:center;gap:3px;font-size:8px;color:var(--green);font-family:var(--mono);}
+  .mk-live::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--green);animation:mk-pulse 1.5s ease-in-out infinite;}
+  @keyframes mk-pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .mk-vid-circ{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,var(--cyan),var(--blue));border:1.5px solid var(--ink);}
+  .mk-bot-s{font-size:14px;}
+
   /* accesibilidad: sin movimiento */
   @media (prefers-reduced-motion: reduce){
     .tlx-dot,.tlx-ring,.tlx-emo,.tlx-skinx,.tlx-skg i,.tlx-cur,.tlx-typ .tlx-td,
     .tlx-iv::after,.tlx-rr .tlx-chk,.tlx-key,.tlx-qr,.tlx-gift{animation:none;}
     .tlx-rr .tlx-chk{color:var(--cyan);}
+    .mk-voice i,.mk-typ i,.mk-grid i,.mk-spoiler,.mk-multi i,.mk-skin-s,.mk-tut-s .d,.mk-ring-s,.mk-emo-s,.mk-live::before{animation:none;}
+    .mk-grid i{opacity:1;}
   }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
@@ -457,10 +539,35 @@
   <div class="tl-card tl-expand">
     <div class="tl-row">
       <div class="tl-txt">
+        <div class="tl-h"><span class="tl-n">v0.14</span><span class="tl-d">· 12 Jun 2026</span><span class="tl-now-tag">actual</span><span class="tl-count">11 features</span></div>
+        <p class="tl-t">Admin, descargas, SharedMedia y notificaciones</p>
+        <p class="tl-ds">Once mejoras en producción: herramientas de admin, descargas directas, pestañas de medios, notificaciones con foto, boost de canal y seis pulidos más.</p>
+        <button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button>
+      </div>
+      <div class="tl-mk"><div class="tlx-stack5"><span class="tlx-mini m1">⚒</span><span class="tlx-mini m2">⬇</span><span class="tlx-mini m3">▦</span><span class="tlx-mini m4">🔔</span><span class="tlx-mini m5">⭐</span></div></div>
+    </div>
+    <div class="tl-details">
+      <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Admin en menú contextual <span class="ft-h">69b7e154</span></p><p class="ft-d">Banear, eliminar mensajes de usuario, info del mensaje.</p></div><div class="ft-mk"><span class="mk-block">⚒</span></div></div>
+      <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Descargar media <span class="ft-h">7c90d1d3</span></p><p class="ft-d">Foto, vídeo, doc, audio y voz desde el menú.</p></div><div class="ft-mk"><span class="mk-dl">⬇</span></div></div>
+      <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">SharedMedia con scroll infinito <span class="ft-h">931eb56e</span></p><p class="ft-d">Media, Docs, Links, Audio, Voz, Grupos con contenido real.</p></div><div class="ft-mk"><div class="mk-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+      <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Notificaciones mejoradas <span class="ft-h">73428f60</span></p><p class="ft-d">Foto del chat, nombre del remitente, clic abre el chat.</p></div><div class="ft-mk"><span style="font-size:14px">🔔</span></div></div>
+      <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Boost de canal <span class="ft-h">8ad16185</span></p><p class="ft-d">Diálogo de nivel, progreso y aplicar boost.</p></div><div class="ft-mk"><span style="font-size:14px;color:var(--teal)">⭐</span></div></div>
+      <div class="tl-feat"><span class="dot d6"></span><div class="ft-body"><p class="ft-t">Modo oscuro automático <span class="ft-h">f28d38ba</span></p><p class="ft-d">Sigue prefers-color-scheme del sistema.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+      <div class="tl-feat"><span class="dot d7"></span><div class="ft-body"><p class="ft-t">AMP + Instant View juntos <span class="ft-h">81030d0c</span></p><p class="ft-d">Ya no son excluyentes, ambos botones a la vez.</p></div><div class="ft-mk"><span class="mk-iv-s">⚡ IV</span></div></div>
+      <div class="tl-feat"><span class="dot d8"></span><div class="ft-body"><p class="ft-t">Barra de progreso de lectura <span class="ft-h">c75f573b</span></p><p class="ft-d">Sigue el scroll dentro del lector IV.</p></div><div class="ft-mk"><span style="font-size:14px">📖</span></div></div>
+      <div class="tl-feat"><span class="dot d9"></span><div class="ft-body"><p class="ft-t">Tablas legibles en oscuro <span class="ft-h">Article.css</span></p><p class="ft-d">Modo oscuro consistente en tablas de IV.</p></div><div class="ft-mk"><span style="font-size:11px">▦</span></div></div>
+      <div class="tl-feat"><span class="dot d10"></span><div class="ft-body"><p class="ft-t">Mini-apps de bots ampliado <span class="ft-h">20dabade</span></p><p class="ft-d">Keepalive, geolocation, fullscreen y 30+ events.</p></div><div class="ft-mk"><span class="mk-bot-s">🤖</span></div></div>
+      <div class="tl-feat"><span class="dot d11"></span><div class="ft-body"><p class="ft-t">Velocidad de notas de voz <span class="ft-h">VoiceNote.js</span></p><p class="ft-d">1×, 1.5× o 2× con toggle en el player.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:8px;color:var(--teal)">1.5×</span></div></div>
+    </div>
+  </div>
+</div>
+    <div class="tl-v">
+  <div class="tl-card tl-expand">
+    <div class="tl-row">
+      <div class="tl-txt">
         <div class="tl-h">
           <span class="tl-n">v0.13</span>
           <span class="tl-d">· 12 Jun 2026</span>
-          <span class="tl-now-tag">actual</span>
           <span class="tl-count">5 features</span>
         </div>
         <p class="tl-t">Forum topics, álbumes y más</p>
@@ -483,65 +590,145 @@
     <div class="tl-details">
       <div class="tl-feat">
         <span class="dot d1"></span>
-        <div>
+        <div class="ft-body">
           <p class="ft-t">Forum topics <span class="ft-h">6a1ca114</span></p>
           <p class="ft-d">Subforos dentro de grupos con <code>is_forum=true</code>. Panel lateral con la lista, badge de no leídos por topic, botón de crear, navegación al thread.</p>
         </div>
+        <div class="ft-mk"><span style="font-size:14px;color:var(--teal)">#</span></div>
       </div>
       <div class="tl-feat">
         <span class="dot d2"></span>
-        <div>
+        <div class="ft-body">
           <p class="ft-t">Álbumes de fotos <span class="ft-h">Album.js</span></p>
           <p class="ft-d">Mensajes con el mismo <code>media_group_id</code> se agrupan en una sola burbuja con grid 2×2 o 2×4, caption único y contador "+N" cuando sobran.</p>
         </div>
+        <div class="ft-mk"><div class="mk-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
       </div>
       <div class="tl-feat">
         <span class="dot d3"></span>
-        <div>
+        <div class="ft-body">
           <p class="ft-t">Reacciones extendidas <span class="ft-h">3197d8d4</span></p>
           <p class="ft-d">Picker con 24 emojis, búsqueda en tiempo real, custom emoji premium, big reaction al doble-click (animación 600 ms), tooltip de nombres y colapso a partir de 5.</p>
         </div>
+        <div class="ft-mk"><span style="font-size:14px">🎉</span></div>
       </div>
       <div class="tl-feat">
         <span class="dot d4"></span>
-        <div>
+        <div class="ft-body">
           <p class="ft-t">Stickers con búsqueda <span class="ft-h">searchStickers</span></p>
           <p class="ft-d">Barra de búsqueda en el picker (debounce 350 ms) y toggle de autoplay persistente en localStorage. Cuando está apagado, los Lottie quedan estáticos hasta el hover.</p>
         </div>
+        <div class="ft-mk"><span style="font-size:14px">🐸</span></div>
       </div>
       <div class="tl-feat">
         <span class="dot d5"></span>
-        <div>
+        <div class="ft-body">
           <p class="ft-t">Inline mode <span class="ft-h">SendInlineBotResult</span></p>
           <p class="ft-d">Al teclear <code>@bot query</code>, panel encima del composer con resultados en vivo (GIFs, imágenes, enlaces). Selección con flechas o ratón, footer con la fuente.</p>
         </div>
+        <div class="ft-mk"><span style="font-family:var(--mono);font-size:9px;color:var(--cyan);font-weight:700">@</span></div>
       </div>
     </div>
   </div>
 </div>
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.12</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Tutorial y pulido</p><p class="tl-ds">Tutorial interactivo con demos visuales · scroll de chats más fluido</p></div><div class="tl-mk"><div class="tlx-tut"><span class="tlx-tip">Paso 1</span><span class="tlx-dot"></span></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.12</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Tutorial y pulido</p><p class="tl-ds">Tutorial interactivo con demos visuales · scroll de chats más fluido</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-tut"><span class="tlx-tip">Paso 1</span><span class="tlx-dot"></span></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Carrusel de bienvenida <span class="ft-h">d06b8598</span></p><p class="ft-d">Tutorial de 8 pasos con auto-show en el primer login.</p></div><div class="ft-mk"><div class="mk-tut-s"><span class="d"></span></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Demos visuales <span class="ft-h">cad0c279</span></p><p class="ft-d">Cada paso lleva su propia animación.</p></div><div class="ft-mk"><div class="mk-ring-s"><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Scroll más fluido <span class="ft-h">015cbb76</span></p><p class="ft-d">Diálogos sin congelación ni solape al buscar.</p></div><div class="ft-mk"><div class="mk-search"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#8794ad" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="m21 21-4-4"/></svg><div class="ph"></div></div></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Descargas más estables <span class="ft-h">daf76a91</span></p><p class="ft-d">Reintento en CONNECTION_NOT_INITED.</p></div><div class="ft-mk"><span class="mk-dl">⬇</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.11</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Historias y emoji animado</p><p class="tl-ds">Stories con anillos y visor a pantalla completa · emoji animado en el texto</p></div><div class="tl-mk"><div class="tlx-ring"><i></i></div><span class="tlx-emo">😄</span></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.11</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Historias y emoji animado</p><p class="tl-ds">Stories con anillos y visor a pantalla completa · emoji animado en el texto</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-ring"><i></i></div><span class="tlx-emo">😄</span></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Stories con anillos <span class="ft-h">29ec513c</span></p><p class="ft-d">Tray con anillos de no-leído y visor a pantalla completa.</p></div><div class="ft-mk"><div class="mk-ring-s"><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Emoji animado inline <span class="ft-h">6473b65b</span></p><p class="ft-d">Emoji personalizado animado con carga perezosa.</p></div><div class="ft-mk"><span class="mk-emo-s">😄</span></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Búsqueda en 5 skins <span class="ft-h">ce1ae126</span></p><p class="ft-d">UI adaptada a current, iOS, Aurora, macOS y tdesktop.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Renderizado progresivo <span class="ft-h">87c2fc36</span></p><p class="ft-d">Top chats y recently-found sin congelar la UI.</p></div><div class="ft-mk"><div class="mk-search"><div class="ph"></div></div></div></div>
+  <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Atajo Esc <span class="ft-h">dc137685</span></p><p class="ft-d">Esc cierra búsqueda o chat abierto.</p></div><div class="ft-mk"><div class="mk-keys"><span>Esc</span></div></div></div>
+  <div class="tl-feat"><span class="dot d6"></span><div class="ft-body"><p class="ft-t">FAB y header master <span class="ft-h">2045a62e</span></p><p class="ft-d">Botón compose y gradientes de avatar para todos los skins.</p></div><div class="ft-mk"><span style="font-size:14px;color:var(--teal)">＋</span></div></div>
+  <div class="tl-feat"><span class="dot d7"></span><div class="ft-body"><p class="ft-t">AMP con fallback Cloudflare <span class="ft-h">ff776633</span></p><p class="ft-d">Lector AMP con caché y arreglos en móvil.</p></div><div class="ft-mk"><span class="mk-amp">AMP</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.10</span><span class="tl-d">· 30 May 2026</span></div><p class="tl-t">Diseños Android y Telegram X</p><p class="tl-ds">Nuevo skin Telegram X independiente · eras Android históricas</p></div><div class="tl-mk"><div class="tlx-skinx"><div class="tlx-h"></div><div class="tlx-b"><div class="tlx-bub l"></div><div class="tlx-bub"></div></div></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.10</span><span class="tl-d">· 30 May 2026</span></div><p class="tl-t">Diseños Android y Telegram X</p><p class="tl-ds">Nuevo skin Telegram X independiente · eras Android históricas</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-skinx"><div class="tlx-h"></div><div class="tlx-b"><div class="tlx-bub l"></div><div class="tlx-bub"></div></div></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Skin Android fiel <span class="ft-h">c295ce11</span></p><p class="ft-d">Android fiel a captura con tema MUI por diseño.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Miembros del supergrupo <span class="ft-h">7353162b</span></p><p class="ft-d">Carga vía getSupergroupMembers.</p></div><div class="ft-mk"><div class="mk-multi"><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Folders más estables <span class="ft-h">83419b94</span></p><p class="ft-d">Carga de chats faltantes y CSS por variante.</p></div><div class="ft-mk"><span class="mk-folder">📁</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.9</span><span class="tl-d">· 30 May 2026</span></div><p class="tl-t">El sistema de diseños</p><p class="tl-ds">9 skins conmutables, cada uno con su acento, tipografía y modo oscuro</p></div><div class="tl-mk"><div class="tlx-skg"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.9</span><span class="tl-d">· 30 May 2026</span></div><p class="tl-t">El sistema de diseños</p><p class="tl-ds">9 skins conmutables, cada uno con su acento, tipografía y modo oscuro</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-skg"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Skins iOS y Aurora <span class="ft-h">9eed440c</span></p><p class="ft-d">Dos diseños nuevos completos con su modo oscuro.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Actualización oficial 2025-2026 <span class="ft-h">35b3877d</span></p><p class="ft-d">Todos los skins refrescados a los diseños actuales.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">MUI theme por diseño <span class="ft-h">c295ce11</span></p><p class="ft-d">Cada skin con su tipografía y acento propios.</p></div><div class="ft-mk"><span style="font-size:11px;color:var(--cyan)">Aa</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.8</span><span class="tl-d">· 21 May 2026</span></div><p class="tl-t">Tiempo real y formato</p><p class="tl-ds">Formato al enviar mensajes · nombre y foto al instante · votos reales</p></div><div class="tl-mk"><div class="tlx-fmt"><b>negrita</b><br><em>cursiva</em> <s>spoiler</s><span class="tlx-cur">▋</span></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.8</span><span class="tl-d">· 21 May 2026</span></div><p class="tl-t">Tiempo real y formato</p><p class="tl-ds">Formato al enviar mensajes · nombre y foto al instante · votos reales</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-fmt"><b>negrita</b><br><em>cursiva</em> <s>spoiler</s><span class="tlx-cur">▋</span></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Live updates <span class="ft-h">4f2a0182</span></p><p class="ft-d">Cambios de título, foto, pin y marca de no leído en vivo.</p></div><div class="ft-mk"><div class="mk-live">live</div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Formato al enviar <span class="ft-h">dbb24a0c</span></p><p class="ft-d">Negrita, cursiva, spoiler, código y polls enriquecidos.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:9px;color:var(--ink);font-weight:700">B</span></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Video stickers <span class="ft-h">006c8aa1</span></p><p class="ft-d">Renderizado como vídeo nativo.</p></div><div class="ft-mk"><span class="mk-stickers">🎞</span></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">11 acciones de servicio <span class="ft-h">5c98278a</span></p><p class="ft-d">Más actions de GramJS y fix de crash de entity null.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:9px;color:var(--cyan)">+11</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.7</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Chats al día</p><p class="tl-ds">Fijar chats y borradores al instante · indicadores de escritura completos</p></div><div class="tl-mk"><div class="tlx-typ"><span class="tlx-td"></span><span class="tlx-td"></span><span class="tlx-td"></span><span style="margin-left:3px">escribiendo</span></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.7</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Chats al día</p><p class="tl-ds">Fijar chats y borradores al instante · indicadores de escritura completos</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-typ"><span class="tlx-td"></span><span class="tlx-td"></span><span class="tlx-td"></span><span style="margin-left:3px">escribiendo</span></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Indicadores de escritura <span class="ft-h">46b8fa91</span></p><p class="ft-d">Traducción de todos los tipos de chat action.</p></div><div class="ft-mk"><div class="mk-typ"><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Notificaciones desktop <span class="ft-h">c8c258dd</span></p><p class="ft-d">Avisos cuando la ventana no tiene el foco.</p></div><div class="ft-mk"><span style="font-size:14px">🔔</span></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Info completa de chat <span class="ft-h">a3dc85ab</span></p><p class="ft-d">getSupergroupFullInfo y getBasicGroupFullInfo.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:9px;color:var(--cyan)">ℹ</span></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Reply y dialog list <span class="ft-h">51a73231</span></p><p class="ft-d">Compat de reply_to_message_id y actualización en mensajes nuevos.</p></div><div class="ft-mk"><span style="font-size:13px">↩</span></div></div>
+  <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Orden de chats consistente <span class="ft-h">f6524fd4</span></p><p class="ft-d">Uso de date*1000 unificado en updateChatLastMessage.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">↕</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.6</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Instant View y AMP</p><p class="tl-ds">Lector integrado para páginas rápidas, sin salir de la app</p></div><div class="tl-mk"><span class="tlx-iv">⚡ Instant View</span></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.6</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Instant View y AMP</p><p class="tl-ds">Lector integrado para páginas rápidas, sin salir de la app</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><span class="tlx-iv">⚡ Instant View</span></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Lector Instant View <span class="ft-h">93a95837</span></p><p class="ft-d">Páginas rápidas sin salir de la app.</p></div><div class="ft-mk"><span class="mk-iv-s">⚡ IV</span></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">AMP Viewer <span class="ft-h">93a95837</span></p><p class="ft-d">Previsualización ligera de páginas AMP.</p></div><div class="ft-mk"><span class="mk-amp">AMP</span></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Web page previews <span class="ft-h">d051bd53</span></p><p class="ft-d">Tarjetas con previsualización y traducción del link.</p></div><div class="ft-mk"><div class="mk-link"><div class="ll"></div><div class="lt"><b></b><span></span></div></div></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.5</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Mensajería en tiempo real</p><p class="tl-ds">Editar/borrar, búsqueda global, notas de voz y vídeo, ubicación</p></div><div class="tl-mk"><div class="tlx-rr"><div class="tlx-rb"></div><span class="tlx-chk">✓✓</span></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.5</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Mensajería en tiempo real</p><p class="tl-ds">Editar/borrar, búsqueda global, notas de voz y vídeo, ubicación</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-rr"><div class="tlx-rb"></div><span class="tlx-chk">✓✓</span></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Notas de voz y vídeo <span class="ft-h">f0856ae0</span></p><p class="ft-d">Voz, vídeo redondas, lugar y ubicación en vivo.</p></div><div class="ft-mk"><div class="mk-voice"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Editar y borrar mensajes <span class="ft-h">3307392e</span></p><p class="ft-d">Editar, borrar para ti o para todos.</p></div><div class="ft-mk"><div class="mk-edit">Hola<br><span>editado</span></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Búsqueda global <span class="ft-h">debb011c</span></p><p class="ft-d">Filtros por tipo y override móvil.</p></div><div class="ft-mk"><div class="mk-search"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#8794ad" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="m21 21-4-4"/></svg><div class="ph"></div></div></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Previsualización de enlaces <span class="ft-h">d051bd53</span></p><p class="ft-d">Tarjetas con web preview y borradores.</p></div><div class="ft-mk"><div class="mk-link"><div class="ll"></div><div class="lt"><b></b><span></span></div></div></div></div>
+  <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Pin, forward y vistas <span class="ft-h">515375c2</span></p><p class="ft-d">Fijar, reenviar, contador de vistas.</p></div><div class="ft-mk"><span class="mk-pin">📌</span></div></div>
+  <div class="tl-feat"><span class="dot d6"></span><div class="ft-body"><p class="ft-t">Mute, dice, invoice, report <span class="ft-h">9ff6557b</span></p><p class="ft-d">Silenciar, dice, invoice, reportar, jump-to-unread.</p></div><div class="ft-mk"><span class="mk-mute">🔇</span></div></div>
+  <div class="tl-feat"><span class="dot d7"></span><div class="ft-body"><p class="ft-t">Indicadores de escritura <span class="ft-h">46b8fa91</span></p><p class="ft-d">Escribiendo, grabando, enviando foto.</p></div><div class="ft-mk"><div class="mk-typ"><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d8"></span><div class="ft-body"><p class="ft-t">Polls traducidos <span class="ft-h">acf92f81</span></p><p class="ft-d">Service messages, polls y contactos en castellano.</p></div><div class="ft-mk"><div class="mk-poll"><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d9"></span><div class="ft-body"><p class="ft-t">Bloquear usuario <span class="ft-h">debb011c</span></p><p class="ft-d">Bloquear desde menú contextual.</p></div><div class="ft-mk"><span class="mk-block">🚫</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.4</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Herramientas y atajos</p><p class="tl-ds">Sesiones activas, admin, read receipts, Picture-in-Picture, Ctrl+K</p></div><div class="tl-mk"><div class="tlx-keys"><span class="tlx-key">Ctrl</span><span class="tlx-key">K</span></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.4</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Herramientas y atajos</p><p class="tl-ds">Sesiones activas, admin, read receipts, Picture-in-Picture, Ctrl+K</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-keys"><span class="tlx-key">Ctrl</span><span class="tlx-key">K</span></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Atajo Ctrl+K <span class="ft-h">a844c779</span></p><p class="ft-d">Búsqueda global desde el teclado y doble check de leído.</p></div><div class="ft-mk"><div class="mk-keys"><span>Ctrl</span><span>K</span></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Sesiones activas <span class="ft-h">5d44cd43</span></p><p class="ft-d">Panel con opción de terminar dispositivos.</p></div><div class="ft-mk"><div class="mk-ses"><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Herramientas de admin <span class="ft-h">16f3637f</span></p><p class="ft-d">Expulsar y banear miembros en grupos.</p></div><div class="ft-mk"><span class="mk-block">⚒</span></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Edición inline para admins <span class="ft-h">ee97f812</span></p><p class="ft-d">Editar descripción de grupo/canal en el sitio.</p></div><div class="ft-mk"><span style="font-size:13px">✎</span></div></div>
+  <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Reply en privado <span class="ft-h">c7a28637</span></p><p class="ft-d">Responder a un mensaje de grupo en privado.</p></div><div class="ft-mk"><span style="font-size:13px">↩</span></div></div>
+  <div class="tl-feat"><span class="dot d6"></span><div class="ft-body"><p class="ft-t">MediaViewer con PiP <span class="ft-h">ea4c68ca</span></p><p class="ft-d">Picture-in-Picture, velocidad y "Show in Chat".</p></div><div class="ft-mk"><span class="mk-pip">▷</span></div></div>
+  <div class="tl-feat"><span class="dot d7"></span><div class="ft-body"><p class="ft-t">Saved Messages rápido <span class="ft-h">5aa772d0</span></p><p class="ft-d">Enlace directo en el menú principal.</p></div><div class="ft-mk"><span style="font-size:13px">★</span></div></div>
+  <div class="tl-feat"><span class="dot d8"></span><div class="ft-body"><p class="ft-t">Badge scroll-down <span class="ft-h">48d41846</span></p><p class="ft-d">No leídos visibles en el botón.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:8px;color:var(--teal);font-weight:700">3</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.3</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Login QR y visor</p><p class="tl-ds">Inicio de sesión por código QR · copiar imagen e info de archivo</p></div><div class="tl-mk"><div class="tlx-qr"></div></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.3</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Login QR y visor</p><p class="tl-ds">Inicio de sesión por código QR · copiar imagen e info de archivo</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-qr"></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Login QR <span class="ft-h">1b82fbb3</span></p><p class="ft-d">Escanear código desde la app móvil para entrar.</p></div><div class="ft-mk"><div class="mk-qr"></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Visor de info de archivo <span class="ft-h">1b82fbb3</span></p><p class="ft-d">Datos del documento dentro del visor.</p></div><div class="ft-mk"><span style="font-size:13px">📄</span></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Foto de perfil histórica <span class="ft-h">cd77b54a</span></p><p class="ft-d">Historial de avatares vía getUserProfilePhotos.</p></div><div class="ft-mk"><span style="font-size:13px">👤</span></div></div>
+</div></div></div>
 
-    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.2</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Primeros tipos de mensaje</p><p class="tl-ds">Sorteos y alertas con tarjeta visual · enviar sin notificación</p></div><div class="tl-mk"><span class="tlx-gift">🎁</span></div></div></div>
+    <div class="tl-v"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.2</span><span class="tl-d">· 20 May 2026</span></div><p class="tl-t">Primeros tipos de mensaje</p><p class="tl-ds">Sorteos y alertas con tarjeta visual · enviar sin notificación</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><span class="tlx-gift">🎁</span></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Sistema de diseños <span class="ft-h">1b0b5a2d</span></p><p class="ft-d">Telegram Web, macOS, TDesktop independientes.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Diseños adicionales <span class="ft-h">42b62a38</span></p><p class="ft-d">Android, Unigram y Shell completos.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Multicuenta <span class="ft-h">7e5d4a1c</span></p><p class="ft-d">Añadir, cambiar y eliminar sin reiniciar.</p></div><div class="ft-mk"><div class="mk-multi"><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Chat folders offline <span class="ft-h">b9c85f03</span></p><p class="ft-d">Carpetas con caché y fix de openssl.</p></div><div class="ft-mk"><span class="mk-folder">📁</span></div></div>
+  <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Stickers TGS animados <span class="ft-h">8aa3e300</span></p><p class="ft-d">Picker de paquetes funcional.</p></div><div class="ft-mk"><span class="mk-stickers">🎬</span></div></div>
+  <div class="tl-feat"><span class="dot d6"></span><div class="ft-body"><p class="ft-t">Spoilers, polls quiz, pins <span class="ft-h">2f24a557</span></p><p class="ft-d">Spoiler en texto y media, polls quiz, múltiples pins.</p></div><div class="ft-mk"><div class="mk-spoiler"></div></div></div>
+  <div class="tl-feat"><span class="dot d7"></span><div class="ft-body"><p class="ft-t">Chats secretos en la UI <span class="ft-h">717fdad2</span></p><p class="ft-d">Soporte de visualización de secret chats.</p></div><div class="ft-mk"><span class="mk-secret">🔒</span></div></div>
+  <div class="tl-feat"><span class="dot d8"></span><div class="ft-body"><p class="ft-t">Crear grupos y canales <span class="ft-h">c690bb29</span></p><p class="ft-d">Desde la UI, sin app móvil.</p></div><div class="ft-mk"><span style="font-size:14px;color:var(--teal)">＋</span></div></div>
+  <div class="tl-feat"><span class="dot d9"></span><div class="ft-body"><p class="ft-t">Nombre del remitente <span class="ft-h">babc8cb0</span></p><p class="ft-d">En cada burbuja de grupos y supergrupos.</p></div><div class="ft-mk"><span style="font-family:var(--mono);font-size:8px;color:var(--cyan)">@</span></div></div>
+</div></div></div>
 
-    <div class="tl-v tl-base"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.1</span><span class="tl-d">· base del fork</span></div><p class="tl-t">Punto de partida</p><p class="tl-ds">Fork de telegram-react (evgeny-nadymov): TDLib + WebAssembly + React. Heredado: reacciones, carpetas, multicuenta, chats secretos, stickers TGS.</p></div><div class="tl-mk"><div class="tlx-fork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V9"/><path d="M12 15v3"/></svg><span>fork</span></div></div></div></div>
+    <div class="tl-v tl-base"><div class="tl-card tl-expand"><div class="tl-row"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.1</span><span class="tl-d">· base del fork</span></div><p class="tl-t">Punto de partida</p><p class="tl-ds">Fork de telegram-react (evgeny-nadymov): TDLib + WebAssembly + React. Heredado: reacciones, carpetas, multicuenta, chats secretos, stickers TGS.</p><button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button></div><div class="tl-mk"><div class="tlx-fork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V9"/><path d="M12 15v3"/></svg><span>fork</span></div></div></div><div class="tl-details">
+  <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Reacciones <span class="ft-h">d92193c1</span></p><p class="ft-d">Sistema base heredado del fork upstream.</p></div><div class="ft-mk"><span style="font-size:14px">❤️</span></div></div>
+  <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Notas de voz <span class="ft-h">d92193c1</span></p><p class="ft-d">Grabación y reproducción inicial.</p></div><div class="ft-mk"><div class="mk-voice"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+  <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Envío de ficheros <span class="ft-h">d92193c1</span></p><p class="ft-d">Adjuntar documentos al chat.</p></div><div class="ft-mk"><span style="font-size:13px">📎</span></div></div>
+  <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Mensajes programados <span class="ft-h">9ed61e89</span></p><p class="ft-d">Enviar más tarde con polyfill de process.</p></div><div class="ft-mk"><span style="font-size:13px">⏱</span></div></div>
+  <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Base TDLib + WASM <span class="ft-h">939602b0</span></p><p class="ft-d">Punto de partida del fork de evgeny-nadymov.</p></div><div class="ft-mk"><span class="mk-fork">⑂</span></div></div>
+</div></div></div>
 
   </div>
 </section>
