@@ -263,6 +263,32 @@
   .tlx-fork{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--violet);}
   .tlx-fork svg{width:26px;height:26px;}
   .tlx-fork span{font-family:var(--mono);font-size:7px;color:var(--muted);}
+  .tl-count{font-family:var(--mono);font-size:9px;color:var(--teal);border:1px solid rgba(62,224,199,.35);background:rgba(62,224,199,.08);padding:2px 7px;border-radius:20px;font-weight:600;}
+  .tl-card.tl-expand{flex-direction:column;align-items:stretch;}
+  .tl-card.tl-expand > .tl-row{display:flex;gap:12px;align-items:flex-start;width:100%;}
+  .tl-toggle{margin-top:10px;display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:8px;cursor:pointer;transition:.2s;}
+  .tl-toggle:hover{border-color:var(--teal);color:var(--teal);}
+  .tl-toggle .chev{transition:transform .25s;}
+  .tl-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  .tl-details{margin-top:12px;border-top:1px solid var(--line);padding-top:12px;display:none;flex-direction:column;gap:8px;}
+  .tl-details.open{display:flex;}
+  .tl-feat{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);align-items:start;}
+  .tl-feat .dot{width:8px;height:8px;border-radius:2px;margin-top:5px;}
+  .tl-feat .ft-t{font-family:var(--display);font-weight:600;font-size:12.5px;color:var(--ink);margin:0 0 2px;}
+  .tl-feat .ft-d{font-size:11px;color:var(--muted);line-height:1.4;margin:0;}
+  .tl-feat .ft-h{font-family:var(--mono);font-size:9px;color:var(--muted);margin-left:6px;background:rgba(255,255,255,.04);padding:1px 5px;border-radius:4px;}
+  .d1{background:linear-gradient(135deg,var(--teal),var(--cyan));}
+  .d2{background:linear-gradient(135deg,var(--cyan),var(--blue));}
+  .d3{background:linear-gradient(135deg,var(--blue),var(--violet));}
+  .d4{background:linear-gradient(135deg,var(--violet),var(--teal));}
+  .d5{background:linear-gradient(135deg,var(--teal),var(--violet));}
+  .tlx-stack5{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;width:100%;height:100%;padding:5px;}
+  .tlx-mini{border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#06101c;font-weight:700;}
+  .tlx-mini.m1{background:linear-gradient(135deg,var(--teal),var(--cyan));}
+  .tlx-mini.m2{background:linear-gradient(135deg,var(--cyan),var(--blue));}
+  .tlx-mini.m3{background:linear-gradient(135deg,var(--blue),var(--violet));}
+  .tlx-mini.m4{background:linear-gradient(135deg,var(--violet),var(--teal));}
+  .tlx-mini.m5{background:linear-gradient(135deg,var(--teal),var(--violet));grid-column:span 2;}
 
   /* accesibilidad: sin movimiento */
   @media (prefers-reduced-motion: reduce){
@@ -427,7 +453,73 @@
 
   <div class="tl-line">
 
-    <div class="tl-v tl-now"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.12</span><span class="tl-d">· 31 May 2026</span><span class="tl-now-tag">actual</span></div><p class="tl-t">Tutorial y pulido</p><p class="tl-ds">Tutorial interactivo con demos visuales · scroll de chats más fluido</p></div><div class="tl-mk"><div class="tlx-tut"><span class="tlx-tip">Paso 1</span><span class="tlx-dot"></span></div></div></div></div>
+    <div class="tl-v tl-now">
+  <div class="tl-card tl-expand">
+    <div class="tl-row">
+      <div class="tl-txt">
+        <div class="tl-h">
+          <span class="tl-n">v0.13</span>
+          <span class="tl-d">· 12 Jun 2026</span>
+          <span class="tl-now-tag">actual</span>
+          <span class="tl-count">5 features</span>
+        </div>
+        <p class="tl-t">Forum topics, álbumes y más</p>
+        <p class="tl-ds">Cinco mejoras a la vez: subforos en grupos, álbumes de fotos, reacciones con custom emoji, stickers buscables e inline mode.</p>
+        <button class="tl-toggle" type="button" aria-expanded="false">
+          <span class="tl-toggle-label">Ver desglose</span>
+          <svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg>
+        </button>
+      </div>
+      <div class="tl-mk">
+        <div class="tlx-stack5">
+          <span class="tlx-mini m1">#</span>
+          <span class="tlx-mini m2">▦</span>
+          <span class="tlx-mini m3">🎉</span>
+          <span class="tlx-mini m4">🐸</span>
+          <span class="tlx-mini m5">@</span>
+        </div>
+      </div>
+    </div>
+    <div class="tl-details">
+      <div class="tl-feat">
+        <span class="dot d1"></span>
+        <div>
+          <p class="ft-t">Forum topics <span class="ft-h">6a1ca114</span></p>
+          <p class="ft-d">Subforos dentro de grupos con <code>is_forum=true</code>. Panel lateral con la lista, badge de no leídos por topic, botón de crear, navegación al thread.</p>
+        </div>
+      </div>
+      <div class="tl-feat">
+        <span class="dot d2"></span>
+        <div>
+          <p class="ft-t">Álbumes de fotos <span class="ft-h">Album.js</span></p>
+          <p class="ft-d">Mensajes con el mismo <code>media_group_id</code> se agrupan en una sola burbuja con grid 2×2 o 2×4, caption único y contador "+N" cuando sobran.</p>
+        </div>
+      </div>
+      <div class="tl-feat">
+        <span class="dot d3"></span>
+        <div>
+          <p class="ft-t">Reacciones extendidas <span class="ft-h">3197d8d4</span></p>
+          <p class="ft-d">Picker con 24 emojis, búsqueda en tiempo real, custom emoji premium, big reaction al doble-click (animación 600 ms), tooltip de nombres y colapso a partir de 5.</p>
+        </div>
+      </div>
+      <div class="tl-feat">
+        <span class="dot d4"></span>
+        <div>
+          <p class="ft-t">Stickers con búsqueda <span class="ft-h">searchStickers</span></p>
+          <p class="ft-d">Barra de búsqueda en el picker (debounce 350 ms) y toggle de autoplay persistente en localStorage. Cuando está apagado, los Lottie quedan estáticos hasta el hover.</p>
+        </div>
+      </div>
+      <div class="tl-feat">
+        <span class="dot d5"></span>
+        <div>
+          <p class="ft-t">Inline mode <span class="ft-h">SendInlineBotResult</span></p>
+          <p class="ft-d">Al teclear <code>@bot query</code>, panel encima del composer con resultados en vivo (GIFs, imágenes, enlaces). Selección con flechas o ratón, footer con la fuente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.12</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Tutorial y pulido</p><p class="tl-ds">Tutorial interactivo con demos visuales · scroll de chats más fluido</p></div><div class="tl-mk"><div class="tlx-tut"><span class="tlx-tip">Paso 1</span><span class="tlx-dot"></span></div></div></div></div>
 
     <div class="tl-v"><div class="tl-card"><div class="tl-txt"><div class="tl-h"><span class="tl-n">v0.11</span><span class="tl-d">· 31 May 2026</span></div><p class="tl-t">Historias y emoji animado</p><p class="tl-ds">Stories con anillos y visor a pantalla completa · emoji animado en el texto</p></div><div class="tl-mk"><div class="tlx-ring"><i></i></div><span class="tlx-emo">😄</span></div></div></div>
 
@@ -469,5 +561,15 @@
 
 </div>
 <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+<script>
+document.querySelectorAll('.tl-toggle').forEach(btn => {
+  const target = btn.closest('.tl-card').querySelector('.tl-details');
+  btn.addEventListener('click', () => {
+    const open = target.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.querySelector('.tl-toggle-label').textContent = open ? 'Ocultar desglose' : 'Ver desglose';
+  });
+});
+</script>
 </body>
 </html>
