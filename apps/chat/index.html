@@ -391,6 +391,24 @@
     .mk-voice i,.mk-typ i,.mk-grid i,.mk-spoiler,.mk-multi i,.mk-skin-s,.mk-tut-s .d,.mk-ring-s,.mk-emo-s,.mk-live::before{animation:none;}
     .mk-grid i{opacity:1;}
   }
+  /* ===== Sección #bugs — estilos (prefijo bg- para no colisionar) ===== */
+  .bg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px;}
+  .bg-card{border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--card);transition:.3s;display:flex;flex-direction:column;gap:10px;}
+  .bg-card:hover{border-color:var(--cyan);background:rgba(54,182,240,.06);}
+  .bg-card-top{display:flex;align-items:center;gap:11px;}
+  .bg-state{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:999px;white-space:nowrap;}
+  .bg-state.done{color:#04121f;background:linear-gradient(120deg,var(--teal),var(--green));}
+  .bg-state.partial{color:#1a1205;background:linear-gradient(120deg,#ffd479,#ffb43c);}
+  .bg-state.pending{color:var(--muted);background:rgba(255,255,255,.06);border:1px solid var(--line);}
+  .bg-state.bug{color:#fff;background:linear-gradient(120deg,#f0566e,#c0394f);}
+  .bg-card h3{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:-.01em;flex:1;}
+  .bg-card p{font-size:13.5px;color:var(--muted);line-height:1.55;}
+  .bg-link{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--cyan);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:2px;transition:.2s;}
+  .bg-link:hover{color:var(--teal);gap:9px;}
+  .bg-link::after{content:'→';transition:.2s;}
+  .bg-subtitle{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:8px 0 18px;display:flex;align-items:center;gap:10px;}
+  .bg-subtitle::before{content:'';width:22px;height:1px;background:var(--teal);}
+  @media(max-width:760px){.bg-grid{grid-template-columns:1fr;}}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
 <script>
@@ -427,6 +445,7 @@
     <nav class="nav-links">
       <a href="#disenos">Diseños</a>
       <a href="#caracteristicas">Características</a>
+      <a href="#bugs">Bugs</a>
     </nav>
     <div class="sh-right">
       <a class="ghlink" href="https://github.com/ComunidadTelebots/telegram-react" target="_blank" rel="noopener">GitHub</a>
@@ -485,6 +504,74 @@
       <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></div><h3>Modo oscuro</h3><p>Claro y oscuro completos, consistentes en cada skin.</p></div>
       <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Privacidad</h3><p>Soporte de proxy (incl. MTProxy) para conectar libremente.</p></div>
       <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><h3>Cinco diseños</h3><p>Web, Desktop, Android, Unigram y Aurora, conmutables.</p></div>
+    </div>
+  </section>
+
+  <section id="bugs">
+    <div class="eyebrow">Transparencia</div>
+    <h2 class="sec-title">Bugs y funciones</h2>
+    <p class="sec-sub">Funciones que este cliente ya resuelve frente a la plataforma oficial de Telegram, y mejoras pedidas por la comunidad. Cada tarjeta enlaza a su ficha oficial en bugs.telegram.org.</p>
+
+    <div class="bg-subtitle">Ya resueltas en este cliente</div>
+    <div class="bg-grid">
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Temas personalizados</h3></div>
+        <p>Telegram lista los temas personalizados como no soportados en Web K. Aquí tienes editor de variables en vivo, paletas, importar/exportar y compartir por enlace.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Historias (Stories)</h3></div>
+        <p>Ver y publicar historias desde el navegador, con anillos de estado, visor a pantalla completa y respuestas.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/83" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Respuesta parcial (cita)</h3></div>
+        <p>Responder citando solo un fragmento del mensaje, una de las sugerencias más votadas de la plataforma.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/1050" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Traducción de mensajes</h3></div>
+        <p>Traducción en línea con cerca de 80 idiomas, búsqueda de idioma y alternar original/traducción.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+    </div>
+
+    <div class="bg-subtitle">Pedidas por la comunidad</div>
+    <div class="bg-grid">
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state pending">Pendiente</span><h3>Iconos de carpeta</h3></div>
+        <p>Iconos personalizados para las carpetas de chats, sincronizados entre dispositivos. Más de 870 votos.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/407" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state pending">Pendiente</span><h3>Códigos QR con tema</h3></div>
+        <p>Códigos QR que adoptan el color del tema activo. Encaja con el sistema de temas de este cliente.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state pending">Pendiente</span><h3>Editar medios antes de enviar</h3></div>
+        <p>Recortar y editar fotos o vídeos antes del envío, hoy no soportado en la versión web.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state partial">Parcial</span><h3>Autoborrado de mensajes</h3></div>
+        <p>Temporizador de autodestrucción por chat. Implementado parcialmente, pendiente de completar opciones.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+    </div>
+
+    <div class="bg-subtitle">Bugs conocidos de la plataforma</div>
+    <div class="bg-grid">
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state bug">Bug</span><h3>Contador de no leídos</h3></div>
+        <p>El contador puede mostrar mensajes sin leer cuando no los hay. Reportado en la plataforma oficial.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/c/203" target="_blank" rel="noopener">Ver ficha oficial</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state bug">Bug</span><h3>Bucle de carga en FLOOD_WAIT</h3></div>
+        <p>Al alcanzar límites de t.me aparece una animación de carga infinita que puede confundir. Reportado oficialmente.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/?type=issues&sort=rate" target="_blank" rel="noopener">Ver fichas oficiales</a>
+      </div>
     </div>
   </section>
 
