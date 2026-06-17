@@ -682,9 +682,14 @@ function summarize(text = '', maxLen = MAX_TELEGRAM_BODY_CHARS) {
  * cual; si no, se derivan de la categoría. Devuelve el message_id del post
  * publicado, o null si falla.
  */
+// Escapa los 3 caracteres que rompen parse_mode HTML en texto plano (no en el <a> del footer).
+const escapeHtml = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 async function publishToTelegram(article, slug) {
-  const header = `📰 ${article.titulo}`;
-  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 Leer más: ${SITE_URL}/noticias/${slug}`;
+  const header = `📰 ${escapeHtml(article.titulo)}`;
+  const articleUrl = `${SITE_URL}/noticias/${slug}`;
+  const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 <a href="${ivUrl}">Leer más</a>`;
 
   // Cuerpo = resumen breve (2-3 frases, máx. 300 caracteres), no el contenido
   // completo. Preferimos el excerpt del feed y caemos al contenido reescrito.
@@ -695,9 +700,9 @@ async function publishToTelegram(article, slug) {
   const room = 4096 - header.length - footer.length - 4; // 4 = los dos "\n\n"
   if (body.length > room) body = `${body.slice(0, Math.max(0, room - 1)).trimEnd()}…`;
 
-  const text = `${header}\n\n${body}\n\n${footer}`;
+  const text = `${header}\n\n${escapeHtml(body)}\n\n${footer}`;
 
-  const result = await telegramApi('sendMessage', { chat_id: PUBLISH_CHANNEL, text });
+  const result = await telegramApi('sendMessage', { chat_id: PUBLISH_CHANNEL, text, parse_mode: 'HTML' });
   if (result.ok && result.result?.message_id) {
     return result.result.message_id;
   }
