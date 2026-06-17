@@ -409,6 +409,42 @@
   .bg-subtitle{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:8px 0 18px;display:flex;align-items:center;gap:10px;}
   .bg-subtitle::before{content:'';width:22px;height:1px;background:var(--teal);}
   @media(max-width:760px){.bg-grid{grid-template-columns:1fr;}}
+  /* ===== Secciones #comparativa y #codigofuente (prefijo cmp-/src-) ===== */
+  .cmp-table-wrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);margin-bottom:28px;}
+  .cmp-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .cmp-table thead th{font-family:var(--display);font-weight:700;font-size:14px;text-align:left;padding:16px 18px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);}
+  .cmp-table thead th.cmp-col-ct{color:var(--teal);}
+  .cmp-table thead th.cmp-col-tg{color:var(--muted);}
+  .cmp-table tbody td{padding:13px 18px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+  .cmp-table tbody tr:last-child td{border-bottom:0;}
+  .cmp-table tbody tr:hover{background:rgba(54,182,240,.04);}
+  .cmp-feat{font-weight:500;}
+  .cmp-mark{font-family:var(--mono);font-size:12px;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;}
+  .cmp-mark.ok{color:var(--green);}
+  .cmp-mark.dev{color:#ffd479;}
+  .cmp-mark.partial{color:var(--cyan);}
+  .cmp-mark.no{color:#7a8499;}
+  .cmp-dot{width:8px;height:8px;border-radius:50%;flex:none;}
+  .cmp-mark.ok .cmp-dot{background:var(--green);box-shadow:0 0 8px var(--green);}
+  .cmp-mark.dev .cmp-dot{background:#ffd479;box-shadow:0 0 8px #ffd479;}
+  .cmp-mark.partial .cmp-dot{background:var(--cyan);}
+  .cmp-mark.no .cmp-dot{background:#7a8499;}
+  .cmp-highlight td{background:rgba(62,224,199,.06);}
+  .cmp-big{font-family:var(--display);font-weight:800;font-size:17px;color:var(--teal);}
+  .cmp-legend{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .cmp-leg-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card);}
+  .cmp-leg-top{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+  .cmp-leg-top .cmp-dot{width:10px;height:10px;}
+  .cmp-leg-title{font-family:var(--display);font-weight:700;font-size:14px;}
+  .cmp-leg-card p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+  @media(max-width:760px){.cmp-legend{grid-template-columns:1fr 1fr;}.cmp-table{font-size:12.5px;}.cmp-table thead th,.cmp-table tbody td{padding:11px 12px;}}
+  .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .src-card{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:14px;padding:15px 17px;background:var(--card);text-decoration:none;color:var(--ink);transition:.25s;}
+  .src-card:hover{border-color:var(--cyan);background:rgba(54,182,240,.06);transform:translateY(-1px);}
+  .src-ic{width:38px;height:38px;border-radius:10px;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.05);color:var(--teal);}
+  .src-meta b{font-family:var(--display);font-weight:600;font-size:14px;display:block;letter-spacing:-.01em;}
+  .src-meta span{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  @media(max-width:760px){.src-grid{grid-template-columns:1fr;}}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
 <script>
@@ -445,7 +481,9 @@
     <nav class="nav-links">
       <a href="#disenos">Diseños</a>
       <a href="#caracteristicas">Características</a>
+      <a href="#comparativa">Comparativa</a>
       <a href="#bugs">Bugs</a>
+      <a href="#codigofuente">Código</a>
     </nav>
     <div class="sh-right">
       <a class="ghlink" href="https://github.com/ComunidadTelebots/telegram-react" target="_blank" rel="noopener">GitHub</a>
@@ -504,6 +542,90 @@
       <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></div><h3>Modo oscuro</h3><p>Claro y oscuro completos, consistentes en cada skin.</p></div>
       <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Privacidad</h3><p>Soporte de proxy (incl. MTProxy) para conectar libremente.</p></div>
       <div class="feat"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><h3>Cinco diseños</h3><p>Web, Desktop, Android, Unigram y Aurora, conmutables.</p></div>
+    </div>
+  </section>
+
+  <section id="comparativa">
+    <div class="eyebrow">Comparativa</div>
+    <h2 class="sec-title">Telegram Web vs ComunidadTelebots</h2>
+    <p class="sec-sub">Cómo se sitúa este cliente frente a la versión web oficial de Telegram. Estamos en beta: varias funciones siguen en desarrollo.</p>
+
+    <div class="cmp-table-wrap">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th class="cmp-col-tg">Telegram Web oficial</th>
+            <th class="cmp-col-ct">ComunidadTelebots</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cmp-highlight">
+            <td class="cmp-feat">Diseños / pieles</td>
+            <td><span class="cmp-mark no"><span class="cmp-dot"></span>1 diseño</span></td>
+            <td><span class="cmp-big">~35 variantes</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Temas personalizados</td>
+            <td><span class="cmp-mark no"><span class="cmp-dot"></span>No soportado</span></td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Editor + paletas</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Traducción de mensajes</td>
+            <td><span class="cmp-mark partial"><span class="cmp-dot"></span>Básica</span></td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>80 idiomas</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Quote reply (cita parcial)</td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Sí</span></td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Sí</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Historias (Stories)</td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Sí</span></td>
+            <td><span class="cmp-mark dev"><span class="cmp-dot"></span>En desarrollo</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Llamadas voz / vídeo</td>
+            <td><span class="cmp-mark partial"><span class="cmp-dot"></span>Parcial</span></td>
+            <td><span class="cmp-mark dev"><span class="cmp-dot"></span>En desarrollo</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Código abierto auto-hospedable</td>
+            <td><span class="cmp-mark partial"><span class="cmp-dot"></span>Parcial</span></td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Total</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Sin anuncios</td>
+            <td><span class="cmp-mark partial"><span class="cmp-dot"></span>Con anuncios</span></td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Sin anuncios</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feat">Proxy / MTProxy</td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Sí</span></td>
+            <td><span class="cmp-mark ok"><span class="cmp-dot"></span>Sí</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cmp-legend">
+      <div class="cmp-leg-card">
+        <div class="cmp-leg-top"><span class="cmp-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span><span class="cmp-leg-title">Listo</span></div>
+        <p>Función disponible y operativa en el cliente.</p>
+      </div>
+      <div class="cmp-leg-card">
+        <div class="cmp-leg-top"><span class="cmp-dot" style="background:#ffd479;box-shadow:0 0 8px #ffd479"></span><span class="cmp-leg-title">En desarrollo</span></div>
+        <p>En construcción para una próxima versión de la beta.</p>
+      </div>
+      <div class="cmp-leg-card">
+        <div class="cmp-leg-top"><span class="cmp-dot" style="background:var(--cyan)"></span><span class="cmp-leg-title">Parcial</span></div>
+        <p>Disponible, pero con limitaciones respecto a la app nativa.</p>
+      </div>
+      <div class="cmp-leg-card">
+        <div class="cmp-leg-top"><span class="cmp-dot" style="background:#7a8499"></span><span class="cmp-leg-title">No soportado</span></div>
+        <p>No disponible o no aplicable a un cliente web.</p>
+      </div>
     </div>
   </section>
 
@@ -867,6 +989,25 @@
 
   </div>
 </section>
+
+  <section id="codigofuente">
+    <div class="eyebrow">Transparencia</div>
+    <h2 class="sec-title">Código fuente</h2>
+    <p class="sec-sub">Cada diseño está basado en un cliente oficial de Telegram. Todos son proyectos de código abierto; aquí tienes sus repositorios.</p>
+    <div class="src-grid">
+      <a class="src-card" href="https://github.com/ComunidadTelebots/telegram-react" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>telegram-react</b><span>ComunidadTelebots · base</span></div></a>
+      <a class="src-card" href="https://github.com/Ajaxy/telegram-tt" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Web A</b><span>Ajaxy/telegram-tt</span></div></a>
+      <a class="src-card" href="https://github.com/morethanwords/tweb" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Web K</b><span>morethanwords/tweb</span></div></a>
+      <a class="src-card" href="https://github.com/DrKLO/Telegram" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Android</b><span>DrKLO/Telegram</span></div></a>
+      <a class="src-card" href="https://github.com/TelegramMessenger/Telegram-iOS" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>iOS</b><span>TelegramMessenger/Telegram-iOS</span></div></a>
+      <a class="src-card" href="https://github.com/overtake/TelegramSwift" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>macOS</b><span>overtake/TelegramSwift</span></div></a>
+      <a class="src-card" href="https://github.com/telegramdesktop/tdesktop" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Telegram Desktop</b><span>telegramdesktop/tdesktop</span></div></a>
+      <a class="src-card" href="https://github.com/UnigramDev/Unigram" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Unigram</b><span>UnigramDev/Unigram</span></div></a>
+      <a class="src-card" href="https://github.com/TGX-Android/Telegram-X" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Telegram X</b><span>TGX-Android/Telegram-X</span></div></a>
+      <a class="src-card" href="https://github.com/zhukov/webogram" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>Webogram</b><span>zhukov/webogram</span></div></a>
+      <a class="src-card" href="https://github.com/gram-js/gramjs" target="_blank" rel="noopener"><div class="src-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></div><div class="src-meta"><b>GramJS</b><span>gram-js/gramjs · motor MTProto</span></div></a>
+    </div>
+  </section>
 
   <section>
     <div class="band">
