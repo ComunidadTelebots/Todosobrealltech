@@ -604,21 +604,25 @@ async function telegramApi(method, body, retries = TELEGRAM_MAX_RETRIES) {
  * Intenta editMessageText; si el mensaje es multimedia (sin texto) cae a editMessageCaption.
  * Devuelve true si la edición se aplicó (o ya estaba aplicada), false en otro caso.
  */
+// Escapa los 3 caracteres que rompen parse_mode HTML en texto plano (no en el <a> del sufijo/footer).
+const escapeHtml = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   if (!match) return false;
 
   const chatId = `@${match[1]}`;
   const messageId = Number(match[2]);
-  const suffix = `\n\n${hashtags || buildHashtags(categoria)}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${slug}`;
+  const articleUrl = `${SITE_URL}/noticias/${slug}`;
+  const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+  const suffix = `\n\n${hashtags || buildHashtags(categoria)}\n\n📰 <a href="${ivUrl}">Leer en NW3</a>`;
   const base = (originalText || '').trim();
 
-  // Si el mensaje original ya tiene el enlace NW3, no volver a editar.
-  if (base.includes('📰 Leer en NW3:')) return true;
-
   // editMessageText reemplaza el texto completo → reenviamos original + sufijo (límite 4096).
-  const text = `${base.slice(0, 4096 - suffix.length)}${suffix}`;
-  let result = await telegramApi('editMessageText', { chat_id: chatId, message_id: messageId, text });
+  // El texto base se escapa (parse_mode HTML); se recorta EN CRUDO antes de escapar
+  // para no partir una entidad (&amp;). El sufijo con <a> NO se escapa.
+  const text = `${escapeHtml(base.slice(0, 4096 - suffix.length))}${suffix}`;
+  let result = await telegramApi('editMessageText', { chat_id: chatId, message_id: messageId, text, parse_mode: 'HTML' });
 
   if (result.ok) return true;
 
@@ -629,8 +633,8 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
 
   // Mensaje multimedia sin texto → usar caption (límite 1024).
   if (desc.includes('no text in the message') || desc.includes('caption')) {
-    const caption = `${base.slice(0, 1024 - suffix.length)}${suffix}`;
-    result = await telegramApi('editMessageCaption', { chat_id: chatId, message_id: messageId, caption });
+    const caption = `${escapeHtml(base.slice(0, 1024 - suffix.length))}${suffix}`;
+    result = await telegramApi('editMessageCaption', { chat_id: chatId, message_id: messageId, caption, parse_mode: 'HTML' });
     if (result.ok) return true;
     if ((result.description || '').toLowerCase().includes('not modified')) return true;
   }
@@ -682,9 +686,6 @@ function summarize(text = '', maxLen = MAX_TELEGRAM_BODY_CHARS) {
  * cual; si no, se derivan de la categoría. Devuelve el message_id del post
  * publicado, o null si falla.
  */
-// Escapa los 3 caracteres que rompen parse_mode HTML en texto plano (no en el <a> del footer).
-const escapeHtml = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
 async function publishToTelegram(article, slug) {
   const header = `📰 ${escapeHtml(article.titulo)}`;
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
@@ -727,12 +728,11 @@ async function backfillTelegramLinks() {
       return;
     }
 
-    // PocketBase filtra solo por telegram_url no vacío; el descarte de los que ya
-    // contienen "Leer en NW3" se hace en JS (más robusto que el operador !~ del filtro).
-    const candidates = await pocketbaseClient.collection('nw3_noticias').getFullList({
-      filter: 'telegram_url != ""',
-    });
-    const records = candidates.filter((r) => !(r.contenido || '').includes('Leer en NW3'));
+    // Posts del canal aún no reescritos al formato Instant View. El flag nw3_iv_added
+    // evita reprocesar los ya editados en cada arranque.
+    const records = (await pocketbaseClient.collection('nw3_noticias').getFullList({
+      filter: 'telegram_url != "" && nw3_iv_added != true',
+    })).slice(0, 1); // TEMPORAL: prueba de 1 post. Quitar para procesar todos.
 
     if (records.length === 0) {
       logger.info('[rssAutoPublisher] backfillTelegramLinks: no hay artículos que actualizar.');
@@ -743,11 +743,6 @@ async function backfillTelegramLinks() {
 
     let edited = 0;
     for (const record of records) {
-      // Texto final del mensaje (documenta el resultado). appendNw3LinkToTelegramPost
-      // ya añade por su cuenta el sufijo "#Categoria #NW3 … 📰 Leer en NW3: …", por eso a la
-      // llamada se le pasa solo el cuerpo base (título + contenido) y no este texto completo.
-      const messageText = `${record.titulo}\n\n${record.contenido}\n\n${buildHashtags(record.categoria)}\n\n📰 Leer en NW3: ${SITE_URL}/noticias/${record.slug}`;
-
       const ok = await appendNw3LinkToTelegramPost(
         record.telegram_url,
         record.slug,
@@ -756,7 +751,8 @@ async function backfillTelegramLinks() {
       );
       if (ok) {
         edited++;
-        logger.info(`[rssAutoPublisher] backfillTelegramLinks: enlace NW3 añadido a ${record.telegram_url}`);
+        await pocketbaseClient.collection('nw3_noticias').update(record.id, { nw3_iv_added: true });
+        logger.info(`[rssAutoPublisher] backfillTelegramLinks: IV añadido a ${record.telegram_url}`);
       }
 
       await sleep(TELEGRAM_BACKFILL_DELAY_MS); // ≥1.5 s entre llamadas: respeta el límite de la Bot API
