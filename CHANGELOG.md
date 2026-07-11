@@ -1,5 +1,18 @@
 # Changelog - TodoSobreAllTech
 
+## [0.2.0] - 2026-07-11
+### Feature — Directorio de proxies MTProto
+- **Multi-fuente**: catálogo desde 7 canales públicos de Telegram (`@ProxyMTProto`, `@DirectProxy`, `@ProxyMTProtoNew`, `@proxymt`, `@config_proxy`, `@GhostProxy`, `@mtproto_proxy`) + listas agregadas de GitHub (SoliSpirit, Grim1313), deduplicado y **verificado por TCP** (solo se listan los que responden). Crawl con paginación case-insensitive.
+- **Geolocalización** con `geoip-lite` (país + coordenadas) para ordenar por cercanía al usuario.
+- **Usuarios activos reales y países por proxy propio**: leídos de `/proc/net/tcp` de los contenedores mtproxy; histórico por hora/día y desglose por país en vivo. Sustituye al `active_inbound_connections` del `/stats` (que marcaba ~1, la propia conexión de stats).
+- **Publicación no bloqueante**: build por fases (propios al instante → primeros online → catálogo completo) y **payload + catálogo persistidos en disco** → tras un reinicio se sirve la última lista conocida al instante; el escaneo nunca bloquea la web.
+- **Proxies de la comunidad**: nuevo `POST /mtproto-proxies/community` (autenticado por token) para publicar los proxies que el master aprueba desde CintiaBot; se guardan en `community-proxies.json` y entran al catálogo con prioridad (tras los propios).
+
+### Fix — Fiabilidad y correcciones del directorio
+- Proxies **propios** comprobados por su dirección interna (`mtproxy-N:443`, ~2 ms) en vez de la IP pública (hairpin NAT desde el contenedor daba falsos "offline"); reintento ante picos de carga; ubicación forzada a 🇫🇷 Francia (geoip fallaba con la IP de Hostinger).
+- `activeUsers` = conexiones concurrentes reales (fin del "1" fijo).
+- Corregido cuelgue del build por `dns.lookup` sin timeout con hosts muertos; concurrencia de health más suave.
+
 ## [0.1.30] - 2026-05-24
 ### API — Endpoint RSS público
 - Nuevo endpoint `GET /noticias/rss` en el API Express que devuelve un feed RSS 2.0 válido.

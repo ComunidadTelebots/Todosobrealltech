@@ -16,3 +16,7 @@ Thumbs.db
 *.env.bak*
 .env.bak*
 .env.example.bak*
+
+# Backups temporales
+*.bak
+*.bak*
