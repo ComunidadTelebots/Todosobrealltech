@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Identidad ComunidadTelebots (portado del BugPanel de chat.todosobreall.tech) ── */
+:root {
+  --bg: #070b14;
+  --bg2: #0b1220;
+  --ink: #e9f0fb;
+  --muted: #8794ad;
+  --teal: #3ee0c7;
+  --cyan: #36b6f0;
+  --blue: #5b8af1;
+  --violet: #9b6cf0;
+  --green: #6de08c;
+  --line: rgba(255, 255, 255, 0.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Hanken Grotesk', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Aurora animada de fondo */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+.aurora::before,
+.aurora::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  will-change: transform;
+}
+.aurora::before {
+  width: 60vw;
+  height: 60vw;
+  top: -22vw;
+  left: -12vw;
+  background: radial-gradient(circle, var(--teal), transparent 60%);
+  animation: drift1 22s ease-in-out infinite;
+}
+.aurora::after {
+  width: 55vw;
+  height: 55vw;
+  bottom: -26vw;
+  right: -12vw;
+  background: radial-gradient(circle, var(--violet), transparent 60%);
+  animation: drift2 26s ease-in-out infinite;
+}
+.aurora i {
+  position: absolute;
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.34;
+  top: 18%;
+  left: 34%;
+  background: radial-gradient(circle, var(--cyan), transparent 60%);
+  animation: drift3 30s ease-in-out infinite;
+}
+@keyframes drift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8vw, 6vh) scale(1.15); }
+}
+@keyframes drift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-7vw, -5vh) scale(1.1); }
+}
+@keyframes drift3 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(-6vw, 4vh); }
+  66% { transform: translate(5vw, -6vh); }
+}
+
+/* Grano sutil */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.rise { animation: rise 0.6s both; }
+
+/* Scrollbar tenue */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Utilidad de texto con gradiente teal→cyan→violet */
+.text-grad {
+  background: linear-gradient(100deg, var(--teal), var(--cyan) 45%, var(--violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Tooltip de Recharts */
+.recharts-default-tooltip {
+  background: rgba(11, 18, 32, 0.92) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(10px);
+}

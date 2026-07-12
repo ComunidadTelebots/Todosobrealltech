@@ -1,0 +1,31 @@
+# docker-compose PROPIO de la app canales — no depende del compose raíz del monorepo.
+# Levantar:  docker compose -f apps/canales/docker-compose.yml up -d --build
+# (o desde apps/canales/:  docker compose up -d --build)
+#
+# Requisito externo único: la red `traefik` (external), igual que el resto de apps.
+# DNS pendiente: registro A `canales` -> IP del host. SOLO A/IPv4, nada de AAAA.
+
+services:
+  canales:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: todosobreall-canales
+    container_name: canales
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.canales.rule=Host(`canales.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.canales.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.canales.tls=true"
+      - "traefik.http.routers.canales.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.canales.loadbalancer.server.port=80"
+      - "traefik.http.services.canales.loadbalancer.passHostHeader=true"
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}
