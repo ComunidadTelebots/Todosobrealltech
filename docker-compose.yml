@@ -10,8 +10,6 @@ services:
     depends_on:
       - api
       - pocketbase
-    ports:
-      - "8080:80"
     networks:
       - default
       - traefik
@@ -22,6 +20,7 @@ services:
       - "traefik.http.routers.todosobrealltech.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.todosobrealltech.tls=true"
       - "traefik.http.routers.todosobrealltech.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.todosobrealltech.middlewares=ol-todosobreall@file"
       - "traefik.http.services.todosobrealltech.loadbalancer.server.port=80"
       - "traefik.http.services.todosobrealltech.loadbalancer.passHostHeader=true"
 
@@ -48,6 +47,7 @@ services:
       - "traefik.http.routers.noticiasweb3.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.noticiasweb3.tls=true"
       - "traefik.http.routers.noticiasweb3.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.noticiasweb3.middlewares=ol-noticiasweb3@file"
       - "traefik.http.routers.noticiasweb3-duckdns.rule=Host(`noticiasweb3.duckdns.org`)"
       - "traefik.http.routers.noticiasweb3-duckdns.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.noticiasweb3-duckdns.tls=true"
@@ -75,8 +75,33 @@ services:
       - "traefik.http.routers.resistencia-censura.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.resistencia-censura.tls=true"
       - "traefik.http.routers.resistencia-censura.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.resistencia-censura.middlewares=ol-resistenciaalacensura@file"
       - "traefik.http.services.resistencia-censura.loadbalancer.server.port=80"
       - "traefik.http.services.resistencia-censura.loadbalancer.passHostHeader=true"
+
+  proxy:
+    build:
+      context: .
+      dockerfile: apps/proxy/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+        VITE_SITE_URL: ${VITE_SITE_URL:-}
+        VITE_ASSETS_URL: ${VITE_ASSETS_URL:-}
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.proxy.rule=Host(`proxy.${WEB_HOST:-todosobreall.tech}`)"
+      - "traefik.http.routers.proxy.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.proxy.tls=true"
+      - "traefik.http.routers.proxy.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.proxy.loadbalancer.server.port=80"
+      - "traefik.http.services.proxy.loadbalancer.passHostHeader=true"
 
   comunidadtelebots:
     build:
@@ -97,6 +122,7 @@ services:
       - "traefik.http.routers.comunidadtelebots.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.comunidadtelebots.tls=true"
       - "traefik.http.routers.comunidadtelebots.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.comunidadtelebots.middlewares=ol-comunidadtelebots@file"
       - "traefik.http.services.comunidadtelebots.loadbalancer.server.port=80"
       - "traefik.http.services.comunidadtelebots.loadbalancer.passHostHeader=true"
 
@@ -119,6 +145,7 @@ services:
       - "traefik.http.routers.todosobregameplays.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.todosobregameplays.tls=true"
       - "traefik.http.routers.todosobregameplays.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.todosobregameplays.middlewares=ol-todosobregameplays@file"
       - "traefik.http.services.todosobregameplays.loadbalancer.server.port=80"
       - "traefik.http.services.todosobregameplays.loadbalancer.passHostHeader=true"
 
@@ -139,6 +166,7 @@ services:
       - "traefik.http.routers.gamergitbug.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.gamergitbug.tls=true"
       - "traefik.http.routers.gamergitbug.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.gamergitbug.middlewares=ol-gamergitbug@file"
       - "traefik.http.routers.gamergitbug-duckdns.rule=Host(`gamergitbug.duckdns.org`)"
       - "traefik.http.routers.gamergitbug-duckdns.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.gamergitbug-duckdns.tls=true"
@@ -156,9 +184,12 @@ services:
       - .env
     depends_on:
       - pocketbase
+    volumes:
+      - proxy_history:/data
     networks:
       - default
       - traefik
+      - mtproto
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
@@ -177,8 +208,6 @@ services:
       - .env
     volumes:
       - pocketbase_data:/data
-    ports:
-      - "8090:8090"
     networks:
       - default
       - traefik
@@ -195,8 +224,12 @@ services:
 
 volumes:
   pocketbase_data:
+  proxy_history:
 
 networks:
   traefik:
     external: true
     name: ${TRAEFIK_NETWORK:-traefik}
+  mtproto:
+    external: true
+    name: mtproto-proxy_default

@@ -6,6 +6,7 @@
     { id: 'gamergitbug',  label: 'GamerGitBug',         url: 'https://gamergitbug.todosobreall.tech' },
     { id: 'gameplays',    label: 'Gameplays',           url: 'https://todosobregameplays.todosobreall.tech' },
     { id: 'resistencia',  label: 'Resistencia Censura', url: 'https://resistenciaalacensura.todosobreall.tech' },
+    { id: 'proxy',        label: 'Proxies MTProto',     url: 'https://proxy.todosobreall.tech' },
     { id: 'comunidad',    label: 'ComunidadTelebots',   url: 'https://comunidadtelebots.todosobreall.tech' },
     { id: 'telegram',     label: 'Telegram Web',        url: 'https://chat.todosobreall.tech' },
   ];

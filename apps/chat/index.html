@@ -409,6 +409,12 @@
   .bg-subtitle{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:8px 0 18px;display:flex;align-items:center;gap:10px;}
   .bg-subtitle::before{content:'';width:22px;height:1px;background:var(--teal);}
   @media(max-width:760px){.bg-grid{grid-template-columns:1fr;}}
+  .bg-tracker{margin-top:10px;}
+  .bg-tracker>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--cyan);transition:.2s;margin-bottom:18px;}
+  .bg-tracker>summary:hover{border-color:var(--cyan);}
+  .bg-tracker>summary::-webkit-details-marker{display:none;}
+  .bg-tracker>summary::after{content:'▾';margin-left:4px;}
+  .bg-tracker[open]>summary::after{content:'▴';}
   /* ===== Secciones #comparativa y #codigofuente (prefijo cmp-/src-) ===== */
   .cmp-table-wrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);margin-bottom:28px;}
   .cmp-table{width:100%;border-collapse:collapse;font-size:14px;}
@@ -682,16 +688,16 @@
       </div>
     </div>
 
-    <div class="bg-subtitle">Bugs conocidos de la plataforma</div>
+    <div class="bg-subtitle">Bugs reportados a la plataforma oficial</div>
     <div class="bg-grid">
       <div class="bg-card">
-        <div class="bg-card-top"><span class="bg-state bug">Bug</span><h3>Contador de no leídos</h3></div>
-        <p>El contador puede mostrar mensajes sin leer cuando no los hay. Reportado en la plataforma oficial.</p>
-        <a class="bg-link" href="https://bugs.telegram.org/c/203" target="_blank" rel="noopener">Ver ficha oficial</a>
+        <div class="bg-card-top"><span class="bg-state bug">Bug</span><h3>TLParseException en upload.getFile</h3></div>
+        <p>Constructor TL desconocido (0xcd78e586) al descargar archivos: provoca fallos de parseo. Detectado en la beta de Android y reportado a la plataforma.</p>
+        <a class="bg-link" href="https://bugs.telegram.org/?type=issues&sort=rate" target="_blank" rel="noopener">Ver fichas oficiales</a>
       </div>
       <div class="bg-card">
-        <div class="bg-card-top"><span class="bg-state bug">Bug</span><h3>Bucle de carga en FLOOD_WAIT</h3></div>
-        <p>Al alcanzar límites de t.me aparece una animación de carga infinita que puede confundir. Reportado oficialmente.</p>
+        <div class="bg-card-top"><span class="bg-state bug">Bug</span><h3>Congelaciones (ANR) por saturación de updates</h3></div>
+        <p>El hilo principal se satura con actualizaciones de la lista de chats y provoca bloqueos temporales (ANR). Reportado a la plataforma.</p>
         <a class="bg-link" href="https://bugs.telegram.org/?type=issues&sort=rate" target="_blank" rel="noopener">Ver fichas oficiales</a>
       </div>
     </div>
