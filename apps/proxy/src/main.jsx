@@ -13,6 +13,8 @@ const BRAND = 'TodoSobreAllTech';
 const RESISTENCIA_URL = 'https://t.me/resistencia_censura';
 const TELEGRAM_URL = 'https://t.me/TodoSobreAllTech';
 const INSTAGRAM_URL = 'https://www.instagram.com/todosobrealltech/';
+// NO cambiar sin revisar: ruta única {success, proxies, total, lastUpdated} servida
+// por el api desde la caché del crawler (worker). Debe coincidir con ProxiesPanel del monorepo.
 const API_URL = '/hcgi/api/proxies';
 const REFRESH_MS = 60_000;
 const PAGE_SIZE = 24;

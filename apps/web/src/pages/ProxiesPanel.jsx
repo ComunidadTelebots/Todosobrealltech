@@ -45,6 +45,8 @@ const ProxiesPanel = () => {
     else setMtLoading(true);
 
     try {
+      // NO cambiar sin revisar: ruta única {success, proxies, total, lastUpdated} servida
+      // por el api desde la caché del crawler (worker). Debe coincidir con apps/proxy.
       const response = await apiServerClient.fetch('/proxies');
       if (!response.ok) throw new Error('Failed to fetch proxies from server');
       

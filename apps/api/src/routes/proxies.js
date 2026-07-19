@@ -1,35 +1,28 @@
 import express from 'express';
-import pb from '../utils/pocketbaseClient.js';
-import logger from '../utils/logger.js';
+import { getCachedPayload } from './mtproto-proxies.js';
 
 const router = express.Router();
 
-// GET /proxies - Fetch MTProto proxies from PocketBase collection
-router.get('/', async (req, res) => {
-  logger.info('Fetching proxies from PocketBase collection');
+// GET /proxies - Ruta ÚNICA que consumen ambos frontends (monorepo /proxies y
+// proxy.todosobreall.tech). Sirve el payload REAL del crawler (@ProxyMTProto):
+// miles de proxies con estado/ping. El crawl corre en el worker; aquí solo se
+// sirve la caché. Contrato: {success, proxies, total, lastUpdated}.
+router.get('/', (req, res) => {
+  const payload = getCachedPayload();
 
-  const result = await pb.collection('proxies').getList(1, 500);
-
-  logger.info(`Retrieved ${result.items.length} proxies from PocketBase`);
-
-  const formattedProxies = result.items.map(proxy => ({
-    id: proxy.id,
-    server: proxy.server,
-    port: proxy.port,
-    secret: proxy.secret,
-  }));
-
-  // Contrato único que consumen ambos frontends (monorepo /proxies y proxy.todosobreall.tech).
-  const lastUpdated = result.items.reduce((max, p) => {
-    const t = p.last_updated || p.updated;
-    return t && t > max ? t : max;
-  }, '') || null;
+  if (!payload || !Array.isArray(payload.proxies)) {
+    return res.json({ success: true, proxies: [], total: 0, lastUpdated: null, stats: { total: 0, online: 0, offline: 0 } });
+  }
 
   res.json({
     success: true,
-    proxies: formattedProxies,
-    total: result.totalItems,
-    lastUpdated,
+    proxies: payload.proxies,
+    total: payload.proxies.length,
+    lastUpdated: payload.fetchedAt,
+    // Extra (no rompe el contrato): lo usa apps/proxy para el resumen online/offline.
+    stats: payload.stats,
+    channelSource: payload.channelSource,
+    pagesCrawled: payload.pagesCrawled,
   });
 });
 
