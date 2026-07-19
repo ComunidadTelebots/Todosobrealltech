@@ -38,6 +38,10 @@ const MAX_HASHTAGS = 5;                        // tope total de hashtags por art
 //   · máx. 1 mensaje por segundo y por chat (canal).
 // Con 1500 ms entre llamadas nos mantenemos holgadamente por debajo de ambos.
 const TELEGRAM_BACKFILL_DELAY_MS = 1500;
+// Backfill de Instant View: lote por ciclo y periodicidad. Con 100 y 1,5 s de
+// pausa, un ciclo tarda ~2,5 min.
+const IV_BACKFILL_MAX_PER_RUN = Number(process.env.IV_BACKFILL_MAX_PER_RUN || 100);
+const IV_BACKFILL_INTERVAL_MS = Number(process.env.IV_BACKFILL_INTERVAL_MS || 45 * 60 * 1000);
 const TELEGRAM_MAX_RETRIES = 3;               // reintentos por mensaje ante un 429 (Too Many Requests)
 
 // Canales de Telegram propios (vía RSSHub) — sus items traen link t.me/... editable.
@@ -602,14 +606,18 @@ async function telegramApi(method, body, retries = TELEGRAM_MAX_RETRIES) {
 /**
  * Añade "#Categoria #NW3" y "📰 Leer en NW3: <url>" al final del mensaje original del canal.
  * Intenta editMessageText; si el mensaje es multimedia (sin texto) cae a editMessageCaption.
- * Devuelve true si la edición se aplicó (o ya estaba aplicada), false en otro caso.
+ * Devuelve { ok, permanent }: ok=true si la edición se aplicó (o ya estaba aplicada);
+ * permanent=true si Telegram rechazó la edición de forma definitiva (mensaje borrado,
+ * demasiado antiguo, sin permisos...) y no tiene sentido reintentarla nunca más.
+ * Un fallo de red/5xx devuelve permanent=false: es transitorio y se reintenta.
  */
 // Escapa los 3 caracteres que rompen parse_mode HTML en texto plano (no en el <a> del sufijo/footer).
 const escapeHtml = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
-  if (!match) return false;
+  // URL que no apunta a un post concreto: irrecuperable, no reintentar.
+  if (!match) return { ok: false, permanent: true };
 
   const chatId = `@${match[1]}`;
   const messageId = Number(match[2]);
@@ -624,23 +632,26 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   const text = `${escapeHtml(base.slice(0, 4096 - suffix.length))}${suffix}`;
   let result = await telegramApi('editMessageText', { chat_id: chatId, message_id: messageId, text, parse_mode: 'HTML' });
 
-  if (result.ok) return true;
+  if (result.ok) return { ok: true, permanent: false };
 
   const desc = (result.description || '').toLowerCase();
 
   // "message is not modified": el enlace ya estaba puesto → lo damos por bueno.
-  if (desc.includes('not modified')) return true;
+  if (desc.includes('not modified')) return { ok: true, permanent: false };
 
   // Mensaje multimedia sin texto → usar caption (límite 1024).
   if (desc.includes('no text in the message') || desc.includes('caption')) {
     const caption = `${escapeHtml(base.slice(0, 1024 - suffix.length))}${suffix}`;
     result = await telegramApi('editMessageCaption', { chat_id: chatId, message_id: messageId, caption, parse_mode: 'HTML' });
-    if (result.ok) return true;
-    if ((result.description || '').toLowerCase().includes('not modified')) return true;
+    if (result.ok) return { ok: true, permanent: false };
+    if ((result.description || '').toLowerCase().includes('not modified')) return { ok: true, permanent: false };
   }
 
-  logger.warn(`[rssAutoPublisher] No se pudo editar ${telegramUrl}: ${result.description || 'error desconocido'}`);
-  return false;
+  // 400/403 de Telegram = rechazo definitivo (mensaje borrado, no editable, sin
+  // permisos). Cualquier otra cosa (5xx, respuesta rara) se trata como transitoria.
+  const permanent = result.error_code === 400 || result.error_code === 403;
+  logger.warn(`[rssAutoPublisher] No se pudo editar ${telegramUrl} (${permanent ? 'definitivo' : 'transitorio'}): ${result.description || 'error desconocido'}`);
+  return { ok: false, permanent };
 }
 
 // Resumen breve para el cuerpo del post de Telegram: las primeras frases del
@@ -718,8 +729,8 @@ async function publishToTelegram(article, slug) {
  * ---------------------
  * Recorre nw3_noticias buscando artículos que tengan telegram_url y cuyo
  * `contenido` aún NO incluya "Leer en NW3", y edita el mensaje original del
- * canal para añadirle el enlace. Pensado para ejecutarse una sola vez al
- * arrancar (no es periódico).
+ * canal para añadirle el enlace. Corre periódicamente (IV_BACKFILL_INTERVAL_MS)
+ * en lotes de IV_BACKFILL_MAX_PER_RUN, de más reciente a más antiguo.
  */
 async function backfillTelegramLinks() {
   try {
@@ -730,9 +741,13 @@ async function backfillTelegramLinks() {
 
     // Posts del canal aún no reescritos al formato Instant View. El flag nw3_iv_added
     // evita reprocesar los ya editados en cada arranque.
+    // Se excluyen los ya editados (nw3_iv_added) y los que Telegram rechazó de
+    // forma definitiva (nw3_iv_failed), para no reintentarlos en cada ciclo.
+    // Orden descendente: los posts recientes del canal son los que la gente ve.
     const records = (await pocketbaseClient.collection('nw3_noticias').getFullList({
-      filter: 'telegram_url != "" && nw3_iv_added != true',
-    })).slice(0, 1); // TEMPORAL: prueba de 1 post. Quitar para procesar todos.
+      filter: 'telegram_url != "" && nw3_iv_added != true && nw3_iv_failed != true',
+      sort: '-created',
+    })).slice(0, IV_BACKFILL_MAX_PER_RUN);
 
     if (records.length === 0) {
       logger.info('[rssAutoPublisher] backfillTelegramLinks: no hay artículos que actualizar.');
@@ -742,23 +757,38 @@ async function backfillTelegramLinks() {
     logger.info(`[rssAutoPublisher] backfillTelegramLinks: ${records.length} artículos por procesar.`);
 
     let edited = 0;
+    let failedPermanent = 0;
+    let failedTransient = 0;
+
     for (const record of records) {
-      const ok = await appendNw3LinkToTelegramPost(
-        record.telegram_url,
-        record.slug,
-        `${record.titulo}\n\n${record.contenido}`,
-        record.categoria,
-      );
-      if (ok) {
-        edited++;
-        await pocketbaseClient.collection('nw3_noticias').update(record.id, { nw3_iv_added: true });
-        logger.info(`[rssAutoPublisher] backfillTelegramLinks: IV añadido a ${record.telegram_url}`);
+      try {
+        const { ok, permanent } = await appendNw3LinkToTelegramPost(
+          record.telegram_url,
+          record.slug,
+          `${record.titulo}\n\n${record.contenido}`,
+          record.categoria,
+        );
+        if (ok) {
+          edited++;
+          await pocketbaseClient.collection('nw3_noticias').update(record.id, { nw3_iv_added: true });
+          logger.info(`[rssAutoPublisher] backfillTelegramLinks: IV añadido a ${record.telegram_url}`);
+        } else if (permanent) {
+          failedPermanent++;
+          await pocketbaseClient.collection('nw3_noticias').update(record.id, { nw3_iv_failed: true });
+        } else {
+          failedTransient++;
+        }
+      } catch (err) {
+        // Fallo de red o de PocketBase: transitorio, se reintenta en el próximo
+        // ciclo. No aborta el resto del lote.
+        failedTransient++;
+        logger.warn(`[rssAutoPublisher] backfillTelegramLinks: fallo transitorio en ${record.telegram_url}: ${err.message}`);
       }
 
       await sleep(TELEGRAM_BACKFILL_DELAY_MS); // ≥1.5 s entre llamadas: respeta el límite de la Bot API
     }
 
-    logger.info(`[rssAutoPublisher] backfillTelegramLinks: completado, ${edited}/${records.length} posts editados en Telegram.`);
+    logger.info(`[rssAutoPublisher] backfillTelegramLinks: completado sobre ${records.length} — ${edited} editados, ${failedPermanent} fallos definitivos, ${failedTransient} transitorios.`);
   } catch (err) {
     logger.error('[rssAutoPublisher] backfillTelegramLinks error:', err.message);
   }
@@ -897,7 +927,7 @@ async function runAutoPublish() {
 
         // Canales de Telegram: editar el post original añadiendo el enlace a NW3.
         if (BOT_TOKEN && !item.publishNew && item.telegramUrl) {
-          const ok = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText, categoria, hashtags);
+          const { ok } = await appendNw3LinkToTelegramPost(item.telegramUrl, slug, item.fullText, categoria, hashtags);
           if (ok) {
             edited++;
             logger.info(`[rssAutoPublisher] Enlace NW3 añadido al post: ${item.telegramUrl}`);
@@ -918,6 +948,15 @@ async function runAutoPublish() {
 export function startRssAutoPublisher(intervalMs = INTERVAL_MS) {
   runAutoPublish();
   return setInterval(runAutoPublish, intervalMs);
+}
+
+// Backfill de Instant View como job periódico propio. No se espera al primer
+// ciclo: arranca en segundo plano para no retrasar al resto de jobs del worker.
+export function startTelegramLinkBackfill(intervalMs = IV_BACKFILL_INTERVAL_MS) {
+  const run = () => backfillTelegramLinks().catch((err) =>
+    logger.error(`[rssAutoPublisher] backfillTelegramLinks: ${err.message}`));
+  run();
+  return setInterval(run, intervalMs);
 }
 
 export { backfillTelegramLinks, fetchArticleContent, detectCategory, buildHashtagsFromContent };
