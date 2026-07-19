@@ -815,6 +815,26 @@ async function runAutoPublish() {
       })),
     ]);
 
+    // Los feeds que fallan NO pueden pasar desapercibidos: si se caen todos,
+    // allItems queda vacío y el ciclo reportaría "Sin artículos nuevos", que es
+    // indistinguible de un ciclo legítimamente vacío. Se loguea cada rechazo.
+    const feedLabels = [
+      ...CHANNELS.map((c) => `@${c.channel}`),
+      ...RSS_APP_FEEDS.map((f) => f.label || f.url),
+      ...dynamicFeeds.map((f) => f.label || f.url),
+    ];
+    const failedFeeds = settled
+      .map((r, i) => (r.status === 'rejected' ? { label: feedLabels[i] || `feed#${i}`, reason: r.reason } : null))
+      .filter(Boolean);
+
+    for (const f of failedFeeds) {
+      const cause = f.reason?.cause?.code || f.reason?.message || String(f.reason);
+      logger.error(`[rssAutoPublisher] Feed caído: ${f.label} — ${cause}`);
+    }
+    if (failedFeeds.length === settled.length && settled.length > 0) {
+      logger.error(`[rssAutoPublisher] TODOS los feeds (${settled.length}) han fallado en este ciclo: no hay datos, no es que no haya novedades.`);
+    }
+
     const allItems = settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []));
 
     // 2. Conjunto de URLs ya conocidas en nw3_noticias (fuente_url + telegram_url).
