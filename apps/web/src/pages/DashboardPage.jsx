@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, Users, Activity, FileText, MessageSquare, Send, Server } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient';
 
 const DashboardPage = () => {
   const { currentUser, logout } = useAuth();
@@ -15,7 +16,7 @@ const DashboardPage = () => {
   const [botStats, setBotStats] = useState({ total: 0, active: 0 });
   const [systemStats, setSystemStats] = useState({ users: 0, totalBots: 0 });
   const [newsStats, setNewsStats] = useState({ total: 0, today: 0 });
-  const [channelStats, setChannelStats] = useState({ total: 0, subscribers: 0, lastDay: null });
+  const [channelStats, setChannelStats] = useState({ total: 0, subscribers: 0 });
   const [proxyStats, setProxyStats] = useState({ total: 0, lastUpdated: null });
   const [loading, setLoading] = useState(true);
 
@@ -38,65 +39,27 @@ const DashboardPage = () => {
             active: bots.filter(b => b.estado).length
           });
 
-          // Fetch system stats if admin or creator
+          // Estadísticas agregadas (admin/creator) desde el endpoint server-side
+          // /stats: el servidor agrega con credenciales superuser, así devuelve
+          // totales reales de users/bots/canales que el navegador no puede leer
+          // (tg_channels tiene listRule=null y contiene bot_token; nunca se expone crudo).
           if (user.role === 'admin' || user.role === 'creator') {
-            // Inicio del día actual en UTC, en el mismo formato que PocketBase guarda
-            // el campo autodate `created` (p.ej. "2026-07-19 00:00:00.000Z").
-            const d = new Date();
-            const todayStart = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
-              .toISOString().replace('T', ' ');
-
-            // Colecciones legibles por el usuario autenticado (listRule público / propio).
-            const [usersList, allBotsList, newsList, newsTodayList, proxiesList] = await Promise.all([
-              pb.collection('users').getList(1, 1, { $autoCancel: false }),
-              pb.collection('bots').getList(1, 1, { $autoCancel: false }),
-              // Total Artículos: los artículos reales viven en nw3_noticias, no en blog_posts.
-              pb.collection('nw3_noticias').getList(1, 1, { $autoCancel: false }),
-              // Publicadas hoy: `fecha` es texto en español no filtrable, se usa `created` (autodate).
-              pb.collection('nw3_noticias').getList(1, 1, { filter: `created >= "${todayStart}"`, $autoCancel: false }),
-              pb.collection('proxies').getList(1, 1, { sort: '-last_updated', $autoCancel: false })
-            ]);
-
-            setSystemStats({
-              users: usersList.totalItems,
-              totalBots: allBotsList.totalItems
-            });
-
-            setNewsStats({
-              total: newsList.totalItems,
-              today: newsTodayList.totalItems
-            });
-
-            setProxyStats({
-              total: proxiesList.totalItems,
-              lastUpdated: proxiesList.items[0]?.last_updated || null
-            });
-
-            // tg_channels / tg_channel_snapshots tienen listRule=null (solo superusers):
-            // un usuario normal recibe 403. Se aísla para que no tumbe el resto de tarjetas;
-            // la tarjeta de Canales queda a 0 si no hay acceso.
             try {
-              const [channelsList, snapshots] = await Promise.all([
-                pb.collection('tg_channels').getList(1, 1, { $autoCancel: false }),
-                // Suscriptores: último snapshot de cada canal (dedup por chat_id sobre orden -day).
-                pb.collection('tg_channel_snapshots').getFullList({ sort: '-day', $autoCancel: false })
-              ]);
-
-              const seenChannels = new Set();
-              let subscribers = 0;
-              for (const snap of snapshots) {
-                if (!seenChannels.has(snap.chat_id)) {
-                  seenChannels.add(snap.chat_id);
-                  subscribers += snap.member_count || 0;
-                }
-              }
-              setChannelStats({
-                total: channelsList.totalItems,
-                subscribers,
-                lastDay: snapshots[0]?.day || null
+              const response = await apiServerClient.fetch('/stats', {
+                headers: { 'Authorization': `Bearer ${pb.authStore.token}` }
               });
-            } catch (channelError) {
-              console.warn('Canales Telegram no accesibles (colección solo-superuser en PocketBase):', channelError?.status || channelError);
+              if (!response.ok) {
+                throw new Error(`/stats HTTP ${response.status}`);
+              }
+              const stats = await response.json();
+
+              setSystemStats({ users: stats.users || 0, totalBots: stats.bots || 0 });
+              setNewsStats({ total: stats.news?.total || 0, today: stats.news?.today || 0 });
+              setChannelStats({ total: stats.channels?.total || 0, subscribers: stats.channels?.subscribers || 0 });
+              setProxyStats({ total: stats.proxies?.total || 0, lastUpdated: stats.proxies?.lastUpdated || null });
+            } catch (statsError) {
+              // Degradación: si /stats falla, las tarjetas quedan a 0 (estado inicial).
+              console.warn('No se pudieron cargar las estadísticas del dashboard (/stats):', statsError?.message || statsError);
             }
           }
         } catch (error) {
@@ -204,9 +167,7 @@ const DashboardPage = () => {
             </div>
             <div className="text-right">
               <p className="text-3xl font-bold text-foreground">{channelStats.subscribers.toLocaleString()}</p>
-              <p className="text-sm text-muted-foreground">
-                Suscriptores{channelStats.lastDay ? ` · ${channelStats.lastDay}` : ''}
-              </p>
+              <p className="text-sm text-muted-foreground">Suscriptores</p>
             </div>
           </div>
           <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white transition-colors" asChild>

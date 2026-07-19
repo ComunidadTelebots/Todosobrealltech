@@ -13,6 +13,7 @@ import telegramChannelRouter from './telegram-channel.js';
 import noticiasRssRouter from './noticias-rss.js';
 import noticiasViewRouter from './noticias-view.js';
 import previewRouter from './preview.js';
+import statsRouter from './stats.js';
 
 const router = Router();
 
@@ -31,6 +32,7 @@ export default () => {
     router.use('/noticias/rss', noticiasRssRouter);
     router.use('/noticias/view', noticiasViewRouter);
     router.use('/preview', previewRouter);
+    router.use('/stats', statsRouter);
 
     return router;
 };
