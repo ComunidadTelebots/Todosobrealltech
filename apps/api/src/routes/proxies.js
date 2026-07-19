@@ -19,7 +19,18 @@ router.get('/', async (req, res) => {
     secret: proxy.secret,
   }));
 
-  res.json(formattedProxies);
+  // Contrato único que consumen ambos frontends (monorepo /proxies y proxy.todosobreall.tech).
+  const lastUpdated = result.items.reduce((max, p) => {
+    const t = p.last_updated || p.updated;
+    return t && t > max ? t : max;
+  }, '') || null;
+
+  res.json({
+    success: true,
+    proxies: formattedProxies,
+    total: result.totalItems,
+    lastUpdated,
+  });
 });
 
 export default router;
