@@ -52,7 +52,13 @@ const ProxiesPanel = () => {
       
       const data = await response.json();
       if (data.success) {
-        setMtProxies(data.proxies || []);
+        // Propios (source==='own') SIEMPRE primero; orden estable dentro de cada grupo
+        // (coherente con la web pública proxy.todosobreall.tech).
+        setMtProxies(
+          (data.proxies || []).slice().sort(
+            (a, b) => (a.source === 'own' ? 0 : 1) - (b.source === 'own' ? 0 : 1)
+          )
+        );
         setMtTotalCount(data.total || data.proxies?.length || 0);
         if (data.lastUpdated) setMtLastUpdated(new Date(data.lastUpdated));
         if (isRefresh) toast.success(`Successfully loaded ${data.total} proxies`);
@@ -292,9 +298,16 @@ const ProxiesPanel = () => {
                                 <p className="text-sm text-muted-foreground">Port: {proxy.port}</p>
                               </div>
                             </div>
-                            <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-transparent">
-                              Active
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              {proxy.source === 'own' && (
+                                <Badge className="bg-emerald-500 text-white hover:bg-emerald-500 border-transparent rounded-full px-2.5">
+                                  PROPIO
+                                </Badge>
+                              )}
+                              <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-transparent">
+                                Active
+                              </Badge>
+                            </div>
                           </div>
 
                           <div className="space-y-4 flex-1">
