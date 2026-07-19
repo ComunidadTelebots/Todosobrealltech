@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, Users, Activity, FileText, MessageSquare } from 'lucide-react';
+import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, Users, Activity, FileText, MessageSquare, Send, Server } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
 
 const DashboardPage = () => {
@@ -14,7 +14,9 @@ const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
   const [botStats, setBotStats] = useState({ total: 0, active: 0 });
   const [systemStats, setSystemStats] = useState({ users: 0, totalBots: 0 });
-  const [blogStats, setBlogStats] = useState({ total: 0, pendingComments: 0, latest: [] });
+  const [newsStats, setNewsStats] = useState({ total: 0, today: 0 });
+  const [channelStats, setChannelStats] = useState({ total: 0, subscribers: 0, lastDay: null });
+  const [proxyStats, setProxyStats] = useState({ total: 0, lastUpdated: null });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,23 +40,64 @@ const DashboardPage = () => {
 
           // Fetch system stats if admin or creator
           if (user.role === 'admin' || user.role === 'creator') {
-            const [usersList, allBotsList, postsList, commentsList] = await Promise.all([
+            // Inicio del día actual en UTC, en el mismo formato que PocketBase guarda
+            // el campo autodate `created` (p.ej. "2026-07-19 00:00:00.000Z").
+            const d = new Date();
+            const todayStart = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
+              .toISOString().replace('T', ' ');
+
+            // Colecciones legibles por el usuario autenticado (listRule público / propio).
+            const [usersList, allBotsList, newsList, newsTodayList, proxiesList] = await Promise.all([
               pb.collection('users').getList(1, 1, { $autoCancel: false }),
               pb.collection('bots').getList(1, 1, { $autoCancel: false }),
-              pb.collection('blog_posts').getList(1, 3, { sort: '-created_at', $autoCancel: false }),
-              pb.collection('blog_comments').getList(1, 1, { filter: 'approved=false', $autoCancel: false })
+              // Total Artículos: los artículos reales viven en nw3_noticias, no en blog_posts.
+              pb.collection('nw3_noticias').getList(1, 1, { $autoCancel: false }),
+              // Publicadas hoy: `fecha` es texto en español no filtrable, se usa `created` (autodate).
+              pb.collection('nw3_noticias').getList(1, 1, { filter: `created >= "${todayStart}"`, $autoCancel: false }),
+              pb.collection('proxies').getList(1, 1, { sort: '-last_updated', $autoCancel: false })
             ]);
-            
+
             setSystemStats({
               users: usersList.totalItems,
               totalBots: allBotsList.totalItems
             });
 
-            setBlogStats({
-              total: postsList.totalItems,
-              pendingComments: commentsList.totalItems,
-              latest: postsList.items
+            setNewsStats({
+              total: newsList.totalItems,
+              today: newsTodayList.totalItems
             });
+
+            setProxyStats({
+              total: proxiesList.totalItems,
+              lastUpdated: proxiesList.items[0]?.last_updated || null
+            });
+
+            // tg_channels / tg_channel_snapshots tienen listRule=null (solo superusers):
+            // un usuario normal recibe 403. Se aísla para que no tumbe el resto de tarjetas;
+            // la tarjeta de Canales queda a 0 si no hay acceso.
+            try {
+              const [channelsList, snapshots] = await Promise.all([
+                pb.collection('tg_channels').getList(1, 1, { $autoCancel: false }),
+                // Suscriptores: último snapshot de cada canal (dedup por chat_id sobre orden -day).
+                pb.collection('tg_channel_snapshots').getFullList({ sort: '-day', $autoCancel: false })
+              ]);
+
+              const seenChannels = new Set();
+              let subscribers = 0;
+              for (const snap of snapshots) {
+                if (!seenChannels.has(snap.chat_id)) {
+                  seenChannels.add(snap.chat_id);
+                  subscribers += snap.member_count || 0;
+                }
+              }
+              setChannelStats({
+                total: channelsList.totalItems,
+                subscribers,
+                lastDay: snapshots[0]?.day || null
+              });
+            } catch (channelError) {
+              console.warn('Canales Telegram no accesibles (colección solo-superuser en PocketBase):', channelError?.status || channelError);
+            }
           }
         } catch (error) {
           console.error('Error fetching dashboard data:', error);
@@ -119,25 +162,87 @@ const DashboardPage = () => {
           <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
             <FileText className="w-6 h-6 text-blue-600" />
           </div>
-          <CardTitle>Blog Management</CardTitle>
-          <CardDescription>Manage articles and moderate comments</CardDescription>
+          <CardTitle>Noticias NW3</CardTitle>
+          <CardDescription>Artículos publicados en NoticiasWeb3</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-3xl font-bold text-foreground">{blogStats.total}</p>
-              <p className="text-sm text-muted-foreground">Total Articles</p>
+              <p className="text-3xl font-bold text-foreground">{newsStats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Artículos</p>
             </div>
             <div className="text-right">
-              <p className={`text-3xl font-bold ${blogStats.pendingComments > 0 ? 'text-yellow-600' : 'text-foreground'}`}>
-                {blogStats.pendingComments}
+              <p className={`text-3xl font-bold ${newsStats.today > 0 ? 'text-green-600' : 'text-foreground'}`}>
+                {newsStats.today}
               </p>
-              <p className="text-sm text-muted-foreground">Pending Comments</p>
+              <p className="text-sm text-muted-foreground">Publicadas hoy</p>
             </div>
           </div>
           <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors" asChild>
-            <Link to="/creator/blog">
-              Manage Blog
+            <a href="https://noticiasweb3.todosobreall.tech" target="_blank" rel="noopener noreferrer">
+              Ver NoticiasWeb3
+              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="relative overflow-hidden group border-cyan-500/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <CardHeader>
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-4">
+            <Send className="w-6 h-6 text-cyan-600" />
+          </div>
+          <CardTitle>Canales Telegram</CardTitle>
+          <CardDescription>Directorio de canales y suscriptores</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-3xl font-bold text-foreground">{channelStats.total}</p>
+              <p className="text-sm text-muted-foreground">Canales</p>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold text-foreground">{channelStats.subscribers.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">
+                Suscriptores{channelStats.lastDay ? ` · ${channelStats.lastDay}` : ''}
+              </p>
+            </div>
+          </div>
+          <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white transition-colors" asChild>
+            <a href="https://canales.todosobreall.tech" target="_blank" rel="noopener noreferrer">
+              Ver Canales
+              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="relative overflow-hidden group border-emerald-500/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <CardHeader>
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
+            <Server className="w-6 h-6 text-emerald-600" />
+          </div>
+          <CardTitle>Proxies MTProto</CardTitle>
+          <CardDescription>Proxies configurados para la comunidad</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-3xl font-bold text-foreground">{proxyStats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Proxies</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xl font-semibold text-foreground">
+                {proxyStats.lastUpdated ? new Date(proxyStats.lastUpdated).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : '—'}
+              </p>
+              <p className="text-sm text-muted-foreground">Actualizado</p>
+            </div>
+          </div>
+          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors" asChild>
+            <Link to="/proxies">
+              Ver Proxies
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
