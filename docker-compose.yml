@@ -209,6 +209,11 @@ services:
       - .env
     environment:
       - PROXY_CRAWLER=1
+      # El crawl de proxies hace miles de resoluciones DNS + TCP-checks. Con los 4
+      # hilos por defecto de libuv, getaddrinfo se satura y ahoga al resto de jobs
+      # (RSS, telegramSync, PocketBase) con timeouts falsos. Ver commit df163c3.
+      - UV_THREADPOOL_SIZE=64
+      - RSS_MAX_NEW_PER_RUN=${RSS_MAX_NEW_PER_RUN:-25}
     volumes:
       - proxy_history:/data
     depends_on:

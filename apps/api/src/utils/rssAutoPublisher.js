@@ -24,7 +24,7 @@ const BOT_TOKEN = process.env.BOT_TOKEN_NW3;
 const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech';
 const INTERVAL_MS = 30 * 60 * 1000;          // cada 30 minutos
 const TELEGRAM_CALL_DELAY_MS = 1200;          // pausa entre llamadas a la Bot API
-const MAX_NEW_PER_RUN = 25;                   // tope de seguridad: nuevos artículos por ejecución
+const MAX_NEW_PER_RUN = Number(process.env.RSS_MAX_NEW_PER_RUN || 25); // tope de seguridad: nuevos artículos por ejecución
 const MAX_TELEGRAM_BODY_CHARS = 300;          // resumen del cuerpo en el post de Telegram (2-3 frases)
 
 // Extracción del cuerpo completo del artículo original (fetchArticleContent):
