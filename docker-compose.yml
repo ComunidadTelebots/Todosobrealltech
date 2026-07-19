@@ -207,10 +207,15 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - PROXY_CRAWLER=1
+    volumes:
+      - proxy_history:/data
     depends_on:
       - pocketbase
     networks:
       - default
+      - mtproto
 
   pocketbase:
     build:

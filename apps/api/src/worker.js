@@ -2,6 +2,9 @@ import 'dotenv/config';
 import logger from './utils/logger.js';
 import { startTelegramSync } from './utils/telegramSync.js';
 import { startRssAutoPublisher, backfillTelegramLinks } from './utils/rssAutoPublisher.js';
+import { refreshPayload } from './routes/mtproto-proxies.js';
+
+const PROXY_CRAWL_MS = Number(process.env.MTPROTO_PAYLOAD_TTL_MS || 300_000); // 5 min
 
 // Worker de jobs en segundo plano. Se separa del proceso HTTP (main.js) para que
 // las conexiones salientes de estos jobs (fetch de RSS/Telegram) no compartan el
@@ -28,8 +31,14 @@ process.on('SIGTERM', async () => {
 });
 
 (async () => {
-	logger.info('🛠️  Worker de jobs iniciado (telegramSync, backfill, rssAutoPublisher)');
+	logger.info('🛠️  Worker de jobs iniciado (telegramSync, backfill, rssAutoPublisher, crawl proxies)');
 	startTelegramSync();
 	await backfillTelegramLinks();
 	startRssAutoPublisher();
+
+	// Crawl de proxies MTProto (@ProxyMTProto): antes ahogaba el pool del api con
+	// ~2244 TCP-checks. Ahora corre aquí y persiste a /data; el api solo sirve caché.
+	const crawl = () => refreshPayload().catch((err) => logger.error(`[proxyCrawl] ${err.message}`));
+	crawl();
+	setInterval(crawl, PROXY_CRAWL_MS);
 })();

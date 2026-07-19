@@ -553,7 +553,35 @@ function refreshPayload() {
   return payloadInflight;
 }
 
+// Solo el contenedor `worker` (PROXY_CRAWLER=1) ejecuta el crawl + TCP-checks;
+// el api solo SIRVE la caché (recargada de disco) para no estrangular su pool.
+const IS_CRAWLER = process.env.PROXY_CRAWLER === '1';
+
+// getCachedPayload: payload real del crawler cacheado (lo consume /proxies).
+export function getCachedPayload() {
+  return payloadCache.data;
+}
+export { refreshPayload };
+
+// En el api (no-crawler) recargamos periódicamente el payload que escribe el worker.
+if (!IS_CRAWLER) {
+  setInterval(() => {
+    try {
+      const saved = JSON.parse(fs.readFileSync(PAYLOAD_CACHE_FILE, 'utf8'));
+      if (saved && saved.data && Array.isArray(saved.data.proxies)) payloadCache = saved;
+    } catch { /* sin cambios */ }
+  }, 60_000);
+}
+
 async function getPayload(force = false) {
+  // Api: nunca crawlea; sirve la última caché conocida (o vacío si aún no hay).
+  if (!IS_CRAWLER) {
+    return payloadCache.data || {
+      fetchedAt: null, channelSource: 'sin datos', pagesCrawled: 0,
+      stats: { total: 0, online: 0, offline: 0 }, proxies: [],
+    };
+  }
+
   const fresh = Date.now() - payloadCache.ts < PAYLOAD_TTL_MS;
 
   if (!force && payloadCache.data && fresh) return payloadCache.data;
