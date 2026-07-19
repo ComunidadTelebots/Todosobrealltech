@@ -521,9 +521,17 @@ async function buildPayload() {
       if (p.source !== 'own') return;
       const host = p.statsHost || p.server;
       const port = p.statsHost ? 443 : p.port;
-      let r = await checkTcp(host, port, OWN_TCP_TIMEOUT_MS);
-      // Reintento: evita falsos offline/null por un pico transitorio de carga.
-      if (r.status !== 'online') r = await checkTcp(host, port, OWN_TCP_TIMEOUT_MS);
+      // Conectar por IP RESUELTA (cacheada), no por nombre: bajo la carga del worker
+      // (rss/telegram + miles de checks de canal) getaddrinfo se satura en el
+      // threadpool de libuv y el check por nombre da falso offline. La IP evita el DNS.
+      const ip = (await resolveIp(host)) || host;
+      let r = await checkTcp(ip, port, OWN_TCP_TIMEOUT_MS);
+      if (r.status !== 'online') {
+        // Por si el contenedor mtproxy reinició y cambió de IP: re-resolver y reintentar.
+        dnsCache.delete(host);
+        const fresh = (await resolveIp(host)) || host;
+        r = await checkTcp(fresh, port, OWN_TCP_TIMEOUT_MS);
+      }
       health[i] = r;
     }),
   );
