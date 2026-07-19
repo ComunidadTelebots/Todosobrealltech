@@ -8,8 +8,6 @@ import morgan from 'morgan';
 import routes from './routes/index.js';
 import { errorMiddleware } from './middleware/index.js';
 import logger from './utils/logger.js';
-import { startTelegramSync } from './utils/telegramSync.js';
-import { startRssAutoPublisher, backfillTelegramLinks } from './utils/rssAutoPublisher.js';
 
 
 const app = express();
@@ -64,11 +62,11 @@ app.use((req, res) => {
 
 const port = process.env.PORT || 3001;
 
-app.listen(port, async () => {
+app.listen(port, () => {
 	logger.info(`🚀 API Server running on http://localhost:${port}`);
-	startTelegramSync();
-	await backfillTelegramLinks();
-	startRssAutoPublisher();
+	// Los jobs en segundo plano (telegramSync, backfill, rssAutoPublisher) se
+	// ejecutan ahora en el contenedor `worker` (src/worker.js), no aquí, para no
+	// compartir el pool de conexiones de undici con el servidor HTTP.
 });
 
 export default app;

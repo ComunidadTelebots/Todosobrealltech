@@ -199,6 +199,19 @@ services:
       - "traefik.http.routers.api.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
       - "traefik.http.services.api.loadbalancer.server.port=3001"
 
+  worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ["node", "src/worker.js"]
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - pocketbase
+    networks:
+      - default
+
   pocketbase:
     build:
       context: .
