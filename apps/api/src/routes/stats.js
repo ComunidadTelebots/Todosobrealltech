@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import crypto from 'crypto';
 import PocketBase from 'pocketbase';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
@@ -10,9 +11,71 @@ const POCKETBASE_HOST = process.env.POCKETBASE_HOST || 'http://localhost:8090';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
 const ALLOWED_ROLES = ['admin', 'creator'];
 
-// Caché en memoria a nivel de módulo (basta con timestamp; no requiere Redis).
+// Caché de la agregación (basta con timestamp; no requiere Redis).
 let cache = null;
 let cacheAt = 0;
+
+// Caché de validación de tokens: sha256(token) -> { user, role, expiresAt }.
+// Evita machacar auth-refresh de PocketBase desde la IP del contenedor: una
+// validación vale 60s. Sin ella, un pico de peticiones abre una conexión nueva
+// por request y expone timeouts de conexión intermitentes.
+const TOKEN_CACHE_TTL_MS = 60 * 1000;
+const AUTH_MAX_ATTEMPTS = 3; // 1 intento + 2 reintentos ante fallo de transporte
+const AUTH_ATTEMPT_TIMEOUT_MS = 3500; // cap por intento: undici tarda ~10s en conexión fría
+const tokenCache = new Map();
+
+// authRefresh con timeout propio por intento: una conexión fría a PocketBase puede
+// tardar el connectTimeout de undici (~10s). Cortamos antes y reintentamos con
+// conexión nueva, que suele calentar y responder en ms.
+async function authRefreshWithTimeout(client, timeoutMs) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject({ status: 0, isTimeout: true }), timeoutMs);
+  });
+  try {
+    return await Promise.race([client.collection('users').authRefresh(), timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function pruneTokenCache(now) {
+  for (const [k, v] of tokenCache) {
+    if (v.expiresAt <= now) tokenCache.delete(k);
+  }
+}
+
+/**
+ * Valida el token contra PocketBase con reintentos SOLO ante fallo de transporte
+ * (err.status === 0: connect timeout / socket, no es culpa del token). Devuelve:
+ *   { record }      → token válido
+ *   { invalid:true }→ PocketBase respondió 401/403/400 (token realmente inválido)
+ *   { transient:true} → fallo de transporte persistente tras los reintentos
+ */
+async function validateToken(token) {
+  for (let attempt = 1; attempt <= AUTH_MAX_ATTEMPTS; attempt++) {
+    const userClient = new PocketBase(POCKETBASE_HOST);
+    userClient.autoCancellation(false);
+    userClient.authStore.save(token, null);
+    try {
+      const authData = await authRefreshWithTimeout(userClient, AUTH_ATTEMPT_TIMEOUT_MS);
+      return { record: authData?.record || null };
+    } catch (err) {
+      if (err?.status === 0) {
+        // Transporte: reintenta con una conexión nueva.
+        if (attempt < AUTH_MAX_ATTEMPTS) {
+          await new Promise((r) => setTimeout(r, 150));
+          continue;
+        }
+        logger.error(`[stats] auth-refresh transporte KO tras ${AUTH_MAX_ATTEMPTS} intentos: ${err?.originalError?.cause?.code || err?.message}`);
+        return { transient: true };
+      }
+      // PocketBase respondió con un error real de auth → token inválido.
+      return { invalid: true };
+    }
+  }
+  return { transient: true };
+}
 
 /**
  * Valida el Bearer token del usuario y exige rol admin/creator.
@@ -22,6 +85,13 @@ let cacheAt = 0;
  *
  * Retorna { user } en éxito, o { status, error } en fallo.
  */
+function decideByRole(user) {
+  if (!ALLOWED_ROLES.includes(user.role)) {
+    return { status: 403, error: 'Only admin/creator can access these stats' };
+  }
+  return { user };
+}
+
 async function authorize(req) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -33,27 +103,33 @@ async function authorize(req) {
     return { status: 401, error: 'Bearer token is required' };
   }
 
-  const userClient = new PocketBase(POCKETBASE_HOST);
-  userClient.autoCancellation(false);
-  userClient.authStore.save(token, null);
+  const now = Date.now();
+  const key = crypto.createHash('sha256').update(token).digest('hex');
 
-  let record;
-  try {
-    const authData = await userClient.collection('users').authRefresh();
-    record = authData?.record;
-  } catch {
+  // Caché válida → no se llama a authRefresh.
+  const hit = tokenCache.get(key);
+  if (hit && hit.expiresAt > now) {
+    return decideByRole(hit.user);
+  }
+
+  const result = await validateToken(token);
+
+  // Fallo de transporte hacia PocketBase: NO es un token inválido. 503 + Retry-After
+  // para no forzar un logout falso en el frontend.
+  if (result.transient) {
+    return { status: 503, error: 'Auth backend temporarily unavailable', retryAfter: 2 };
+  }
+  // PocketBase rechazó el token (401/403/400) o no devolvió record.
+  if (result.invalid || !result.record) {
     return { status: 401, error: 'Invalid or expired authentication token' };
   }
 
-  if (!record) {
-    return { status: 401, error: 'Invalid or expired authentication token' };
-  }
+  const record = result.record;
+  const user = { id: record.id, role: record.role, username: record.username };
+  pruneTokenCache(now);
+  tokenCache.set(key, { user, expiresAt: now + TOKEN_CACHE_TTL_MS });
 
-  if (!ALLOWED_ROLES.includes(record.role)) {
-    return { status: 403, error: 'Only admin/creator can access these stats' };
-  }
-
-  return { user: record };
+  return decideByRole(user);
 }
 
 /**
@@ -106,6 +182,9 @@ async function buildStats() {
 router.get('/', async (req, res) => {
   const auth = await authorize(req);
   if (auth.error) {
+    if (auth.retryAfter) {
+      res.set('Retry-After', String(auth.retryAfter));
+    }
     return res.status(auth.status).json({ error: auth.error });
   }
 
