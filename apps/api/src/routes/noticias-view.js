@@ -9,7 +9,7 @@ router.post('/:slug', async (req, res) => {
   try {
     const slug = req.params.slug;
     const pbRes = await fetch(
-      `${PB_HOST}/api/collections/nw3_noticias/records?filter=${encodeURIComponent(`slug="${slug}"`)}&fields=id,visitas`
+      `${PB_HOST}/api/collections/nw3_noticias/records?filter=${encodeURIComponent(`slug="${slug}" && oculto=false`)}&fields=id,visitas`
     );
     const data = await pbRes.json();
     if (!data.items?.length) return res.status(404).json({ error: 'Not found' });

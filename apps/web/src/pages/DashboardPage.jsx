@@ -5,19 +5,27 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, Users, Activity, FileText, MessageSquare, Send, Server } from 'lucide-react';
+import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, FileText, Send, Server, Crown, UserCheck, Network } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
 import apiServerClient from '@/lib/apiServerClient';
+import CreatorNewsManager from '@/components/CreatorNewsManager.jsx';
 
 const DashboardPage = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [botStats, setBotStats] = useState({ total: 0, active: 0 });
-  const [systemStats, setSystemStats] = useState({ users: 0, totalBots: 0 });
+  const [systemStats, setSystemStats] = useState({
+    users: 0,
+    totalBots: 0,
+    verified: 0,
+    frozen: 0,
+    creators: 0,
+    admins: 0,
+  });
   const [newsStats, setNewsStats] = useState({ total: 0, today: 0 });
   const [channelStats, setChannelStats] = useState({ total: 0, subscribers: 0 });
-  const [proxyStats, setProxyStats] = useState({ total: 0, lastUpdated: null });
+  const [proxyStats, setProxyStats] = useState({ total: 0, active: 0, owners: 0, lastUpdated: null });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,10 +61,22 @@ const DashboardPage = () => {
               }
               const stats = await response.json();
 
-              setSystemStats({ users: stats.users || 0, totalBots: stats.bots || 0 });
+              setSystemStats({
+                users: stats.users || 0,
+                totalBots: stats.bots || 0,
+                verified: stats.userStats?.verified || 0,
+                frozen: stats.userStats?.frozen || 0,
+                creators: stats.userStats?.creators || 0,
+                admins: stats.userStats?.admins || 0,
+              });
               setNewsStats({ total: stats.news?.total || 0, today: stats.news?.today || 0 });
               setChannelStats({ total: stats.channels?.total || 0, subscribers: stats.channels?.subscribers || 0 });
-              setProxyStats({ total: stats.proxies?.total || 0, lastUpdated: stats.proxies?.lastUpdated || null });
+              setProxyStats({
+                total: stats.proxies?.total || 0,
+                active: stats.proxies?.active || 0,
+                owners: stats.proxies?.owners || 0,
+                lastUpdated: stats.proxies?.lastUpdated || null,
+              });
             } catch (statsError) {
               // Degradación: si /stats falla, las tarjetas quedan a 0 (estado inicial).
               console.warn('No se pudieron cargar las estadísticas del dashboard (/stats):', statsError?.message || statsError);
@@ -96,23 +116,31 @@ const DashboardPage = () => {
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
             <Shield className="w-6 h-6 text-primary" />
           </div>
-          <CardTitle>Admin Control Panel</CardTitle>
-          <CardDescription>Manage users, roles, and system settings</CardDescription>
+          <CardTitle>Panel de cuentas</CardTitle>
+          <CardDescription>Usuarios, roles y estado de las cuentas</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between mb-6">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
               <p className="text-3xl font-bold text-foreground">{systemStats.users}</p>
-              <p className="text-sm text-muted-foreground">Total Users</p>
+              <p className="text-sm text-muted-foreground">Usuarios</p>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-foreground">{systemStats.totalBots}</p>
-              <p className="text-sm text-muted-foreground">Total Bots</p>
+              <p className="text-3xl font-bold text-green-600">{systemStats.verified}</p>
+              <p className="text-sm text-muted-foreground">Verificados</p>
+            </div>
+            <div>
+              <p className="text-xl font-semibold text-foreground">{systemStats.admins + systemStats.creators}</p>
+              <p className="text-xs text-muted-foreground">Equipo administrador</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xl font-semibold text-foreground">{systemStats.frozen}</p>
+              <p className="text-xs text-muted-foreground">Congeladas</p>
             </div>
           </div>
           <Button className="w-full group-hover:bg-primary/90 transition-colors" asChild>
             <Link to="/admin">
-              Open Admin Dashboard
+              Gestionar cuentas
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
@@ -142,8 +170,8 @@ const DashboardPage = () => {
             </div>
           </div>
           <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors" asChild>
-            <a href="https://noticiasweb3.todosobreall.tech" target="_blank" rel="noopener noreferrer">
-              Ver NoticiasWeb3
+            <a href="#creator-news">
+              Gestionar NoticiasWeb3
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </a>
           </Button>
@@ -192,13 +220,23 @@ const DashboardPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-3xl font-bold text-foreground">{proxyStats.total}</p>
-              <p className="text-sm text-muted-foreground">Total Proxies</p>
+              <p className="text-sm text-muted-foreground">Proxies privados</p>
             </div>
             <div className="text-right">
               <p className="text-xl font-semibold text-foreground">
                 {proxyStats.lastUpdated ? new Date(proxyStats.lastUpdated).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : '—'}
               </p>
-              <p className="text-sm text-muted-foreground">Actualizado</p>
+              <p className="text-sm text-muted-foreground">Última actualización</p>
+            </div>
+          </div>
+          <div className="mb-6 grid grid-cols-2 gap-3 rounded-lg bg-muted/50 p-3 text-sm">
+            <div>
+              <p className="font-semibold text-green-600">{proxyStats.active}</p>
+              <p className="text-muted-foreground">Proxies activos</p>
+            </div>
+            <div className="text-right">
+              <p className="font-semibold">{proxyStats.owners}</p>
+              <p className="text-muted-foreground">Usuarios con proxy</p>
             </div>
           </div>
           <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors" asChild>
@@ -342,27 +380,58 @@ const DashboardPage = () => {
                 <CardDescription>Manage your account</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start" disabled>
-                  <User className="w-4 h-4 mr-2" />
-                  View Profile
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link to="/profile">
+                    <User className="w-4 h-4 mr-2" />
+                    Ver perfil
+                  </Link>
                 </Button>
-                <Button variant="outline" className="w-full justify-start" disabled>
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link to="/settings">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Ajustes
+                  </Link>
                 </Button>
+                {(userData?.role === 'admin' || userData?.role === 'creator') && (
+                  <>
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <Link to="/creator">
+                        <Crown className="w-4 h-4 mr-2" />
+                        Panel de creador
+                      </Link>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <Link to="/admin">
+                        <UserCheck className="w-4 h-4 mr-2" />
+                        Gestionar cuentas
+                      </Link>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <Link to="/proxies">
+                        <Network className="w-4 h-4 mr-2" />
+                        Gestionar proxies
+                      </Link>
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="outline"
                   className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                   onClick={handleLogout}
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  Cerrar sesión
                 </Button>
               </CardContent>
             </Card>
           </div>
 
           {(userData?.role === 'admin' || userData?.role === 'creator') && renderAdminContent()}
+          {(userData?.role === 'admin' || userData?.role === 'creator') && (
+            <div id="creator-news" className="mt-8 scroll-mt-24 rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
+              <CreatorNewsManager />
+            </div>
+          )}
           {(userData?.role === 'user' || !userData?.role) && renderUserContent()}
         </div>
       </div>

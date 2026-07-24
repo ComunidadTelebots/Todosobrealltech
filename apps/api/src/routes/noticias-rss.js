@@ -22,7 +22,7 @@ function toRfc822(dateStr) {
 
 router.get('/', async (req, res) => {
   try {
-    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&fields=id,slug,titulo,contenido,fecha,categoria,created`;
+    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}&fields=id,slug,titulo,contenido,fecha,categoria,created`;
     const pbRes = await fetch(url);
     const pbData = await pbRes.json();
     const pbRecords = pbData.items || [];

@@ -142,8 +142,8 @@ async function buildStats() {
   const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
     .toISOString().replace('T', ' ');
 
-  const [usersList, botsList, newsList, newsTodayList, channelsList, snapshots, proxiesList] = await Promise.all([
-    pb.collection('users').getList(1, 1),
+  const [users, botsList, newsList, newsTodayList, channelsList, snapshots, proxies] = await Promise.all([
+    pb.collection('users').getFullList({ fields: 'id,role,verified,is_frozen,created' }),
     pb.collection('bots').getList(1, 1),
     pb.collection('nw3_noticias').getList(1, 1),
     // `fecha` es texto en español no filtrable; se usa `created` (autodate).
@@ -151,7 +151,7 @@ async function buildStats() {
     pb.collection('tg_channels').getList(1, 1),
     // Último snapshot de cada canal: dedup por chat_id sobre orden -day.
     pb.collection('tg_channel_snapshots').getFullList({ sort: '-day' }),
-    pb.collection('proxies').getList(1, 1, { sort: '-last_updated' }),
+    pb.collection('user_proxies').getFullList({ sort: '-updated', fields: 'id,user_id,status,last_tested,updated' }),
   ]);
 
   const seenChannels = new Set();
@@ -164,13 +164,23 @@ async function buildStats() {
   }
 
   return {
-    users: usersList.totalItems,
+    users: users.length,
+    userStats: {
+      total: users.length,
+      verified: users.filter((user) => user.verified).length,
+      frozen: users.filter((user) => user.is_frozen).length,
+      creators: users.filter((user) => user.role === 'creator').length,
+      admins: users.filter((user) => user.role === 'admin').length,
+      regular: users.filter((user) => !['admin', 'creator'].includes(user.role)).length,
+    },
     bots: botsList.totalItems,
     news: { total: newsList.totalItems, today: newsTodayList.totalItems },
     channels: { total: channelsList.totalItems, subscribers },
     proxies: {
-      total: proxiesList.totalItems,
-      lastUpdated: proxiesList.items[0]?.last_updated || null,
+      total: proxies.length,
+      active: proxies.filter((proxy) => proxy.status === 'active' || proxy.status === true).length,
+      owners: new Set(proxies.map((proxy) => proxy.user_id).filter(Boolean)).size,
+      lastUpdated: proxies[0]?.last_tested || proxies[0]?.updated || null,
     },
     services: null, // placeholder fase 3
     github: null,    // placeholder fase 3

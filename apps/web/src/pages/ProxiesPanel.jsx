@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import apiServerClient from '@/lib/apiServerClient.js';
+import pb from '@/lib/pocketbaseClient.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, RefreshCw, Shield, Server, Clock, CheckCircle2, AlertCircle, Plus, Network } from 'lucide-react';
+import { Copy, RefreshCw, Shield, Server, CheckCircle2, AlertCircle, Plus, Network, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -25,6 +26,7 @@ const ProxiesPanel = () => {
   const [mtLastUpdated, setMtLastUpdated] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const [mtTotalCount, setMtTotalCount] = useState(0);
+  const [creatorStats, setCreatorStats] = useState(null);
 
   // Personal Proxies State
   const { 
@@ -80,6 +82,23 @@ const ProxiesPanel = () => {
       fetchPersonalProxies();
     }
   }, [currentUser, fetchPersonalProxies]);
+
+  useEffect(() => {
+    if (!['admin', 'creator'].includes(currentUser?.role)) {
+      setCreatorStats(null);
+      return;
+    }
+
+    apiServerClient.fetch('/stats', {
+      headers: { Authorization: `Bearer ${pb.authStore.token}` },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`/stats HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((stats) => setCreatorStats(stats.proxies || null))
+      .catch((error) => console.warn('Failed to load creator proxy stats:', error));
+  }, [currentUser]);
 
   const handleCopy = (proxy) => {
     const proxyString = `${proxy.server}:${proxy.port}:${proxy.secret}`;
@@ -142,6 +161,38 @@ const ProxiesPanel = () => {
               </p>
             </div>
           </div>
+
+          {creatorStats && (
+            <div className="mb-8 grid gap-4 sm:grid-cols-3">
+              <Card>
+                <CardContent className="flex items-center gap-4 p-5">
+                  <Server className="h-8 w-8 text-primary" />
+                  <div>
+                    <p className="text-2xl font-bold">{creatorStats.total || 0}</p>
+                    <p className="text-sm text-muted-foreground">Proxies privados</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-4 p-5">
+                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                  <div>
+                    <p className="text-2xl font-bold">{creatorStats.active || 0}</p>
+                    <p className="text-sm text-muted-foreground">Conexiones activas</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-4 p-5">
+                  <Users className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <p className="text-2xl font-bold">{creatorStats.owners || 0}</p>
+                    <p className="text-sm text-muted-foreground">Usuarios con proxy</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           <Tabs defaultValue="personal" className="space-y-8">
             <TabsList className="grid w-full max-w-md grid-cols-2">

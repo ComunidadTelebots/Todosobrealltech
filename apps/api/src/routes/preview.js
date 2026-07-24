@@ -59,7 +59,7 @@ async function findArticle(slug) {
   // 1. PocketBase (dynamic articles). Read is public, same as the RSS/view routes.
   try {
     const url = `${PB_HOST}/api/collections/nw3_noticias/records`
-      + `?filter=${encodeURIComponent(`slug="${slug}"`)}&perPage=1`;
+      + `?filter=${encodeURIComponent(`slug="${slug}" && oculto=false`)}&perPage=1`;
     const pbRes = await fetch(url);
     if (pbRes.ok) {
       const data = await pbRes.json();
@@ -109,7 +109,7 @@ async function findRelated(category, excludeSlug, limit = 3) {
 
   // 1. PocketBase.
   try {
-    const filter = `categoria="${category}" && slug!="${excludeSlug}"`;
+    const filter = `categoria="${category}" && slug!="${excludeSlug}" && oculto=false`;
     const url = `${PB_HOST}/api/collections/nw3_noticias/records`
       + `?filter=${encodeURIComponent(filter)}&perPage=${limit}&sort=-created&fields=slug,titulo`;
     const pbRes = await fetch(url);
