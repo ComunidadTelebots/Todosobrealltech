@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext.jsx';
 import { LanguageProvider } from '@/contexts/LanguageContext.jsx';
@@ -40,6 +40,31 @@ const PageTracker = () => {
   return null;
 };
 
+const ThemePreference = () => {
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applyTheme = (theme = localStorage.getItem('selectedTheme') || 'system') => {
+      const useDarkTheme = theme === 'dark' || (theme === 'system' && mediaQuery.matches);
+      document.documentElement.classList.toggle('dark', useDarkTheme);
+      document.documentElement.style.colorScheme = useDarkTheme ? 'dark' : 'light';
+    };
+    const handlePreferenceUpdate = (event) => applyTheme(event.detail);
+    const handleSystemThemeChange = () => applyTheme();
+
+    applyTheme();
+    window.addEventListener('themePreferenceUpdate', handlePreferenceUpdate);
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+
+    return () => {
+      window.removeEventListener('themePreferenceUpdate', handlePreferenceUpdate);
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, []);
+
+  return null;
+};
+
 function App() {
   return (
     <Router>
@@ -47,6 +72,7 @@ function App() {
         <LanguageProvider>
           <AnalyticsProvider>
             <PageTracker />
+            <ThemePreference />
             <AdSenseAutoAds />
             <ScrollToTop />
             <div className="flex flex-col min-h-screen relative">
