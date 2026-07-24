@@ -9,6 +9,7 @@ import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, FileText, Send, 
 import pb from '@/lib/pocketbaseClient';
 import apiServerClient from '@/lib/apiServerClient';
 import CreatorNewsManager from '@/components/CreatorNewsManager.jsx';
+import CreatorAccountProxyManager from '@/components/CreatorAccountProxyManager.jsx';
 
 const DashboardPage = () => {
   const { currentUser, logout } = useAuth();
@@ -427,6 +428,11 @@ const DashboardPage = () => {
           </div>
 
           {(userData?.role === 'admin' || userData?.role === 'creator') && renderAdminContent()}
+          {(userData?.role === 'admin' || userData?.role === 'creator') && (
+            <div className="mt-8 rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
+              <CreatorAccountProxyManager />
+            </div>
+          )}
           {(userData?.role === 'admin' || userData?.role === 'creator') && (
             <div id="creator-news" className="mt-8 scroll-mt-24 rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
               <CreatorNewsManager />
