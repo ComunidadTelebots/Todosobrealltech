@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, FileText, Send, Server, Crown, UserCheck, Network } from 'lucide-react';
+import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, FileText, Send, Server, Crown, UserCheck, Network, UsersRound } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
 import apiServerClient from '@/lib/apiServerClient';
 import CreatorNewsManager from '@/components/CreatorNewsManager.jsx';
@@ -412,6 +412,12 @@ const DashboardPage = () => {
                         <Network className="w-4 h-4 mr-2" />
                         Gestionar proxies
                       </Link>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <a href="https://cintiabot.todosobrealltech/hub.html" target="_blank" rel="noreferrer">
+                        <UsersRound className="w-4 h-4 mr-2" />
+                        Administrar grupos Moonbot
+                      </a>
                     </Button>
                   </>
                 )}

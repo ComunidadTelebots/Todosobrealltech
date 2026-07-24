@@ -1,5 +1,15 @@
 # Changelog - TodoSobreAllTech
 
+## [0.3.0] - 2026-07-25
+### Panel creador y administración conectada
+- Acceso directo desde el dashboard de creadores al centro de grupos de Moonbot, manteniendo la autorización sensible en la Mini App de Telegram.
+- Paneles de creador ampliados para administrar artículos de NoticiasWeb3, cuentas y proxies, con estadísticas agregadas servidas desde la API.
+- Temas visuales estacionales y festividades locales europeas sin alterar la navegación ni la accesibilidad del sitio.
+- Integración de anuncios de NoticiasWeb3 revisada: slots superior, lateral e inline configurables mediante variables de entorno.
+
+### Suite avanzada para grupos
+- La web principal enlaza la administración equilibrada con la web y la Mini App de Moonbot: cuarentena, anti-raid, reglas horarias, reportes, consenso, contexto de usuarios, roles, bienvenidas, resúmenes y plantillas.
+
 ## [0.2.0] - 2026-07-11
 ### Feature — Directorio de proxies MTProto
 - **Multi-fuente**: catálogo desde 7 canales públicos de Telegram (`@ProxyMTProto`, `@DirectProxy`, `@ProxyMTProtoNew`, `@proxymt`, `@config_proxy`, `@GhostProxy`, `@mtproto_proxy`) + listas agregadas de GitHub (SoliSpirit, Grim1313), deduplicado y **verificado por TCP** (solo se listan los que responden). Crawl con paginación case-insensitive.
