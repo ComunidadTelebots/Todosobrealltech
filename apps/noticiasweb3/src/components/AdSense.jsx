@@ -1,14 +1,25 @@
 import { useEffect } from 'react';
 
-const CLIENT = import.meta.env.VITE_ADSENSE_ID;
+const DEFAULT_ADSENSE_ID = 'ca-pub-1927309987076600';
+
+function normalizePublisherId(value) {
+  const publisherId = String(value || DEFAULT_ADSENSE_ID).trim();
+  if (/^ca-pub-\d+$/.test(publisherId)) return publisherId;
+  if (/^pub-\d+$/.test(publisherId)) return `ca-${publisherId}`;
+  return DEFAULT_ADSENSE_ID;
+}
+
+const CLIENT = normalizePublisherId(import.meta.env.VITE_ADSENSE_ID);
 
 function loadScript() {
   if (!CLIENT || document.getElementById('adsense-script')) return;
 
-  const meta = document.createElement('meta');
-  meta.name = 'google-adsense-account';
-  meta.content = CLIENT;
-  document.head.appendChild(meta);
+  if (!document.querySelector('meta[name="google-adsense-account"]')) {
+    const meta = document.createElement('meta');
+    meta.name = 'google-adsense-account';
+    meta.content = CLIENT;
+    document.head.appendChild(meta);
+  }
 
   const s = document.createElement('script');
   s.id = 'adsense-script';
