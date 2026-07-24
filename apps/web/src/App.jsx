@@ -13,6 +13,7 @@ import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 import CookieConsent from '@/components/CookieConsent.jsx';
 import CookiePreferencesModal from '@/components/CookiePreferencesModal.jsx';
 import AdSenseAutoAds from '@/components/AdSenseAutoAds.jsx';
+import SeasonalTheme from '@/components/SeasonalTheme.jsx';
 import { Toaster } from '@/components/ui/sonner';
 
 import HomePage from '@/pages/HomePage.jsx';
@@ -76,6 +77,7 @@ function App() {
             <AdSenseAutoAds />
             <ScrollToTop />
             <div className="flex flex-col min-h-screen relative">
+              <SeasonalTheme />
               <Header />
               <main className="flex-1">
                 <Routes>

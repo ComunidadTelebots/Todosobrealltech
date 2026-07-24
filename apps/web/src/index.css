@@ -122,4 +122,202 @@
     /* Ensures stacking over general app surfaces but below critical tooltips */
     z-index: 100;
   }
+
+  .seasonal-banner {
+    @apply relative isolate flex min-h-9 items-center justify-center overflow-hidden border-b px-12 text-center text-sm font-medium;
+    color: hsl(var(--season-foreground));
+    background:
+      linear-gradient(90deg, hsl(var(--season-primary) / 0.16), hsl(var(--season-secondary) / 0.2), hsl(var(--season-primary) / 0.16)),
+      hsl(var(--background));
+    border-color: hsl(var(--season-primary) / 0.24);
+  }
+
+  .seasonal-banner__content {
+    @apply relative flex items-center justify-center gap-2 py-2;
+  }
+
+  .seasonal-banner__glow {
+    @apply absolute inset-0 opacity-70;
+    background: radial-gradient(circle at 50% -120%, hsl(var(--season-secondary) / 0.55), transparent 62%);
+  }
+
+  .seasonal-banner__close {
+    @apply absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full transition-colors;
+  }
+
+  .seasonal-banner__close:hover {
+    background: hsl(var(--season-primary) / 0.12);
+  }
+
+  .seasonal-decoration {
+    @apply pointer-events-none fixed top-28 z-40 hidden select-none lg:block;
+    color: hsl(var(--season-primary) / 0.55);
+  }
+
+  .seasonal-decoration--left {
+    left: 1.5rem;
+  }
+
+  .seasonal-decoration--right {
+    right: 1.5rem;
+  }
+
+  .seasonal-decoration span {
+    @apply absolute block;
+    animation: seasonal-float 5s ease-in-out infinite;
+    text-shadow: 0 0 18px hsl(var(--season-secondary) / 0.45);
+  }
+
+  .seasonal-decoration span:nth-child(1) {
+    font-size: 1.4rem;
+  }
+
+  .seasonal-decoration span:nth-child(2) {
+    top: 5rem;
+    left: 1.25rem;
+    font-size: 0.9rem;
+    animation-delay: -1.5s;
+  }
+
+  .seasonal-decoration span:nth-child(3) {
+    top: 11rem;
+    left: -0.35rem;
+    font-size: 1.1rem;
+    animation-delay: -3s;
+  }
+}
+
+html[data-season] body {
+  background-image:
+    radial-gradient(circle at 7% 14%, hsl(var(--season-primary) / 0.055), transparent 23rem),
+    radial-gradient(circle at 94% 32%, hsl(var(--season-secondary) / 0.06), transparent 26rem);
+  background-attachment: fixed;
+}
+
+html[data-season='christmas'] {
+  --season-primary: 0 72% 46%;
+  --season-secondary: 145 63% 36%;
+  --season-foreground: 0 42% 22%;
+}
+
+html.dark[data-season='christmas'] {
+  --season-primary: 0 75% 62%;
+  --season-secondary: 145 55% 50%;
+  --season-foreground: 0 0% 96%;
+}
+
+html[data-season='new-year'] {
+  --season-primary: 226 68% 45%;
+  --season-secondary: 43 92% 55%;
+  --season-foreground: 226 55% 24%;
+}
+
+html.dark[data-season='new-year'] {
+  --season-primary: 226 82% 70%;
+  --season-secondary: 43 92% 62%;
+  --season-foreground: 45 100% 92%;
+}
+
+html[data-season='valentine'] {
+  --season-primary: 342 75% 52%;
+  --season-secondary: 326 72% 74%;
+  --season-foreground: 342 58% 27%;
+}
+
+html.dark[data-season='valentine'] {
+  --season-primary: 342 85% 68%;
+  --season-secondary: 326 66% 58%;
+  --season-foreground: 330 100% 95%;
+}
+
+html[data-season='halloween'] {
+  --season-primary: 27 95% 51%;
+  --season-secondary: 269 55% 48%;
+  --season-foreground: 269 46% 22%;
+}
+
+html.dark[data-season='halloween'] {
+  --season-primary: 27 100% 60%;
+  --season-secondary: 269 70% 68%;
+  --season-foreground: 35 100% 92%;
+}
+
+html[data-season='fallas'],
+html[data-season='kings-day'] {
+  --season-primary: 24 95% 53%;
+  --season-secondary: 48 96% 55%;
+  --season-foreground: 20 62% 25%;
+}
+
+html[data-season='sant-jordi'] {
+  --season-primary: 353 78% 52%;
+  --season-secondary: 145 55% 40%;
+  --season-foreground: 353 58% 25%;
+}
+
+html[data-season='san-juan'] {
+  --season-primary: 197 83% 47%;
+  --season-secondary: 39 96% 56%;
+  --season-foreground: 204 65% 23%;
+}
+
+html[data-season='st-patrick'] {
+  --season-primary: 145 66% 36%;
+  --season-secondary: 48 90% 55%;
+  --season-foreground: 145 58% 20%;
+}
+
+html[data-season='europe-day'] {
+  --season-primary: 222 75% 45%;
+  --season-secondary: 47 95% 56%;
+  --season-foreground: 222 65% 24%;
+}
+
+html[data-season='italy-republic'],
+html[data-season='portugal-day'] {
+  --season-primary: 146 62% 36%;
+  --season-secondary: 0 72% 52%;
+  --season-foreground: 146 50% 20%;
+}
+
+html[data-season='bastille-day'] {
+  --season-primary: 221 76% 48%;
+  --season-secondary: 0 74% 55%;
+  --season-foreground: 221 58% 24%;
+}
+
+html[data-season='oktoberfest'] {
+  --season-primary: 216 72% 44%;
+  --season-secondary: 42 91% 54%;
+  --season-foreground: 216 52% 22%;
+}
+
+html.dark[data-season='fallas'],
+html.dark[data-season='kings-day'],
+html.dark[data-season='sant-jordi'],
+html.dark[data-season='san-juan'],
+html.dark[data-season='st-patrick'],
+html.dark[data-season='europe-day'],
+html.dark[data-season='italy-republic'],
+html.dark[data-season='portugal-day'],
+html.dark[data-season='bastille-day'],
+html.dark[data-season='oktoberfest'] {
+  --season-foreground: 0 0% 96%;
+}
+
+@keyframes seasonal-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-4deg);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(0, -12px, 0) rotate(6deg);
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seasonal-decoration span {
+    animation: none;
+  }
 }
