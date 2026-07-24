@@ -32,6 +32,7 @@ import BlogAdminPage from '@/pages/BlogAdminPage.jsx';
 import BlogArticleFormPage from '@/pages/BlogArticleFormPage.jsx';
 import ProxiesPanel from '@/pages/ProxiesPanel.jsx';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage.jsx';
+import SettingsPage from '@/pages/SettingsPage.jsx';
 
 // Component to handle route-change analytics
 const PageTracker = () => {
@@ -73,6 +74,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <UserProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute>
+                        <SettingsPage />
                       </ProtectedRoute>
                     }
                   />
