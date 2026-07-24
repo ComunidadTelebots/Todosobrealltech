@@ -213,6 +213,11 @@ services:
       # hilos por defecto de libuv, getaddrinfo se satura y ahoga al resto de jobs
       # (RSS, telegramSync, PocketBase) con timeouts falsos. Ver commit df163c3.
       - UV_THREADPOOL_SIZE=64
+      # 64 conexiones TCP simultaneas sostenidas durante todo el crawl dejaban
+      # sin turno a los connects de RSS/PocketBase (UND_ERR_CONNECT_TIMEOUT en
+      # ~20% de los fetch externos del worker). No era conntrack: la tabla no
+      # pasa del 38%. Ver diagnostico en la sesion del 2026-07-19.
+      - MTPROTO_HEALTH_CONCURRENCY=16
       - RSS_MAX_NEW_PER_RUN=${RSS_MAX_NEW_PER_RUN:-25}
     volumes:
       - proxy_history:/data

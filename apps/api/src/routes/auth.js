@@ -1,106 +1,109 @@
 import express from 'express';
 import crypto from 'crypto';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
 
-// Helper function to generate random password
-function generateRandomPassword(length = 32) {
-  return crypto.randomBytes(length).toString('hex');
-}
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 días
+const TG_ISSUER = 'https://oauth.telegram.org';
+const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID || '';
 
-// Helper function to verify Telegram signature
-function verifyTelegramSignature(data, hash) {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  if (!botToken) {
-    throw new Error('TELEGRAM_BOT_TOKEN is not configured');
-  }
+// Claves públicas de Telegram para verificar la firma del id_token (cacheadas por jose).
+const JWKS = createRemoteJWKSet(new URL('https://oauth.telegram.org/.well-known/jwks.json'));
 
-  // Create data check string from sorted keys
-  const dataCheckString = Object.keys(data)
-    .filter(key => key !== 'hash')
-    .sort()
-    .map(key => `${key}=${data[key]}`)
-    .join('\n');
-
-  // Create HMAC signature
-  const secretKey = crypto.createHmac('sha256', 'WebAppData').update(botToken).digest();
-  const signature = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-
-  return signature === hash;
-}
-
-// POST /auth/telegram - Authenticate with Telegram
+// POST /auth/telegram — login NATIVO de Telegram (OpenID Connect).
+// El frontend obtiene un id_token (JWT firmado por Telegram) con la librería
+// telegram-login.js y lo envía aquí. Verificamos firma + issuer + audiencia.
 router.post('/telegram', async (req, res) => {
-  const { telegram_id, telegram_username, telegram_name, telegram_photo_url, hash } = req.body;
-
-  // Validate required fields
-  if (!telegram_id || !hash) {
-    return res.status(400).json({ error: 'telegram_id and hash are required' });
+  const { id_token, nonce } = req.body || {};
+  if (!id_token) {
+    return res.status(400).json({ error: 'Falta id_token' });
+  }
+  if (!CLIENT_ID) {
+    logger.error('TELEGRAM_CLIENT_ID no está configurado');
+    return res.status(500).json({ error: 'Login de Telegram no configurado en el servidor' });
   }
 
-  // Verify Telegram signature
-  const dataToVerify = {
-    telegram_id: String(telegram_id),
-    telegram_username: telegram_username || '',
-    telegram_name: telegram_name || '',
-    telegram_photo_url: telegram_photo_url || '',
-  };
-
-  const isValidSignature = verifyTelegramSignature(dataToVerify, hash);
-  if (!isValidSignature) {
-    throw new Error('Invalid Telegram signature');
+  // 1) Verifica firma (JWKS de Telegram) + issuer + expiración.
+  let claims;
+  try {
+    const { payload } = await jwtVerify(id_token, JWKS, { issuer: TG_ISSUER });
+    claims = payload;
+  } catch (e) {
+    logger.warn(`id_token de Telegram inválido: ${e.message}`);
+    return res.status(401).json({ error: 'Autenticación de Telegram inválida' });
   }
 
-  logger.info(`Telegram authentication attempt for user ${telegram_id}`);
+  // 2) audiencia = nuestro Client ID (aud puede venir como número, string o array).
+  const auds = Array.isArray(claims.aud) ? claims.aud.map(String) : [String(claims.aud)];
+  if (!auds.includes(String(CLIENT_ID))) {
+    return res.status(401).json({ error: 'Audiencia del token no coincide' });
+  }
 
-  // Check if user already exists
+  // 3) nonce anti-replay (si el cliente lo envió).
+  if (nonce && claims.nonce && String(claims.nonce) !== String(nonce)) {
+    return res.status(401).json({ error: 'nonce no coincide' });
+  }
+
+  const telegramId = String(claims.sub || claims.id || '');
+  if (!telegramId) {
+    return res.status(400).json({ error: 'El token no contiene usuario' });
+  }
+  const telegramName = claims.name || [claims.given_name, claims.family_name].filter(Boolean).join(' ');
+  const username = claims.preferred_username || '';
+  const photo = claims.picture || '';
+  logger.info(`Telegram login (OIDC) for user ${telegramId}`);
+
+  // 4) Busca o crea el usuario en PocketBase (role es obligatorio en la colección).
   let user;
   try {
-    const existingUsers = await pb.collection('users').getFullList({
-      filter: `telegram_id = "${telegram_id}"`,
-    });
+    const existing = await pb.collection('users').getFullList({ filter: `telegram_id = "${telegramId}"` });
+    if (existing && existing.length > 0) user = existing[0];
+  } catch (error) {
+    logger.warn(`Error querying existing Telegram user: ${error.message}`);
+  }
 
-    if (existingUsers && existingUsers.length > 0) {
-      user = existingUsers[0];
-      logger.info(`Existing Telegram user found: ${user.id}`);
+  try {
+    if (!user) {
+      const email = `telegram_${telegramId}@telegram.local`;
+      const password = crypto.randomBytes(32).toString('hex');
+      user = await pb.collection('users').create({
+        email,
+        password,
+        passwordConfirm: password,
+        role: 'user',
+        telegram_id: telegramId,
+        telegram_username: username,
+        telegram_name: telegramName,
+        telegram_photo_url: photo,
+      });
+      logger.info(`New Telegram user created: ${user.id}`);
+    } else {
+      user = await pb.collection('users').update(user.id, {
+        telegram_username: username || user.telegram_username || '',
+        telegram_name: telegramName || user.telegram_name || '',
+        telegram_photo_url: photo || user.telegram_photo_url || '',
+      });
     }
   } catch (error) {
-    logger.warn(`Error querying existing user: ${error.message}`);
+    logger.error(`Error creating/updating Telegram user: ${error.message}`);
+    return res.status(500).json({ error: 'No se pudo iniciar sesión' });
   }
 
-  // If user doesn't exist, create new user
-  if (!user) {
-    const email = `telegram_${telegram_id}@telegram.local`;
-    const password = generateRandomPassword(32);
-
-    user = await pb.collection('users').create({
-      email,
-      password,
-      passwordConfirm: password,
-      telegram_id: String(telegram_id),
-      telegram_username: telegram_username || '',
-      telegram_name: telegram_name || '',
-      telegram_photo_url: telegram_photo_url || '',
-    });
-
-    logger.info(`New Telegram user created: ${user.id}`);
+  // 5) Emite token de sesión de ese usuario (cliente PB = superadmin → impersonate).
+  let authToken;
+  try {
+    const impersonated = await pb.collection('users').impersonate(user.id, SESSION_TTL_SECONDS);
+    authToken = impersonated.authStore.token;
+  } catch (error) {
+    logger.error(`Error impersonating Telegram user: ${error.message}`);
+    return res.status(500).json({ error: 'No se pudo emitir la sesión' });
   }
-
-  // Authenticate user and get auth token
-  const authData = await pb.collection('users').authWithPassword(user.email, user.password);
 
   logger.info(`Telegram user authenticated: ${user.id}`);
-
-  res.json({
-    authToken: authData.token,
-    user: {
-      id: user.id,
-      email: user.email,
-      telegram_username: user.telegram_username,
-    },
-  });
+  res.json({ authToken, user });
 });
 
 export default router;

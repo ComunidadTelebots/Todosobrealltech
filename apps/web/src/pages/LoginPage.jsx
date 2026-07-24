@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -17,32 +17,65 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [telegramLoading, setTelegramLoading] = useState(false);
+  const [tgReady, setTgReady] = useState(false);
+  const nonceRef = useRef('');
 
+  // Client ID del bot (CintiaBot) registrado en BotFather → Web Login.
+  const TELEGRAM_CLIENT_ID = 209219812;
+
+  // Carga la librería nativa de Telegram Login (OpenID) una sola vez.
   useEffect(() => {
-    window.onTelegramAuth = async (user) => {
-      setTelegramLoading(true);
-      setError('');
-      
-      const result = await loginWithTelegram(user);
-      
-      if (result.success) {
-        toast.success('Successfully logged in with Telegram');
-        navigate('/dashboard');
-      } else {
-        const errorMsg = result.error === 'Esta cuenta ha sido congelada. Contacta al administrador.' 
-          ? 'Tu cuenta ha sido congelada. Por favor contacta al administrador para más información.'
-          : result.error || 'Failed to authenticate with Telegram';
-        setError(errorMsg);
-        toast.error('Telegram login failed');
-      }
-      
-      setTelegramLoading(false);
-    };
+    if (window.Telegram && window.Telegram.Login) {
+      setTgReady(true);
+      return;
+    }
+    const existing = document.getElementById('telegram-login-native');
+    if (existing) {
+      existing.addEventListener('load', () => setTgReady(true));
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'telegram-login-native';
+    script.src = 'https://oauth.telegram.org/js/telegram-login.js';
+    script.async = true;
+    script.onload = () => setTgReady(true);
+    document.head.appendChild(script);
+  }, []);
 
-    return () => {
-      delete window.onTelegramAuth;
-    };
-  }, [loginWithTelegram, navigate]);
+  const handleTelegramLogin = () => {
+    if (!window.Telegram || !window.Telegram.Login) {
+      toast.error('Telegram todavía se está cargando, inténtalo de nuevo en un momento.');
+      return;
+    }
+    const nonce = (window.crypto?.randomUUID?.() || String(Math.random())).replace(/-/g, '');
+    nonceRef.current = nonce;
+    setError('');
+    setTelegramLoading(true);
+    window.Telegram.Login.auth(
+      { client_id: TELEGRAM_CLIENT_ID, scope: ['profile'], nonce },
+      async (result) => {
+        if (!result || result.error || !result.id_token) {
+          setTelegramLoading(false);
+          if (result && result.error && result.error !== 'cancelled') {
+            setError('No se pudo iniciar sesión con Telegram.');
+          }
+          return;
+        }
+        const res = await loginWithTelegram({ id_token: result.id_token, nonce });
+        if (res.success) {
+          toast.success('Sesión iniciada con Telegram');
+          navigate('/dashboard');
+        } else {
+          const errorMsg = res.error === 'Esta cuenta ha sido congelada. Contacta al administrador.'
+            ? 'Tu cuenta ha sido congelada. Por favor contacta al administrador para más información.'
+            : res.error || 'No se pudo autenticar con Telegram';
+          setError(errorMsg);
+          toast.error('El login con Telegram falló');
+        }
+        setTelegramLoading(false);
+      },
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,10 +100,6 @@ const LoginPage = () => {
     }
     
     setLoading(false);
-  };
-
-  const handleTelegramClick = () => {
-    toast.info('Please use the Telegram Login Widget if configured, or ensure your bot is set up.');
   };
 
   return (
@@ -155,12 +184,12 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               className="w-full bg-[#2481cc]/10 text-[#2481cc] border-[#2481cc]/20 hover:bg-[#2481cc]/20 hover:text-[#2481cc] transition-all duration-200 active:scale-[0.98]"
-              onClick={handleTelegramClick}
-              disabled={loading || telegramLoading}
+              onClick={handleTelegramLogin}
+              disabled={loading || telegramLoading || !tgReady}
             >
               {telegramLoading ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -169,8 +198,6 @@ const LoginPage = () => {
               )}
               Iniciar sesión con Telegram
             </Button>
-            
-            <div id="telegram-login-widget-container" className="hidden justify-center mt-4"></div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 pt-2 border-t border-border/50 mt-2">
             <div className="text-sm text-center text-muted-foreground mt-4">
