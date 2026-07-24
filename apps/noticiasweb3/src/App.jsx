@@ -4,7 +4,6 @@ import { cloneElement, isValidElement, useEffect, useState } from 'react';
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 const ADSENSE_SLOT_TOP = import.meta.env.VITE_ADSENSE_SLOT_TOP || 'SLOT_TOP';
 const ADSENSE_SLOT_RIGHT = import.meta.env.VITE_ADSENSE_SLOT_RIGHT || 'SLOT_RIGHT';
-const ADSENSE_SLOT_INLINE = import.meta.env.VITE_ADSENSE_SLOT_INLINE || 'SLOT_INLINE';
 
 const CONSENT_REQUIRED_REGIONS = new Set([
   'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
@@ -190,7 +189,6 @@ function Layout({ children }) {
             {isValidElement(children)
               ? cloneElement(children, { appPlatform, onPlatformChange: setAppPlatform, isNightMode, siteVersion })
               : children}
-            <AdSense slot={ADSENSE_SLOT_INLINE} className="ad-preview-inline" style={{ minHeight: 110 }} />
           </div>
           <Sidebar siteVersion={siteVersion} />
           <div style={{ clear: 'both' }}></div>

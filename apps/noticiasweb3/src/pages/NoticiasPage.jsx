@@ -6,7 +6,11 @@ import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useTelegramFeed } from '../hooks/useTelegramFeed.jsx';
 import { ShareBar, readingTime } from '../components/ShareBar.jsx';
+import AdSense from '../components/AdSense.jsx';
 import { trackCategoryFilter, trackSearch } from '../utils/analytics.js';
+
+const ADSENSE_SLOT_INLINE = import.meta.env.VITE_ADSENSE_SLOT_INLINE || 'SLOT_INLINE';
+const INLINE_AD_AFTER_INDEX = 5;
 
 // URLs de artículos estáticos ya publicados (para evitar duplicados con feeds RSS)
 const STATIC_ARTICLE_URLS = new Set(
@@ -724,6 +728,13 @@ export default function NoticiasPage({ siteVersion }) {
                       </div>
                     )}
                   </div>
+                  {siteVersion !== '2014' && index === INLINE_AD_AFTER_INDEX && (
+                    <AdSense
+                      slot={ADSENSE_SLOT_INLINE}
+                      className="ad-preview-inline"
+                      style={{ minHeight: 110 }}
+                    />
+                  )}
                 </div>
               );
             });
