@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.4.0] - 2026-07-26
+### Horizonte 202
+- Nueva página pública `/roadmap` con buscador y filtros por categoría.
+- Catálogo sincronizado con Moonbot: 100 ideas adicionales repartidas en diez áreas.
+- Las propuestas aparecen claramente marcadas como planificadas y no se confunden con funciones operativas.
+- La página sincroniza el estado de las primeras cinco funciones ya disponibles en Moonbot.
+- Estado ampliado a las diez funciones de confianza y moderación ya operativas.
+- Seguimiento ampliado a 15 funciones operativas con el primer bloque de participación comunitaria.
+
 ## [0.3.0] - 2026-07-25
 ### Panel creador y administración conectada
 - Acceso directo desde el dashboard de creadores al centro de grupos de Moonbot, manteniendo la autorización sensible en la Mini App de Telegram.

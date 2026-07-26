@@ -54,6 +54,7 @@ const Header = () => {
     { name: getTranslation('nav_home'), path: '/' },
     { name: getTranslation('nav_blog'), path: '/blog' },
     { name: getTranslation('nav_proxies'), path: '/proxies' },
+    { name: 'Roadmap', path: '/roadmap' },
   ];
 
   const ecosystemLinks = [

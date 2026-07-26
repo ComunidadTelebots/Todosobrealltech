@@ -34,6 +34,7 @@ import BlogArticleFormPage from '@/pages/BlogArticleFormPage.jsx';
 import ProxiesPanel from '@/pages/ProxiesPanel.jsx';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage.jsx';
 import SettingsPage from '@/pages/SettingsPage.jsx';
+import FutureFeaturesPage from '@/pages/FutureFeaturesPage.jsx';
 
 // Component to handle route-change analytics
 const PageTracker = () => {
@@ -88,6 +89,7 @@ function App() {
                   <Route path="/blog/:slug" element={<BlogPostPage />} />
                   <Route path="/proxies" element={<ProxiesPanel />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                  <Route path="/roadmap" element={<FutureFeaturesPage />} />
                   
                   <Route
                     path="/dashboard"
