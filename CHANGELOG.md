@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.16.0] - 2026-07-26
+### Centro de automatizaciones Moonbot
+- Constructor visual de reglas, condiciones y respuestas automáticas por grupo.
+- Simulador seguro para comprobar coincidencias antes de activar un flujo.
+- Creación de formularios adaptables, webhooks HTTPS y acciones programadas.
+- Vista operativa de colas con priorización, cancelación y reintentos.
+- Biblioteca de automatizaciones instalables con un clic.
+- Secretos y contenido sensible de los webhooks nunca llegan al navegador.
+
 ## [0.15.0] - 2026-07-26
 ### Centro de IA Moonbot
 - ConfiguraciÃ³n de proveedor y modelo global o por grupo.
