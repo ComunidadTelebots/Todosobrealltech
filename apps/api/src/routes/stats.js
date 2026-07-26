@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import crypto from 'crypto';
+import http from 'node:http';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 
@@ -28,19 +29,30 @@ const tokenValidationInFlight = new Map();
 // tardar el connectTimeout de undici (~10s). Cortamos antes y reintentamos con
 // conexión nueva, que suele calentar y responder en ms.
 async function authRefreshWithTimeout(token, timeoutMs) {
-  try {
-    const response = await fetch(`${POCKETBASE_HOST}/api/collections/users/auth-refresh`, {
+  const target = new URL('/api/collections/users/auth-refresh', POCKETBASE_HOST);
+  return new Promise((resolve, reject) => {
+    const request = http.request(target, {
       method: 'POST',
-      headers: { Authorization: token },
-      signal: AbortSignal.timeout(timeoutMs),
+      agent: false,
+      headers: { Authorization: token, Connection: 'close', 'Content-Length': '0' },
+    }, (response) => {
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => { body += chunk; });
+      response.on('end', () => {
+        let data = {};
+        try { data = body ? JSON.parse(body) : {}; } catch { data = {}; }
+        if ((response.statusCode || 500) >= 400) {
+          reject({ status: response.statusCode, response: data });
+        } else {
+          resolve(data);
+        }
+      });
     });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw { status: response.status, response: data };
-    return data;
-  } catch (error) {
-    if (error?.status) throw error;
-    throw { status: 0, originalError: error, message: error?.message };
-  }
+    request.setTimeout(timeoutMs, () => request.destroy(new Error('auth-refresh timeout')));
+    request.on('error', (error) => reject({ status: 0, originalError: error, message: error.message }));
+    request.end();
+  });
 }
 
 function pruneTokenCache(now) {

@@ -16,6 +16,7 @@
 - La validación del dashboard usa HTTP directo contra PocketBase en lugar del transporte inestable de `authRefresh` del SDK tras reinicios.
 - El mapa lingüístico admite respuestas lentas de Moonbot sin abortar prematuramente.
 - PocketBase dispone de un alias Docker exclusivo para evitar colisiones DNS con otros proyectos que también usan un servicio llamado `pocketbase` en la red compartida de Traefik.
+- `auth-refresh` utiliza una conexión HTTP interna dedicada, aislada del pool global saturado por integraciones externas.
 
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
