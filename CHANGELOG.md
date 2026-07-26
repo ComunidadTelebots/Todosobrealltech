@@ -4,6 +4,7 @@
 - TodoSobreAllTech incorpora un gestor de anuncios de canales y grupos propios con ubicación, prioridad, imagen, estado y clics.
 - La API expone el catálogo público y registra redirecciones sin depender de AdSense.
 - Noticias Web3 usa estos anuncios únicamente cuando Google no llena el espacio correspondiente.
+- Todos los destinos pasan por enlaces medidos del dominio propio y el panel calcula impresiones, clics y CTR por ubicación.
 
 ### Publicidad sin espacios vacíos - 2026-07-26
 - Los bloques sin una ranura real ya no muestran maquetas publicitarias al público.

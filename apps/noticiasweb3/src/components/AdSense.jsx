@@ -62,7 +62,7 @@ export default function AdSense({ slot, placement = 'inline', style, className =
   }, [hasRealSlot, placement, status]);
 
   if ((!CLIENT || !hasRealSlot || status === 'unfilled') && houseAd) return (
-    <a className={`house-ad ${className}`} style={style} href={`/hcgi/api/house-ads/${encodeURIComponent(houseAd.id)}/click`} target="_blank" rel="noopener noreferrer sponsored">
+    <a className={`house-ad ${className}`} style={style} href={`/hcgi/api/house-ads/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored">
       {houseAd.image && <img src={houseAd.image} alt="" />}
       <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span>{houseAd.description}</span></span>
       <b>Abrir</b>
