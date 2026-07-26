@@ -70,7 +70,6 @@ const LoginPage = () => {
         scope: ['profile'],
         nonce: config.nonce,
         lang: 'es',
-        redirect_uri: `${window.location.origin}/login`,
       },
       async (result) => {
         if (!result || result.error || !result.id_token) {

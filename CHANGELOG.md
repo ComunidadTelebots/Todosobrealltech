@@ -6,7 +6,7 @@
 - Se validan firma, emisor, audiencia, expiración y nonce antes de crear la sesión.
 - La política COOP permite comunicarse con la ventana emergente de Telegram Login.
 - La pantalla explica si falta configuración o si el script fue bloqueado.
-- El SDK recibe explícitamente `https://todosobreall.tech/login` como retorno para evitar `redirect_uri required`.
+- La ventana emergente usa `Telegram.Login.auth` con sus opciones oficiales; la API pública permanece bajo `/hcgi/api` y no se confunde con las rutas SPA.
 
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
