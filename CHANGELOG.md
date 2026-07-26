@@ -1,5 +1,8 @@
 # Changelog - TodoSobreAllTech
 
+### Objetivos y análisis de campañas - 2026-07-26
+- Las campañas admiten objetivo máximo de clics con pausa automática, duplicación limpia y desglose de clics por ubicación.
+
 ### NoticiasWeb3 embebida en la MiniApp - 2026-07-26
 - Traefik permite expresamente mostrar la web pública dentro del Hub sin que `X-Frame-Options` bloquee el contenido.
 
