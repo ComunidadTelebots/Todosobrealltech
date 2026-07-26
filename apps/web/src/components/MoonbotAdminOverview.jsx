@@ -9,6 +9,8 @@ import MoonbotGroupsManager from '@/components/MoonbotGroupsManager.jsx';
 import MoonbotUsersManager from '@/components/MoonbotUsersManager.jsx';
 import MoonbotSecurityCenter from '@/components/MoonbotSecurityCenter.jsx';
 import MoonbotEditorialCenter from '@/components/MoonbotEditorialCenter.jsx';
+import MoonbotLiveSafety from '@/components/MoonbotLiveSafety.jsx';
+import MoonbotAdvancedUserActions from '@/components/MoonbotAdvancedUserActions.jsx';
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -73,6 +75,8 @@ const MoonbotAdminOverview = () => {
     {data && <MoonbotUsersManager groups={data.groups || []} />}
     {data && <MoonbotSecurityCenter />}
     {data && <MoonbotEditorialCenter groups={data.groups || []} />}
+    {data && <MoonbotLiveSafety />}
+    {data && <MoonbotAdvancedUserActions groups={data.groups || []} />}
     </>
   );
 };

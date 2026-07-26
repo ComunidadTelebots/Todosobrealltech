@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.14.0] - 2026-07-26
+### Seguridad administrativa en vivo
+- Vista combinada de CAS, SpamWatch, registro comunitario, baneos locales y otras fuentes.
+- Raids activos actualizados automÃ¡ticamente cada 15 segundos.
+- Detector visual de posibles suplantaciones de administradores.
+- Panel para silenciar o restaurar usuarios por grupo.
+- CreaciÃ³n de revisiones por pares para sanciones dudosas.
+
 ## [0.13.0] - 2026-07-26
 ### Horizonte 1000
 - CatÃ¡logo reproducible con 1.000 propuestas Ãºnicas: 334 para TodoSobreAllTech, 333 para Moonbot y 333 para Telegram WebApp.
