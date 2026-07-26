@@ -18,6 +18,20 @@ const MoonbotIntegrationsCenter = lazy(() => import('@/components/MoonbotIntegra
 const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperationsCenter.jsx'));
 const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
 
+const MASTER_SECTIONS = [
+  ['Grupos', 'moon-groups'],
+  ['Usuarios y baneos', 'moon-users'],
+  ['Seguridad', 'moon-security'],
+  ['Editorial y comunicados', 'moon-editorial'],
+  ['Protección en directo', 'moon-live-safety'],
+  ['Acciones avanzadas', 'moon-advanced-users'],
+  ['Moon IA', 'moon-ai'],
+  ['Herramientas IA', 'moon-ai-tools'],
+  ['Automatizaciones', 'moon-automations'],
+  ['Integraciones', 'moon-integrations'],
+  ['Operaciones', 'moon-operations'],
+];
+
 const LazySection = ({ children, id }) => {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -90,6 +104,17 @@ const MoonbotAdminOverview = () => {
             <Metric icon={UsersRound} label={`Grupos administrados · ${summary.shared_groups ?? 0} compartidos`} value={summary.groups} />
             <Metric icon={Clock3} label="Acciones pendientes" value={data.pending?.total} />
           </div>
+          <section className="rounded-xl border p-4">
+            <h3 className="font-semibold">Acciones master</h3>
+            <p className="mb-3 text-sm text-muted-foreground">Los mismos centros de gestión de la MiniApp, organizados para la web.</p>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
+              {MASTER_SECTIONS.map(([label, id]) => (
+                <Button key={id} variant="outline" className="h-auto justify-start py-3 text-left" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </section>
           <div className="grid gap-4 lg:grid-cols-3">
             <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Recursos del servidor</h3><div className="space-y-2 text-sm"><p className="flex justify-between"><span className="flex gap-2"><Cpu className="h-4 w-4" />CPU</span><b>{resources.cpu ?? 'â€”'}%</b></p><p className="flex justify-between"><span className="flex gap-2"><MemoryStick className="h-4 w-4" />RAM</span><b>{resources.ram ?? 'â€”'}%</b></p><p className="flex justify-between"><span className="flex gap-2"><HardDrive className="h-4 w-4" />Disco</span><b>{resources.disk ?? 'â€”'}%</b></p></div></section>
             <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Servicios</h3><div className="space-y-2">{data.services?.map((service) => <div key={service.name} className="flex items-center justify-between text-sm"><span className="flex gap-2"><Database className="h-4 w-4" />{service.name}</span><Badge variant={service.status === 'online' ? 'default' : 'secondary'}>{service.status}</Badge></div>)}</div></section>
@@ -99,15 +124,15 @@ const MoonbotAdminOverview = () => {
         </>}
       </CardContent>
     </Card>
-    {data && <LazySection><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-experience"><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-security"><MoonbotSecurityCenter /></LazySection>}
-    {data && <LazySection><MoonbotEditorialCenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection><MoonbotLiveSafety /></LazySection>}
-    {data && <LazySection><MoonbotAdvancedUserActions groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-editorial"><MoonbotEditorialCenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-live-safety"><MoonbotLiveSafety /></LazySection>}
+    {data && <LazySection id="moon-advanced-users"><MoonbotAdvancedUserActions groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-ai"><MoonbotAICenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection><MoonbotAIAdvancedTools groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-ai-tools"><MoonbotAIAdvancedTools groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-automations"><MoonbotAutomationsCenter groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-integrations"><MoonbotIntegrationsCenter groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-operations"><MoonbotOperationsCenter groups={data.groups || []} /></LazySection>}

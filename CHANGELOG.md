@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Centro master alineado con la MiniApp - 2026-07-26
+- El dashboard incorpora una navegación compacta hacia grupos, usuarios, seguridad, editorial, IA, automatizaciones, integraciones y operaciones.
+- Las acciones reutilizan los centros administrativos existentes y conservan la carga diferida para no ralentizar la pantalla inicial.
+- Los módulos reciben el mismo inventario multibot con grupos únicos, compartidos y la instancia responsable.
+
 ### Inicio de sesión de Telegram corregido - 2026-07-26
 - Web y API usan el mismo Client ID servido desde la configuración del backend.
 - El nonce se genera y consume en el servidor con caducidad para impedir reutilizaciones.
