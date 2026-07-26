@@ -630,5 +630,6 @@
 - Anadido `.gitignore` para evitar subir secretos, datos locales, builds y binarios.
 # Captcha estricto sin excepciones
 
+- Nuevo botón para reverificar colectivamente a los miembros conocidos, con progreso y entregas privadas.
 - El panel de grupos de Moonbot permite activar el modo estricto por grupo.
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
