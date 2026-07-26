@@ -2,12 +2,23 @@ import { Router } from 'express';
 import { authorizeAdminOrCreator } from './stats.js';
 
 const router = Router();
-const MOON_URL = (process.env.MOONBOT_INTERNAL_URL || 'http://moonbot:5000').replace(/\/$/, '');
+const MOON_URLS = [...new Set([
+  process.env.MOONBOT_INTERNAL_URL,
+  'http://moonbot:5000',
+].filter(Boolean).map((value) => value.replace(/\/$/, '')))];
 const headers = () => ({ Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': String(process.env.MOON_ADMIN_API_KEY || '').trim() });
 const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad.starts_at) <= now) && (!ad.ends_at || Date.parse(ad.ends_at) >= now);
 
 async function moon(options = {}) {
-  return fetch(`${MOON_URL}/api/internal/house-ads`, { ...options, headers: { ...headers(), ...(options.headers || {}) }, signal: AbortSignal.timeout(6000) });
+  let lastError;
+  for (const baseUrl of MOON_URLS) {
+    try {
+      return await fetch(`${baseUrl}/api/internal/house-ads`, { ...options, headers: { ...headers(), ...(options.headers || {}) }, signal: AbortSignal.timeout(6000) });
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error('Moonbot no disponible');
 }
 
 router.get('/', async (req, res) => {
