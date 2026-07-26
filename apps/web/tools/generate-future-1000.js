@@ -43,7 +43,7 @@ const capabilities = [
 ];
 
 const difficultyCycle = ['easy', 'medium', 'advanced'];
-const implemented = new Set(['future-0001', 'future-0002', 'future-0003', 'future-0004', 'future-0005', 'future-0006', 'future-0007', 'future-0008', 'future-0009', 'future-0010', 'future-0011', 'future-0012', 'future-0014', 'future-0015']);
+const implemented = new Set(['future-0001', 'future-0002', 'future-0003', 'future-0004', 'future-0005', 'future-0006', 'future-0007', 'future-0008', 'future-0009', 'future-0010', 'future-0011', 'future-0012', 'future-0013', 'future-0014', 'future-0015', 'future-0016', 'future-0017']);
 const items = [];
 for (const product of products) {
   let index = 0;

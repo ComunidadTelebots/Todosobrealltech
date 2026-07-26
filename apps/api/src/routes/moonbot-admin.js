@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
+import pocketbaseClient from '../utils/pocketbaseClient.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -23,6 +24,7 @@ router.post('/account-tools/sign', async (req, res) => {
 });
 
 const accountHistoryFile = '/data/account-change-history.json';
+const accountBulkFile = '/data/account-bulk-transactions.json';
 router.all('/account-tools/history', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   let rows = [];
@@ -35,6 +37,35 @@ router.all('/account-tools/history', async (req, res) => {
     before: event.before ?? null, after: event.after ?? null, actor_id: String(event.actor_id || ''), created_at: new Date().toISOString() });
   await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000)), { mode: 0o600 });
   return res.json({ ok: true });
+});
+
+router.post('/account-tools/bulk', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  const operation = req.body?.operation;
+  let transactions = [];
+  try { transactions = JSON.parse(await fs.readFile(accountBulkFile, 'utf8')); } catch (error) { if (error.code !== 'ENOENT') return res.status(500).json({ ok: false, error: 'No se pudo leer el registro transaccional' }); }
+  if (operation === 'undo') {
+    const transaction = transactions.find((item) => item.id === req.body?.transaction_id && item.status === 'applied');
+    if (!transaction) return res.status(404).json({ ok: false, error: 'Transacción reversible no encontrada' });
+    for (const item of transaction.items) await pocketbaseClient.collection('users').update(item.id, { role: item.before.role });
+    transaction.status = 'undone'; transaction.undone_at = new Date().toISOString();
+    await fs.writeFile(accountBulkFile, JSON.stringify(transactions.slice(-200)), { mode: 0o600 });
+    return res.json({ ok: true, transaction });
+  }
+  const ids = [...new Set(req.body?.account_ids || [])].filter((id) => /^[a-z0-9]+$/i.test(id)).slice(0, 50);
+  const role = String(req.body?.role || '');
+  if (!ids.length || !['user', 'moderator', 'admin'].includes(role)) return res.status(400).json({ ok: false, error: 'Selección o rol no válidos' });
+  const items = [];
+  try {
+    for (const id of ids) { const record = await pocketbaseClient.collection('users').getOne(id); if (record.role === 'creator') throw new Error('creator protegido'); items.push({ id, before: { role: record.role }, after: { role } }); }
+    for (const item of items) await pocketbaseClient.collection('users').update(item.id, item.after);
+  } catch (error) {
+    for (const item of items) { try { await pocketbaseClient.collection('users').update(item.id, item.before); } catch {} }
+    return res.status(500).json({ ok: false, error: 'La operación falló y se revirtió' });
+  }
+  const transaction = { id: crypto.randomUUID(), status: 'applied', items, created_at: new Date().toISOString() };
+  transactions.push(transaction); await fs.writeFile(accountBulkFile, JSON.stringify(transactions.slice(-200)), { mode: 0o600 });
+  return res.json({ ok: true, transaction });
 });
 
 async function requireAdmin(req, res) {
