@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, RefreshCw, Shield, Server, CheckCircle2, AlertCircle, Plus, Network, Users } from 'lucide-react';
+import { Copy, RefreshCw, Shield, Server, CheckCircle2, AlertCircle, Plus, Network, Users, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -106,6 +106,11 @@ const ProxiesPanel = () => {
     setCopiedId(proxy.id || proxy.server);
     toast.success('Proxy copied to clipboard');
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleConnectMtProxy = (proxy) => {
+    const link = proxy.link || `https://t.me/proxy?server=${encodeURIComponent(proxy.server)}&port=${encodeURIComponent(proxy.port)}&secret=${encodeURIComponent(proxy.secret)}`;
+    window.open(link.replace(/^tg:\/\/proxy/, 'https://t.me/proxy'), '_blank', 'noopener,noreferrer');
   };
 
   const handleOpenAddModal = () => {
@@ -377,7 +382,11 @@ const ProxiesPanel = () => {
                             </div>
                           </div>
 
-                          <div className="mt-6 pt-4 border-t border-border/50">
+                          <div className="mt-6 pt-4 border-t border-border/50 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <Button className="w-full" onClick={() => handleConnectMtProxy(proxy)}>
+                              <ExternalLink className="w-4 h-4 mr-2" />
+                              Conectar en Telegram
+                            </Button>
                             <Button 
                               variant={(copiedId === proxy.id || copiedId === proxy.server) ? "secondary" : "default"}
                               className="w-full transition-all"

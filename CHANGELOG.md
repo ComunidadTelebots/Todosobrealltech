@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Conexión directa a proxies MTProto - 2026-07-26
+- El catálogo web permite abrir cada proxy directamente en Telegram además de copiar sus credenciales.
+- Los enlaces se reconstruyen de forma segura cuando el origen no entrega uno explícito.
+
 ### Servicio gratuito y sin ánimo de lucro - 2026-07-26
 - La portada, el dashboard y el pie de página informan claramente del carácter comunitario, gratuito y sin ánimo de lucro del proyecto.
 - El aviso aclara que el acceso a las funciones ofrecidas no tiene coste.
