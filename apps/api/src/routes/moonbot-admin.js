@@ -100,4 +100,32 @@ router.all('/users/:id', async (req, res) => {
   }
 });
 
+router.all('/security', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'MÃ©todo no permitido' });
+  try {
+    const response = await moonRequest('/api/internal/security', {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-security] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar el centro de seguridad' });
+  }
+});
+
+router.get('/security/evidence', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  try {
+    const response = await moonRequest('/api/internal/security/evidence');
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-evidence] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo generar el paquete de evidencias' });
+  }
+});
+
 export default router;

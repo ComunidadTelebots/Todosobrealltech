@@ -7,6 +7,7 @@ import apiServerClient from '@/lib/apiServerClient';
 import pb from '@/lib/pocketbaseClient';
 import MoonbotGroupsManager from '@/components/MoonbotGroupsManager.jsx';
 import MoonbotUsersManager from '@/components/MoonbotUsersManager.jsx';
+import MoonbotSecurityCenter from '@/components/MoonbotSecurityCenter.jsx';
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -69,6 +70,7 @@ const MoonbotAdminOverview = () => {
     </Card>
     {data && <MoonbotGroupsManager groups={data.groups || []} />}
     {data && <MoonbotUsersManager groups={data.groups || []} />}
+    {data && <MoonbotSecurityCenter />}
     </>
   );
 };

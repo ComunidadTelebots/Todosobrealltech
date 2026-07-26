@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.10.0] - 2026-07-26
+### Centro de seguridad Moonbot
+- Panel agregado de amenazas, raids, anÃ¡lisis multimedia y fuentes de baneos.
+- Consulta de URL, dominio o hash utilizando VirusTotal desde el servidor.
+- Detector privado de secretos que no conserva el contenido introducido.
+- CronologÃ­a de incidentes recientes con niveles de riesgo.
+- Descarga de paquetes JSON de evidencia firmados por Moonbot.
+- Acceso exclusivo para administradores y creadores mediante el proxy autenticado.
+
 ## [0.9.0] - 2026-07-26
 ### Usuarios, CAS y sanciones Moonbot
 - Buscador de usuarios observados por nombre o ID de Telegram.
