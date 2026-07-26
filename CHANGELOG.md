@@ -1,5 +1,8 @@
 # Changelog - TodoSobreAllTech
 
+### NoticiasWeb3 embebida en la MiniApp - 2026-07-26
+- Traefik permite expresamente mostrar la web pública dentro del Hub sin que `X-Frame-Options` bloquee el contenido.
+
 ### Anuncios propios configurables - 2026-07-26
 - El recomendador automático detecta el formato con menor cobertura, reutiliza el destino con mejor CTR y prepara texto, colores, botón y prioridad.
 - Nuevo creador visual con formatos superior, lateral e inline, vista previa, imagen, llamada a la acción y colores personalizados.
