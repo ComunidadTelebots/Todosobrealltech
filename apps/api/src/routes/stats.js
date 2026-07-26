@@ -20,8 +20,8 @@ let cacheAt = 0;
 // validación vale 60s. Sin ella, un pico de peticiones abre una conexión nueva
 // por request y expone timeouts de conexión intermitentes.
 const TOKEN_CACHE_TTL_MS = 60 * 1000;
-const AUTH_MAX_ATTEMPTS = 3; // 1 intento + 2 reintentos ante fallo de transporte
-const AUTH_ATTEMPT_TIMEOUT_MS = 3500; // cap por intento: undici tarda ~10s en conexión fría
+const AUTH_MAX_ATTEMPTS = 2; // reintento de respaldo ante fallo de transporte
+const AUTH_ATTEMPT_TIMEOUT_MS = 12000; // tolera conexiones internas lentas
 const tokenCache = new Map();
 const tokenValidationInFlight = new Map();
 
