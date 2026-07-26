@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Salud y rendimiento de plugins - 2026-07-26
+- El panel muestra ejecuciones, errores, latencia media y último fallo de cada plugin.
+- Los plugins aislados automáticamente aparecen destacados tanto en la web como en la MiniApp.
+
 ### Aislamiento de plugins por grupo - 2026-07-26
 - Cada panel de grupo permite activar o desactivar individualmente los plugins instalados.
 - El contador distingue plugins disponibles y activos, y actualiza inmediatamente el menú de comandos de Telegram.
