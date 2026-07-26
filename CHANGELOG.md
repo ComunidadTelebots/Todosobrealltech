@@ -3,6 +3,9 @@
 ### Anuncios recíprocos entre grupos - 2026-07-26
 - El panel web incorpora perfiles publicitarios selectivo, equilibrado y amplio, además de desactivación por grupo.
 - La política limita campañas diarias, descanso entre socios y diferencia máxima de audiencia.
+- Los perfiles incluyen límites semanales y pausa automática según fallos recientes de entrega.
+- El nuevo centro de campañas permite al master crear, aceptar, cancelar y consultar intercambios desde la web protegida.
+- La API conecta este centro con Moonbot mediante la integración interna servidor a servidor.
 
 ### Salud y rendimiento de plugins - 2026-07-26
 - El panel muestra ejecuciones, errores, latencia media y último fallo de cada plugin.

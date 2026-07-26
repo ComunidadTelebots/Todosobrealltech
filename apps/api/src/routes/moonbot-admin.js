@@ -128,6 +128,24 @@ router.all('/groups/:id', async (req, res) => {
   }
 });
 
+router.all('/groups/:id/ads', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const cid = String(req.params.id || '');
+  if (!/^-\d+$/.test(cid)) return res.status(400).json({ ok: false, error: 'ID de grupo no válido' });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const response = await moonRequest(`/api/internal/groups/${encodeURIComponent(cid)}/ads`, {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-group-ads] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar las campañas' });
+  }
+});
+
 router.get('/users', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;
