@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.7.0] - 2026-07-26
+### Centro de control Moonbot
+- IntegraciÃ³n servidor-a-servidor protegida para administrar Moonbot desde la web principal sin exponer credenciales.
+- Panel unificado con instancias conectadas, usuarios activos en 24 horas, grupos administrados y acciones pendientes.
+- MÃ©tricas reales de CPU, RAM y almacenamiento, estado de servicios y rendimiento por bot.
+- CronologÃ­a de actividad administrativa y actualizaciÃ³n manual con respuesta degradada segura.
+- ReutilizaciÃ³n de las funciones operativas existentes en Moonbot en lugar de contadores simulados.
+
 ## [0.6.0] - 2026-07-26
 ### Mapa lingüístico global de Telegram
 - Nuevo mapa visual para administradores y creadores basado en el idioma declarado por los usuarios de Telegram.

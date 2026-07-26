@@ -92,7 +92,7 @@ function decideByRole(user) {
   return { user };
 }
 
-async function authorize(req) {
+export async function authorizeAdminOrCreator(req) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return { status: 401, error: 'Authorization header is required' };
@@ -190,7 +190,7 @@ async function buildStats() {
 
 // GET /stats — métricas agregadas del dashboard (admin/creator).
 router.get('/', async (req, res) => {
-  const auth = await authorize(req);
+  const auth = await authorizeAdminOrCreator(req);
   if (auth.error) {
     if (auth.retryAfter) {
       res.set('Retry-After', String(auth.retryAfter));

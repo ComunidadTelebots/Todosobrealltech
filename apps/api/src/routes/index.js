@@ -15,6 +15,7 @@ import noticiasViewRouter from './noticias-view.js';
 import previewRouter from './preview.js';
 import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
+import moonbotAdminRouter from './moonbot-admin.js';
 
 const router = Router();
 
@@ -35,6 +36,7 @@ export default () => {
     router.use('/preview', previewRouter);
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);
+    router.use('/moonbot-admin', moonbotAdminRouter);
 
     return router;
 };
