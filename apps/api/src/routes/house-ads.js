@@ -1,4 +1,7 @@
 import { Router } from 'express';
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { authorizeAdminOrCreator } from './stats.js';
 
 const router = Router();
@@ -8,6 +11,8 @@ const MOON_URLS = [...new Set([
 ].filter(Boolean).map((value) => value.replace(/\/$/, '')))];
 const headers = () => ({ Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': String(process.env.MOON_ADMIN_API_KEY || '').trim() });
 const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad.starts_at) <= now) && (!ad.ends_at || Date.parse(ad.ends_at) >= now);
+const mediaDir = '/data/house-ad-media';
+const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 
 async function moon(options = {}) {
   let lastError;
@@ -55,6 +60,29 @@ router.post('/', async (req, res) => {
     catch { return res.status(502).json({ ok: false, error: 'Moonbot devolvió una respuesta no válida', upstream_status: response.status }); }
   }
   catch { return res.status(502).json({ ok: false, error: 'Moonbot no responde' }); }
+});
+
+router.post('/media', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  const match = String(req.body?.data || '').match(/^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
+  if (!match || !imageTypes[match[1]]) return res.status(400).json({ ok: false, error: 'Imagen no válida. Usa JPG, PNG, WebP o GIF.' });
+  const content = Buffer.from(match[2], 'base64');
+  if (!content.length || content.length > 4 * 1024 * 1024) return res.status(413).json({ ok: false, error: 'La imagen debe pesar menos de 4 MB.' });
+  const signatures = { jpg: content[0] === 0xff && content[1] === 0xd8, png: content.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])), gif: content.subarray(0, 3).toString() === 'GIF', webp: content.subarray(0, 4).toString() === 'RIFF' && content.subarray(8, 12).toString() === 'WEBP' };
+  const extension = imageTypes[match[1]];
+  if (!signatures[extension]) return res.status(400).json({ ok: false, error: 'El contenido no coincide con el formato de la imagen.' });
+  await fs.mkdir(mediaDir, { recursive: true });
+  const filename = `${crypto.randomUUID()}.${extension}`;
+  await fs.writeFile(path.join(mediaDir, filename), content, { mode: 0o644 });
+  const publicApi = String(process.env.PUBLIC_API_URL || 'https://api.todosobreall.tech').replace(/\/$/, '');
+  return res.json({ ok: true, url: `${publicApi}/house-ads/media/${filename}` });
+});
+
+router.get('/media/:filename', async (req, res) => {
+  const filename = String(req.params.filename || '');
+  if (!/^[a-f0-9-]+\.(?:jpg|png|webp|gif)$/.test(filename)) return res.status(404).end();
+  return res.sendFile(path.join(mediaDir, filename), { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'Cross-Origin-Resource-Policy': 'cross-origin' } }, (error) => { if (error && !res.headersSent) res.status(404).end(); });
 });
 
 router.get('/:id/click', async (req, res) => {

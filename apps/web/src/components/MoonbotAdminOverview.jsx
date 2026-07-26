@@ -133,7 +133,7 @@ const MoonbotAdminOverview = () => {
     {data && <LazySection id="moon-experience"><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={telegramGroups} entityType="group" /></LazySection>}
     {data && <LazySection id="moon-channels"><MoonbotGroupsManager groups={telegramChannels} entityType="channel" /></LazySection>}
-    {data && <LazySection id="moon-house-ads"><HouseAdsManager /></LazySection>}
+    {data && <LazySection id="moon-house-ads"><HouseAdsManager groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-security"><MoonbotSecurityCenter /></LazySection>}
     {data && <LazySection id="moon-moderation-productivity"><MoonbotModerationProductivity /></LazySection>}

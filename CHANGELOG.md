@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Anuncios con comunidades e imágenes detectadas - 2026-07-26
+- El creador de anuncios muestra los grupos y canales administrados para elegir el destino.
+- Permite seleccionar y almacenar fotos JPG, PNG, WebP o GIF desde el dispositivo.
+- Valida el contenido y limita las imágenes a 4 MB antes de publicarlas.
+
 ### Administración separada de Telegram - 2026-07-26
 - Usuarios, grupos y canales tienen accesos de administración independientes.
 - Los canales se clasifican por su tipo real de Telegram y dejan de mezclarse con los grupos.
