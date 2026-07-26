@@ -11,6 +11,12 @@ const TG_ISSUER = 'https://oauth.telegram.org';
 const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID || '';
 const telegramLoginNonces = new Map();
 const NONCE_TTL_MS = 5 * 60 * 1000;
+const describePocketBaseError = (error) => JSON.stringify({
+  message: error?.message,
+  status: error?.status,
+  url: error?.url,
+  response: error?.response,
+});
 
 // Claves públicas de Telegram para verificar la firma del id_token (cacheadas por jose).
 const JWKS = createRemoteJWKSet(
@@ -107,7 +113,7 @@ router.post('/telegram', async (req, res) => {
     const existing = await pb.collection('users').getFullList({ filter: `telegram_id = "${telegramId}"` });
     if (existing && existing.length > 0) user = existing[0];
   } catch (error) {
-    logger.warn(`Error querying existing Telegram user: ${error.message}`);
+    logger.warn(`Error querying existing Telegram user: ${describePocketBaseError(error)}`);
   }
 
   try {
@@ -133,7 +139,7 @@ router.post('/telegram', async (req, res) => {
       });
     }
   } catch (error) {
-    logger.error(`Error creating/updating Telegram user: ${error.message}`);
+    logger.error(`Error creating/updating Telegram user: ${describePocketBaseError(error)}`);
     return res.status(500).json({ error: 'No se pudo iniciar sesión' });
   }
 
