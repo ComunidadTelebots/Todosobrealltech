@@ -635,3 +635,8 @@
 - Programación mensual de reverificación y administración de usuarios exentos desde web y MiniApp.
 - El panel de grupos de Moonbot permite activar el modo estricto por grupo.
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
+# Publicidad automática de canales del master en NoticiasWeb3
+
+- Los canales administrados por el master generan campañas propias medibles automáticamente.
+- La entrega rota entre campañas con la misma prioridad según sus impresiones por ubicación.
+- El panel identifica las campañas automáticas y mantiene AdSense como alternativa.

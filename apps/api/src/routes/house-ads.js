@@ -15,8 +15,14 @@ router.get('/', async (req, res) => {
     const response = await moon(); const data = await response.json();
     if (!response.ok) return res.status(response.status).json(data);
     const placement = String(req.query.placement || '');
-    const ads = (data.ads || []).filter((ad) => ad.enabled !== false && !['pending', 'rejected'].includes(ad.approval_status) && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
-    if (placement && ads[0]) moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement }) }).catch(() => {});
+    let ads = (data.ads || []).filter((ad) => ad.enabled !== false && !['pending', 'rejected'].includes(ad.approval_status) && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
+    if (placement && ads.length) {
+      const highestPriority = Math.max(...ads.map((ad) => Number(ad.priority || 0)));
+      const candidates = ads.filter((ad) => Number(ad.priority || 0) === highestPriority)
+        .sort((left, right) => Number(left.impressions_by_placement?.[placement] || 0) - Number(right.impressions_by_placement?.[placement] || 0));
+      ads = candidates.slice(0, 1);
+      moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement }) }).catch(() => {});
+    }
     return res.json({ ok: true, ads });
   } catch { return res.status(502).json({ ok: false, error: 'Catálogo propio no disponible' }); }
 });

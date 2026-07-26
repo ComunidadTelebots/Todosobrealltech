@@ -19,7 +19,7 @@ function AdPreview({ ad }) {
   const shape = ad.placement === 'right' ? 'max-w-[250px] min-h-52 flex-col text-center' : 'w-full min-h-24';
   return <div className={`flex items-center gap-3 overflow-hidden rounded-xl border p-4 shadow-sm ${shape}`} style={{ background: ad.background, color: ad.foreground, borderColor: `${ad.accent}55` }}>
     {ad.image ? <img src={ad.image} alt="" className={ad.placement === 'right' ? 'h-24 w-full rounded-lg object-cover' : 'h-16 w-16 rounded-lg object-cover'} /> : <div className="grid h-16 w-16 shrink-0 place-items-center rounded-lg" style={{ background: `${ad.accent}22` }}><Palette /></div>}
-    <div className="min-w-0 flex-1"><small className="text-[10px] uppercase tracking-wider opacity-70">Recomendado</small><strong className="block text-lg">{ad.title || 'Tu anuncio personalizado'}</strong><span className="block whitespace-pre-line text-sm opacity-80"><SafeMarkdownText text={ad.description || 'Añade aquí una descripción breve.'}/></span></div>
+    <div className="min-w-0 flex-1"><small className="text-[10px] uppercase tracking-wider opacity-70">{ad.automatic ? 'Canal del master · automático' : 'Recomendado'}</small><strong className="block text-lg">{ad.title || 'Tu anuncio personalizado'}</strong><span className="block whitespace-pre-line text-sm opacity-80"><SafeMarkdownText text={ad.description || 'Añade aquí una descripción breve.'}/></span></div>
     <span className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-white" style={{ background: ad.accent }}>{ad.cta || 'Abrir'}</span>
   </div>;
 }
