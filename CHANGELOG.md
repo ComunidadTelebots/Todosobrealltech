@@ -1,6 +1,7 @@
 # Changelog - TodoSobreAllTech
 
 ### Anuncios propios configurables - 2026-07-26
+- Nuevo creador visual con formatos superior, lateral e inline, vista previa, imagen, llamada a la acción y colores personalizados.
 - TodoSobreAllTech incorpora un gestor de anuncios de canales y grupos propios con ubicación, prioridad, imagen, estado y clics.
 - La API expone el catálogo público y registra redirecciones sin depender de AdSense.
 - Noticias Web3 usa estos anuncios únicamente cuando Google no llena el espacio correspondiente.
