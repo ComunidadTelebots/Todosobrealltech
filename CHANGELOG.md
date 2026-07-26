@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.17.0] - 2026-07-26
+### Integraciones y API Moonbot
+- Gestión visual de módulos, permisos, versiones y checksums.
+- Creación de tokens por ámbitos con visualización única, rotación y revocación.
+- Controles de sandbox y cuotas por bot y método.
+- Enlaces administrables para incidentes y calendarios externos.
+- Consulta del manifiesto y eventos disponibles en el SDK de extensiones.
+- Preparación de paquetes de configuración firmados contra modificaciones.
+
 ## [0.16.0] - 2026-07-26
 ### Centro de automatizaciones Moonbot
 - Constructor visual de reglas, condiciones y respuestas automáticas por grupo.

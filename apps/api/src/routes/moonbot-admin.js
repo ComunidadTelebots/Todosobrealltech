@@ -173,4 +173,17 @@ router.all('/automations', async (req, res) => {
   }
 });
 
+router.all('/integrations', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const response = await moonRequest('/api/internal/integrations', { method: req.method, body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-integrations] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar el centro de integraciones' });
+  }
+});
+
 export default router;

@@ -14,6 +14,7 @@ import MoonbotAdvancedUserActions from '@/components/MoonbotAdvancedUserActions.
 import MoonbotAICenter from '@/components/MoonbotAICenter.jsx';
 import MoonbotAIAdvancedTools from '@/components/MoonbotAIAdvancedTools.jsx';
 import MoonbotAutomationsCenter from '@/components/MoonbotAutomationsCenter.jsx';
+import MoonbotIntegrationsCenter from '@/components/MoonbotIntegrationsCenter.jsx';
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -83,6 +84,7 @@ const MoonbotAdminOverview = () => {
     {data && <MoonbotAICenter groups={data.groups || []} />}
     {data && <MoonbotAIAdvancedTools groups={data.groups || []} />}
     {data && <MoonbotAutomationsCenter groups={data.groups || []} />}
+    {data && <MoonbotIntegrationsCenter groups={data.groups || []} />}
     </>
   );
 };
