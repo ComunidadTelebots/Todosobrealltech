@@ -67,14 +67,19 @@ const LoginPage = () => {
     }
     // No debe haber ningún await antes de auth: los navegadores bloquearían
     // la ventana de Telegram al dejar de considerarla iniciada por el usuario.
-    window.Telegram.Login.auth(
-      {
-        client_id: Number(config.client_id),
-        scope: ['profile'],
-        nonce: config.nonce,
-        lang: 'es',
-      },
-      async (result) => {
+    const loginPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    // El SDK usa location.pathname como redirect_uri y BotFather registra solo
+    // Trusted Origin. Durante la apertura hacemos que ambos coincidan exactamente.
+    window.history.replaceState(window.history.state, '', '/');
+    try {
+      window.Telegram.Login.auth(
+        {
+          client_id: Number(config.client_id),
+          scope: ['profile'],
+          nonce: config.nonce,
+          lang: 'es',
+        },
+        async (result) => {
         setTelegramConfig(null);
         if (!result || result.error || !result.id_token) {
           setTelegramLoading(false);
@@ -96,8 +101,14 @@ const LoginPage = () => {
           toast.error('El login con Telegram falló');
         }
         setTelegramLoading(false);
-      },
-    );
+        },
+      );
+    } catch (reason) {
+      setTelegramLoading(false);
+      setError(reason.message || 'No se pudo abrir Telegram Login.');
+    } finally {
+      window.history.replaceState(window.history.state, '', loginPath || '/login');
+    }
   };
 
   const handleSubmit = async (e) => {
