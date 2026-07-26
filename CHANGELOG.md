@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Aislamiento de plugins por grupo - 2026-07-26
+- Cada panel de grupo permite activar o desactivar individualmente los plugins instalados.
+- El contador distingue plugins disponibles y activos, y actualiza inmediatamente el menú de comandos de Telegram.
+
 ### Comandos dinámicos y plugins - 2026-07-26
 - La web muestra el número de comandos públicos, administrativos y plugins cargados para cada grupo.
 - El administrador puede ordenar una sincronización real del menú de Telegram desde el panel del grupo.
