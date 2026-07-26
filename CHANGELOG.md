@@ -637,6 +637,7 @@
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
 # Publicidad automática de canales del master en NoticiasWeb3
 
+- La API detecta respuestas HTML o corruptas de Moonbot y devuelve un error JSON controlado.
 - Docker Compose fija `http://moonbot:5000` como ruta interna de la API sin permitir que un valor antiguo de `.env` la sustituya.
 - La API publicitaria usa `http://moonbot:5000` como respaldo si la ruta interna configurada apunta a un destino inaccesible.
 - Interruptor independiente para activar o detener la publicidad de cada canal del master.
