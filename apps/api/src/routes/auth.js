@@ -13,7 +13,14 @@ const telegramLoginNonces = new Map();
 const NONCE_TTL_MS = 5 * 60 * 1000;
 
 // Claves públicas de Telegram para verificar la firma del id_token (cacheadas por jose).
-const JWKS = createRemoteJWKSet(new URL('https://oauth.telegram.org/.well-known/jwks.json'));
+const JWKS = createRemoteJWKSet(
+  new URL('https://oauth.telegram.org/.well-known/jwks.json'),
+  {
+    timeoutDuration: 30_000,
+    cooldownDuration: 30_000,
+    cacheMaxAge: 12 * 60 * 60 * 1000,
+  },
+);
 
 router.get('/telegram/config', (req, res) => {
   if (!CLIENT_ID) return res.json({ enabled: false, error: 'Login de Telegram no configurado' });
@@ -51,6 +58,10 @@ router.post('/telegram', async (req, res) => {
     claims = payload;
   } catch (e) {
     logger.warn(`id_token de Telegram inválido: ${e.message}`);
+    if (/timed? out|timeout|fetch failed|network/i.test(String(e.message))) {
+      res.set('Retry-After', '10');
+      return res.status(503).json({ error: 'Telegram no responde temporalmente; inténtalo de nuevo' });
+    }
     return res.status(401).json({ error: 'Autenticación de Telegram inválida' });
   }
 

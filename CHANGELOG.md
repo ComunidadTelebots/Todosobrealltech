@@ -9,6 +9,7 @@
 - La ventana emergente usa `Telegram.Login.auth` con sus opciones oficiales; la API pública permanece bajo `/hcgi/api` y no se confunde con las rutas SPA.
 - El nonce se prepara antes del clic para que el navegador no bloquee la ventana de Telegram como un popup ajeno al usuario.
 - El popup usa exactamente el `Trusted Origin` admitido por BotFather aunque la pantalla de acceso esté en `/login`.
+- La verificación admite conexiones lentas al descargar las claves públicas de Telegram y diferencia un fallo temporal de red de un token inválido.
 
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
