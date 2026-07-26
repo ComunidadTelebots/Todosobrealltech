@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Dashboard compacto por pestañas - 2026-07-26
+- Las herramientas master de Moonbot dejan de renderizarse en una página continua y se abren individualmente.
+- Se añade navegación de vuelta al índice y carga diferida únicamente de la pestaña seleccionada.
+- Grupos, canales, usuarios, anuncios, seguridad, IA y operaciones mantienen paneles independientes.
+
 ### Entrega de anuncios propios en NoticiasWeb3 - 2026-07-26
 - NoticiasWeb3 reenvía el catálogo `/hcgi/api/house-ads` y los clics medidos a la API interna.
 - Se evita que la SPA devuelva HTML cuando el componente de anuncios espera JSON.

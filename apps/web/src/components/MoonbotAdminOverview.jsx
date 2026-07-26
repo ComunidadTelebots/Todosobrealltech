@@ -1,5 +1,5 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Activity, AlertTriangle, Bot, Clock3, Cpu, Database, HardDrive, MemoryStick, RefreshCw, Server, UsersRound } from 'lucide-react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { Activity, AlertTriangle, ArrowLeft, Bot, Clock3, Cpu, Database, HardDrive, MemoryStick, RefreshCw, Server, UsersRound } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,8 +21,10 @@ const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotMod
 const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
 
 const MASTER_SECTIONS = [
+  ['Experiencia y preferencias', 'moon-experience'],
   ['Grupos', 'moon-groups'],
   ['Canales', 'moon-channels'],
+  ['Anuncios propios', 'moon-house-ads'],
   ['Usuarios y baneos', 'moon-users'],
   ['Seguridad', 'moon-security'],
   ['Moderación productiva', 'moon-moderation-productivity'],
@@ -35,22 +37,6 @@ const MASTER_SECTIONS = [
   ['Integraciones', 'moon-integrations'],
   ['Operaciones', 'moon-operations'],
 ];
-
-const LazySection = ({ children, id }) => {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (visible || !ref.current) return undefined;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
-    }, { rootMargin: '500px 0px' });
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [visible]);
-  return <div ref={ref} id={id} className="min-h-24">
-    {visible && <Suspense fallback={<div className="mt-8 h-32 animate-pulse rounded-2xl border bg-muted/20" />}>{children}</Suspense>}
-  </div>;
-};
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -70,6 +56,7 @@ const MoonbotAdminOverview = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -93,6 +80,26 @@ const MoonbotAdminOverview = () => {
   const resources = data?.resources || {};
   const telegramGroups = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() !== 'channel');
   const telegramChannels = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() === 'channel');
+  const openSection = (id) => {
+    setActiveSection(id);
+    window.setTimeout(() => document.getElementById('moon-active-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  };
+  const activeLabel = MASTER_SECTIONS.find(([, id]) => id === activeSection)?.[0];
+  const activePanel = activeSection === 'moon-experience' ? <MoonbotExperienceCenter groups={data?.groups || []} />
+    : activeSection === 'moon-groups' ? <MoonbotGroupsManager groups={telegramGroups} entityType="group" />
+      : activeSection === 'moon-channels' ? <MoonbotGroupsManager groups={telegramChannels} entityType="channel" />
+        : activeSection === 'moon-house-ads' ? <HouseAdsManager groups={data?.groups || []} />
+          : activeSection === 'moon-users' ? <MoonbotUsersManager groups={data?.groups || []} />
+            : activeSection === 'moon-security' ? <MoonbotSecurityCenter />
+              : activeSection === 'moon-moderation-productivity' ? <MoonbotModerationProductivity />
+                : activeSection === 'moon-editorial' ? <MoonbotEditorialCenter groups={data?.groups || []} />
+                  : activeSection === 'moon-live-safety' ? <MoonbotLiveSafety />
+                    : activeSection === 'moon-advanced-users' ? <MoonbotAdvancedUserActions groups={data?.groups || []} />
+                      : activeSection === 'moon-ai' ? <MoonbotAICenter groups={data?.groups || []} />
+                        : activeSection === 'moon-ai-tools' ? <MoonbotAIAdvancedTools groups={data?.groups || []} />
+                          : activeSection === 'moon-automations' ? <MoonbotAutomationsCenter groups={data?.groups || []} />
+                            : activeSection === 'moon-integrations' ? <MoonbotIntegrationsCenter groups={data?.groups || []} />
+                              : activeSection === 'moon-operations' ? <MoonbotOperationsCenter groups={data?.groups || []} /> : null;
 
   return (
     <>
@@ -115,7 +122,7 @@ const MoonbotAdminOverview = () => {
             <p className="mb-3 text-sm text-muted-foreground">Los mismos centros de gestión de la MiniApp, organizados para la web.</p>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
               {MASTER_SECTIONS.map(([label, id]) => (
-                <Button key={id} variant="outline" className="h-auto justify-start py-3 text-left" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                <Button key={id} variant={activeSection === id ? 'default' : 'outline'} className="h-auto justify-start py-3 text-left" onClick={() => openSection(id)}>
                   {label}
                 </Button>
               ))}
@@ -130,21 +137,7 @@ const MoonbotAdminOverview = () => {
         </>}
       </CardContent>
     </Card>
-    {data && <LazySection id="moon-experience"><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={telegramGroups} entityType="group" /></LazySection>}
-    {data && <LazySection id="moon-channels"><MoonbotGroupsManager groups={telegramChannels} entityType="channel" /></LazySection>}
-    {data && <LazySection id="moon-house-ads"><HouseAdsManager groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-security"><MoonbotSecurityCenter /></LazySection>}
-    {data && <LazySection id="moon-moderation-productivity"><MoonbotModerationProductivity /></LazySection>}
-    {data && <LazySection id="moon-editorial"><MoonbotEditorialCenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-live-safety"><MoonbotLiveSafety /></LazySection>}
-    {data && <LazySection id="moon-advanced-users"><MoonbotAdvancedUserActions groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-ai"><MoonbotAICenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-ai-tools"><MoonbotAIAdvancedTools groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-automations"><MoonbotAutomationsCenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-integrations"><MoonbotIntegrationsCenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-operations"><MoonbotOperationsCenter groups={data.groups || []} /></LazySection>}
+    {data && activePanel && <section id="moon-active-panel" className="scroll-mt-24"><div className="mt-6 flex items-center justify-between rounded-xl border bg-background p-3"><Button variant="ghost" onClick={() => setActiveSection('')}><ArrowLeft className="mr-2 h-4 w-4" />Volver al índice</Button><Badge variant="secondary">{activeLabel}</Badge></div><Suspense fallback={<div className="mt-4 h-40 animate-pulse rounded-2xl border bg-muted/20" />}>{activePanel}</Suspense></section>}
     </>
   );
 };
