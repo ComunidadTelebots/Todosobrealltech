@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import apiServerClient from '@/lib/apiServerClient';
 import pb from '@/lib/pocketbaseClient';
 import MoonbotGroupsManager from '@/components/MoonbotGroupsManager.jsx';
+import MoonbotUsersManager from '@/components/MoonbotUsersManager.jsx';
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -67,6 +68,7 @@ const MoonbotAdminOverview = () => {
       </CardContent>
     </Card>
     {data && <MoonbotGroupsManager groups={data.groups || []} />}
+    {data && <MoonbotUsersManager groups={data.groups || []} />}
     </>
   );
 };

@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.9.0] - 2026-07-26
+### Usuarios, CAS y sanciones Moonbot
+- Buscador de usuarios observados por nombre o ID de Telegram.
+- Ficha individual con actividad, reputaciÃ³n, participaciÃ³n, notas y estado CAS local.
+- VisualizaciÃ³n del motivo y la fuente de cada baneo global.
+- Acciones de ban, restauraciÃ³n y cuarentena globales o por grupo.
+- Consulta y resoluciÃ³n de apelaciones desde la web principal.
+- Todas las operaciones viajan por el proxy autenticado y quedan auditadas en Moonbot.
+
 ## [0.8.0] - 2026-07-26
 ### AdministraciÃ³n de grupos Moonbot
 - Lista y buscador de grupos administrables desde todosobreall.tech.

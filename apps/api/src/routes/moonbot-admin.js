@@ -69,4 +69,35 @@ router.all('/groups/:id', async (req, res) => {
   }
 });
 
+router.get('/users', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const query = String(req.query.q || '').slice(0, 100);
+  try {
+    const response = await moonRequest(`/api/internal/users?q=${encodeURIComponent(query)}`);
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-users] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudieron consultar los usuarios' });
+  }
+});
+
+router.all('/users/:id', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const uid = String(req.params.id || '');
+  if (!/^\d+$/.test(uid)) return res.status(400).json({ ok: false, error: 'ID de usuario no vÃ¡lido' });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'MÃ©todo no permitido' });
+  try {
+    const response = await moonRequest(`/api/internal/users/${uid}`, {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-user] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo completar la acciÃ³n de usuario' });
+  }
+});
+
 export default router;
