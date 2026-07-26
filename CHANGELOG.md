@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+## [0.5.0] - 2026-07-26
+### Horizonte 202 completado
+- Las 100 funciones aparecen como operativas y sincronizadas con Moonbot v18.0.0.
+- El motor final cubre contenido, IA, accesibilidad, privacidad, operaciones, integraciones, sostenibilidad y Telegram.
+- La página `/roadmap` muestra el estado final sin confundir funciones operativas con propuestas pendientes.
+
 ## [0.4.0] - 2026-07-26
 ### Horizonte 202
 - Nueva página pública `/roadmap` con buscador y filtros por categoría.

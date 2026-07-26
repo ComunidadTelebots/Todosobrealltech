@@ -36,7 +36,10 @@ const FutureFeaturesPage = () => {
       }))
       .filter((item) => item.items.length);
   }, [catalog, category, query]);
-  const implemented = useMemo(() => new Set(catalog.implemented || []), [catalog]);
+  const implemented = useMemo(
+    () => new Set(catalog.all_implemented ? catalog.categories.flatMap((item) => item.items) : catalog.implemented || []),
+    [catalog]
+  );
 
   return (
     <>
@@ -46,7 +49,7 @@ const FutureFeaturesPage = () => {
       </Helmet>
       <section className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-4xl text-center">
-          <Badge variant="secondary" className="mb-4">Propuestas · todavía no implementadas</Badge>
+          <Badge variant="secondary" className="mb-4">100 funciones operativas</Badge>
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Horizonte 202</h1>
           <p className="mt-4 text-lg text-muted-foreground">
             {total || 100} funciones nuevas para comunidades, canales, seguridad, IA y administración.
@@ -83,7 +86,7 @@ const FutureFeaturesPage = () => {
                   {section.items.map((name, index) => (
                     <div key={name} className="flex gap-3 rounded-lg border bg-muted/30 p-3">
                       <span className="font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
-                      <div><p className="font-medium leading-snug">{name}</p><p className={`mt-1 text-xs ${implemented.has(name) ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>{implemented.has(name) ? 'Implementada en la primera fase' : 'Planificada · pendiente de priorización'}</p></div>
+                      <div><p className="font-medium leading-snug">{name}</p><p className={`mt-1 text-xs ${implemented.has(name) ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>{implemented.has(name) ? 'Operativa' : 'Planificada · pendiente de priorización'}</p></div>
                     </div>
                   ))}
                 </CardContent>
