@@ -51,6 +51,18 @@ const DashboardPage = () => {
     const fetchDashboardData = async () => {
       if (currentUser?.id) {
         try {
+          const requestStats = async () => {
+            const response = await apiServerClient.fetch('/stats', {
+              headers: { 'Authorization': `Bearer ${pb.authStore.token}` }
+            });
+            if (!response.ok) throw new Error(`/stats HTTP ${response.status}`);
+            return response.json();
+          };
+          const hasAdminRole = (user) => ['admin', 'creator'].includes(String(user?.role).toLowerCase());
+          // Empieza antes de las consultas personales para que una petición lenta
+          // de PocketBase en el navegador no bloquee los contadores agregados.
+          let statsPromise = hasAdminRole(currentUser) ? requestStats() : null;
+
           // Perfil y bots personales son independientes de las estadísticas
           // agregadas. Un fallo parcial no debe dejar el dashboard completo a 0.
           const [userResult, botsResult] = await Promise.allSettled([
@@ -75,15 +87,10 @@ const DashboardPage = () => {
           // /stats: el servidor agrega con credenciales superuser, así devuelve
           // totales reales de users/bots/canales que el navegador no puede leer
           // (tg_channels tiene listRule=null y contiene bot_token; nunca se expone crudo).
-          if (['admin', 'creator'].includes(String(user?.role || currentUser?.role).toLowerCase())) {
+          if (hasAdminRole(user) || hasAdminRole(currentUser)) {
             try {
-              const response = await apiServerClient.fetch('/stats', {
-                headers: { 'Authorization': `Bearer ${pb.authStore.token}` }
-              });
-              if (!response.ok) {
-                throw new Error(`/stats HTTP ${response.status}`);
-              }
-              const stats = await response.json();
+              if (!statsPromise) statsPromise = requestStats();
+              const stats = await statsPromise;
 
               setSystemStats({
                 users: stats.users || 0,

@@ -17,6 +17,7 @@
 - El mapa lingüístico admite respuestas lentas de Moonbot sin abortar prematuramente.
 - PocketBase dispone de un alias Docker exclusivo para evitar colisiones DNS con otros proyectos que también usan un servicio llamado `pocketbase` en la red compartida de Traefik.
 - `auth-refresh` utiliza una conexión HTTP interna dedicada, aislada del pool global saturado por integraciones externas.
+- El dashboard lanza `/stats` inmediatamente y en paralelo, sin esperar a consultas personales que puedan quedar pendientes.
 
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
