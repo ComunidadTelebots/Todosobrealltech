@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.12.0] - 2026-07-26
+### AdministraciÃ³n de grupos completada
+- GuÃ­a visible para corregir permisos faltantes de Moonbot.
+- Historial reciente sanitizado dentro de la ficha del grupo.
+- Comparador de reglas y configuraciones entre comunidades.
+- Copia de configuraciÃ³n conservada como acciÃ³n separada y explÃ­cita.
+- Backend preparado para mute, revisiÃ³n por pares y detecciÃ³n de suplantaciÃ³n.
+
 ## [0.11.0] - 2026-07-26
 ### Centro editorial Moonbot
 - Editor de publicaciones Telegram compatible con Markdown.
