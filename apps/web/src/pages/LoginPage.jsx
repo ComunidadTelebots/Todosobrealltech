@@ -65,7 +65,13 @@ const LoginPage = () => {
       return;
     }
     window.Telegram.Login.auth(
-      { client_id: Number(config.client_id), scope: ['profile'], nonce: config.nonce, lang: 'es' },
+      {
+        client_id: Number(config.client_id),
+        scope: ['profile'],
+        nonce: config.nonce,
+        lang: 'es',
+        redirect_uri: `${window.location.origin}/login`,
+      },
       async (result) => {
         if (!result || result.error || !result.id_token) {
           setTelegramLoading(false);
