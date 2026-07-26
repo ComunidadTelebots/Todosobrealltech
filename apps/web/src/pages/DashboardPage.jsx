@@ -61,7 +61,12 @@ const DashboardPage = () => {
           const hasAdminRole = (user) => ['admin', 'creator'].includes(String(user?.role).toLowerCase());
           // Empieza antes de las consultas personales para que una petición lenta
           // de PocketBase en el navegador no bloquee los contadores agregados.
-          let statsPromise = hasAdminRole(currentUser) ? requestStats() : null;
+          // El backend es quien valida el rol; no dependemos de que el perfil
+          // almacenado en el navegador incluya `role` durante el arranque.
+          const statsPromise = requestStats().then(
+            (stats) => ({ stats, error: null }),
+            (error) => ({ stats: null, error }),
+          );
 
           // Perfil y bots personales son independientes de las estadísticas
           // agregadas. Un fallo parcial no debe dejar el dashboard completo a 0.
@@ -89,8 +94,9 @@ const DashboardPage = () => {
           // (tg_channels tiene listRule=null y contiene bot_token; nunca se expone crudo).
           if (hasAdminRole(user) || hasAdminRole(currentUser)) {
             try {
-              if (!statsPromise) statsPromise = requestStats();
-              const stats = await statsPromise;
+              const statsResult = await statsPromise;
+              if (statsResult.error) throw statsResult.error;
+              const stats = statsResult.stats;
 
               setSystemStats({
                 users: stats.users || 0,
@@ -112,6 +118,8 @@ const DashboardPage = () => {
               // Degradación: si /stats falla, las tarjetas quedan a 0 (estado inicial).
               console.warn('No se pudieron cargar las estadísticas del dashboard (/stats):', statsError?.message || statsError);
             }
+          } else {
+            await statsPromise;
           }
         } catch (error) {
           console.error('Error fetching dashboard data:', error);
