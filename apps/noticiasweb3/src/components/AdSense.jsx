@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const DEFAULT_ADSENSE_ID = 'ca-pub-1927309987076600';
 
@@ -29,43 +29,37 @@ function loadScript() {
   document.head.appendChild(s);
 }
 
-function getPreviewLabel(slot) {
-  if (slot === 'SLOT_TOP') return 'Banner superior';
-  if (slot === 'SLOT_RIGHT') return 'Lateral derecho';
-  if (slot === 'SLOT_INLINE') return 'Entre contenidos';
-  return 'Espacio publicitario';
-}
-
 export default function AdSense({ slot, style, className = '' }) {
   const hasRealSlot = Boolean(slot && !String(slot).startsWith('SLOT_'));
-  const label = getPreviewLabel(slot);
+  const adRef = useRef(null);
+  const [status, setStatus] = useState('loading');
 
   useEffect(() => {
     if (!CLIENT || !hasRealSlot) return;
     loadScript();
+    const ad = adRef.current;
+    const updateStatus = () => {
+      const next = ad?.getAttribute('data-ad-status');
+      if (next === 'filled' || next === 'unfilled') {
+        setStatus(next);
+        observer.disconnect();
+      }
+    };
+    const observer = new MutationObserver(updateStatus);
+    if (ad) observer.observe(ad, { attributes: true, attributeFilter: ['data-ad-status'] });
+    const timeout = window.setTimeout(() => setStatus((current) => current === 'loading' ? 'unfilled' : current), 5000);
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (_) {}
+    return () => { observer.disconnect(); window.clearTimeout(timeout); };
   }, [hasRealSlot]);
 
-  if (!CLIENT || !hasRealSlot) {
-    return (
-      <div className={`ad-preview ${className}`} style={style} role="complementary" aria-label={label}>
-        <span>Publicidad</span>
-        <strong>{label}</strong>
-        <small>Espacio reservado para Google AdSense o campaña directa</small>
-      </div>
-    );
-  }
+  if (!CLIENT || !hasRealSlot || status === 'unfilled') return null;
 
   return (
-    <div className={`ad-slot ${className}`} style={style} role="complementary" aria-label={label}>
-      <div className="ad-preview ad-preview-fallback">
-        <span>Publicidad</span>
-        <strong>{label}</strong>
-        <small>Google AdSense se mostrara aqui cuando entregue anuncio</small>
-      </div>
+    <div className={`ad-slot ${status === 'loading' ? 'ad-slot-loading' : 'ad-slot-filled'} ${className}`} style={style} role="complementary" aria-label="Publicidad">
       <ins
+        ref={adRef}
         className="adsbygoogle"
         style={{ display: 'block', width: '100%', height: '100%' }}
         data-ad-client={CLIENT}

@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Publicidad sin espacios vacíos - 2026-07-26
+- Los bloques sin una ranura real ya no muestran maquetas publicitarias al público.
+- Noticias Web3 observa el estado `filled/unfilled` de AdSense y elimina los anuncios no servidos.
+- Los contenedores superior, lateral e intercalado colapsan al quedar vacíos.
+- Durante la carga el anuncio permanece invisible y desaparece si Google no responde en cinco segundos.
+- El formato lateral de 160×600 se desactiva en móvil para que nunca invada el contenido.
+
 ### Noticias Web3 2026 dentro de Moonbot - 2026-07-26
 - Noticias Web3 acepta el parámetro seguro `version=2026` al iniciar y aplica directamente su interfaz moderna.
 - La selección explícita tiene prioridad sobre preferencias antiguas guardadas en el navegador.

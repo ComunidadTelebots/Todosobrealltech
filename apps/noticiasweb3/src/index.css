@@ -48,6 +48,10 @@ a:focus, a:active, a:hover { text-decoration: underline; }
   left: 50%;
   margin-left: 526px;
 }
+#banner-top:empty,
+#banner-right:empty {
+  display: none;
+}
 .ad-preview {
   display: grid;
   place-items: center;
@@ -70,14 +74,12 @@ a:focus, a:active, a:hover { text-decoration: underline; }
   position: relative;
   overflow: hidden;
 }
+.ad-slot-loading {
+  visibility: hidden;
+}
 .ad-slot > .adsbygoogle {
   position: relative;
   z-index: 2;
-}
-.ad-preview-fallback {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
 }
 .ad-preview span {
   color: #b50433;
@@ -2030,12 +2032,12 @@ body.nw3-night-mode a {
     width: calc(100% - 24px);
     max-width: 728px;
   }
+  #banner-top .ad-slot {
+    width: 100% !important;
+    max-width: 100%;
+  }
   #banner-right {
-    position: static;
-    width: calc(100% - 24px);
-    max-width: 728px;
-    height: 120px;
-    margin: 12px auto;
+    display: none !important;
   }
   .app-showcase {
     grid-template-columns: 1fr;
