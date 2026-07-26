@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Propiedad de grupos por bot - 2026-07-26
+- Cada grupo muestra la instancia de Moonbot responsable sin exponer su token.
+- La búsqueda de grupos admite también el nombre del bot.
+
 ### Corrección de autenticación administrativa - 2026-07-26
 - Las peticiones simultáneas de los widgets comparten una única renovación de sesión para evitar saturar PocketBase.
 - La renovación admite conexiones internas lentas sin declarar PocketBase inaccesible demasiado pronto.
