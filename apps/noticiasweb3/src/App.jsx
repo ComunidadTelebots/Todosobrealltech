@@ -100,6 +100,8 @@ function Layout({ children }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [siteVersion, setSiteVersion] = useState(() => {
     if (typeof window === 'undefined') return '2014';
+    const requestedVersion = new URLSearchParams(window.location.search).get('version');
+    if (['2012', '2014', '2026'].includes(requestedVersion)) return requestedVersion;
     return localStorage.getItem('nw3-version') || '2014';
   });
   const [appPlatform, setAppPlatform] = useState(() => {

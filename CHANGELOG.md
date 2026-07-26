@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Noticias Web3 2026 dentro de Moonbot - 2026-07-26
+- Noticias Web3 acepta el parámetro seguro `version=2026` al iniciar y aplica directamente su interfaz moderna.
+- La selección explícita tiene prioridad sobre preferencias antiguas guardadas en el navegador.
+
 ### Conexión directa a proxies MTProto - 2026-07-26
 - El catálogo web permite abrir cada proxy directamente en Telegram además de copiar sus credenciales.
 - Los enlaces se reconstruyen de forma segura cuando el origen no entrega uno explícito.
