@@ -1,22 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Activity, AlertTriangle, Bot, Clock3, Cpu, Database, HardDrive, MemoryStick, RefreshCw, Server, UsersRound } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import apiServerClient from '@/lib/apiServerClient';
 import pb from '@/lib/pocketbaseClient';
-import MoonbotGroupsManager from '@/components/MoonbotGroupsManager.jsx';
-import MoonbotUsersManager from '@/components/MoonbotUsersManager.jsx';
-import MoonbotSecurityCenter from '@/components/MoonbotSecurityCenter.jsx';
-import MoonbotEditorialCenter from '@/components/MoonbotEditorialCenter.jsx';
-import MoonbotLiveSafety from '@/components/MoonbotLiveSafety.jsx';
-import MoonbotAdvancedUserActions from '@/components/MoonbotAdvancedUserActions.jsx';
-import MoonbotAICenter from '@/components/MoonbotAICenter.jsx';
-import MoonbotAIAdvancedTools from '@/components/MoonbotAIAdvancedTools.jsx';
-import MoonbotAutomationsCenter from '@/components/MoonbotAutomationsCenter.jsx';
-import MoonbotIntegrationsCenter from '@/components/MoonbotIntegrationsCenter.jsx';
-import MoonbotOperationsCenter from '@/components/MoonbotOperationsCenter.jsx';
-import MoonbotExperienceCenter from '@/components/MoonbotExperienceCenter.jsx';
+const MoonbotGroupsManager = lazy(() => import('@/components/MoonbotGroupsManager.jsx'));
+const MoonbotUsersManager = lazy(() => import('@/components/MoonbotUsersManager.jsx'));
+const MoonbotSecurityCenter = lazy(() => import('@/components/MoonbotSecurityCenter.jsx'));
+const MoonbotEditorialCenter = lazy(() => import('@/components/MoonbotEditorialCenter.jsx'));
+const MoonbotLiveSafety = lazy(() => import('@/components/MoonbotLiveSafety.jsx'));
+const MoonbotAdvancedUserActions = lazy(() => import('@/components/MoonbotAdvancedUserActions.jsx'));
+const MoonbotAICenter = lazy(() => import('@/components/MoonbotAICenter.jsx'));
+const MoonbotAIAdvancedTools = lazy(() => import('@/components/MoonbotAIAdvancedTools.jsx'));
+const MoonbotAutomationsCenter = lazy(() => import('@/components/MoonbotAutomationsCenter.jsx'));
+const MoonbotIntegrationsCenter = lazy(() => import('@/components/MoonbotIntegrationsCenter.jsx'));
+const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperationsCenter.jsx'));
+const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
+
+const LazySection = ({ children, id }) => {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (visible || !ref.current) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+    }, { rootMargin: '500px 0px' });
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [visible]);
+  return <div ref={ref} id={id} className="min-h-24">
+    {visible && <Suspense fallback={<div className="mt-8 h-32 animate-pulse rounded-2xl border bg-muted/20" />}>{children}</Suspense>}
+  </div>;
+};
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -77,18 +93,18 @@ const MoonbotAdminOverview = () => {
         </>}
       </CardContent>
     </Card>
-    {data && <MoonbotExperienceCenter groups={data.groups || []} />}
-    {data && <div id="moon-groups"><MoonbotGroupsManager groups={data.groups || []} /></div>}
-    {data && <div id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></div>}
-    {data && <div id="moon-security"><MoonbotSecurityCenter /></div>}
-    {data && <MoonbotEditorialCenter groups={data.groups || []} />}
-    {data && <MoonbotLiveSafety />}
-    {data && <MoonbotAdvancedUserActions groups={data.groups || []} />}
-    {data && <div id="moon-ai"><MoonbotAICenter groups={data.groups || []} /></div>}
-    {data && <MoonbotAIAdvancedTools groups={data.groups || []} />}
-    {data && <div id="moon-automations"><MoonbotAutomationsCenter groups={data.groups || []} /></div>}
-    {data && <div id="moon-integrations"><MoonbotIntegrationsCenter groups={data.groups || []} /></div>}
-    {data && <div id="moon-operations"><MoonbotOperationsCenter groups={data.groups || []} /></div>}
+    {data && <LazySection><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-security"><MoonbotSecurityCenter /></LazySection>}
+    {data && <LazySection><MoonbotEditorialCenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection><MoonbotLiveSafety /></LazySection>}
+    {data && <LazySection><MoonbotAdvancedUserActions groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-ai"><MoonbotAICenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection><MoonbotAIAdvancedTools groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-automations"><MoonbotAutomationsCenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-integrations"><MoonbotIntegrationsCenter groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-operations"><MoonbotOperationsCenter groups={data.groups || []} /></LazySection>}
     </>
   );
 };

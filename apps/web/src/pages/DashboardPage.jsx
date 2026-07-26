@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useNavigate, Link } from 'react-router-dom';
@@ -8,10 +8,26 @@ import { Badge } from '@/components/ui/badge';
 import { User, Mail, Shield, LogOut, Settings, Bot, ArrowRight, FileText, Send, Server, Crown, UserCheck, Network, UsersRound } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
 import apiServerClient from '@/lib/apiServerClient';
-import CreatorNewsManager from '@/components/CreatorNewsManager.jsx';
-import CreatorAccountProxyManager from '@/components/CreatorAccountProxyManager.jsx';
-import TelegramLanguageMap from '@/components/TelegramLanguageMap.jsx';
-import MoonbotAdminOverview from '@/components/MoonbotAdminOverview.jsx';
+const CreatorNewsManager = lazy(() => import('@/components/CreatorNewsManager.jsx'));
+const CreatorAccountProxyManager = lazy(() => import('@/components/CreatorAccountProxyManager.jsx'));
+const TelegramLanguageMap = lazy(() => import('@/components/TelegramLanguageMap.jsx'));
+const MoonbotAdminOverview = lazy(() => import('@/components/MoonbotAdminOverview.jsx'));
+
+const DeferredPanel = ({ children, minHeight = 180 }) => {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (visible || !ref.current) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+    }, { rootMargin: '500px 0px' });
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [visible]);
+  return <div ref={ref} style={{ minHeight: visible ? undefined : minHeight }}>
+    {visible && <Suspense fallback={<div className="mt-8 animate-pulse rounded-2xl border bg-muted/20" style={{ minHeight }} />}>{children}</Suspense>}
+  </div>;
+};
 
 const DashboardPage = () => {
   const { currentUser, logout } = useAuth();
@@ -36,19 +52,21 @@ const DashboardPage = () => {
       if (currentUser?.id) {
         try {
           // Fetch user data
-          const user = await pb.collection('users').getOne(currentUser.id, { $autoCancel: false });
+          const [user, bots] = await Promise.all([
+            pb.collection('users').getOne(currentUser.id, { $autoCancel: false }),
+            pb.collection('bots').getFullList({
+              filter: `user_id="${currentUser.id}"`,
+              $autoCancel: false
+            })
+          ]);
           setUserData(user);
-
-          // Fetch personal bot stats
-          const bots = await pb.collection('bots').getFullList({
-            filter: `user_id="${currentUser.id}"`,
-            $autoCancel: false
-          });
-          
           setBotStats({
             total: bots.length,
             active: bots.filter(b => b.estado).length
           });
+          // La información crítica ya está lista: muestra el dashboard mientras
+          // las estadísticas agregadas continúan cargando en segundo plano.
+          setLoading(false);
 
           // Estadísticas agregadas (admin/creator) desde el endpoint server-side
           // /stats: el servidor agrega con credenciales superuser, así devuelve
@@ -436,16 +454,16 @@ const DashboardPage = () => {
           </div>
 
           {(userData?.role === 'admin' || userData?.role === 'creator') && renderAdminContent()}
-          {(userData?.role === 'admin' || userData?.role === 'creator') && <MoonbotAdminOverview />}
-          {(userData?.role === 'admin' || userData?.role === 'creator') && <TelegramLanguageMap />}
+          {(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={240}><MoonbotAdminOverview /></DeferredPanel>}
+          {(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={420}><TelegramLanguageMap /></DeferredPanel>}
           {(userData?.role === 'admin' || userData?.role === 'creator') && (
             <div className="mt-8 rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
-              <CreatorAccountProxyManager />
+              <DeferredPanel><CreatorAccountProxyManager /></DeferredPanel>
             </div>
           )}
           {(userData?.role === 'admin' || userData?.role === 'creator') && (
             <div id="creator-news" className="mt-8 scroll-mt-24 rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
-              <CreatorNewsManager />
+              <DeferredPanel><CreatorNewsManager /></DeferredPanel>
             </div>
           )}
           {(userData?.role === 'user' || !userData?.role) && renderUserContent()}

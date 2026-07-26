@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Dashboard de carga rápida - 2026-07-26
+- Las páginas y herramientas administrativas se dividen en módulos descargables bajo demanda.
+- Perfil y bots personales cargan en paralelo; las estadísticas agregadas ya no bloquean la primera pantalla.
+- Los centros avanzados de Moonbot se activan progresivamente al acercarse durante el desplazamiento.
+- El JavaScript inicial comprimido se reduce de aproximadamente 407 KB a 176 KB.
+
 ### Propiedad de grupos por bot - 2026-07-26
 - Cada grupo muestra la instancia de Moonbot responsable sin exponer su token.
 - La búsqueda de grupos admite también el nombre del bot.

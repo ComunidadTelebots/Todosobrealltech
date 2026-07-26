@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext.jsx';
 import { LanguageProvider } from '@/contexts/LanguageContext.jsx';
@@ -16,25 +16,27 @@ import AdSenseAutoAds from '@/components/AdSenseAutoAds.jsx';
 import SeasonalTheme from '@/components/SeasonalTheme.jsx';
 import { Toaster } from '@/components/ui/sonner';
 
-import HomePage from '@/pages/HomePage.jsx';
-import LoginPage from '@/pages/LoginPage.jsx';
-import SignupPage from '@/pages/SignupPage.jsx';
-import DashboardPage from '@/pages/DashboardPage.jsx';
-import UserProfilePage from '@/pages/UserProfilePage.jsx';
-import BotsPage from '@/pages/BotsPage.jsx';
-import AdminPage from '@/pages/AdminPage.jsx';
-import AdminStatisticsPage from '@/pages/AdminStatisticsPage.jsx';
-import CreatorPage from '@/pages/CreatorPage.jsx';
-import TranslationsPage from '@/pages/TranslationsPage.jsx';
-import OnionWebManagement from '@/pages/OnionWebManagement.jsx';
-import BlogPage from '@/pages/BlogPage.jsx';
-import BlogPostPage from '@/pages/BlogPostPage.jsx';
-import BlogAdminPage from '@/pages/BlogAdminPage.jsx';
-import BlogArticleFormPage from '@/pages/BlogArticleFormPage.jsx';
-import ProxiesPanel from '@/pages/ProxiesPanel.jsx';
-import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage.jsx';
-import SettingsPage from '@/pages/SettingsPage.jsx';
-import FutureFeaturesPage from '@/pages/FutureFeaturesPage.jsx';
+const HomePage = lazy(() => import('@/pages/HomePage.jsx'));
+const LoginPage = lazy(() => import('@/pages/LoginPage.jsx'));
+const SignupPage = lazy(() => import('@/pages/SignupPage.jsx'));
+const DashboardPage = lazy(() => import('@/pages/DashboardPage.jsx'));
+const UserProfilePage = lazy(() => import('@/pages/UserProfilePage.jsx'));
+const BotsPage = lazy(() => import('@/pages/BotsPage.jsx'));
+const AdminPage = lazy(() => import('@/pages/AdminPage.jsx'));
+const AdminStatisticsPage = lazy(() => import('@/pages/AdminStatisticsPage.jsx'));
+const CreatorPage = lazy(() => import('@/pages/CreatorPage.jsx'));
+const TranslationsPage = lazy(() => import('@/pages/TranslationsPage.jsx'));
+const OnionWebManagement = lazy(() => import('@/pages/OnionWebManagement.jsx'));
+const BlogPage = lazy(() => import('@/pages/BlogPage.jsx'));
+const BlogPostPage = lazy(() => import('@/pages/BlogPostPage.jsx'));
+const BlogAdminPage = lazy(() => import('@/pages/BlogAdminPage.jsx'));
+const BlogArticleFormPage = lazy(() => import('@/pages/BlogArticleFormPage.jsx'));
+const ProxiesPanel = lazy(() => import('@/pages/ProxiesPanel.jsx'));
+const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage.jsx'));
+const SettingsPage = lazy(() => import('@/pages/SettingsPage.jsx'));
+const FutureFeaturesPage = lazy(() => import('@/pages/FutureFeaturesPage.jsx'));
+
+const PageFallback = () => <div className="mx-auto min-h-[60vh] max-w-7xl animate-pulse px-4 py-12"><div className="h-40 rounded-2xl bg-muted/30" /></div>;
 
 // Component to handle route-change analytics
 const PageTracker = () => {
@@ -81,7 +83,7 @@ function App() {
               <SeasonalTheme />
               <Header />
               <main className="flex-1">
-                <Routes>
+                <Suspense fallback={<PageFallback />}><Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
@@ -198,7 +200,7 @@ function App() {
                       </a>
                     </div>
                   } />
-                </Routes>
+                </Routes></Suspense>
               </main>
               <Footer />
               
