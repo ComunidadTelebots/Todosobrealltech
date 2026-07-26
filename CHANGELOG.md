@@ -637,6 +637,7 @@
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
 # Publicidad automática de canales del master en NoticiasWeb3
 
+- Interruptor independiente para activar o detener la publicidad de cada canal del master.
 - Los canales administrados por el master generan campañas propias medibles automáticamente.
 - La entrega rota entre campañas con la misma prioridad según sus impresiones por ubicación.
 - El panel identifica las campañas automáticas y mantiene AdSense como alternativa.
