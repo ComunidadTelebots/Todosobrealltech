@@ -23,6 +23,7 @@ const TOKEN_CACHE_TTL_MS = 60 * 1000;
 const AUTH_MAX_ATTEMPTS = 3; // 1 intento + 2 reintentos ante fallo de transporte
 const AUTH_ATTEMPT_TIMEOUT_MS = 3500; // cap por intento: undici tarda ~10s en conexión fría
 const tokenCache = new Map();
+const tokenValidationInFlight = new Map();
 
 // authRefresh con timeout propio por intento: una conexión fría a PocketBase puede
 // tardar el connectTimeout de undici (~10s). Cortamos antes y reintentamos con
@@ -112,7 +113,14 @@ export async function authorizeAdminOrCreator(req) {
     return decideByRole(hit.user);
   }
 
-  const result = await validateToken(token);
+  // El panel carga muchos widgets a la vez. Una sola renovación compartida
+  // evita una avalancha de auth-refresh para el mismo token.
+  let validation = tokenValidationInFlight.get(key);
+  if (!validation) {
+    validation = validateToken(token).finally(() => tokenValidationInFlight.delete(key));
+    tokenValidationInFlight.set(key, validation);
+  }
+  const result = await validation;
 
   // Fallo de transporte hacia PocketBase: NO es un token inválido. 503 + Retry-After
   // para no forzar un logout falso en el frontend.

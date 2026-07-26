@@ -1,5 +1,8 @@
 # Changelog - TodoSobreAllTech
 
+### Corrección de autenticación administrativa - 2026-07-26
+- Las peticiones simultáneas de los widgets comparten una única renovación de sesión para evitar saturar PocketBase.
+
 ## [0.19.0] - 2026-07-26
 ### Experiencia web y MiniApp equilibrada
 - Buscador global de acciones con navegación interna e historial.
