@@ -20,50 +20,53 @@ const LoginPage = () => {
   const [telegramLoading, setTelegramLoading] = useState(false);
   const [tgReady, setTgReady] = useState(false);
   const [telegramEnabled, setTelegramEnabled] = useState(false);
+  const [telegramConfig, setTelegramConfig] = useState(null);
 
   // Client ID del bot (CintiaBot) registrado en BotFather → Web Login.
 
   // Carga la librería nativa de Telegram Login (OpenID) una sola vez.
   useEffect(() => {
-    apiServerClient.fetch('/auth/telegram/config').then((response) => response.json()).then((config) => {
+    const prepareTelegram = () => apiServerClient.fetch('/auth/telegram/config?prepare=1').then((response) => response.json()).then((config) => {
       setTelegramEnabled(Boolean(config.enabled && config.client_id));
+      setTelegramConfig(config.enabled && config.client_id && config.nonce ? config : null);
       if (!config.enabled && config.error) setError(config.error);
     }).catch(() => setError('No se pudo consultar la configuración de Telegram.'));
+    prepareTelegram();
+    const nonceRefresh = window.setInterval(prepareTelegram, 4 * 60 * 1000);
     if (window.Telegram && window.Telegram.Login) {
       setTgReady(true);
-      return;
+    } else {
+      const existing = document.getElementById('telegram-login-native');
+      if (existing) {
+        existing.addEventListener('load', () => setTgReady(true), { once: true });
+      } else {
+        const script = document.createElement('script');
+        script.id = 'telegram-login-native';
+        script.src = 'https://oauth.telegram.org/js/telegram-login.js';
+        script.async = true;
+        script.onload = () => setTgReady(true);
+        script.onerror = () => setError('No se pudo cargar Telegram Login. Revisa el bloqueador de contenido.');
+        document.head.appendChild(script);
+      }
     }
-    const existing = document.getElementById('telegram-login-native');
-    if (existing) {
-      existing.addEventListener('load', () => setTgReady(true));
-      return;
-    }
-    const script = document.createElement('script');
-    script.id = 'telegram-login-native';
-    script.src = 'https://oauth.telegram.org/js/telegram-login.js';
-    script.async = true;
-    script.onload = () => setTgReady(true);
-    script.onerror = () => setError('No se pudo cargar Telegram Login. Revisa el bloqueador de contenido.');
-    document.head.appendChild(script);
+    return () => window.clearInterval(nonceRefresh);
   }, []);
 
-  const handleTelegramLogin = async () => {
+  const handleTelegramLogin = () => {
     if (!window.Telegram || !window.Telegram.Login) {
       toast.error('Telegram todavía se está cargando, inténtalo de nuevo en un momento.');
       return;
     }
     setError('');
     setTelegramLoading(true);
-    let config;
-    try {
-      const response = await apiServerClient.fetch('/auth/telegram/config?prepare=1');
-      config = await response.json();
-      if (!response.ok || !config.enabled || !config.client_id || !config.nonce) throw new Error(config.error || 'Telegram no está configurado');
-    } catch (reason) {
+    const config = telegramConfig;
+    if (!config?.enabled || !config?.client_id || !config?.nonce) {
       setTelegramLoading(false);
-      setError(reason.message || 'No se pudo preparar Telegram Login.');
+      setError('Telegram todavía se está preparando. Inténtalo de nuevo en un momento.');
       return;
     }
+    // No debe haber ningún await antes de auth: los navegadores bloquearían
+    // la ventana de Telegram al dejar de considerarla iniciada por el usuario.
     window.Telegram.Login.auth(
       {
         client_id: Number(config.client_id),
@@ -72,11 +75,13 @@ const LoginPage = () => {
         lang: 'es',
       },
       async (result) => {
+        setTelegramConfig(null);
         if (!result || result.error || !result.id_token) {
           setTelegramLoading(false);
           if (result && result.error && result.error !== 'cancelled') {
             setError('No se pudo iniciar sesión con Telegram.');
           }
+          apiServerClient.fetch('/auth/telegram/config?prepare=1').then((response) => response.json()).then(setTelegramConfig).catch(() => {});
           return;
         }
         const res = await loginWithTelegram({ id_token: result.id_token, nonce: config.nonce });
