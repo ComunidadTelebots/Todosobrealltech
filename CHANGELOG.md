@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Comandos dinámicos y plugins - 2026-07-26
+- La web muestra el número de comandos públicos, administrativos y plugins cargados para cada grupo.
+- El administrador puede ordenar una sincronización real del menú de Telegram desde el panel del grupo.
+
 ### Política de formatos por grupo - 2026-07-26
 - El panel web añade perfiles para grupos sin restricciones, productivos, limitados a texto y documentos o solo texto estricto.
 - Muestra formatos bloqueados, tamaño máximo y sanción aplicada usando la misma configuración de Moonbot.
