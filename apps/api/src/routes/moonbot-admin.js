@@ -271,4 +271,21 @@ router.all('/experience', async (req, res) => {
   }
 });
 
+router.post('/roadmap/action', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const allowed = new Set(['rule_impact', 'library', 'report_schedule', 'translation', 'public_announcement']);
+  const action = String(req.body?.action || '');
+  if (!allowed.has(action)) return res.status(400).json({ ok: false, error: 'Acción no permitida' });
+  try {
+    const response = await moonRequest('/api/internal/roadmap/action', {
+      method: 'POST', body: JSON.stringify({ action, data: req.body?.data || {} }),
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-roadmap] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo completar la función avanzada' });
+  }
+});
+
 export default router;

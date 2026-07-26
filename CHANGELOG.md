@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Horizonte 1000 sincronizado · bloque de moderación - 2026-07-26
+- La web incorpora simulación segura de reglas, plantillas reutilizables, informes programados, traducción coordinada y comunicados versionados.
+- Todas las acciones pasan por la API protegida de TodoSobreAllTech y se ejecutan en Moonbot mediante autenticación servidor-a-servidor.
+- El centro master enlaza directamente con estas herramientas sin duplicar su lógica.
+
 ### Centro master alineado con la MiniApp - 2026-07-26
 - El dashboard incorpora una navegación compacta hacia grupos, usuarios, seguridad, editorial, IA, automatizaciones, integraciones y operaciones.
 - Las acciones reutilizan los centros administrativos existentes y conservan la carga diferida para no ralentizar la pantalla inicial.
