@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Anti-flood configurable por grupo - 2026-07-26
+- El panel web incorpora perfiles desactivado, suave, equilibrado y estricto sincronizados con Moonbot.
+- Cada grupo muestra el límite de mensajes, ventana temporal, duración del mute y reincidencias necesarias para ban local.
+
 ### Mute real durante el captcha - 2026-07-26
 - El panel de cada grupo permite activar o desactivar el bloqueo de permisos de Telegram hasta completar la verificación.
 - La web muestra el estado procedente de Moonbot y guarda el ajuste mediante la integración administrativa protegida.
