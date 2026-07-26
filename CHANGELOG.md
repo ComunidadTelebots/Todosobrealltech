@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Anuncios recíprocos entre grupos - 2026-07-26
+- El panel web incorpora perfiles publicitarios selectivo, equilibrado y amplio, además de desactivación por grupo.
+- La política limita campañas diarias, descanso entre socios y diferencia máxima de audiencia.
+
 ### Salud y rendimiento de plugins - 2026-07-26
 - El panel muestra ejecuciones, errores, latencia media y último fallo de cada plugin.
 - Los plugins aislados automáticamente aparecen destacados tanto en la web como en la MiniApp.
