@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import SafeMarkdown from './SafeMarkdown.jsx';
 
 const DEFAULT_ADSENSE_ID = 'ca-pub-1927309987076600';
 
@@ -64,7 +65,7 @@ export default function AdSense({ slot, placement = 'inline', style, className =
   if ((!CLIENT || !hasRealSlot || status === 'unfilled') && houseAd) return (
     <a className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }} href={`/hcgi/api/house-ads/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored">
       {houseAd.image && <img src={houseAd.image} alt="" />}
-      <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span>{houseAd.description}</span></span>
+      <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span><SafeMarkdown>{houseAd.description}</SafeMarkdown></span></span>
       <b>{houseAd.cta || 'Abrir'}</b>
     </a>
   );

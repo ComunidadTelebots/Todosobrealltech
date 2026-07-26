@@ -79,6 +79,7 @@ a:focus, a:active, a:hover { text-decoration: underline; }
 }
 .house-ad{display:flex;align-items:center;gap:12px;box-sizing:border-box;padding:12px 14px;border:1px solid color-mix(in srgb,var(--house-accent,#1982d1) 28%,transparent);border-radius:10px;background:var(--house-bg,linear-gradient(135deg,#f7fbff,#eef7ff));color:var(--house-fg,#27364a);text-decoration:none!important;overflow:hidden;}
 .house-ad img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:0 0 auto;}.house-ad-copy{display:flex;flex:1;min-width:0;flex-direction:column;line-height:1.25}.house-ad-copy small{font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.7}.house-ad-copy strong{font-size:15px;color:var(--house-fg,#155f9b)}.house-ad-copy span{font-size:11px;opacity:.8}.house-ad>b{padding:7px 10px;border-radius:999px;background:var(--house-accent,#1982d1);color:#fff;font-size:11px;}.house-ad-right{flex-direction:column;text-align:center}.house-ad-right img{width:100%;height:96px}
+.house-ad .markdown-link{text-decoration:underline}.house-ad code{padding:1px 3px;border-radius:3px;background:rgba(0,0,0,.08);font-family:monospace}
 .ad-slot > .adsbygoogle {
   position: relative;
   z-index: 2;

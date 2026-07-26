@@ -1,5 +1,8 @@
 # Changelog - TodoSobreAllTech
 
+### Publicidad con Markdown - 2026-07-26
+- Los anuncios propios admiten negrita, cursiva, código, enlaces HTTPS y saltos de línea con renderizado seguro y vista previa.
+
 ### Objetivos y análisis de campañas - 2026-07-26
 - Las campañas admiten objetivo máximo de clics con pausa automática, duplicación limpia y desglose de clics por ubicación.
 
