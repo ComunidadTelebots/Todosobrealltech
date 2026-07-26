@@ -185,6 +185,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - MOONBOT_INTERNAL_URL=${MOONBOT_INTERNAL_URL:-http://moonbot:5000}
     depends_on:
       - pocketbase
     volumes:
