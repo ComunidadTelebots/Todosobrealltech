@@ -188,9 +188,13 @@ services:
     volumes:
       - proxy_history:/data
     networks:
-      - default
-      - traefik
-      - mtproto
+      default:
+        aliases:
+          - todosobrealltech-api
+      traefik:
+        aliases:
+          - todosobrealltech-api
+      mtproto: {}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
@@ -241,7 +245,9 @@ services:
       default:
         aliases:
           - todosobrealltech-pocketbase
-      traefik: {}
+      traefik:
+        aliases:
+          - todosobrealltech-pocketbase
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
