@@ -8,6 +8,7 @@
 - La página sincroniza el estado de las primeras cinco funciones ya disponibles en Moonbot.
 - Estado ampliado a las diez funciones de confianza y moderación ya operativas.
 - Seguimiento ampliado a 15 funciones operativas con el primer bloque de participación comunitaria.
+- Seguimiento ampliado a 20 funciones: misiones compartidas, aportes invisibles, salud social agregada, relevos administrativos y memoria anual.
 
 ## [0.3.0] - 2026-07-25
 ### Panel creador y administración conectada
