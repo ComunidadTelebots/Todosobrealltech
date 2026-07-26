@@ -1,5 +1,16 @@
 # Changelog - TodoSobreAllTech
 
+## [0.11.0] - 2026-07-26
+### Centro editorial Moonbot
+- Editor de publicaciones Telegram compatible con Markdown.
+- SelecciÃ³n de uno o varios grupos administrados como destinos.
+- PublicaciÃ³n inmediata, programada y recurrente.
+- Vista previa del mensaje antes de enviarlo.
+- Biblioteca de plantillas reutilizables.
+- Calendario de publicaciones pendientes y recurrencias.
+- Comparador de titulares con puntuaciÃ³n de claridad y seÃ±ales de clickbait.
+- Comunicados versionados para conservar correcciones e historial.
+
 ## [0.10.0] - 2026-07-26
 ### Centro de seguridad Moonbot
 - Panel agregado de amenazas, raids, anÃ¡lisis multimedia y fuentes de baneos.

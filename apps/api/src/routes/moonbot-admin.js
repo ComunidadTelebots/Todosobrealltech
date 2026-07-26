@@ -128,4 +128,20 @@ router.get('/security/evidence', async (req, res) => {
   }
 });
 
+router.all('/editorial', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'MÃ©todo no permitido' });
+  try {
+    const response = await moonRequest('/api/internal/editorial', {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-editorial] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar el centro editorial' });
+  }
+});
+
 export default router;
