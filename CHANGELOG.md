@@ -13,6 +13,8 @@
 - Las claves públicas oficiales tienen un respaldo local para que el acceso siga funcionando cuando el servidor no alcance temporalmente el JWKS de Telegram.
 - Una migración de reparación garantiza que PocketBase disponga de los campos de identidad de Telegram aunque una instalación antigua los hubiera perdido.
 - El dashboard carga estadísticas agregadas aunque falle temporalmente la consulta personal de perfil o bots, evitando tarjetas engañosas a cero.
+- La validación del dashboard usa HTTP directo contra PocketBase en lugar del transporte inestable de `authRefresh` del SDK tras reinicios.
+- El mapa lingüístico admite respuestas lentas de Moonbot sin abortar prematuramente.
 
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.

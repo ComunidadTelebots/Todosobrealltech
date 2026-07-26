@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import crypto from 'crypto';
-import PocketBase from 'pocketbase';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 
@@ -28,15 +27,19 @@ const tokenValidationInFlight = new Map();
 // authRefresh con timeout propio por intento: una conexión fría a PocketBase puede
 // tardar el connectTimeout de undici (~10s). Cortamos antes y reintentamos con
 // conexión nueva, que suele calentar y responder en ms.
-async function authRefreshWithTimeout(client, timeoutMs) {
-  let timer;
-  const timeout = new Promise((_, reject) => {
-    timer = setTimeout(() => reject({ status: 0, isTimeout: true }), timeoutMs);
-  });
+async function authRefreshWithTimeout(token, timeoutMs) {
   try {
-    return await Promise.race([client.collection('users').authRefresh(), timeout]);
-  } finally {
-    clearTimeout(timer);
+    const response = await fetch(`${POCKETBASE_HOST}/api/collections/users/auth-refresh`, {
+      method: 'POST',
+      headers: { Authorization: token },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw { status: response.status, response: data };
+    return data;
+  } catch (error) {
+    if (error?.status) throw error;
+    throw { status: 0, originalError: error, message: error?.message };
   }
 }
 
@@ -55,11 +58,8 @@ function pruneTokenCache(now) {
  */
 async function validateToken(token) {
   for (let attempt = 1; attempt <= AUTH_MAX_ATTEMPTS; attempt++) {
-    const userClient = new PocketBase(POCKETBASE_HOST);
-    userClient.autoCancellation(false);
-    userClient.authStore.save(token, null);
     try {
-      const authData = await authRefreshWithTimeout(userClient, AUTH_ATTEMPT_TIMEOUT_MS);
+      const authData = await authRefreshWithTimeout(token, AUTH_ATTEMPT_TIMEOUT_MS);
       return { record: authData?.record || null };
     } catch (err) {
       if (err?.status === 0) {

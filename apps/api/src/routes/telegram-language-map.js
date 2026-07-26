@@ -11,7 +11,7 @@ router.get('/', async (_req, res) => {
   if (cache && Date.now() - cacheAt < CACHE_TTL_MS) return res.json(cache);
   try {
     const response = await fetch(`${MOONBOT_PUBLIC_URL}/api/public/stats/language-map`, {
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(15000),
       headers: { Accept: 'application/json' },
     });
     if (!response.ok) throw new Error(`Moonbot HTTP ${response.status}`);
