@@ -238,8 +238,10 @@ services:
     volumes:
       - pocketbase_data:/data
     networks:
-      - default
-      - traefik
+      default:
+        aliases:
+          - todosobrealltech-pocketbase
+      traefik: {}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
