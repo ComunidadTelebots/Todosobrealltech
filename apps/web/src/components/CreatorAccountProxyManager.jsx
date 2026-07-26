@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Activity, Edit2, Loader2, Search, Snowflake, Trash2, UserCog, Users } from 'lucide-react';
+import { Activity, AlertTriangle, Edit2, Loader2, Search, Snowflake, Trash2, TrendingUp, UserCog, Users, WandSparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import pb from '@/lib/pocketbaseClient.js';
 import apiServerClient from '@/lib/apiServerClient.js';
@@ -65,6 +65,22 @@ const CreatorAccountProxyManager = () => {
         .some((value) => String(value || '').toLowerCase().includes(query));
     });
   }, [proxies, proxyQuery, usersById]);
+
+  const accountInsights = useMemo(() => {
+    const now = new Date();
+    const currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const previousStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const current = users.filter((user) => new Date(user.created) >= currentStart).length;
+    const previous = users.filter((user) => { const date = new Date(user.created); return date >= previousStart && date < currentStart; }).length;
+    const elapsed = Math.max(1, now.getDate());
+    const forecast = Math.round(current * new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() / elapsed);
+    const alerts = [
+      users.filter((user) => user.is_frozen).length && `${users.filter((user) => user.is_frozen).length} cuentas congeladas`,
+      users.filter((user) => !user.role).length && `${users.filter((user) => !user.role).length} cuentas sin rol explícito`,
+      proxies.filter((proxy) => proxy.status !== 'active').length && `${proxies.filter((proxy) => proxy.status !== 'active').length} proxies requieren revisión`,
+    ].filter(Boolean);
+    return { current, previous, forecast, change: previous ? Math.round((current - previous) * 100 / previous) : current ? 100 : 0, alerts };
+  }, [users, proxies]);
 
   const updateLocalUser = (updated) => {
     setUsers((current) => current.map((user) => user.id === updated.id ? updated : user));
@@ -226,6 +242,13 @@ const CreatorAccountProxyManager = () => {
         <h2 className="text-2xl font-bold">Administración de cuentas y proxies</h2>
         <p className="text-muted-foreground">Gestiona los recursos de la plataforma directamente desde este panel.</p>
       </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        <div className="rounded-xl border bg-background p-4"><TrendingUp className="mb-2 h-5 w-5 text-emerald-600" /><p className="text-2xl font-bold">{accountInsights.forecast}</p><p className="text-xs text-muted-foreground">Previsión explicable de altas este mes, basada en el ritmo actual.</p></div>
+        <div className="rounded-xl border bg-background p-4"><Activity className="mb-2 h-5 w-5 text-blue-600" /><p className="text-2xl font-bold">{accountInsights.current} <span className="text-sm font-normal">({accountInsights.change >= 0 ? '+' : ''}{accountInsights.change}%)</span></p><p className="text-xs text-muted-foreground">Altas actuales frente a {accountInsights.previous} el mes anterior.</p></div>
+        <div className="rounded-xl border bg-background p-4"><AlertTriangle className="mb-2 h-5 w-5 text-amber-600" /><p className="text-2xl font-bold">{accountInsights.alerts.length}</p><p className="text-xs text-muted-foreground">Alertas adaptativas: {accountInsights.alerts.join(' · ') || 'ninguna incidencia'}.</p></div>
+      </div>
+      <div className="flex items-center gap-2 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 text-sm"><WandSparkles className="h-5 w-5 text-violet-600" /><span><b>Asistente de cuentas:</b> revisa primero las alertas, después los roles y finalmente los proxies inactivos.</span></div>
 
       <Tabs defaultValue="accounts">
         <TabsList className="grid w-full max-w-md grid-cols-2">

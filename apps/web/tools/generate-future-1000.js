@@ -43,6 +43,7 @@ const capabilities = [
 ];
 
 const difficultyCycle = ['easy', 'medium', 'advanced'];
+const implemented = new Set(['future-0001', 'future-0002', 'future-0003']);
 const items = [];
 for (const product of products) {
   let index = 0;
@@ -60,7 +61,7 @@ for (const product of products) {
         priority,
         difficulty: difficulty || difficultyCycle[index % difficultyCycle.length],
         dependency,
-        status: 'proposed',
+        status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'proposed',
       });
       index += 1;
     }
@@ -72,7 +73,8 @@ if (items.length !== 1000) throw new Error(`Se esperaban 1000 propuestas y se ge
 const catalog = {
   version: 'Horizonte 1000',
   generated_at: new Date().toISOString(),
-  status: 'proposed',
+  status: 'in_progress',
+  implemented: items.filter((item) => item.status === 'implemented').length,
   totals: Object.fromEntries(products.map((product) => [product.id, product.quota])),
   total: items.length,
   items,

@@ -1,7 +1,8 @@
 {
   "version": "Horizonte 1000",
-  "generated_at": "2026-07-26T02:23:43.808Z",
-  "status": "proposed",
+  "generated_at": "2026-07-26T03:27:24.748Z",
+  "status": "in_progress",
+  "implemented": 3,
   "totals": {
     "web": 334,
     "moonbot": 333,
@@ -19,7 +20,7 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "historial agregado",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0002",
@@ -31,7 +32,7 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ayuda contextual",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0003",
@@ -43,7 +44,7 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0004",
