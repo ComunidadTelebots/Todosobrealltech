@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Mute real durante el captcha - 2026-07-26
+- El panel de cada grupo permite activar o desactivar el bloqueo de permisos de Telegram hasta completar la verificación.
+- La web muestra el estado procedente de Moonbot y guarda el ajuste mediante la integración administrativa protegida.
+
 ### Horizonte 1000 sincronizado · bloque de moderación - 2026-07-26
 - La web incorpora simulación segura de reglas, plantillas reutilizables, informes programados, traducción coordinada y comunicados versionados.
 - Todas las acciones pasan por la API protegida de TodoSobreAllTech y se ejecutan en Moonbot mediante autenticación servidor-a-servidor.
