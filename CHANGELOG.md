@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.13.0] - 2026-07-26
+### Horizonte 1000
+- CatÃ¡logo reproducible con 1.000 propuestas Ãºnicas: 334 para TodoSobreAllTech, 333 para Moonbot y 333 para Telegram WebApp.
+- BÃºsqueda global y filtros por producto, categorÃ­a, prioridad y dificultad.
+- Fichas con descripciÃ³n, dependencia y estado claramente marcado como propuesta.
+- PaginaciÃ³n para mantener un rendimiento estable al navegar por el catÃ¡logo completo.
+- Script de generaciÃ³n determinista ejecutado durante la compilaciÃ³n de la web.
+
 ## [0.12.0] - 2026-07-26
 ### AdministraciÃ³n de grupos completada
 - GuÃ­a visible para corregir permisos faltantes de Moonbot.
