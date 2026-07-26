@@ -1,6 +1,6 @@
 import express from 'express';
 import crypto from 'crypto';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createLocalJWKSet, createRemoteJWKSet, jwtVerify } from 'jose';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 
@@ -16,11 +16,19 @@ const NONCE_TTL_MS = 5 * 60 * 1000;
 const JWKS = createRemoteJWKSet(
   new URL('https://oauth.telegram.org/.well-known/jwks.json'),
   {
-    timeoutDuration: 30_000,
+    timeoutDuration: 5_000,
     cooldownDuration: 30_000,
     cacheMaxAge: 12 * 60 * 60 * 1000,
   },
 );
+// Respaldo de las claves públicas oficiales para servidores donde Telegram
+// esté temporalmente bloqueado. La fuente remota sigue siendo prioritaria.
+const TELEGRAM_JWKS_FALLBACK = createLocalJWKSet({ keys: [
+  { alg: 'RS256', e: 'AQAB', ext: true, key_ops: ['verify'], kty: 'RSA', n: '5RneLtsKvVcxdv6gu6gxEQu30Cru5NiMQnY6SNr9ZyZFZ4ya-pfHNuaZXJ6QPG0JSFwoxeOkEO2-eZN_REVPm448PvjjsR1eQdZ5QpEkNxnItFcmxkHH91v5cgf52_EI9BGO-MT6f1vaBSg3uWHFlDxI7J2AYxNvd1_Nf3TkgrrR7gyJFTmEIai5RefGnA0KGNYDlRIGUzrz2F05n6gTaHFT_iHL5UHatTZA4GCiUSjIOuwqu5pE5uZge20TFv3cxXMQaFw_xv1pgQt_Rq8eoCN7TS0RQ0zjWKiad-W286BcFectXsUm03p5Nq_kY4mf_7rqwX_B8yy_bBreyKn7RQ', kid: 'oidc-1' },
+  { alg: 'ES256', kty: 'EC', x: 'ahVYrohhX6YA7w0P2gUNSwMFbaabCgBZFkeq9bWdmwU', y: 'Ea8nKJ34VQMA7zv8aYDfzcBhXEjnWQ9C06jVke_eUV0', crv: 'P-256', kid: 'oidc-es256-1', use: 'sig' },
+  { alg: 'EdDSA', crv: 'Ed25519', x: 'i6BEafXMEe4osXgUTffpKAm6Cn6F2bhqPZoclunTAV4', kty: 'OKP', kid: 'oidc-eddsa-1', use: 'sig' },
+  { alg: 'ES256K', kty: 'EC', x: 'vsk5i5YJu8H_VPL7DWTgVGXBPrqgkyNmYvfgOrVut38', y: 'Mrg56tBhVeorHPXK1LbTX2jP7rEqOHIatM96HFzVMIU', crv: 'secp256k1', kid: 'oidc-es256k-1', use: 'sig' },
+] });
 
 router.get('/telegram/config', (req, res) => {
   if (!CLIENT_ID) return res.json({ enabled: false, error: 'Login de Telegram no configurado' });
@@ -54,7 +62,15 @@ router.post('/telegram', async (req, res) => {
   // 1) Verifica firma (JWKS de Telegram) + issuer + expiración.
   let claims;
   try {
-    const { payload } = await jwtVerify(id_token, JWKS, { issuer: TG_ISSUER });
+    let verified;
+    try {
+      verified = await jwtVerify(id_token, JWKS, { issuer: TG_ISSUER });
+    } catch (remoteError) {
+      if (!/timed? out|timeout|fetch failed|network/i.test(String(remoteError.message))) throw remoteError;
+      logger.warn(`JWKS remoto de Telegram no disponible; usando claves públicas de respaldo: ${remoteError.message}`);
+      verified = await jwtVerify(id_token, TELEGRAM_JWKS_FALLBACK, { issuer: TG_ISSUER });
+    }
+    const { payload } = verified;
     claims = payload;
   } catch (e) {
     logger.warn(`id_token de Telegram inválido: ${e.message}`);
