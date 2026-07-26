@@ -3,6 +3,7 @@
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
 - Los datos proceden de cada proceso real de Moonbot y permanecen separados por instancia.
+- El nombre oficial y el `@username` se muestran desde el perfil devuelto por la API de Telegram.
 
 ### Dashboard de carga rápida - 2026-07-26
 - Las páginas y herramientas administrativas se dividen en módulos descargables bajo demanda.
