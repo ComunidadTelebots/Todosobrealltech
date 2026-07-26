@@ -18,6 +18,7 @@ const MoonbotIntegrationsCenter = lazy(() => import('@/components/MoonbotIntegra
 const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperationsCenter.jsx'));
 const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
 const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotModerationProductivity.jsx'));
+const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
 
 const MASTER_SECTIONS = [
   ['Grupos', 'moon-groups'],
@@ -128,6 +129,7 @@ const MoonbotAdminOverview = () => {
     </Card>
     {data && <LazySection id="moon-experience"><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-house-ads"><HouseAdsManager /></LazySection>}
     {data && <LazySection id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-security"><MoonbotSecurityCenter /></LazySection>}
     {data && <LazySection id="moon-moderation-productivity"><MoonbotModerationProductivity /></LazySection>}

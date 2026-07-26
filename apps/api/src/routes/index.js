@@ -16,6 +16,7 @@ import previewRouter from './preview.js';
 import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
 import moonbotAdminRouter from './moonbot-admin.js';
+import houseAdsRouter from './house-ads.js';
 
 const router = Router();
 
@@ -37,6 +38,7 @@ export default () => {
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);
     router.use('/moonbot-admin', moonbotAdminRouter);
+    router.use('/house-ads', houseAdsRouter);
 
     return router;
 };

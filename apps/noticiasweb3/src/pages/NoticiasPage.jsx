@@ -731,6 +731,7 @@ export default function NoticiasPage({ siteVersion }) {
                   {siteVersion !== '2014' && index === INLINE_AD_AFTER_INDEX && (
                     <AdSense
                       slot={ADSENSE_SLOT_INLINE}
+                      placement="inline"
                       className="ad-preview-inline"
                       style={{ minHeight: 110 }}
                     />

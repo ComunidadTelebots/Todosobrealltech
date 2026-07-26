@@ -29,10 +29,11 @@ function loadScript() {
   document.head.appendChild(s);
 }
 
-export default function AdSense({ slot, style, className = '' }) {
+export default function AdSense({ slot, placement = 'inline', style, className = '' }) {
   const hasRealSlot = Boolean(slot && !String(slot).startsWith('SLOT_'));
   const adRef = useRef(null);
   const [status, setStatus] = useState('loading');
+  const [houseAd, setHouseAd] = useState(null);
 
   useEffect(() => {
     if (!CLIENT || !hasRealSlot) return;
@@ -54,6 +55,19 @@ export default function AdSense({ slot, style, className = '' }) {
     return () => { observer.disconnect(); window.clearTimeout(timeout); };
   }, [hasRealSlot]);
 
+  useEffect(() => {
+    if (hasRealSlot && status !== 'unfilled') return;
+    fetch(`/hcgi/api/house-ads?placement=${encodeURIComponent(placement)}`)
+      .then((response) => response.json()).then((data) => setHouseAd(data.ads?.[0] || null)).catch(() => {});
+  }, [hasRealSlot, placement, status]);
+
+  if ((!CLIENT || !hasRealSlot || status === 'unfilled') && houseAd) return (
+    <a className={`house-ad ${className}`} style={style} href={`/hcgi/api/house-ads/${encodeURIComponent(houseAd.id)}/click`} target="_blank" rel="noopener noreferrer sponsored">
+      {houseAd.image && <img src={houseAd.image} alt="" />}
+      <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span>{houseAd.description}</span></span>
+      <b>Abrir</b>
+    </a>
+  );
   if (!CLIENT || !hasRealSlot || status === 'unfilled') return null;
 
   return (

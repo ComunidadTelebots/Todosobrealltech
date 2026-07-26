@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Anuncios propios configurables - 2026-07-26
+- TodoSobreAllTech incorpora un gestor de anuncios de canales y grupos propios con ubicación, prioridad, imagen, estado y clics.
+- La API expone el catálogo público y registra redirecciones sin depender de AdSense.
+- Noticias Web3 usa estos anuncios únicamente cuando Google no llena el espacio correspondiente.
+
 ### Publicidad sin espacios vacíos - 2026-07-26
 - Los bloques sin una ranura real ya no muestran maquetas publicitarias al público.
 - Noticias Web3 observa el estado `filled/unfilled` de AdSense y elimina los anuncios no servidos.

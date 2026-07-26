@@ -169,10 +169,10 @@ function Layout({ children }) {
   return (
     <>
       <div id="banner-top">
-        <AdSense slot={ADSENSE_SLOT_TOP} style={{ width: 728, height: 90 }} />
+        <AdSense slot={ADSENSE_SLOT_TOP} placement="top" style={{ width: 728, height: 90 }} />
       </div>
       <div id="banner-right">
-        <AdSense slot={ADSENSE_SLOT_RIGHT} style={{ width: 160, height: 600 }} />
+        <AdSense slot={ADSENSE_SLOT_RIGHT} placement="right" style={{ width: 160, height: 600 }} />
       </div>
       <div id="stage" className={`version-${siteVersion} platform-${appPlatform} ${isNightMode ? 'night-mode' : 'day-mode'}`}>
       <SiteHeader
