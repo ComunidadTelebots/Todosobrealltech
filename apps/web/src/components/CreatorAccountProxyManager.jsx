@@ -87,6 +87,11 @@ const CreatorAccountProxyManager = () => {
     setUsers((current) => current.map((user) => user.id === updated.id ? updated : user));
   };
 
+  const recordAccountChange = (event) => apiServerClient.fetch('/moonbot-admin/account-tools/history', {
+    method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...event, actor_id: currentUser.id }),
+  }).catch(() => {});
+
   const handleRoleChange = async (user, role) => {
     if (user.id === currentUser.id && role !== currentUser.role) {
       toast.error('No puedes cambiar tu propio rol desde este panel');
@@ -96,6 +101,7 @@ const CreatorAccountProxyManager = () => {
     setProcessingId(user.id);
     try {
       const updated = await pb.collection('users').update(user.id, { role }, { $autoCancel: false });
+      await recordAccountChange({ account_id: user.id, action: 'role', before: { role: user.role }, after: { role } });
       updateLocalUser(updated);
       toast.success(`Rol de ${user.email} actualizado a ${role}`);
     } catch (error) {
@@ -120,6 +126,7 @@ const CreatorAccountProxyManager = () => {
         { is_frozen: !user.is_frozen },
         { $autoCancel: false },
       );
+      await recordAccountChange({ account_id: user.id, action: 'freeze', before: { is_frozen: !!user.is_frozen }, after: { is_frozen: !user.is_frozen } });
       updateLocalUser(updated);
       toast.success(updated.is_frozen ? 'Cuenta congelada' : 'Cuenta descongelada');
     } catch (error) {
@@ -139,6 +146,7 @@ const CreatorAccountProxyManager = () => {
 
     setProcessingId(user.id);
     try {
+      await recordAccountChange({ account_id: user.id, action: 'delete', before: { role: user.role, is_frozen: !!user.is_frozen }, after: null });
       await pb.collection('users').delete(user.id, { $autoCancel: false });
       setUsers((current) => current.filter((item) => item.id !== user.id));
       setProxies((current) => current.filter((proxy) => proxy.user_id !== user.id));

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
 import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
 
@@ -19,6 +20,21 @@ router.post('/account-tools/sign', async (req, res) => {
   const serialized = JSON.stringify(payload);
   const signature = crypto.createHmac('sha256', key).update(serialized).digest('hex');
   return res.json({ ok: true, bundle: { payload, algorithm: 'HMAC-SHA256', signature } });
+});
+
+const accountHistoryFile = '/data/account-change-history.json';
+router.all('/account-tools/history', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  let rows = [];
+  try { rows = JSON.parse(await fs.readFile(accountHistoryFile, 'utf8')); } catch (error) { if (error.code !== 'ENOENT') return res.status(500).json({ ok: false, error: 'No se pudo leer el historial' }); }
+  if (req.method === 'GET') return res.json({ ok: true, history: rows.slice(-200).reverse() });
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  const event = req.body || {};
+  if (!['role', 'freeze', 'delete'].includes(event.action) || !String(event.account_id || '').match(/^[a-z0-9]+$/i)) return res.status(400).json({ ok: false, error: 'Evento no válido' });
+  rows.push({ id: crypto.randomUUID(), account_id: String(event.account_id), action: event.action,
+    before: event.before ?? null, after: event.after ?? null, actor_id: String(event.actor_id || ''), created_at: new Date().toISOString() });
+  await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000)), { mode: 0o600 });
+  return res.json({ ok: true });
 });
 
 async function requireAdmin(req, res) {

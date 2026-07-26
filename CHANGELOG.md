@@ -8,7 +8,8 @@
 - Implementadas `future-0001` a `future-0003`: previsión de altas, asistente guiado y alertas adaptativas.
 - El catálogo distingue ahora propuestas de funciones realmente implementadas.
 - Implementadas `future-0004`–`future-0007`, `future-0009` y `future-0010`: reglas configurables, comparación temporal, exportación HMAC, simulación, búsqueda por significado y resumen explicable.
-- `future-0008` continúa pendiente hasta disponer de historial versionado persistente real.
+- `future-0008` incorpora ahora historial versionado persistente real.
+- Completadas `future-0008`, `future-0011` y `future-0015`: historial persistente en volumen, permisos por rol y exportación sin datos personales.
 
 ### Corrección de autenticación administrativa - 2026-07-26
 - Las peticiones simultáneas de los widgets comparten una única renovación de sesión para evitar saturar PocketBase.
