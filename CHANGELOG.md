@@ -631,5 +631,6 @@
 # Captcha estricto sin excepciones
 
 - Nuevo botón para reverificar colectivamente a los miembros conocidos, con progreso y entregas privadas.
+- Vista previa, cancelación e historial de campañas disponibles desde el panel web.
 - El panel de grupos de Moonbot permite activar el modo estricto por grupo.
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
