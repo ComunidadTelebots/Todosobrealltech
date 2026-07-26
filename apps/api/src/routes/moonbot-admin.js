@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import crypto from 'node:crypto';
 import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
 
@@ -8,6 +9,17 @@ const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MO
 const CACHE_TTL_MS = 15 * 1000;
 let cache = null;
 let cacheAt = 0;
+
+router.post('/account-tools/sign', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  const key = (process.env.MOON_ADMIN_API_KEY || '').trim();
+  if (!key) return res.status(503).json({ ok: false, error: 'Firma administrativa no configurada' });
+  const payload = req.body?.payload;
+  if (!payload || JSON.stringify(payload).length > 500000) return res.status(400).json({ ok: false, error: 'Paquete no válido' });
+  const serialized = JSON.stringify(payload);
+  const signature = crypto.createHmac('sha256', key).update(serialized).digest('hex');
+  return res.json({ ok: true, bundle: { payload, algorithm: 'HMAC-SHA256', signature } });
+});
 
 async function requireAdmin(req, res) {
   const auth = await authorizeAdminOrCreator(req);

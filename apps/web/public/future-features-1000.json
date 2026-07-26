@@ -1,8 +1,8 @@
 {
   "version": "Horizonte 1000",
-  "generated_at": "2026-07-26T03:27:24.748Z",
+  "generated_at": "2026-07-26T03:32:58.750Z",
   "status": "in_progress",
-  "implemented": 3,
+  "implemented": 9,
   "totals": {
     "web": 334,
     "moonbot": 333,
@@ -56,7 +56,7 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "cola de tareas",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0005",
@@ -68,7 +68,7 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "snapshots",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0006",
@@ -80,7 +80,7 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "auditorÃ­a",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0007",
@@ -92,7 +92,7 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "entorno aislado",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0008",
@@ -116,7 +116,7 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "Ã­ndice vectorial",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0010",
@@ -128,7 +128,7 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "modelo de lenguaje",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0011",
