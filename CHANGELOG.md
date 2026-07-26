@@ -628,3 +628,7 @@
 - Anadido `docker-compose.yml` para levantar la pila completa.
 - Ajustado el cliente de API para usar `POCKETBASE_HOST` en despliegues Docker.
 - Anadido `.gitignore` para evitar subir secretos, datos locales, builds y binarios.
+# Captcha estricto sin excepciones
+
+- El panel de grupos de Moonbot permite activar el modo estricto por grupo.
+- El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
