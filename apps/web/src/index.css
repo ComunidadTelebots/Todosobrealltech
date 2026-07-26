@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.moon-admin-contrast { filter: contrast(1.12); }
+.moon-admin-compact .mt-8 { margin-top: 1rem; }
+.moon-admin-compact .p-4 { padding: .7rem; }
+.moon-admin-reduced-motion *, .moon-admin-reduced-motion *::before, .moon-admin-reduced-motion *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+
 @layer base {
   :root {
     --background: 0 0% 100%;

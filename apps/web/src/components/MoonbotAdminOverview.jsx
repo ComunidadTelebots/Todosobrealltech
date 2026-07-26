@@ -16,6 +16,7 @@ import MoonbotAIAdvancedTools from '@/components/MoonbotAIAdvancedTools.jsx';
 import MoonbotAutomationsCenter from '@/components/MoonbotAutomationsCenter.jsx';
 import MoonbotIntegrationsCenter from '@/components/MoonbotIntegrationsCenter.jsx';
 import MoonbotOperationsCenter from '@/components/MoonbotOperationsCenter.jsx';
+import MoonbotExperienceCenter from '@/components/MoonbotExperienceCenter.jsx';
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -76,17 +77,18 @@ const MoonbotAdminOverview = () => {
         </>}
       </CardContent>
     </Card>
-    {data && <MoonbotGroupsManager groups={data.groups || []} />}
-    {data && <MoonbotUsersManager groups={data.groups || []} />}
-    {data && <MoonbotSecurityCenter />}
+    {data && <MoonbotExperienceCenter groups={data.groups || []} />}
+    {data && <div id="moon-groups"><MoonbotGroupsManager groups={data.groups || []} /></div>}
+    {data && <div id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></div>}
+    {data && <div id="moon-security"><MoonbotSecurityCenter /></div>}
     {data && <MoonbotEditorialCenter groups={data.groups || []} />}
     {data && <MoonbotLiveSafety />}
     {data && <MoonbotAdvancedUserActions groups={data.groups || []} />}
-    {data && <MoonbotAICenter groups={data.groups || []} />}
+    {data && <div id="moon-ai"><MoonbotAICenter groups={data.groups || []} /></div>}
     {data && <MoonbotAIAdvancedTools groups={data.groups || []} />}
-    {data && <MoonbotAutomationsCenter groups={data.groups || []} />}
-    {data && <MoonbotIntegrationsCenter groups={data.groups || []} />}
-    {data && <MoonbotOperationsCenter groups={data.groups || []} />}
+    {data && <div id="moon-automations"><MoonbotAutomationsCenter groups={data.groups || []} /></div>}
+    {data && <div id="moon-integrations"><MoonbotIntegrationsCenter groups={data.groups || []} /></div>}
+    {data && <div id="moon-operations"><MoonbotOperationsCenter groups={data.groups || []} /></div>}
     </>
   );
 };

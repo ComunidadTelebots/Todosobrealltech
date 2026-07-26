@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.19.0] - 2026-07-26
+### Experiencia web y MiniApp equilibrada
+- Buscador global de acciones con navegación interna e historial.
+- Favoritos persistentes y centro unificado de notificaciones.
+- Modo compacto, tamaño de texto, alto contraste y movimiento reducido.
+- Temas visuales por grupo y configuración de widgets personales.
+- Trabajo sin conexión con sincronización automática posterior.
+- Recorrido guiado reiniciable para las funciones administrativas.
+
 ## [0.18.0] - 2026-07-26
 ### Operaciones y fiabilidad Moonbot
 - Panel de métricas de CPU, memoria, disco y latencia con alertas.
