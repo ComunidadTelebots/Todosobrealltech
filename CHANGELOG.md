@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Rendimiento por instancia Moonbot - 2026-07-26
+- La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
+- Los datos proceden de cada proceso real de Moonbot y permanecen separados por instancia.
+
 ### Dashboard de carga rápida - 2026-07-26
 - Las páginas y herramientas administrativas se dividen en módulos descargables bajo demanda.
 - Perfil y bots personales cargan en paralelo; las estadísticas agregadas ya no bloquean la primera pantalla.
