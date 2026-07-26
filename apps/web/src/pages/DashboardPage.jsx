@@ -51,14 +51,17 @@ const DashboardPage = () => {
     const fetchDashboardData = async () => {
       if (currentUser?.id) {
         try {
-          // Fetch user data
-          const [user, bots] = await Promise.all([
+          // Perfil y bots personales son independientes de las estadísticas
+          // agregadas. Un fallo parcial no debe dejar el dashboard completo a 0.
+          const [userResult, botsResult] = await Promise.allSettled([
             pb.collection('users').getOne(currentUser.id, { $autoCancel: false }),
             pb.collection('bots').getFullList({
               filter: `user_id="${currentUser.id}"`,
               $autoCancel: false
             })
           ]);
+          const user = userResult.status === 'fulfilled' ? userResult.value : currentUser;
+          const bots = botsResult.status === 'fulfilled' ? botsResult.value : [];
           setUserData(user);
           setBotStats({
             total: bots.length,
@@ -72,7 +75,7 @@ const DashboardPage = () => {
           // /stats: el servidor agrega con credenciales superuser, así devuelve
           // totales reales de users/bots/canales que el navegador no puede leer
           // (tg_channels tiene listRule=null y contiene bot_token; nunca se expone crudo).
-          if (user.role === 'admin' || user.role === 'creator') {
+          if (['admin', 'creator'].includes(String(user?.role || currentUser?.role).toLowerCase())) {
             try {
               const response = await apiServerClient.fetch('/stats', {
                 headers: { 'Authorization': `Bearer ${pb.authStore.token}` }
