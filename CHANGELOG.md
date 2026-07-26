@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Política de formatos por grupo - 2026-07-26
+- El panel web añade perfiles para grupos sin restricciones, productivos, limitados a texto y documentos o solo texto estricto.
+- Muestra formatos bloqueados, tamaño máximo y sanción aplicada usando la misma configuración de Moonbot.
+
 ### Anti-flood configurable por grupo - 2026-07-26
 - El panel web incorpora perfiles desactivado, suave, equilibrado y estricto sincronizados con Moonbot.
 - Cada grupo muestra el límite de mensajes, ventana temporal, duración del mute y reincidencias necesarias para ban local.
