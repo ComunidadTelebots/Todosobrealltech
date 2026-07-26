@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+## [0.6.0] - 2026-07-26
+### Mapa lingüístico global de Telegram
+- Nuevo mapa visual para administradores y creadores basado en el idioma declarado por los usuarios de Telegram.
+- Métricas agregadas de usuarios, idiomas y porcentajes sin exponer identidades ni ubicaciones reales.
+- Proxy API con caché y timeout hacia el endpoint público agregado de Moonbot.
+- Leyenda y aviso de precisión para evitar presentar el idioma como geolocalización física.
+
 ## [0.5.0] - 2026-07-26
 ### Horizonte 202 completado
 - Las 100 funciones aparecen como operativas y sincronizadas con Moonbot v18.0.0.

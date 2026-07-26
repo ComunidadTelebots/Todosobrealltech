@@ -14,6 +14,7 @@ import noticiasRssRouter from './noticias-rss.js';
 import noticiasViewRouter from './noticias-view.js';
 import previewRouter from './preview.js';
 import statsRouter from './stats.js';
+import telegramLanguageMapRouter from './telegram-language-map.js';
 
 const router = Router();
 
@@ -33,6 +34,7 @@ export default () => {
     router.use('/noticias/view', noticiasViewRouter);
     router.use('/preview', previewRouter);
     router.use('/stats', statsRouter);
+    router.use('/telegram-language-map', telegramLanguageMapRouter);
 
     return router;
 };
