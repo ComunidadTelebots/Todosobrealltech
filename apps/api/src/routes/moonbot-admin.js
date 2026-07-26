@@ -9,24 +9,36 @@ const CACHE_TTL_MS = 15 * 1000;
 let cache = null;
 let cacheAt = 0;
 
-router.get('/dashboard', async (req, res) => {
+async function requireAdmin(req, res) {
   const auth = await authorizeAdminOrCreator(req);
-  if (auth.error) {
-    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
-    return res.status(auth.status).json({ ok: false, error: auth.error });
-  }
+  if (!auth.error) return true;
+  if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+  res.status(auth.status).json({ ok: false, error: auth.error });
+  return false;
+}
 
+function serviceConfig(res) {
+  const key = (process.env.MOON_ADMIN_API_KEY || '').trim();
+  if (!key) res.status(503).json({ ok: false, error: 'La integraciÃ³n segura con Moonbot no estÃ¡ configurada' });
+  return key;
+}
+
+async function moonRequest(path, options = {}) {
   const serviceKey = (process.env.MOON_ADMIN_API_KEY || '').trim();
-  if (!serviceKey) {
-    return res.status(503).json({ ok: false, error: 'La integraciÃ³n segura con Moonbot no estÃ¡ configurada' });
-  }
+  return fetch(`${MOONBOT_INTERNAL_URL}${path}`, {
+    ...options,
+    signal: AbortSignal.timeout(6000),
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': serviceKey, ...(options.headers || {}) },
+  });
+}
+
+router.get('/dashboard', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
   if (cache && Date.now() - cacheAt < CACHE_TTL_MS) return res.json(cache);
 
   try {
-    const response = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/admin-overview`, {
-      signal: AbortSignal.timeout(6000),
-      headers: { Accept: 'application/json', 'X-Moon-Admin-Key': serviceKey },
-    });
+    const response = await moonRequest('/api/internal/admin-overview');
     if (!response.ok) throw new Error(`Moonbot HTTP ${response.status}`);
     cache = await response.json();
     cacheAt = Date.now();
@@ -35,6 +47,25 @@ router.get('/dashboard', async (req, res) => {
     logger.warn(`[moonbot-admin] ${error.message}`);
     if (cache) return res.json({ ...cache, stale: true });
     return res.status(502).json({ ok: false, error: 'Moonbot no responde en este momento' });
+  }
+});
+
+router.all('/groups/:id', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const cid = String(req.params.id || '');
+  if (!/^-\d+$/.test(cid)) return res.status(400).json({ ok: false, error: 'ID de grupo no vÃ¡lido' });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'MÃ©todo no permitido' });
+  try {
+    const response = await moonRequest(`/api/internal/groups/${encodeURIComponent(cid)}`, {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+    });
+    const payload = await response.json();
+    return res.status(response.status).json(payload);
+  } catch (error) {
+    logger.warn(`[moonbot-groups] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar el grupo' });
   }
 });
 

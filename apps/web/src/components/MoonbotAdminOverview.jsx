@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import apiServerClient from '@/lib/apiServerClient';
 import pb from '@/lib/pocketbaseClient';
+import MoonbotGroupsManager from '@/components/MoonbotGroupsManager.jsx';
 
 const Metric = ({ icon: Icon, label, value }) => (
   <div className="rounded-xl border bg-muted/20 p-4">
@@ -41,6 +42,7 @@ const MoonbotAdminOverview = () => {
   const resources = data?.resources || {};
 
   return (
+    <>
     <Card className="mt-8 overflow-hidden border-cyan-500/20">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div><CardTitle className="flex items-center gap-2"><Server className="h-5 w-5 text-cyan-600" />Centro de control Moonbot</CardTitle><CardDescription>Estado operativo real de bots, comunidades, recursos y tareas pendientes.</CardDescription></div>
@@ -64,6 +66,8 @@ const MoonbotAdminOverview = () => {
         </>}
       </CardContent>
     </Card>
+    {data && <MoonbotGroupsManager groups={data.groups || []} />}
+    </>
   );
 };
 

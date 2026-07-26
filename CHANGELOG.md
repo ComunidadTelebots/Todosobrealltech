@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+## [0.8.0] - 2026-07-26
+### AdministraciÃ³n de grupos Moonbot
+- Lista y buscador de grupos administrables desde todosobreall.tech.
+- Cada grupo se abre como un panel independiente con navegaciÃ³n de regreso.
+- DiagnÃ³stico visible de permisos faltantes y resumen de actividad real.
+- VisualizaciÃ³n de mÃ³dulos activos y copia segura de configuraciÃ³n entre grupos.
+- Proxy autenticado para que las claves internas nunca se entreguen al navegador.
+
 ## [0.7.0] - 2026-07-26
 ### Centro de control Moonbot
 - IntegraciÃ³n servidor-a-servidor protegida para administrar Moonbot desde la web principal sin exponer credenciales.
