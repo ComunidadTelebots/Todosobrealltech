@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Administración separada de Telegram - 2026-07-26
+- Usuarios, grupos y canales tienen accesos de administración independientes.
+- Los canales se clasifican por su tipo real de Telegram y dejan de mezclarse con los grupos.
+- Cada grupo y canal conserva su buscador y su panel de gestión independiente.
+
 ### Publicidad con Markdown - 2026-07-26
 - Los anuncios propios admiten negrita, cursiva, código, enlaces HTTPS y saltos de línea con renderizado seguro y vista previa.
 

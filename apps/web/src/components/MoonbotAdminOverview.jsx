@@ -22,6 +22,7 @@ const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
 
 const MASTER_SECTIONS = [
   ['Grupos', 'moon-groups'],
+  ['Canales', 'moon-channels'],
   ['Usuarios y baneos', 'moon-users'],
   ['Seguridad', 'moon-security'],
   ['Moderación productiva', 'moon-moderation-productivity'],
@@ -90,6 +91,8 @@ const MoonbotAdminOverview = () => {
   useEffect(() => { load(); }, []);
   const summary = data?.summary || {};
   const resources = data?.resources || {};
+  const telegramGroups = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() !== 'channel');
+  const telegramChannels = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() === 'channel');
 
   return (
     <>
@@ -128,7 +131,8 @@ const MoonbotAdminOverview = () => {
       </CardContent>
     </Card>
     {data && <LazySection id="moon-experience"><MoonbotExperienceCenter groups={data.groups || []} /></LazySection>}
-    {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={data.groups || []} /></LazySection>}
+    {data && <LazySection id="moon-groups"><MoonbotGroupsManager groups={telegramGroups} entityType="group" /></LazySection>}
+    {data && <LazySection id="moon-channels"><MoonbotGroupsManager groups={telegramChannels} entityType="channel" /></LazySection>}
     {data && <LazySection id="moon-house-ads"><HouseAdsManager /></LazySection>}
     {data && <LazySection id="moon-users"><MoonbotUsersManager groups={data.groups || []} /></LazySection>}
     {data && <LazySection id="moon-security"><MoonbotSecurityCenter /></LazySection>}
