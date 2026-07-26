@@ -8,6 +8,7 @@
 - Comparador de calidad y coste entre modelos.
 - Cola de respuestas que requieren revisiÃ³n humana.
 - La interfaz nunca recibe claves API de Gemini, Ollama ni otros proveedores.
+- Herramientas visibles para detectar preguntas sin respuesta, registrar latencia/coste y borrar memorias concretas.
 
 ## [0.14.0] - 2026-07-26
 ### Seguridad administrativa en vivo
