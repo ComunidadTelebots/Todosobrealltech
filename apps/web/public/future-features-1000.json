@@ -1,8 +1,8 @@
 {
   "version": "Horizonte 1000",
-  "generated_at": "2026-07-26T03:47:13.607Z",
+  "generated_at": "2026-07-26T03:47:52.019Z",
   "status": "in_progress",
-  "implemented": 12,
+  "implemented": 14,
   "totals": {
     "web": 334,
     "moonbot": 333,
@@ -152,7 +152,7 @@
       "priority": "medium",
       "difficulty": "easy",
       "dependency": "biblioteca",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0013",
@@ -176,7 +176,7 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "programador",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-0015",
