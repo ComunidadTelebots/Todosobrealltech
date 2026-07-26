@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Entrega de anuncios propios en NoticiasWeb3 - 2026-07-26
+- NoticiasWeb3 reenvía el catálogo `/hcgi/api/house-ads` y los clics medidos a la API interna.
+- Se evita que la SPA devuelva HTML cuando el componente de anuncios espera JSON.
+
 ### Anuncios con comunidades e imágenes detectadas - 2026-07-26
 - El creador de anuncios muestra los grupos y canales administrados para elegir el destino.
 - Permite seleccionar y almacenar fotos JPG, PNG, WebP o GIF desde el dispositivo.
