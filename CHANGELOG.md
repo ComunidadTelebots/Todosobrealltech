@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.15.0] - 2026-07-26
+### Centro de IA Moonbot
+- ConfiguraciÃ³n de proveedor y modelo global o por grupo.
+- AdministraciÃ³n de fuentes de aprendizaje aprobadas.
+- Visibilidad del tamaÃ±o de memoria por comunidad.
+- Comparador de calidad y coste entre modelos.
+- Cola de respuestas que requieren revisiÃ³n humana.
+- La interfaz nunca recibe claves API de Gemini, Ollama ni otros proveedores.
+
 ## [0.14.0] - 2026-07-26
 ### Seguridad administrativa en vivo
 - Vista combinada de CAS, SpamWatch, registro comunitario, baneos locales y otras fuentes.
