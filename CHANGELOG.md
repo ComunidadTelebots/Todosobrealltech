@@ -632,5 +632,6 @@
 
 - Nuevo botón para reverificar colectivamente a los miembros conocidos, con progreso y entregas privadas.
 - Vista previa, cancelación e historial de campañas disponibles desde el panel web.
+- Programación mensual de reverificación y administración de usuarios exentos desde web y MiniApp.
 - El panel de grupos de Moonbot permite activar el modo estricto por grupo.
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.

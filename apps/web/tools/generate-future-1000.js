@@ -49,6 +49,8 @@ const implemented = new Set([
   'future-0013', 'future-0014', 'future-0015', 'future-0016', 'future-0017',
   // Vista previa e historial de campañas de captcha, equilibrados entre productos.
   'future-0247', 'future-0248', 'future-0431', 'future-0432', 'future-0704', 'future-0705',
+  // Exenciones granulares y calendario de reverificación en los tres paneles.
+  'future-0251', 'future-0254', 'future-0435', 'future-0438', 'future-0708', 'future-0711',
 ]);
 const items = [];
 for (const product of products) {
