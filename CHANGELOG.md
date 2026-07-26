@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+## [0.18.0] - 2026-07-26
+### Operaciones y fiabilidad Moonbot
+- Panel de métricas de CPU, memoria, disco y latencia con alertas.
+- Planificación de despliegues graduales y seguimiento por instancia.
+- Políticas de copia cifrada y planes de restauración cancelables.
+- Supervisión de dependencias y capacidades disponibles en modo degradado.
+- Diagnóstico automático y agrupación de errores recurrentes.
+- Programación de ventanas de mantenimiento con mensajes informativos.
+
 ## [0.17.0] - 2026-07-26
 ### Integraciones y API Moonbot
 - Gestión visual de módulos, permisos, versiones y checksums.
