@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     const response = await moon(); const data = await response.json();
     if (!response.ok) return res.status(response.status).json(data);
     const placement = String(req.query.placement || '');
-    const ads = (data.ads || []).filter((ad) => ad.enabled !== false && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
+    const ads = (data.ads || []).filter((ad) => ad.enabled !== false && !['pending', 'rejected'].includes(ad.approval_status) && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
     if (placement && ads[0]) moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement }) }).catch(() => {});
     return res.json({ ok: true, ads });
   } catch { return res.status(502).json({ ok: false, error: 'Catálogo propio no disponible' }); }
@@ -24,7 +24,10 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const auth = await authorizeAdminOrCreator(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
-  try { const response = await moon({ method: 'POST', body: JSON.stringify(req.body || {}) }); return res.status(response.status).json(await response.json()); }
+  const payload = { ...(req.body || {}) };
+  if (['approve', 'reject'].includes(payload.action) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede revisar campañas' });
+  if ((!payload.action || payload.action === 'upsert') && payload.ad) payload.ad = { ...payload.ad, approval_status: auth.user.role === 'creator' ? 'approved' : 'pending', submitted_by: auth.user.id };
+  try { const response = await moon({ method: 'POST', body: JSON.stringify(payload) }); return res.status(response.status).json(await response.json()); }
   catch { return res.status(502).json({ ok: false, error: 'Moonbot no responde' }); }
 });
 
@@ -32,7 +35,7 @@ router.get('/:id/click', async (req, res) => {
   try {
     const current = await moon(); const data = await current.json();
     const ad = (data.ads || []).find((item) => String(item.id) === String(req.params.id));
-    if (!ad || !ad.enabled || !isScheduledNow(ad)) return res.redirect(302, 'https://todosobreall.tech');
+    if (!ad || !ad.enabled || ['pending', 'rejected'].includes(ad.approval_status) || !isScheduledNow(ad)) return res.redirect(302, 'https://todosobreall.tech');
     const placement = String(req.query.placement || 'unknown').slice(0, 20);
     await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement }) });
     return res.redirect(302, ad.url.startsWith('tg://') ? ad.url.replace('tg://', 'https://t.me/') : ad.url);
