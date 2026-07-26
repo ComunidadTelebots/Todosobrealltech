@@ -20,7 +20,8 @@ services:
       - "traefik.http.routers.todosobrealltech.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.todosobrealltech.tls=true"
       - "traefik.http.routers.todosobrealltech.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.routers.todosobrealltech.middlewares=ol-todosobreall@file"
+      - "traefik.http.routers.todosobrealltech.middlewares=ol-todosobreall@file,telegram-login-coop"
+      - "traefik.http.middlewares.telegram-login-coop.headers.customresponseheaders.Cross-Origin-Opener-Policy=same-origin-allow-popups"
       - "traefik.http.services.todosobrealltech.loadbalancer.server.port=80"
       - "traefik.http.services.todosobrealltech.loadbalancer.passHostHeader=true"
 

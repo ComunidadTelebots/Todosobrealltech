@@ -9,9 +9,21 @@ const router = express.Router();
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 días
 const TG_ISSUER = 'https://oauth.telegram.org';
 const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID || '';
+const telegramLoginNonces = new Map();
+const NONCE_TTL_MS = 5 * 60 * 1000;
 
 // Claves públicas de Telegram para verificar la firma del id_token (cacheadas por jose).
 const JWKS = createRemoteJWKSet(new URL('https://oauth.telegram.org/.well-known/jwks.json'));
+
+router.get('/telegram/config', (req, res) => {
+  if (!CLIENT_ID) return res.json({ enabled: false, error: 'Login de Telegram no configurado' });
+  if (req.query.prepare !== '1') return res.json({ enabled: true, client_id: String(CLIENT_ID) });
+  const now = Date.now();
+  for (const [value, expiresAt] of telegramLoginNonces) if (expiresAt <= now) telegramLoginNonces.delete(value);
+  const nonce = crypto.randomBytes(24).toString('base64url');
+  telegramLoginNonces.set(nonce, now + NONCE_TTL_MS);
+  return res.json({ enabled: true, client_id: String(CLIENT_ID), nonce, expires_in: NONCE_TTL_MS / 1000 });
+});
 
 // POST /auth/telegram — login NATIVO de Telegram (OpenID Connect).
 // El frontend obtiene un id_token (JWT firmado por Telegram) con la librería
@@ -25,6 +37,12 @@ router.post('/telegram', async (req, res) => {
     logger.error('TELEGRAM_CLIENT_ID no está configurado');
     return res.status(500).json({ error: 'Login de Telegram no configurado en el servidor' });
   }
+  const nonceExpiresAt = telegramLoginNonces.get(String(nonce || ''));
+  if (!nonceExpiresAt || nonceExpiresAt <= Date.now()) {
+    telegramLoginNonces.delete(String(nonce || ''));
+    return res.status(401).json({ error: 'La solicitud de Telegram ha expirado; inténtalo de nuevo' });
+  }
+  telegramLoginNonces.delete(String(nonce));
 
   // 1) Verifica firma (JWKS de Telegram) + issuer + expiración.
   let claims;
@@ -43,7 +61,7 @@ router.post('/telegram', async (req, res) => {
   }
 
   // 3) nonce anti-replay (si el cliente lo envió).
-  if (nonce && claims.nonce && String(claims.nonce) !== String(nonce)) {
+  if (!claims.nonce || String(claims.nonce) !== String(nonce)) {
     return res.status(401).json({ error: 'nonce no coincide' });
   }
 

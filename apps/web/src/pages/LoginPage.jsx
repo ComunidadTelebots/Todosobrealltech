@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogIn, AlertCircle, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import apiServerClient from '@/lib/apiServerClient.js';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -18,13 +19,16 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [telegramLoading, setTelegramLoading] = useState(false);
   const [tgReady, setTgReady] = useState(false);
-  const nonceRef = useRef('');
+  const [telegramEnabled, setTelegramEnabled] = useState(false);
 
   // Client ID del bot (CintiaBot) registrado en BotFather → Web Login.
-  const TELEGRAM_CLIENT_ID = 209219812;
 
   // Carga la librería nativa de Telegram Login (OpenID) una sola vez.
   useEffect(() => {
+    apiServerClient.fetch('/auth/telegram/config').then((response) => response.json()).then((config) => {
+      setTelegramEnabled(Boolean(config.enabled && config.client_id));
+      if (!config.enabled && config.error) setError(config.error);
+    }).catch(() => setError('No se pudo consultar la configuración de Telegram.'));
     if (window.Telegram && window.Telegram.Login) {
       setTgReady(true);
       return;
@@ -39,20 +43,29 @@ const LoginPage = () => {
     script.src = 'https://oauth.telegram.org/js/telegram-login.js';
     script.async = true;
     script.onload = () => setTgReady(true);
+    script.onerror = () => setError('No se pudo cargar Telegram Login. Revisa el bloqueador de contenido.');
     document.head.appendChild(script);
   }, []);
 
-  const handleTelegramLogin = () => {
+  const handleTelegramLogin = async () => {
     if (!window.Telegram || !window.Telegram.Login) {
       toast.error('Telegram todavía se está cargando, inténtalo de nuevo en un momento.');
       return;
     }
-    const nonce = (window.crypto?.randomUUID?.() || String(Math.random())).replace(/-/g, '');
-    nonceRef.current = nonce;
     setError('');
     setTelegramLoading(true);
+    let config;
+    try {
+      const response = await apiServerClient.fetch('/auth/telegram/config?prepare=1');
+      config = await response.json();
+      if (!response.ok || !config.enabled || !config.client_id || !config.nonce) throw new Error(config.error || 'Telegram no está configurado');
+    } catch (reason) {
+      setTelegramLoading(false);
+      setError(reason.message || 'No se pudo preparar Telegram Login.');
+      return;
+    }
     window.Telegram.Login.auth(
-      { client_id: TELEGRAM_CLIENT_ID, scope: ['profile'], nonce },
+      { client_id: Number(config.client_id), scope: ['profile'], nonce: config.nonce, lang: 'es' },
       async (result) => {
         if (!result || result.error || !result.id_token) {
           setTelegramLoading(false);
@@ -61,7 +74,7 @@ const LoginPage = () => {
           }
           return;
         }
-        const res = await loginWithTelegram({ id_token: result.id_token, nonce });
+        const res = await loginWithTelegram({ id_token: result.id_token, nonce: config.nonce });
         if (res.success) {
           toast.success('Sesión iniciada con Telegram');
           navigate('/dashboard');
@@ -189,7 +202,7 @@ const LoginPage = () => {
               variant="outline"
               className="w-full bg-[#2481cc]/10 text-[#2481cc] border-[#2481cc]/20 hover:bg-[#2481cc]/20 hover:text-[#2481cc] transition-all duration-200 active:scale-[0.98]"
               onClick={handleTelegramLogin}
-              disabled={loading || telegramLoading || !tgReady}
+              disabled={loading || telegramLoading || !tgReady || !telegramEnabled}
             >
               {telegramLoading ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Inicio de sesión de Telegram corregido - 2026-07-26
+- Web y API usan el mismo Client ID servido desde la configuración del backend.
+- El nonce se genera y consume en el servidor con caducidad para impedir reutilizaciones.
+- Se validan firma, emisor, audiencia, expiración y nonce antes de crear la sesión.
+- La política COOP permite comunicarse con la ventana emergente de Telegram Login.
+- La pantalla explica si falta configuración o si el script fue bloqueado.
+
 ### Rendimiento por instancia Moonbot - 2026-07-26
 - La tarjeta muestra por bot estado, grupos, eventos procesados, latencia, errores, uptime y salud del polling.
 - Los datos proceden de cada proceso real de Moonbot y permanecen separados por instancia.
