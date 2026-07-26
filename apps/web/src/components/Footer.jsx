@@ -21,6 +21,9 @@ const Footer = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">
               {getTranslation('footer_desc')}
             </p>
+            <p className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-medium leading-relaxed">
+              {getTranslation('nonprofit_notice')}
+            </p>
           </div>
 
           <div>

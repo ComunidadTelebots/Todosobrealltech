@@ -117,6 +117,9 @@ const HomePage = () => {
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
               {getTranslation('home_hero_subtitle')}
             </p>
+            <p className="mx-auto mb-8 max-w-2xl rounded-full border border-primary/20 bg-background/70 px-5 py-2 text-sm font-medium backdrop-blur">
+              {getTranslation('nonprofit_notice')}
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {!isAuthenticated ? (
                 <>

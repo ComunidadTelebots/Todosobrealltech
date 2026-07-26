@@ -208,6 +208,10 @@ const LOCAL_TRANSLATIONS = {
     es: 'Tu espacio para servicios tecnologicos, automatizaciones, bots y herramientas digitales.',
     en: 'Your space for technology services, automations, bots and digital tools.',
   },
+  nonprofit_notice: {
+    es: 'Servicio comunitario gratuito y sin ánimo de lucro. No cobramos por acceder a sus funciones.',
+    en: 'A free, nonprofit community service. We do not charge for access to its features.',
+  },
   quick_links: {
     es: 'Enlaces rapidos',
     en: 'Quick links',

@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Servicio gratuito y sin ánimo de lucro - 2026-07-26
+- La portada, el dashboard y el pie de página informan claramente del carácter comunitario, gratuito y sin ánimo de lucro del proyecto.
+- El aviso aclara que el acceso a las funciones ofrecidas no tiene coste.
+
 ### Anuncios recíprocos entre grupos - 2026-07-26
 - El panel web incorpora perfiles publicitarios selectivo, equilibrado y amplio, además de desactivación por grupo.
 - La política limita campañas diarias, descanso entre socios y diferencia máxima de audiencia.

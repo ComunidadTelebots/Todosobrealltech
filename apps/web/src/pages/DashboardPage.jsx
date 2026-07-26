@@ -376,6 +376,9 @@ const DashboardPage = () => {
             <p className="text-muted-foreground text-lg">
               Manage your account and explore your personalized dashboard
             </p>
+            <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-medium">
+              TodoSobreAllTech y Moonbot son servicios comunitarios gratuitos y sin ánimo de lucro. El acceso a sus funciones no tiene coste.
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
