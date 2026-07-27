@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Segunda oleada de 1.000 propuestas en `/roadmap` - 2026-07-27
+- El roadmap público crece a 2.000 funciones únicas y consultables desde una sola página.
+- Se incorporan 1.000 propuestas nuevas, equilibradas entre TodoSobreAllTech Web, Moonbot y Telegram WebApp.
+- La cabecera diferencia con contadores las funciones integradas, en desarrollo y propuestas, sin presentar ideas pendientes como implementadas.
+
 ### Roadmap e inventario de features incluidas - 2026-07-27
 - `/roadmap` incorpora un apartado independiente con todas las features verificadas como incluidas.
 - Se mantienen filtros por producto, categoría y estado para consultar las funciones en desarrollo.
