@@ -150,8 +150,10 @@ router.get('/users', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;
   const query = String(req.query.q || '').slice(0, 100);
+  const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+  const perPage = Math.max(10, Math.min(100, Number.parseInt(req.query.per_page, 10) || 50));
   try {
-    const response = await moonRequest(`/api/internal/users?q=${encodeURIComponent(query)}`);
+    const response = await moonRequest(`/api/internal/users?q=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`);
     return res.status(response.status).json(await response.json());
   } catch (error) {
     logger.warn(`[moonbot-users] ${error.message}`);

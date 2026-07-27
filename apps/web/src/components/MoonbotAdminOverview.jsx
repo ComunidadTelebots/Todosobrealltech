@@ -56,7 +56,13 @@ const MoonbotAdminOverview = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, setActiveSection] = useState(() => {
+    const requested = new URLSearchParams(window.location.search).get('moon');
+    let saved = '';
+    try { saved = window.localStorage.getItem('moon_dashboard_section') || ''; } catch {}
+    const candidate = requested || saved;
+    return MASTER_SECTIONS.some(([, id]) => id === candidate) ? candidate : '';
+  });
 
   const load = async () => {
     setLoading(true);
@@ -76,6 +82,12 @@ const MoonbotAdminOverview = () => {
   };
 
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (activeSection) url.searchParams.set('moon', activeSection); else url.searchParams.delete('moon');
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    try { window.localStorage.setItem('moon_dashboard_section', activeSection); } catch {}
+  }, [activeSection]);
   const summary = data?.summary || {};
   const resources = data?.resources || {};
   const telegramGroups = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() !== 'channel');

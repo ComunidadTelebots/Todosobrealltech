@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Búsqueda paginada y pestañas persistentes - 2026-07-27
+- Usuarios y sanciones busca sobre el inventario completo de Moonbot y pagina los resultados desde el servidor.
+- El dashboard conserva la última herramienta abierta y refleja su estado en el parámetro `moon` de la URL.
+- Las pestañas pueden recargarse o compartirse sin volver al índice general.
+
 ### Dashboard compacto por pestañas - 2026-07-26
 - Las herramientas master de Moonbot dejan de renderizarse en una página continua y se abren individualmente.
 - Se añade navegación de vuelta al índice y carga diferida únicamente de la pestaña seleccionada.
