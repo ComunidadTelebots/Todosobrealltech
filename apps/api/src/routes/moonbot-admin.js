@@ -82,11 +82,11 @@ function serviceConfig(res) {
   return key;
 }
 
-async function moonRequest(path, options = {}) {
+async function moonRequest(path, { timeoutMs = 6000, ...options } = {}) {
   const serviceKey = (process.env.MOON_ADMIN_API_KEY || '').trim();
   return fetch(`${MOONBOT_INTERNAL_URL}${path}`, {
     ...options,
-    signal: AbortSignal.timeout(6000),
+    signal: AbortSignal.timeout(timeoutMs),
     headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': serviceKey, ...(options.headers || {}) },
   });
 }
@@ -166,6 +166,33 @@ router.get('/groups/:id/photo', async (req, res) => {
   } catch (error) {
     logger.warn(`[moonbot-group-photo] ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudo cargar la foto del grupo' });
+  }
+});
+
+router.get('/groups/:id/media/:fileId', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const cid = String(req.params.id || '');
+  const fileId = String(req.params.fileId || '');
+  if (!/^-\d+$/.test(cid) || !fileId || fileId.length > 300 || fileId.includes('/')) {
+    return res.status(400).json({ ok: false, error: 'Archivo no válido' });
+  }
+  try {
+    const response = await moonRequest(`/api/internal/groups/${encodeURIComponent(cid)}/media/${encodeURIComponent(fileId)}`, {
+      timeoutMs: 15000,
+      headers: { Accept: '*/*' },
+    });
+    if (!response.ok) return res.status(response.status).json({ ok: false, error: 'Archivo no disponible' });
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (bytes.length > 20 * 1024 * 1024) return res.status(413).json({ ok: false, error: 'Archivo demasiado grande' });
+    res.set('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
+    res.set('Cache-Control', 'private, max-age=1800');
+    const disposition = response.headers.get('content-disposition');
+    if (disposition) res.set('Content-Disposition', disposition);
+    return res.send(bytes);
+  } catch (error) {
+    logger.warn(`[moonbot-group-media] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo cargar el archivo de Telegram' });
   }
 });
 
