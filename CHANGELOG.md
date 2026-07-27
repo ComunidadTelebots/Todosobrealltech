@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Herramientas operativas del roadmap - 2026-07-27
+- `/roadmap` permite guardar favoritas en el dispositivo y mostrar únicamente la selección personal.
+- Los filtros se conservan en la URL para compartir exactamente la misma vista con otra persona.
+- Se añaden ordenación por prioridad, novedad o título, exportación CSV de resultados y restablecimiento rápido.
+- Corregida la codificación de los textos visibles de la página.
+
 ### Conservación de oleadas del roadmap - 2026-07-27
 - Las 1.000 definiciones de la oleada anterior se conservan con el estado «Completada (definición)».
 - Las 1.000 propuestas regeneradas se añaden sin sustituir el historial, elevando `/roadmap` a 3.000 entradas únicas.

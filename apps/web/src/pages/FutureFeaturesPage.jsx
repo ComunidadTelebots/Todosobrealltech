@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Search, Sparkles } from 'lucide-react';
+import { Download, Link2, RotateCcw, Search, Sparkles, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,28 +8,82 @@ import { Card, CardContent } from '@/components/ui/card';
 const PAGE_SIZE = 60;
 const labels = { web: 'TodoSobreAllTech', moonbot: 'Moonbot', webapp: 'Telegram WebApp' };
 const statusLabels = { implemented: 'Integrada', completed: 'Completada (definición)', routed: 'En desarrollo', proposed: 'Propuesta' };
+const readParam = (name, fallback = 'all') => new URLSearchParams(window.location.search).get(name) || fallback;
+const csvCell = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
 const RoadmapPage = () => {
   const [catalog, setCatalog] = useState({ items: [], totals: {} });
-  const [query, setQuery] = useState('');
-  const [product, setProduct] = useState('all');
-  const [category, setCategory] = useState('all');
-  const [status, setStatus] = useState('all');
+  const [query, setQuery] = useState(() => readParam('q', ''));
+  const [product, setProduct] = useState(() => readParam('product'));
+  const [category, setCategory] = useState(() => readParam('category'));
+  const [status, setStatus] = useState(() => readParam('status'));
+  const [sort, setSort] = useState(() => readParam('sort', 'priority'));
+  const [favoritesOnly, setFavoritesOnly] = useState(() => readParam('favorites', '0') === '1');
+  const [favorites, setFavorites] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('roadmap-favorites') || '[]')); } catch { return new Set(); }
+  });
   const [page, setPage] = useState(1);
   const [error, setError] = useState('');
-  useEffect(() => { fetch('/future-features-1000.json').then((response) => response.ok ? response.json() : Promise.reject()).then(setCatalog).catch(() => setError('No se pudo cargar el roadmap.')); }, []);
+
+  useEffect(() => {
+    fetch('/future-features-1000.json')
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then(setCatalog)
+      .catch(() => setError('No se pudo cargar el roadmap.'));
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (query) params.set('q', query);
+    if (product !== 'all') params.set('product', product);
+    if (category !== 'all') params.set('category', category);
+    if (status !== 'all') params.set('status', status);
+    if (sort !== 'priority') params.set('sort', sort);
+    if (favoritesOnly) params.set('favorites', '1');
+    window.history.replaceState(null, '', `${window.location.pathname}${params.size ? `?${params}` : ''}`);
+    setPage(1);
+  }, [query, product, category, status, sort, favoritesOnly]);
+
   const categories = useMemo(() => [...new Set(catalog.items.map((item) => item.category))].sort(), [catalog.items]);
-  const visible = useMemo(() => { const text = query.trim().toLocaleLowerCase('es'); return catalog.items.filter((item) => (product === 'all' || item.product === product) && (category === 'all' || item.category === category) && (status === 'all' || item.status === status) && (!text || `${item.title} ${item.description}`.toLocaleLowerCase('es').includes(text))); }, [catalog.items, category, product, query, status]);
-  useEffect(() => { setPage(1); }, [query, product, category, status]);
+  const visible = useMemo(() => {
+    const text = query.trim().toLocaleLowerCase('es');
+    const priority = { critical: 0, high: 1, medium: 2, low: 3 };
+    return catalog.items
+      .filter((item) => (product === 'all' || item.product === product)
+        && (category === 'all' || item.category === category)
+        && (status === 'all' || item.status === status)
+        && (!favoritesOnly || favorites.has(item.id))
+        && (!text || `${item.title} ${item.description} ${item.dependency}`.toLocaleLowerCase('es').includes(text)))
+      .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title, 'es') : sort === 'newest' ? b.id.localeCompare(a.id) : (priority[a.priority] ?? 9) - (priority[b.priority] ?? 9));
+  }, [catalog.items, category, favorites, favoritesOnly, product, query, sort, status]);
+
   const pages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
   const items = visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const included = useMemo(() => catalog.items.filter((item) => item.status === 'implemented'), [catalog.items]);
+  const toggleFavorite = (id) => setFavorites((current) => {
+    const next = new Set(current);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    localStorage.setItem('roadmap-favorites', JSON.stringify([...next]));
+    return next;
+  });
+  const resetFilters = () => { setQuery(''); setProduct('all'); setCategory('all'); setStatus('all'); setSort('priority'); setFavoritesOnly(false); };
+  const shareFilters = async () => { try { await navigator.clipboard.writeText(window.location.href); } catch { /* Clipboard may be unavailable. */ } };
+  const exportCsv = () => {
+    const header = ['ID', 'Producto', 'Estado', 'Categoría', 'Prioridad', 'Título', 'Dependencia'];
+    const rows = visible.map((item) => [item.id, labels[item.product], statusLabels[item.status], item.category, item.priority, item.title, item.dependency]);
+    const blob = new Blob([[header, ...rows].map((row) => row.map(csvCell).join(',')).join('\n')], { type: 'text/csv;charset=utf-8' });
+    const anchor = document.createElement('a');
+    anchor.href = URL.createObjectURL(blob); anchor.download = 'roadmap-filtrado.csv'; anchor.click(); URL.revokeObjectURL(anchor.href);
+  };
+
   return <><Helmet><title>Roadmap | TodoSobreAllTech</title><meta name="description" content="Hoja de ruta pública de TodoSobreAllTech, Moonbot y Telegram WebApp."/></Helmet><section className="container mx-auto px-4 py-12">
     <div className="mx-auto max-w-5xl text-center"><Badge variant="secondary" className="mb-4">Hoja de ruta pública</Badge><h1 className="text-4xl font-bold tracking-tight md:text-5xl">Roadmap</h1><p className="mt-4 text-lg text-muted-foreground">Inventario de mejoras para TodoSobreAllTech, Moonbot y la WebApp. «Completada» indica que su definición está terminada; una función solo figura como «Integrada» cuando está disponible en su módulo real.</p></div>
-    <div className="mx-auto mt-10 max-w-7xl"><div className="grid gap-3 md:grid-cols-[2fr_repeat(3,1fr)]"><div className="relative"><Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground"/><input value={query} onChange={(event) => setQuery(event.target.value)} className="h-10 w-full rounded-md border bg-background pl-10 pr-3" placeholder="Buscar en el roadmap"/></div><select className="h-10 rounded-md border bg-background px-3 text-sm" value={product} onChange={(event) => setProduct(event.target.value)}><option value="all">Todos los productos</option>{Object.entries(labels).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select><select className="h-10 rounded-md border bg-background px-3 text-sm" value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">Todas las categorías</option>{categories.map((name) => <option key={name}>{name}</option>)}</select><select className="h-10 rounded-md border bg-background px-3 text-sm" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">Todos los estados</option><option value="implemented">Integradas</option><option value="completed">Completadas (definición)</option><option value="routed">En desarrollo</option><option value="proposed">Propuestas</option></select></div>
+    <div className="mx-auto mt-10 max-w-7xl">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6"><div className="relative xl:col-span-2"><Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground"/><input value={query} onChange={(event) => setQuery(event.target.value)} className="h-10 w-full rounded-md border bg-background pl-10 pr-3" placeholder="Buscar en el roadmap"/></div><select className="h-10 rounded-md border bg-background px-3 text-sm" value={product} onChange={(event) => setProduct(event.target.value)}><option value="all">Todos los productos</option>{Object.entries(labels).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select><select className="h-10 rounded-md border bg-background px-3 text-sm" value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">Todas las categorías</option>{categories.map((name) => <option key={name}>{name}</option>)}</select><select className="h-10 rounded-md border bg-background px-3 text-sm" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">Todos los estados</option><option value="implemented">Integradas</option><option value="completed">Completadas (definición)</option><option value="routed">En desarrollo</option><option value="proposed">Propuestas</option></select><select className="h-10 rounded-md border bg-background px-3 text-sm" value={sort} onChange={(event) => setSort(event.target.value)}><option value="priority">Ordenar por prioridad</option><option value="newest">Más recientes</option><option value="title">Orden alfabético</option></select></div>
+      <div className="mt-3 flex flex-wrap gap-2"><Button variant={favoritesOnly ? 'default' : 'outline'} onClick={() => setFavoritesOnly((value) => !value)}><Star className="mr-2 h-4 w-4"/>Favoritas ({favorites.size})</Button><Button variant="outline" onClick={shareFilters}><Link2 className="mr-2 h-4 w-4"/>Copiar vista</Button><Button variant="outline" onClick={exportCsv} disabled={!visible.length}><Download className="mr-2 h-4 w-4"/>Exportar CSV</Button><Button variant="ghost" onClick={resetFilters}><RotateCcw className="mr-2 h-4 w-4"/>Restablecer</Button></div>
       <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-5"><Card><CardContent className="p-4"><b className="text-2xl">{catalog.total || 0}</b><p className="text-xs text-muted-foreground">Funciones planificadas</p></CardContent></Card><Card><CardContent className="p-4"><b className="text-2xl">{catalog.implemented || 0}</b><p className="text-xs text-muted-foreground">Integradas</p></CardContent></Card><Card><CardContent className="p-4"><b className="text-2xl">{catalog.completed || 0}</b><p className="text-xs text-muted-foreground">Definiciones completadas</p></CardContent></Card><Card><CardContent className="p-4"><b className="text-2xl">{catalog.routed || 0}</b><p className="text-xs text-muted-foreground">En desarrollo</p></CardContent></Card><Card><CardContent className="p-4"><b className="text-2xl">{catalog.proposed || 0}</b><p className="text-xs text-muted-foreground">Nuevas propuestas</p></CardContent></Card></div>
       <Card className="mt-5 border-emerald-500/20"><CardContent className="p-5"><h2 className="text-lg font-semibold">Features incluidas</h2><p className="mt-1 text-sm text-muted-foreground">Funciones que ya forman parte de sus módulos reales.</p><div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">{included.map((item) => <div key={item.id} className="rounded-lg border bg-emerald-500/5 p-3"><div className="flex items-start justify-between gap-2"><b className="text-sm">{item.title}</b><Badge variant="outline">Incluida</Badge></div><p className="mt-1 text-xs text-muted-foreground">{labels[item.product]} · {item.category}</p></div>)}</div>{!included.length && <p className="mt-4 text-sm text-muted-foreground">Todavía no hay funciones verificadas como integradas.</p>}</CardContent></Card>
-      {error && <div className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive">{error}</div>}<p className="mt-6 text-sm text-muted-foreground">Mostrando {items.length} de {visible.length} funciones.</p><div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <Card key={item.id}><CardContent className="p-5"><div className="mb-3 flex flex-wrap gap-2"><Badge>{labels[item.product]}</Badge><Badge variant="outline">{item.category}</Badge><Badge variant={item.status === 'implemented' ? 'default' : 'secondary'}>{statusLabels[item.status] || item.status}</Badge></div><h2 className="font-semibold leading-snug"><Sparkles className="mr-2 inline h-4 w-4 text-primary"/>{item.title}</h2><p className="mt-2 text-sm text-muted-foreground">{item.description}</p><div className="mt-4 flex justify-between text-xs text-muted-foreground"><span>Dificultad: {item.difficulty}</span><span>Depende de: {item.dependency}</span></div></CardContent></Card>)}</div><div className="mt-8 flex items-center justify-center gap-3"><Button variant="outline" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Anterior</Button><span className="text-sm">Página {page} de {pages}</span><Button variant="outline" disabled={page >= pages} onClick={() => setPage((value) => value + 1)}>Siguiente</Button></div>
+      {error && <div className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive">{error}</div>}<p className="mt-6 text-sm text-muted-foreground">Mostrando {items.length} de {visible.length} funciones.</p><div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <Card key={item.id}><CardContent className="p-5"><div className="mb-3 flex items-start justify-between gap-2"><div className="flex flex-wrap gap-2"><Badge>{labels[item.product]}</Badge><Badge variant="outline">{item.category}</Badge><Badge variant={item.status === 'implemented' ? 'default' : 'secondary'}>{statusLabels[item.status] || item.status}</Badge></div><button type="button" onClick={() => toggleFavorite(item.id)} aria-label={favorites.has(item.id) ? 'Quitar de favoritas' : 'Añadir a favoritas'}><Star className={`h-5 w-5 ${favorites.has(item.id) ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground'}`}/></button></div><h2 className="font-semibold leading-snug"><Sparkles className="mr-2 inline h-4 w-4 text-primary"/>{item.title}</h2><p className="mt-2 text-sm text-muted-foreground">{item.description}</p><div className="mt-4 flex justify-between text-xs text-muted-foreground"><span>Dificultad: {item.difficulty}</span><span>Depende de: {item.dependency}</span></div></CardContent></Card>)}</div><div className="mt-8 flex items-center justify-center gap-3"><Button variant="outline" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Anterior</Button><span className="text-sm">Página {page} de {pages}</span><Button variant="outline" disabled={page >= pages} onClick={() => setPage((value) => value + 1)}>Siguiente</Button></div>
     </div>
   </section></>;
 };
