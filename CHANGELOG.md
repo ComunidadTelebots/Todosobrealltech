@@ -5,6 +5,7 @@
 - Permite leer el historial registrado, identificar el bot asociado, refrescar automáticamente y enviar mensajes Markdown desde la web.
 - La sesión creator/admin y la clave interna siguen siendo obligatorias; ningún token de Telegram llega al navegador.
 - Se muestran todas las instancias propias, se puede filtrar por bot y elegir cuál publica cuando varios comparten el mismo grupo.
+- Cada mensaje de usuario ofrece controles rápidos de mute, ban, advertencia, karma, cuarentena y restauración, equivalentes al chat original de Moonbot.
 
 ### Actualización manual desde Telegram - 2026-07-27
 - Cada comunidad muestra cuándo se sincronizó por última vez.
