@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Conservación de oleadas del roadmap - 2026-07-27
+- Las 1.000 definiciones de la oleada anterior se conservan con el estado «Completada (definición)».
+- Las 1.000 propuestas regeneradas se añaden sin sustituir el historial, elevando `/roadmap` a 3.000 entradas únicas.
+- Se diferencia explícitamente una definición completada de una función integrada y operativa.
+
 ### Segunda oleada de 1.000 propuestas en `/roadmap` - 2026-07-27
 - El roadmap público crece a 2.000 funciones únicas y consultables desde una sola página.
 - Se incorporan 1.000 propuestas nuevas, equilibradas entre TodoSobreAllTech Web, Moonbot y Telegram WebApp.

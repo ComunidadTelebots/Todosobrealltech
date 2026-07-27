@@ -42,6 +42,39 @@ const capabilities = [
   ['Conector interoperable', 'integrations', 'medium', 'advanced', 'API'],
 ];
 
+const completedCapabilities = [
+  ['Mapa de dependencias funcionales', 'operations', 'high', 'advanced', 'inventario de servicios'],
+  ['Reglas condicionales visuales', 'automation', 'high', 'advanced', 'motor de reglas'],
+  ['Bandeja unificada de revisión', 'governance', 'high', 'medium', 'flujos de aprobación'],
+  ['Detección de cambios sensibles', 'security', 'critical', 'advanced', 'auditoría diferencial'],
+  ['Explicación de decisiones automáticas', 'ai', 'high', 'advanced', 'trazas de decisión'],
+  ['Panel de calidad de datos', 'analytics', 'high', 'advanced', 'validación de datos'],
+  ['Importación con vista previa', 'operations', 'medium', 'medium', 'validación transaccional'],
+  ['Colaboración mediante comentarios', 'community', 'medium', 'medium', 'identidad y permisos'],
+  ['Etiquetas inteligentes', 'content', 'medium', 'advanced', 'clasificación semántica'],
+  ['Resumen de actividad configurable', 'reporting', 'medium', 'medium', 'eventos agregados'],
+  ['Alertas de caducidad', 'notifications', 'high', 'medium', 'programador temporal'],
+  ['Modo de emergencia reversible', 'resilience', 'critical', 'advanced', 'planes de recuperación'],
+  ['Historial de permisos efectivo', 'security', 'high', 'advanced', 'auditoría de roles'],
+  ['Objetivos y progreso compartidos', 'planning', 'medium', 'medium', 'métricas de progreso'],
+  ['Recomendador de configuración', 'ai', 'medium', 'advanced', 'telemetría anonimizada'],
+  ['Pruebas automáticas de configuración', 'developer', 'high', 'advanced', 'sandbox'],
+  ['Centro de consentimiento', 'privacy', 'critical', 'advanced', 'registro de consentimiento'],
+  ['Navegación simplificada por tareas', 'accessibility', 'high', 'medium', 'mapa de tareas'],
+  ['Sincronización entre dispositivos', 'integrations', 'high', 'advanced', 'identidad portable'],
+  ['Detección de duplicados', 'content', 'medium', 'advanced', 'índice de similitud'],
+  ['Cuotas adaptativas por uso', 'operations', 'high', 'advanced', 'telemetría y límites'],
+  ['Panel de impacto comunitario', 'community', 'medium', 'advanced', 'métricas agregadas'],
+  ['Traducción revisable por la comunidad', 'i18n', 'high', 'advanced', 'memoria de traducción'],
+  ['Notificaciones agrupadas por contexto', 'notifications', 'medium', 'medium', 'motor de eventos'],
+  ['Asistente de migración', 'ux', 'high', 'advanced', 'versionado de configuración'],
+  ['Registro de decisiones administrativas', 'governance', 'high', 'medium', 'auditoría'],
+  ['Análisis de accesibilidad continuo', 'accessibility', 'high', 'advanced', 'reglas WCAG'],
+  ['Conector de almacenamiento externo', 'integrations', 'medium', 'advanced', 'API de archivos'],
+  ['Políticas por franja horaria', 'automation', 'medium', 'medium', 'zonas horarias'],
+  ['Simulador de crecimiento sostenible', 'analytics', 'medium', 'advanced', 'series históricas'],
+];
+
 const nextCapabilities = [
   ['Centro de incidencias correlacionadas', 'operations', 'critical', 'advanced', 'eventos y trazas'],
   ['Constructor de flujos sin código', 'automation', 'high', 'advanced', 'motor de automatización'],
@@ -116,7 +149,7 @@ for (const product of products) {
 for (const product of products) {
   let index = 0;
   for (const context of product.contexts) {
-    for (const [capabilityIndex, [label, category, priority, difficulty, dependency]] of nextCapabilities.entries()) {
+    for (const [capabilityIndex, [label, category, priority, difficulty, dependency]] of completedCapabilities.entries()) {
       if (index >= product.quota) break;
       const number = items.length + 1;
       items.push({
@@ -125,6 +158,33 @@ for (const product of products) {
         product_name: product.name,
         category,
         capability_index: capabilities.length + capabilityIndex + 1,
+        capability: label,
+        context,
+        title: `${label} para ${context} en ${product.name}`,
+        description: `${label} aplicado al área de ${context}. Su definición funcional en el roadmap está completada; su implementación técnica se valida por separado.`,
+        priority,
+        difficulty,
+        dependency,
+        status: 'completed',
+      });
+      index += 1;
+    }
+    if (index >= product.quota) break;
+  }
+}
+
+for (const product of products) {
+  let index = 0;
+  for (const context of product.contexts) {
+    for (const [capabilityIndex, [label, category, priority, difficulty, dependency]] of nextCapabilities.entries()) {
+      if (index >= product.quota) break;
+      const number = items.length + 1;
+      items.push({
+        id: `future-${String(number).padStart(4, '0')}`,
+        product: product.id,
+        product_name: product.name,
+        category,
+        capability_index: capabilities.length + completedCapabilities.length + capabilityIndex + 1,
         capability: label,
         context,
         title: `${label} para ${context} en ${product.name}`,
@@ -140,15 +200,16 @@ for (const product of products) {
   }
 }
 
-if (items.length !== 2000) throw new Error(`Se esperaban 2000 propuestas y se generaron ${items.length}`);
+if (items.length !== 3000) throw new Error(`Se esperaban 3000 funciones y se generaron ${items.length}`);
 const catalog = {
   version: 'Roadmap',
   generated_at: new Date().toISOString(),
   status: 'in_progress',
   implemented: items.filter((item) => item.status === 'implemented').length,
   routed: items.filter((item) => item.status === 'routed').length,
+  completed: items.filter((item) => item.status === 'completed').length,
   proposed: items.filter((item) => item.status === 'proposed').length,
-  totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 2])),
+  totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 3])),
   total: items.length,
   items,
 };
