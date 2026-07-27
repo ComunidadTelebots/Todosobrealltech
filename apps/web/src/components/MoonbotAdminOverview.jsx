@@ -39,7 +39,7 @@ const MASTER_SECTIONS = [
   ['Automatizaciones', 'moon-automations'],
   ['Integraciones', 'moon-integrations'],
   ['Operaciones', 'moon-operations'],
-  ['Horizonte 202 · 100 funciones', 'moon-horizon'],
+  ['Horizonte unificado · 1.100 funciones', 'moon-horizon'],
 ];
 
 const Metric = ({ icon: Icon, label, value }) => (

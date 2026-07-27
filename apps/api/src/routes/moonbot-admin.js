@@ -372,7 +372,7 @@ router.all('/horizon', async (req, res) => {
     return res.status(response.status).json(await response.json());
   } catch (error) {
     logger.warn(`[moonbot-horizon] ${error.message}`);
-    return res.status(502).json({ ok: false, error: 'No se pudo consultar Horizonte 202' });
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar el Horizonte unificado' });
   }
 });
 

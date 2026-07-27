@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Horizonte unificado - 2026-07-27
+- Horizonte 202 y Horizonte 1000 aparecen ahora como un único Horizonte de 1.100 entradas.
+- El panel distingue las 100 funciones ejecutables, las iniciativas implementadas y las propuestas pendientes.
+- Se conservan las rutas anteriores para mantener la compatibilidad.
+
 ### Centro completo Horizonte 202 - 2026-07-27
 - Nuevo panel master con las 100 funciones operativas, búsqueda, filtros por área y estado del motor responsable.
 - Cada función dispone de formulario JSON asistido, ejecución protegida, resultado legible e historial auditable.
