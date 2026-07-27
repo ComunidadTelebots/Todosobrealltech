@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Chat efímero y Comunidades Telegram 10.2 - 2026-07-27
+- El chat master puede dirigir un mensaje privado efímero a un usuario concreto dentro de un grupo.
+- La interfaz valida el ID receptor y evita combinar el modo efímero con formatos no admitidos por Telegram.
+- Los chats asociados a una Comunidad Telegram muestran su estado 10.2 en la cabecera.
+
 ### Bot API 10.2 en el chat web - 2026-07-27
 - El chat master permite alternar entre mensaje normal, Rich Markdown y Rich HTML.
 - Se añaden plantillas visuales de detalles, listas, citas y fórmulas, soporte RTL y multimedia referenciada.
