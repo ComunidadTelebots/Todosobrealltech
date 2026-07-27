@@ -144,6 +144,30 @@ router.all('/groups/:id', async (req, res) => {
   }
 });
 
+router.get('/groups/:id/photo', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const cid = String(req.params.id || '');
+  if (!/^-\d+$/.test(cid)) return res.status(400).json({ ok: false, error: 'ID de grupo no válido' });
+  try {
+    const response = await moonRequest(`/api/internal/groups/${encodeURIComponent(cid)}/photo`, {
+      headers: { Accept: 'image/*' },
+    });
+    if (!response.ok) return res.status(response.status).json({ ok: false, error: 'Foto no disponible' });
+    const contentType = response.headers.get('content-type') || '';
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (!contentType.startsWith('image/') || bytes.length > 5 * 1024 * 1024) {
+      return res.status(502).json({ ok: false, error: 'Imagen no válida' });
+    }
+    res.set('Content-Type', contentType);
+    res.set('Cache-Control', 'private, max-age=3600');
+    return res.send(bytes);
+  } catch (error) {
+    logger.warn(`[moonbot-group-photo] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo cargar la foto del grupo' });
+  }
+});
+
 router.all('/groups/:id/ads', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;

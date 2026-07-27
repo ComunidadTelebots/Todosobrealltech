@@ -4,6 +4,7 @@
 - Cada comunidad muestra cuándo se sincronizó por última vez.
 - El panel independiente permite actualizar nombre, alias, descripción, miembros, administradores y permisos sin abandonar la web.
 - La interfaz bloquea la acción mientras está en curso y vuelve a consultar el estado real al terminar.
+- La cabecera carga la foto real del grupo o canal mediante una ruta autenticada y muestra un avatar alternativo si Telegram no ofrece imagen.
 
 ### Grupos y canales con búsqueda global - 2026-07-27
 - Las listas consultan Moonbot por páginas de 40 elementos en lugar de filtrar únicamente datos ya cargados.

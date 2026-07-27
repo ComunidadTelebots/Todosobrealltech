@@ -31,6 +31,7 @@ const MoonbotGroupsManager = ({ groups = [], entityType = 'group' }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [loadingList, setLoadingList] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState('');
   const isChannelView = entityType === 'channel';
   const entityLabel = isChannelView ? 'canal' : 'grupo';
   const entityLabelPlural = isChannelView ? 'canales' : 'grupos';
@@ -44,6 +45,19 @@ const MoonbotGroupsManager = ({ groups = [], entityType = 'group' }) => {
     }, 250);
     return () => window.clearTimeout(timer);
   }, [entityType, page, query, selected]);
+  useEffect(() => {
+    if (!selected?.id) { setPhotoUrl(''); return undefined; }
+    let active = true;
+    let objectUrl = '';
+    apiServerClient.fetch(`/moonbot-admin/groups/${selected.id}/photo`, {
+      headers: { Authorization: `Bearer ${pb.authStore.token}` },
+    }).then(async (response) => {
+      if (!response.ok) return;
+      objectUrl = URL.createObjectURL(await response.blob());
+      if (active) setPhotoUrl(objectUrl);
+    }).catch(() => {});
+    return () => { active = false; if (objectUrl) URL.revokeObjectURL(objectUrl); setPhotoUrl(''); };
+  }, [selected?.id, selected?.synced_at]);
   const open = async (group) => { setSelected(group); setDetail(null); setComparison(null); setAds(null); setCaptchaPreview(null); setError(''); try { setDetail(await request(`/moonbot-admin/groups/${group.id}`)); } catch (cause) { setError(cause.message); } };
   const groupAction = async (action, sourceId, extra = {}) => {
     try {
@@ -71,7 +85,7 @@ const MoonbotGroupsManager = ({ groups = [], entityType = 'group' }) => {
 
   if (!selected) { const EntityIcon = isChannelView ? RadioTower : UsersRound; return <Card className="mt-8 border-violet-500/20"><CardHeader><CardTitle className="flex items-center gap-2"><EntityIcon className="h-5 w-5 text-violet-600" />Administración de {entityLabelPlural}</CardTitle><CardDescription>{total} {entityLabelPlural} vinculados con bots activos · búsqueda sobre todo el inventario.</CardDescription></CardHeader><CardContent>{error && <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">{error}</div>}<div className="relative mb-4"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input className="pl-9" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder={`Buscar ${entityLabel} por nombre, ID o bot`} /></div><div className={`grid gap-3 md:grid-cols-2 ${loadingList ? 'opacity-60' : ''}`}>{listedGroups.map((group) => <button key={group.id} onClick={() => open(group)} className="rounded-xl border p-4 text-left hover:border-violet-500/50 hover:bg-muted/30"><div className="flex items-start justify-between gap-2"><p className="font-semibold">{group.name || `${isChannelView ? 'Canal' : 'Grupo'} ${group.id}`}</p><Badge variant="outline">{isChannelView ? 'Canal' : 'Grupo'}</Badge></div><p className="text-xs text-muted-foreground">{group.username && group.username !== group.id ? `@${String(group.username).replace(/^@/, '')} · ` : ''}{group.id}</p><div className="mt-2 flex flex-wrap gap-1">{(group.bots?.length ? group.bots : group.bot_username ? [{ username: group.bot_username }] : []).map((bot) => <Badge key={`${group.id}-${bot.id || bot.username}`} variant="secondary">@{bot.username}</Badge>)}</div>{group.synced_at && <p className="mt-2 text-xs text-muted-foreground">Sincronizado {new Date(group.synced_at).toLocaleString()}</p>}</button>)}</div>{!loadingList && !listedGroups.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No hay {entityLabelPlural} que coincidan con la búsqueda.</p>}<div className="mt-4 flex items-center justify-between"><Button size="sm" variant="outline" disabled={loadingList || page <= 1} onClick={() => setPage((value) => value - 1)}>Anterior</Button><span className="text-xs text-muted-foreground">Página {page} de {totalPages}</span><Button size="sm" variant="outline" disabled={loadingList || page >= totalPages} onClick={() => setPage((value) => value + 1)}>Siguiente</Button></div></CardContent></Card>; }
 
-  return <Card className="mt-8 border-violet-500/20"><CardHeader><Button variant="ghost" className="mb-2 w-fit" onClick={() => setSelected(null)}><ChevronLeft className="mr-2 h-4 w-4" />Volver a {entityLabelPlural}</Button><div className="flex flex-wrap items-start justify-between gap-3"><div><CardTitle>{selected.name}</CardTitle><CardDescription>{isChannelView ? 'Canal' : 'Grupo'} · ID {selected.id}{selected.synced_at ? ` · sincronizado ${new Date(selected.synced_at).toLocaleString()}` : ''}</CardDescription></div><Button variant="outline" disabled={refreshing} onClick={refreshTelegram}><RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />{refreshing ? 'Sincronizando' : 'Actualizar desde Telegram'}</Button></div></CardHeader><CardContent className="space-y-5">
+  return <Card className="mt-8 border-violet-500/20"><CardHeader><Button variant="ghost" className="mb-2 w-fit" onClick={() => setSelected(null)}><ChevronLeft className="mr-2 h-4 w-4" />Volver a {entityLabelPlural}</Button><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex items-center gap-3">{photoUrl ? <img src={photoUrl} alt="" className="h-14 w-14 rounded-full border object-cover" /> : <div className="flex h-14 w-14 items-center justify-center rounded-full border bg-muted text-lg font-semibold">{String(selected.name || '?').slice(0, 1).toUpperCase()}</div>}<div><CardTitle>{selected.name}</CardTitle><CardDescription>{isChannelView ? 'Canal' : 'Grupo'} · ID {selected.id}{selected.synced_at ? ` · sincronizado ${new Date(selected.synced_at).toLocaleString()}` : ''}</CardDescription></div></div><Button variant="outline" disabled={refreshing} onClick={refreshTelegram}><RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />{refreshing ? 'Sincronizando' : 'Actualizar desde Telegram'}</Button></div></CardHeader><CardContent className="space-y-5">
     {error && <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">{error}</div>}
     {detail && <>
       <section className={`rounded-xl border p-4 ${detail.permissions.healthy ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-amber-500/30 bg-amber-500/10'}`}><h3 className="flex items-center gap-2 font-semibold">{detail.permissions.healthy ? <CheckCircle2 className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}Permisos del bot</h3><p className="mt-2 text-sm">{detail.permissions.healthy ? 'Todos los permisos esenciales están disponibles.' : `Faltan: ${detail.permissions.missing.map((item) => item.label).join(', ')}`}</p>{detail.repair_steps?.length > 0 && <ol className="mt-3 list-inside list-decimal text-sm">{detail.repair_steps.map((step) => <li key={step}>{step}</li>)}</ol>}</section>
