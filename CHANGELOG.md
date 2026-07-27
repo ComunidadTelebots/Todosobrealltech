@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Actualización manual desde Telegram - 2026-07-27
+- Cada comunidad muestra cuándo se sincronizó por última vez.
+- El panel independiente permite actualizar nombre, alias, descripción, miembros, administradores y permisos sin abandonar la web.
+- La interfaz bloquea la acción mientras está en curso y vuelve a consultar el estado real al terminar.
+
 ### Grupos y canales con búsqueda global - 2026-07-27
 - Las listas consultan Moonbot por páginas de 40 elementos en lugar de filtrar únicamente datos ya cargados.
 - La búsqueda cubre nombre, ID, enlace público y bot asociado.
