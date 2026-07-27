@@ -19,11 +19,13 @@ const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperation
 const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
 const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotModerationProductivity.jsx'));
 const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
+const MoonbotTelegramChat = lazy(() => import('@/components/MoonbotTelegramChat.jsx'));
 
 const MASTER_SECTIONS = [
   ['Experiencia y preferencias', 'moon-experience'],
   ['Grupos', 'moon-groups'],
   ['Canales', 'moon-channels'],
+  ['Chat de Telegram', 'moon-chat'],
   ['Anuncios propios', 'moon-house-ads'],
   ['Usuarios y baneos', 'moon-users'],
   ['Seguridad', 'moon-security'],
@@ -100,6 +102,7 @@ const MoonbotAdminOverview = () => {
   const activePanel = activeSection === 'moon-experience' ? <MoonbotExperienceCenter groups={data?.groups || []} />
     : activeSection === 'moon-groups' ? <MoonbotGroupsManager groups={telegramGroups} entityType="group" />
       : activeSection === 'moon-channels' ? <MoonbotGroupsManager groups={telegramChannels} entityType="channel" />
+        : activeSection === 'moon-chat' ? <MoonbotTelegramChat />
         : activeSection === 'moon-house-ads' ? <HouseAdsManager groups={data?.groups || []} />
           : activeSection === 'moon-users' ? <MoonbotUsersManager groups={data?.groups || []} />
             : activeSection === 'moon-security' ? <MoonbotSecurityCenter />

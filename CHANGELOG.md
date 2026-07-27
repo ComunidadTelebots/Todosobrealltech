@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Chat Telegram para el master - 2026-07-27
+- El centro Moonbot incorpora una pestaña de chat con búsqueda paginada de grupos y canales.
+- Permite leer el historial registrado, identificar el bot asociado, refrescar automáticamente y enviar mensajes Markdown desde la web.
+- La sesión creator/admin y la clave interna siguen siendo obligatorias; ningún token de Telegram llega al navegador.
+
 ### Actualización manual desde Telegram - 2026-07-27
 - Cada comunidad muestra cuándo se sincronizó por última vez.
 - El panel independiente permite actualizar nombre, alias, descripción, miembros, administradores y permisos sin abandonar la web.
