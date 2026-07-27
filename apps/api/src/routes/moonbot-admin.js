@@ -359,6 +359,23 @@ router.all('/experience', async (req, res) => {
   }
 });
 
+router.all('/horizon', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const response = await moonRequest('/api/internal/horizon', {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+      timeoutMs: 15000,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-horizon] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar Horizonte 202' });
+  }
+});
+
 router.post('/roadmap/action', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;

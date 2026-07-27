@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Centro completo Horizonte 202 - 2026-07-27
+- Nuevo panel master con las 100 funciones operativas, búsqueda, filtros por área y estado del motor responsable.
+- Cada función dispone de formulario JSON asistido, ejecución protegida, resultado legible e historial auditable.
+- La API de TodoSobreAllTech actúa como proxy servidor-a-servidor y nunca entrega la clave administrativa de Moonbot al navegador.
+- El catálogo combina las 25 funciones originales y las 75 capacidades finales sin duplicarlas.
+
 ### Herramientas ampliadas del chat web - 2026-07-27
 - El chat master incorpora edición, copia, reenvío y limpieza completa de reacciones por ID de mensaje.
 - Se puede desfijar toda la conversación y crear encuestas sin abandonar TodoSobreAllTech.
