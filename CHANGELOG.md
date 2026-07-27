@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Bot API 10.2 en el chat web - 2026-07-27
+- El chat master permite alternar entre mensaje normal, Rich Markdown y Rich HTML.
+- Se añaden plantillas visuales de detalles, listas, citas y fórmulas, soporte RTL y multimedia referenciada.
+- La interfaz admite foto, vídeo, audio, animación y notas de voz de Bot API 10.2 con fallback compatible.
+
 ### Avisos de aprendizaje IA de Moonbot - 2026-07-27
 - El Centro de control muestra las copias horarias del aprendizaje de Moonbot con estado, tamaño, neuronas, progreso y fecha.
 - Los avisos aparecen también en el centro de experiencia y distinguen visualmente una entrega correcta de un fallo.
