@@ -82,7 +82,7 @@ for (const product of products) {
 
 if (items.length !== 1000) throw new Error(`Se esperaban 1000 propuestas y se generaron ${items.length}`);
 const catalog = {
-  version: 'Horizonte unificado',
+  version: 'Roadmap',
   generated_at: new Date().toISOString(),
   status: 'in_progress',
   implemented: items.filter((item) => item.status === 'implemented').length,

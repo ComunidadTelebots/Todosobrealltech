@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap e inventario de features incluidas - 2026-07-27
+- `/roadmap` incorpora un apartado independiente con todas las features verificadas como incluidas.
+- Se mantienen filtros por producto, categoría y estado para consultar las funciones en desarrollo.
+
+### Roadmap como única vista de planificación - 2026-07-27
+- `https://todosobreall.tech/roadmap` pasa a ser la única pantalla del inventario de funciones.
+- Eliminado el centro Horizonte del panel master; las funciones terminadas viven en sus módulos correspondientes.
+- La página distingue entre funciones integradas, en desarrollo y propuestas sin ofrecer un ejecutor genérico.
+
 ### Horizonte mediante recursos REST reales - 2026-07-27
 - Cada función dispone de un recurso autenticado propio en `/moonbot-admin/horizon/:slug`.
 - La web deja de enviar todas las operaciones al ejecutor monolítico y utiliza la ruta correspondiente a la función seleccionada.
