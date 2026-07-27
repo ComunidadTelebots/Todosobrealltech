@@ -56,7 +56,7 @@ const items = [];
 for (const product of products) {
   let index = 0;
   for (const context of product.contexts) {
-    for (const [label, category, priority, difficulty, dependency] of capabilities) {
+    for (const [capabilityIndex, [label, category, priority, difficulty, dependency]] of capabilities.entries()) {
       if (index >= product.quota) break;
       const number = items.length + 1;
       items.push({
@@ -64,6 +64,9 @@ for (const product of products) {
         product: product.id,
         product_name: product.name,
         category,
+        capability_index: capabilityIndex + 1,
+        capability: label,
+        context,
         title: `${label} para ${context} en ${product.name}`,
         description: `${label} aplicado al Ã¡rea de ${context}, con controles auditables, configuraciÃ³n gradual y una experiencia coherente entre los tres productos.`,
         priority,

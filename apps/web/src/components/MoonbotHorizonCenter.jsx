@@ -52,7 +52,7 @@ const MoonbotHorizonCenter = () => {
   const choose = (feature) => {
     if (!feature.executable) return;
     setSelected(feature); setResult(null); setError('');
-    setPayload(JSON.stringify(PAYLOAD_EXAMPLES[feature.category] || {}, null, 2));
+    setPayload(JSON.stringify(feature.payload_example || PAYLOAD_EXAMPLES[feature.category] || {}, null, 2));
   };
   const execute = async () => {
     if (!selected) return;
