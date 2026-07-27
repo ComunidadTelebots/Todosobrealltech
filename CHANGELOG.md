@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Herramientas ampliadas del chat web - 2026-07-27
+- El chat master incorpora edición, copia, reenvío y limpieza completa de reacciones por ID de mensaje.
+- Se puede desfijar toda la conversación y crear encuestas sin abandonar TodoSobreAllTech.
+- Los destinos de copia y reenvío se validan contra los grupos y canales realmente administrados.
+
 ### Operaciones de mensajes desde el chat web - 2026-07-27
 - El master puede responder, reaccionar, fijar, desfijar o borrar indicando el mensaje de Telegram.
 - Se incorporan envío silencioso y protección contra reenvío tanto en mensajes normales como enriquecidos.
