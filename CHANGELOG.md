@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Grupos y canales con búsqueda global - 2026-07-27
+- Las listas consultan Moonbot por páginas de 40 elementos en lugar de filtrar únicamente datos ya cargados.
+- La búsqueda cubre nombre, ID, enlace público y bot asociado.
+- Los canales y grupos se clasifican en el servidor según su tipo real de Telegram.
+
 ### Búsqueda paginada y pestañas persistentes - 2026-07-27
 - Usuarios y sanciones busca sobre el inventario completo de Moonbot y pagina los resultados desde el servidor.
 - El dashboard conserva la última herramienta abierta y refleja su estado en el parámetro `moon` de la URL.

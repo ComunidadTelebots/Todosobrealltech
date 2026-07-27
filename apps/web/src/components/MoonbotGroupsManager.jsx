@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, ChevronLeft, RadioTower, Search, UsersRound } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,10 +25,24 @@ const MoonbotGroupsManager = ({ groups = [], entityType = 'group' }) => {
   const [adWhen, setAdWhen] = useState('');
   const [error, setError] = useState('');
   const [captchaPreview, setCaptchaPreview] = useState(null);
+  const [listedGroups, setListedGroups] = useState(groups);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(groups.length);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingList, setLoadingList] = useState(false);
   const isChannelView = entityType === 'channel';
   const entityLabel = isChannelView ? 'canal' : 'grupo';
   const entityLabelPlural = isChannelView ? 'canales' : 'grupos';
-  const filtered = useMemo(() => groups.filter((group) => `${group.name} ${group.id} ${group.bot_username || ''}`.toLowerCase().includes(query.toLowerCase())), [groups, query]);
+  useEffect(() => {
+    if (selected) return undefined;
+    const timer = window.setTimeout(async () => {
+      setLoadingList(true); setError('');
+      try { const payload = await request(`/moonbot-admin/groups?q=${encodeURIComponent(query)}&type=${entityType}&page=${page}&per_page=40`); setListedGroups(payload.groups || []); setTotal(payload.total || 0); setPage(payload.page || 1); setTotalPages(payload.total_pages || 1); }
+      catch (cause) { setError(cause.message); }
+      finally { setLoadingList(false); }
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [entityType, page, query, selected]);
   const open = async (group) => { setSelected(group); setDetail(null); setComparison(null); setAds(null); setCaptchaPreview(null); setError(''); try { setDetail(await request(`/moonbot-admin/groups/${group.id}`)); } catch (cause) { setError(cause.message); } };
   const groupAction = async (action, sourceId, extra = {}) => {
     try {
@@ -44,7 +58,7 @@ const MoonbotGroupsManager = ({ groups = [], entityType = 'group' }) => {
   const loadAds = async () => { try { setAds(await request(`/moonbot-admin/groups/${selected.id}/ads`)); } catch (cause) { setError(cause.message); } };
   const adAction = async (action, extra = {}) => { try { const payload = await request(`/moonbot-admin/groups/${selected.id}/ads`, { method: 'POST', body: JSON.stringify({ action, ...extra }) }); setAds(payload); } catch (cause) { setError(cause.message); } };
 
-  if (!selected) { const EntityIcon = isChannelView ? RadioTower : UsersRound; return <Card className="mt-8 border-violet-500/20"><CardHeader><CardTitle className="flex items-center gap-2"><EntityIcon className="h-5 w-5 text-violet-600" />Administración de {entityLabelPlural}</CardTitle><CardDescription>Busca un {entityLabel} y abre su panel independiente.</CardDescription></CardHeader><CardContent><div className="relative mb-4"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input className="pl-9" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Buscar ${entityLabel} por nombre, ID o bot`} /></div><div className="grid gap-3 md:grid-cols-2">{filtered.map((group) => <button key={group.id} onClick={() => open(group)} className="rounded-xl border p-4 text-left hover:border-violet-500/50 hover:bg-muted/30"><div className="flex items-start justify-between gap-2"><p className="font-semibold">{group.name || `${isChannelView ? 'Canal' : 'Grupo'} ${group.id}`}</p><Badge variant="outline">{isChannelView ? 'Canal' : 'Grupo'}</Badge></div><p className="text-xs text-muted-foreground">{group.id}</p><div className="mt-2 flex flex-wrap gap-1">{(group.bots?.length ? group.bots : group.bot_username ? [{ username: group.bot_username }] : []).map((bot) => <Badge key={`${group.id}-${bot.id || bot.username}`} variant="secondary">@{bot.username}</Badge>)}</div></button>)}</div>{!filtered.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No hay {entityLabelPlural} que coincidan con la búsqueda.</p>}</CardContent></Card>; }
+  if (!selected) { const EntityIcon = isChannelView ? RadioTower : UsersRound; return <Card className="mt-8 border-violet-500/20"><CardHeader><CardTitle className="flex items-center gap-2"><EntityIcon className="h-5 w-5 text-violet-600" />Administración de {entityLabelPlural}</CardTitle><CardDescription>{total} {entityLabelPlural} vinculados con bots activos · búsqueda sobre todo el inventario.</CardDescription></CardHeader><CardContent>{error && <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">{error}</div>}<div className="relative mb-4"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input className="pl-9" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder={`Buscar ${entityLabel} por nombre, ID o bot`} /></div><div className={`grid gap-3 md:grid-cols-2 ${loadingList ? 'opacity-60' : ''}`}>{listedGroups.map((group) => <button key={group.id} onClick={() => open(group)} className="rounded-xl border p-4 text-left hover:border-violet-500/50 hover:bg-muted/30"><div className="flex items-start justify-between gap-2"><p className="font-semibold">{group.name || `${isChannelView ? 'Canal' : 'Grupo'} ${group.id}`}</p><Badge variant="outline">{isChannelView ? 'Canal' : 'Grupo'}</Badge></div><p className="text-xs text-muted-foreground">{group.username && group.username !== group.id ? `@${String(group.username).replace(/^@/, '')} · ` : ''}{group.id}</p><div className="mt-2 flex flex-wrap gap-1">{(group.bots?.length ? group.bots : group.bot_username ? [{ username: group.bot_username }] : []).map((bot) => <Badge key={`${group.id}-${bot.id || bot.username}`} variant="secondary">@{bot.username}</Badge>)}</div></button>)}</div>{!loadingList && !listedGroups.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No hay {entityLabelPlural} que coincidan con la búsqueda.</p>}<div className="mt-4 flex items-center justify-between"><Button size="sm" variant="outline" disabled={loadingList || page <= 1} onClick={() => setPage((value) => value - 1)}>Anterior</Button><span className="text-xs text-muted-foreground">Página {page} de {totalPages}</span><Button size="sm" variant="outline" disabled={loadingList || page >= totalPages} onClick={() => setPage((value) => value + 1)}>Siguiente</Button></div></CardContent></Card>; }
 
   return <Card className="mt-8 border-violet-500/20"><CardHeader><Button variant="ghost" className="mb-2 w-fit" onClick={() => setSelected(null)}><ChevronLeft className="mr-2 h-4 w-4" />Volver a {entityLabelPlural}</Button><CardTitle>{selected.name}</CardTitle><CardDescription>{isChannelView ? 'Canal' : 'Grupo'} · ID {selected.id}</CardDescription></CardHeader><CardContent className="space-y-5">
     {error && <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">{error}</div>}
