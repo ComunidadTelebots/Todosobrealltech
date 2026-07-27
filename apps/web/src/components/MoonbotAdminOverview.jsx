@@ -102,7 +102,7 @@ const MoonbotAdminOverview = () => {
   const activePanel = activeSection === 'moon-experience' ? <MoonbotExperienceCenter groups={data?.groups || []} />
     : activeSection === 'moon-groups' ? <MoonbotGroupsManager groups={telegramGroups} entityType="group" />
       : activeSection === 'moon-channels' ? <MoonbotGroupsManager groups={telegramChannels} entityType="channel" />
-        : activeSection === 'moon-chat' ? <MoonbotTelegramChat />
+        : activeSection === 'moon-chat' ? <MoonbotTelegramChat bots={data?.instances || []} />
         : activeSection === 'moon-house-ads' ? <HouseAdsManager groups={data?.groups || []} />
           : activeSection === 'moon-users' ? <MoonbotUsersManager groups={data?.groups || []} />
             : activeSection === 'moon-security' ? <MoonbotSecurityCenter />

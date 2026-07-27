@@ -113,11 +113,12 @@ router.get('/groups', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;
   const query = String(req.query.q || '').slice(0, 100);
+  const botId = String(req.query.bot_id || '').slice(0, 100);
   const type = ['group', 'channel'].includes(req.query.type) ? req.query.type : 'all';
   const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
   const perPage = Math.max(10, Math.min(100, Number.parseInt(req.query.per_page, 10) || 40));
   try {
-    const response = await moonRequest(`/api/internal/groups?q=${encodeURIComponent(query)}&type=${type}&page=${page}&per_page=${perPage}`);
+    const response = await moonRequest(`/api/internal/groups?q=${encodeURIComponent(query)}&bot_id=${encodeURIComponent(botId)}&type=${type}&page=${page}&per_page=${perPage}`);
     return res.status(response.status).json(await response.json());
   } catch (error) {
     logger.warn(`[moonbot-groups-list] ${error.message}`);
