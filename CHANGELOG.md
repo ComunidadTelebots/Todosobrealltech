@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Comparador del roadmap sin duplicar funciones - 2026-07-27
+- Auditoría cruzada de Web, API, Moonbot y WebApp para descartar capacidades ya existentes antes de desarrollar.
+- Nuevo comparador de hasta tres entradas con estado, prioridad, dificultad y dependencia visibles en paralelo.
+- La selección se mantiene al buscar, filtrar y cambiar de página durante la sesión.
+
 ### Herramientas operativas del roadmap - 2026-07-27
 - `/roadmap` permite guardar favoritas en el dispositivo y mostrar únicamente la selección personal.
 - Los filtros se conservan en la URL para compartir exactamente la misma vista con otra persona.
