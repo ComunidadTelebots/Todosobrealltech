@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Operaciones de mensajes desde el chat web - 2026-07-27
+- El master puede responder, reaccionar, fijar, desfijar o borrar indicando el mensaje de Telegram.
+- Se incorporan envío silencioso y protección contra reenvío tanto en mensajes normales como enriquecidos.
+- El backend valida que el mensaje pertenezca al grupo abierto y reutiliza los controles existentes de Moonbot.
+
 ### Chat efímero y Comunidades Telegram 10.2 - 2026-07-27
 - El chat master puede dirigir un mensaje privado efímero a un usuario concreto dentro de un grupo.
 - La interfaz valida el ID receptor y evita combinar el modo efímero con formatos no admitidos por Telegram.
