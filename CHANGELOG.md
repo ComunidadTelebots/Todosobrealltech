@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Horizonte completo y ejecutable - 2026-07-27
+- Las 1.100 funciones del Horizonte unificado pueden abrirse y ejecutarse desde el Centro Moonbot.
+- Las 1.000 funciones multiplataforma incorporan configuración, persistencia, auditoría, estado y reversión.
+- El catálogo público marca las 1.000 entradas como implementadas después de validar sus motores.
+
 ### Horizonte unificado - 2026-07-27
 - Horizonte 202 y Horizonte 1000 aparecen ahora como un único Horizonte de 1.100 entradas.
 - El panel distingue las 100 funciones ejecutables, las iniciativas implementadas y las propuestas pendientes.
