@@ -376,6 +376,23 @@ router.all('/horizon', async (req, res) => {
   }
 });
 
+router.all('/horizon/:slug', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  if (!['GET', 'POST', 'PUT', 'DELETE'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const response = await moonRequest(`/api/internal/horizon/features/${encodeURIComponent(req.params.slug)}`, {
+      method: req.method,
+      body: req.method === 'GET' ? undefined : JSON.stringify(req.body || {}),
+      timeoutMs: 15000,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-horizon-feature] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo ejecutar la función del Horizonte' });
+  }
+});
+
 router.post('/roadmap/action', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;

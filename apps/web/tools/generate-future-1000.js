@@ -72,7 +72,7 @@ for (const product of products) {
         priority,
         difficulty: difficulty || difficultyCycle[index % difficultyCycle.length],
         dependency,
-        status: 'implemented',
+        status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'routed',
       });
       index += 1;
     }
@@ -84,8 +84,9 @@ if (items.length !== 1000) throw new Error(`Se esperaban 1000 propuestas y se ge
 const catalog = {
   version: 'Horizonte unificado',
   generated_at: new Date().toISOString(),
-  status: 'complete',
+  status: 'in_progress',
   implemented: items.filter((item) => item.status === 'implemented').length,
+  routed: items.filter((item) => item.status === 'routed').length,
   totals: Object.fromEntries(products.map((product) => [product.id, product.quota])),
   total: items.length,
   items,

@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Horizonte mediante recursos REST reales - 2026-07-27
+- Cada función dispone de un recurso autenticado propio en `/moonbot-admin/horizon/:slug`.
+- La web deja de enviar todas las operaciones al ejecutor monolítico y utiliza la ruta correspondiente a la función seleccionada.
+- El catálogo vuelve a distinguir honestamente entre funciones integradas y funciones con ruta preparada.
+
 ### Horizonte completo y ejecutable - 2026-07-27
 - Las 1.100 funciones del Horizonte unificado pueden abrirse y ejecutarse desde el Centro Moonbot.
 - Las 1.000 funciones multiplataforma incorporan configuración, persistencia, auditoría, estado y reversión.
