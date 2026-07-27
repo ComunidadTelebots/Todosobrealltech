@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Avisos de aprendizaje IA de Moonbot - 2026-07-27
+- El Centro de control muestra las copias horarias del aprendizaje de Moonbot con estado, tamaño, neuronas, progreso y fecha.
+- Los avisos aparecen también en el centro de experiencia y distinguen visualmente una entrega correcta de un fallo.
+
 ### Chat Telegram para el master - 2026-07-27
 - El centro Moonbot incorpora una pestaña de chat con búsqueda paginada de grupos y canales.
 - Permite leer el historial registrado, identificar el bot asociado, refrescar automáticamente y enviar mensajes Markdown desde la web.
