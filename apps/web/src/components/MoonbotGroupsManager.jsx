@@ -76,13 +76,19 @@ const MoonbotGroupsManager = ({ groups = [], entityType = 'group' }) => {
   };
   const loadAds = async () => { try { setAds(await request(`/moonbot-admin/groups/${selected.id}/ads`)); } catch (cause) { setError(cause.message); } };
   const adAction = async (action, extra = {}) => { try { const payload = await request(`/moonbot-admin/groups/${selected.id}/ads`, { method: 'POST', body: JSON.stringify({ action, ...extra }) }); setAds(payload); } catch (cause) { setError(cause.message); } };
-  const rssAction = async (action, extra = {}) => { try { const payload = await request(`/moonbot-admin/groups/${selected.id}/rss`, { method: 'POST', body: JSON.stringify({ action, ...extra }) }); setRss(payload); if (action === 'add') { setRssUrl(''); setRssTitle(''); } } catch (cause) { setError(cause.message); } };
-  const configureRss = (feed) => {
+  const rssAction = async (action, extra = {}) => { try { const payload = await request(`/moonbot-admin/groups/${selected.id}/rss`, { method: 'POST', body: JSON.stringify({ action, ...extra }) }); setRss(payload); if (action === 'add') { setRssUrl(''); setRssTitle(''); } return payload; } catch (cause) { setError(cause.message); return null; } };
+  const configureRss = async (feed) => {
     const include = window.prompt('Palabras que debe incluir, separadas por comas (vacío = todas)', (feed.include_keywords || []).join(', ')); if (include === null) return;
     const exclude = window.prompt('Palabras que se deben excluir', (feed.exclude_keywords || []).join(', ')); if (exclude === null) return;
     const messageThreadId = window.prompt('ID del tema de Telegram (vacío = chat principal)', feed.message_thread_id || ''); if (messageThreadId === null) return;
+    const pollInterval = window.prompt('Frecuencia en minutos (5-1440)', feed.poll_interval_minutes || 15); if (pollInterval === null) return;
+    const maximum = window.prompt('Máximo de entradas por ciclo (1-10)', feed.max_entries_per_cycle || 3); if (maximum === null) return;
+    const failures = window.prompt('Pausar tras cuántos fallos (1-20)', feed.pause_after_failures || 5); if (failures === null) return;
+    const quietStart = window.prompt('Inicio del horario silencioso UTC (0-23, vacío = desactivado)', feed.quiet_start_utc ?? ''); if (quietStart === null) return;
+    const quietEnd = window.prompt('Fin del horario silencioso UTC (0-23, vacío = desactivado)', feed.quiet_end_utc ?? ''); if (quietEnd === null) return;
     const template = window.prompt('Plantilla: usa {title}, {url} y opcionalmente {source}', feed.template || '📰 **{title}**\n{url}'); if (template === null) return;
-    rssAction('configure', { feed_id: feed.id, include_keywords: include, exclude_keywords: exclude, message_thread_id: messageThreadId, template });
+    const saved = await rssAction('configure', { feed_id: feed.id, include_keywords: include, exclude_keywords: exclude, message_thread_id: messageThreadId, poll_interval_minutes: pollInterval, max_entries_per_cycle: maximum, pause_after_failures: failures, quiet_start_utc: quietStart, quiet_end_utc: quietEnd, template });
+    if (saved && window.confirm('Configuración guardada. ¿Comprobar y publicar ahora?')) await rssAction('run_now', { feed_id: feed.id });
   };
   const refreshTelegram = async () => {
     setRefreshing(true); setError('');
