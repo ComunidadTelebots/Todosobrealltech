@@ -19,6 +19,9 @@
 - La administración web añade frecuencia, límite por ciclo, horario silencioso, tolerancia a fallos y ejecución inmediata por fuente.
 - Cada fuente se puede renombrar y reiniciar de forma segura para reconstruir su cursor sin publicar el historial anterior.
 - El panel muestra comprobaciones, publicaciones, descartes, errores y el historial reciente de entregas.
+- La web muestra estado, latencia y próxima comprobación por fuente, con acceso al artículo entregado.
+- Se pueden reiniciar métricas o vaciar el historial sin eliminar la configuración RSS.
+- Los reintentos aplican espera progresiva tras errores para reducir carga sobre fuentes inestables.
 
 ### Correlación de incidencias multigrupo - 2026-07-28
 - El centro de seguridad puede agrupar incidentes relacionados de varios grupos por tiempo, tipo y términos compartidos.
