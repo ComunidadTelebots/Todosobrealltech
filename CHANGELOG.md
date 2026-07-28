@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Comunidades reales de Telegram - 2026-07-28
+- El panel de cada grupo muestra si pertenece a una comunidad de Telegram, sus chats ya vinculados y los chats administrados que todavía se pueden añadir.
+- Se incorporan detección Bot API 10.2, comprobación conjunta y accesos para completar la vinculación en Telegram.
+- El listado identifica visualmente los grupos y canales que ya pertenecen a una comunidad.
+
 ### Vista "roadmap por producto" y panel de progreso en Moonbot - 2026-07-28
 - Se agregó `/api/moonbot-admin/roadmap-summary` para mostrar, desde la API protegida por admin/creator, el inventario verificable del roadmap 3000 por estado y producto.
 - El centro Moonbot de la web ahora incluye una tarjeta de progreso con:
