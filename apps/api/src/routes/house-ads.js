@@ -2,6 +2,7 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import geoip from 'geoip-lite';
 import { authorizeAdminOrCreator } from './stats.js';
 
 const router = Router();
@@ -29,6 +30,15 @@ const rotatedOfficialAdsFor = (placement = '', now = Date.now()) => {
   const index = (Math.floor(now / ROTATION_MS) + offset) % ads.length;
   return [...ads.slice(index), ...ads.slice(0, index)];
 };
+const requestCountry = (req) => {
+  const headerCountry = ['cf-ipcountry', 'x-country-code', 'x-vercel-ip-country', 'x-geo-country']
+    .map((name) => String(req.headers[name] || '').trim().toUpperCase())
+    .find((value) => /^[A-Z]{2}$/.test(value) && value !== 'XX');
+  if (headerCountry) return headerCountry;
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',').map((value) => value.trim());
+  const address = forwarded.find(Boolean) || String(req.socket?.remoteAddress || '').replace(/^::ffff:/, '');
+  return String(geoip.lookup(address)?.country || 'UNK').toUpperCase();
+};
 
 async function moon(options = {}) {
   let lastError;
@@ -44,6 +54,7 @@ async function moon(options = {}) {
 
 router.get('/', async (req, res) => {
   const placement = String(req.query.placement || '');
+  const country = requestCountry(req);
   try {
     const response = await moon();
     const rawBody = await response.text();
@@ -59,7 +70,7 @@ router.get('/', async (req, res) => {
         .sort((left, right) => String(left.id).localeCompare(String(right.id)));
       const offset = [...placement].reduce((sum, character) => sum + character.charCodeAt(0), 0);
       ads = [candidates[(Math.floor(Date.now() / ROTATION_MS) + offset) % candidates.length]];
-      moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement }) }).catch(() => {});
+      moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement, country }) }).catch(() => {});
     }
     return res.json({ ok: true, ads });
   } catch {
@@ -108,7 +119,12 @@ router.get('/media/:filename', async (req, res) => {
 
 router.get('/:id/click', async (req, res) => {
   const officialAd = OFFICIAL_ADS.find((item) => item.id === String(req.params.id));
-  if (officialAd) return res.redirect(302, officialAd.url);
+  const placement = String(req.query.placement || 'unknown').slice(0, 20);
+  const country = requestCountry(req);
+  if (officialAd) {
+    moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: officialAd.id, placement, country }) }).catch(() => {});
+    return res.redirect(302, officialAd.url);
+  }
   try {
     const current = await moon();
     const rawBody = await current.text();
@@ -116,8 +132,7 @@ router.get('/:id/click', async (req, res) => {
     try { data = JSON.parse(rawBody); } catch { return res.redirect(302, 'https://todosobreall.tech'); }
     const ad = (data.ads || []).find((item) => String(item.id) === String(req.params.id));
     if (!ad || !ad.enabled || ['pending', 'rejected'].includes(ad.approval_status) || !isScheduledNow(ad)) return res.redirect(302, 'https://todosobreall.tech');
-    const placement = String(req.query.placement || 'unknown').slice(0, 20);
-    await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement }) });
+    await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, country }) });
     return res.redirect(302, ad.url.startsWith('tg://') ? ad.url.replace('tg://', 'https://t.me/') : ad.url);
   } catch { return res.redirect(302, 'https://todosobreall.tech'); }
 });
