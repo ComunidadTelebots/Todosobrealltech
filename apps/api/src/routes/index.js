@@ -39,6 +39,9 @@ export default () => {
     router.use('/telegram-language-map', telegramLanguageMapRouter);
     router.use('/moonbot-admin', moonbotAdminRouter);
     router.use('/house-ads', houseAdsRouter);
+    // Alias neutral: algunos bloqueadores interceptan cualquier URL que incluya
+    // "ads", incluso cuando son recomendaciones propias sin seguimiento externo.
+    router.use('/community-cards', houseAdsRouter);
 
     return router;
 };
