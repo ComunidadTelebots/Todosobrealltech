@@ -17,6 +17,8 @@
 - La interfaz muestra el último chequeo y los errores de cada fuente sin mezclar este sistema con el RSS editorial de NoticiasWeb3.
 - Cada fuente admite palabras obligatorias y excluidas, plantilla de publicación y un tema concreto de Telegram como destino.
 - La administración web añade frecuencia, límite por ciclo, horario silencioso, tolerancia a fallos y ejecución inmediata por fuente.
+- Cada fuente se puede renombrar y reiniciar de forma segura para reconstruir su cursor sin publicar el historial anterior.
+- El panel muestra comprobaciones, publicaciones, descartes, errores y el historial reciente de entregas.
 
 ### Correlación de incidencias multigrupo - 2026-07-28
 - El centro de seguridad puede agrupar incidentes relacionados de varios grupos por tiempo, tipo y términos compartidos.
