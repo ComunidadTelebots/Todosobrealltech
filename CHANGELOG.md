@@ -3,6 +3,7 @@
 ### Publicación resiliente de NoticiasWeb3 - 2026-07-28
 - Un timeout de Telegram ya no interrumpe la creación del artículo propio en PocketBase ni su ruta interna de NoticiasWeb3.
 - El publicador continúa procesando el lote aunque la fuente completa o Telegram no respondan temporalmente.
+- El guardado en PocketBase dispone de tres intentos con espera progresiva y comprueba el `slug` antes de reintentar para no crear duplicados.
 
 ### Formatos publicitarios discretos para Telegram - 2026-07-28
 - El creador puede elegir formato automático, mosaico, fila compacta, tarjetas, recomendación rotatoria o cinta de accesos para las campañas comunitarias.

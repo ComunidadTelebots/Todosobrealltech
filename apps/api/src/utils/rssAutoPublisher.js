@@ -146,6 +146,31 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+async function createNewsRecordWithRetry(record, maxAttempts = 3) {
+  const escapedSlug = String(record.slug).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await pocketbaseClient.collection('nw3_noticias').create(record);
+    } catch (err) {
+      lastError = err;
+      // Si PocketBase guardó el registro pero la respuesta se perdió, no crear
+      // un duplicado durante el reintento.
+      try {
+        const existing = await pocketbaseClient.collection('nw3_noticias')
+          .getFirstListItem(`slug="${escapedSlug}"`);
+        if (existing) return existing;
+      } catch { /* sigue con el reintento */ }
+      if (attempt < maxAttempts) {
+        const delayMs = 1000 * (2 ** (attempt - 1));
+        logger.warn(`[rssAutoPublisher] PocketBase no respondió al guardar; reintento ${attempt}/${maxAttempts} en ${delayMs} ms: ${err.message}`);
+        await sleep(delayMs);
+      }
+    }
+  }
+  throw new Error(`PocketBase no pudo guardar el artículo tras ${maxAttempts} intentos: ${lastError?.message || 'error desconocido'}`);
+}
+
 function detectCategory(text, defaultCategory) {
   const lower = ` ${text.toLowerCase()} `;
   for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
@@ -934,7 +959,7 @@ async function runAutoPublish() {
           await sleep(TELEGRAM_CALL_DELAY_MS);
         }
 
-        await pocketbaseClient.collection('nw3_noticias').create({
+        await createNewsRecordWithRetry({
           titulo,
           slug,
           categoria,
