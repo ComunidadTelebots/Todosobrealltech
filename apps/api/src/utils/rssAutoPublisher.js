@@ -714,13 +714,20 @@ async function publishToTelegram(article, slug) {
 
   const text = `${header}\n\n${escapeHtml(body)}\n\n${footer}`;
 
-  const result = await telegramApi('sendMessage', { chat_id: PUBLISH_CHANNEL, text, parse_mode: 'HTML' });
-  if (result.ok && result.result?.message_id) {
-    return result.result.message_id;
-  }
+  try {
+    const result = await telegramApi('sendMessage', { chat_id: PUBLISH_CHANNEL, text, parse_mode: 'HTML' });
+    if (result.ok && result.result?.message_id) {
+      return result.result.message_id;
+    }
 
-  logger.warn(`[rssAutoPublisher] publishToTelegram falló: ${result.description || 'error desconocido'}`);
-  return null;
+    logger.warn(`[rssAutoPublisher] publishToTelegram falló: ${result.description || 'error desconocido'}`);
+    return null;
+  } catch (err) {
+    // Telegram es una salida secundaria: un timeout suyo nunca debe impedir que
+    // el artículo se guarde y obtenga su URL propia en NoticiasWeb3.
+    logger.warn(`[rssAutoPublisher] Telegram no disponible; el artículo se guardará igualmente: ${err.message}`);
+    return null;
+  }
 }
 
 // ── Backfill puntual ─────────────────────────────────────────────────────────
