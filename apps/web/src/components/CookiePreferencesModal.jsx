@@ -121,7 +121,7 @@ const CookiePreferencesModal = () => {
         </div>
 
         <div className="text-sm text-muted-foreground pb-2">
-          Para más información, visita nuestra <Link to="/privacy-policy" onClick={closeCookieModal} className="text-primary hover:underline font-medium">Política de Privacidad</Link>.
+          Más información en la <Link to="/cookies" onClick={closeCookieModal} className="text-primary hover:underline font-medium">Política de cookies</Link> y la <Link to="/privacy" onClick={closeCookieModal} className="text-primary hover:underline font-medium">Política de privacidad</Link>.
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">

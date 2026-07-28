@@ -38,12 +38,11 @@ a:focus, a:active, a:hover { text-decoration: underline; }
 #banner-top {
   margin: 15px auto;
   width: 728px;
-  height: 90px;
-  overflow: hidden;
+  min-height: 90px;
 }
 #banner-right {
   width: 160px;
-  height: 600px;
+  min-height: 600px;
   position: absolute;
   left: 50%;
   margin-left: 526px;
@@ -80,10 +79,15 @@ a:focus, a:active, a:hover { text-decoration: underline; }
 .house-ad{display:flex;align-items:center;gap:12px;box-sizing:border-box;padding:12px 14px;border:1px solid color-mix(in srgb,var(--house-accent,#1982d1) 28%,transparent);border-radius:10px;background:var(--house-bg,linear-gradient(135deg,#f7fbff,#eef7ff));color:var(--house-fg,#27364a);text-decoration:none!important;overflow:hidden;}
 .house-ad img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:0 0 auto;}.house-ad-copy{display:flex;flex:1;min-width:0;flex-direction:column;line-height:1.25}.house-ad-copy small{font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.7}.house-ad-copy strong{font-size:15px;color:var(--house-fg,#155f9b)}.house-ad-copy span{font-size:11px;opacity:.8}.house-ad>b{padding:7px 10px;border-radius:999px;background:var(--house-accent,#1982d1);color:#fff;font-size:11px;}.house-ad-right{flex-direction:column;text-align:center}.house-ad-right img{width:100%;height:96px}
 .house-ad .markdown-link{text-decoration:underline}.house-ad code{padding:1px 3px;border-radius:3px;background:rgba(0,0,0,.08);font-family:monospace}
+.ad-stack{display:flex;flex-direction:column;gap:10px;width:100%}.ad-stack-top{align-items:center}.ad-stack-right{width:160px}.ad-stack-inline{margin:12px 0}.ad-stack .google-ad-slot{flex:0 0 auto}.ad-stack-top .house-ad{order:0}.ad-stack-top .google-ad-slot{order:1}
 .ad-slot > .adsbygoogle {
   position: relative;
   z-index: 2;
 }
+.nw3-cookie-banner{position:fixed;z-index:10000;left:18px;right:18px;bottom:18px;display:flex;align-items:flex-start;gap:14px;max-width:920px;margin:auto;padding:18px;border:1px solid rgba(32,112,180,.28);border-radius:18px;background:rgba(250,253,255,.98);color:#172235;box-shadow:0 18px 60px rgba(15,42,68,.28);backdrop-filter:blur(14px)}
+.nw3-cookie-icon{font-size:27px}.nw3-cookie-copy{flex:1;min-width:0}.nw3-cookie-copy strong{font-size:16px}.nw3-cookie-copy p{margin:5px 0 7px;font-size:12px;line-height:1.45;color:#526175}.nw3-cookie-copy small a{color:#0873c5}.nw3-cookie-options{display:flex;flex-wrap:wrap;gap:12px;margin:9px 0;font-size:12px}.nw3-cookie-options label{display:flex;align-items:center;gap:5px}.nw3-cookie-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}.nw3-cookie-actions button{border:1px solid #b9cde0;border-radius:999px;background:#fff;color:#18537f;padding:8px 12px;font-weight:700;cursor:pointer}.nw3-cookie-actions .primary{border-color:#168acd;background:#168acd;color:#fff}
+.legal-consent-button{margin:8px 0 18px;border:0;border-radius:999px;background:#168acd;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer}
+@media(max-width:720px){.nw3-cookie-banner{left:10px;right:10px;bottom:72px;display:grid;grid-template-columns:auto 1fr;padding:14px}.nw3-cookie-actions{grid-column:1/-1}.nw3-cookie-actions button{flex:1}.nw3-cookie-icon{font-size:22px}}
 .ad-preview span {
   color: #b50433;
   font-size: 10px;

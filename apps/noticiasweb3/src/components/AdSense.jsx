@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import SafeMarkdown from './SafeMarkdown.jsx';
+import { effectiveCookieConsent } from '../utils/cookieConsent.js';
 
 const DEFAULT_ADSENSE_ID = 'ca-pub-1927309987076600';
 
@@ -37,9 +38,16 @@ export default function AdSense({ slot, placement = 'inline', style, className =
   const [status, setStatus] = useState('loading');
   const [houseAd, setHouseAd] = useState(null);
   const [houseError, setHouseError] = useState('');
+  const [adsAllowed, setAdsAllowed] = useState(() => effectiveCookieConsent().ads);
 
   useEffect(() => {
-    if (!CLIENT) return;
+    const update = (event) => setAdsAllowed(Boolean(event.detail?.ads));
+    window.addEventListener('nw3CookieConsentChanged', update);
+    return () => window.removeEventListener('nw3CookieConsentChanged', update);
+  }, []);
+
+  useEffect(() => {
+    if (!CLIENT || !adsAllowed) return;
     loadScript();
     if (!hasRealSlot) return;
     const ad = adRef.current;
@@ -57,7 +65,7 @@ export default function AdSense({ slot, placement = 'inline', style, className =
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (_) {}
     return () => { observer.disconnect(); window.clearTimeout(timeout); };
-  }, [hasRealSlot]);
+  }, [adsAllowed, hasRealSlot]);
 
   useEffect(() => {
     if (status === 'filled') return;
@@ -66,37 +74,25 @@ export default function AdSense({ slot, placement = 'inline', style, className =
       .catch((error) => { setHouseError(error?.message || 'No se pudo consultar anuncios propios'); });
   }, [hasRealSlot, placement, status]);
 
-  if ((!CLIENT || !hasRealSlot || status === 'unfilled') && houseAd) return (
-    <a className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }} href={`/hcgi/api/house-ads/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored">
-      {houseAd.image && <img src={houseAd.image} alt="" />}
-      <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span><SafeMarkdown>{houseAd.description}</SafeMarkdown></span></span>
-      <b>{houseAd.cta || 'Abrir'}</b>
-    </a>
-  );
-  if (!CLIENT || !hasRealSlot || status === 'unfilled') {
-    if (!houseAd) {
-      return (
-        <div className={`ad-slot ${className}`} style={style} role="note" aria-label={`Publicidad (${placement})`}>
-          <div className="ad-preview ad-preview-inline">
-            {houseError ? 'Sin anuncios propios disponibles' : 'Cargando publicidad...'}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  }
-
+  const showGoogle = adsAllowed && CLIENT && hasRealSlot && status !== 'unfilled';
   return (
-    <div className={`ad-slot ${status === 'loading' ? 'ad-slot-loading' : 'ad-slot-filled'} ${className}`} style={style} role="complementary" aria-label="Publicidad">
-      <ins
-        ref={adRef}
-        className="adsbygoogle"
-        style={{ display: 'block', width: '100%', height: '100%' }}
-        data-ad-client={CLIENT}
-        data-ad-slot={slot}
-        data-ad-format="auto"
-        data-full-width-responsive="false"
-      />
+    <div className={`ad-stack ad-stack-${placement}`}>
+      {houseAd ? (
+        <a className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }} href={`/hcgi/api/house-ads/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored">
+          {houseAd.image && <img src={houseAd.image} alt="" />}
+          <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span><SafeMarkdown>{houseAd.description}</SafeMarkdown></span></span>
+          <b>{houseAd.cta || 'Abrir'}</b>
+        </a>
+      ) : (
+        <div className={`ad-slot community-ad-loading ${className}`} style={style} role="status">
+          <div className="ad-preview ad-preview-inline">{houseError ? 'Campaña comunitaria temporalmente no disponible' : 'Cargando recomendación de la comunidad…'}</div>
+        </div>
+      )}
+      {showGoogle && (
+        <div className={`ad-slot google-ad-slot ${status === 'loading' ? 'ad-slot-loading' : 'ad-slot-filled'} ${className}`} style={style} role="complementary" aria-label="Publicidad de Google">
+          <ins ref={adRef} className="adsbygoogle" style={{ display: 'block', width: '100%', height: '100%' }} data-ad-client={CLIENT} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="false" />
+        </div>
+      )}
     </div>
   );
 }

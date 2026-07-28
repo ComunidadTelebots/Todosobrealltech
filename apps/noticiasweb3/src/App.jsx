@@ -1,41 +1,27 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
+import { effectiveCookieConsent } from './utils/cookieConsent.js';
 
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 const ADSENSE_SLOT_TOP = import.meta.env.VITE_ADSENSE_SLOT_TOP || 'SLOT_TOP';
 const ADSENSE_SLOT_RIGHT = import.meta.env.VITE_ADSENSE_SLOT_RIGHT || 'SLOT_RIGHT';
 
-const CONSENT_REQUIRED_REGIONS = new Set([
-  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
-  'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK',
-  'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'UK', 'CH',
-]);
-
 function getAnalyticsConsentValue() {
-  const locale = navigator.languages?.[0] || navigator.language || '';
-  const region = locale.match(/[-_]([A-Z]{2})$/i)?.[1]?.toUpperCase() || '';
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-
-  if (CONSENT_REQUIRED_REGIONS.has(region)) return 'denied';
-  if (timeZone.startsWith('Europe/')) return 'denied';
-  if (timeZone === 'Atlantic/Canary' || timeZone === 'Atlantic/Madeira' || timeZone === 'Atlantic/Azores') return 'denied';
-  if (!timeZone && !region) return 'denied';
-
-  return 'granted';
+  return effectiveCookieConsent();
 }
 
 function initGA() {
   if (!GA_ID || document.getElementById('ga-script')) return;
-  const consentValue = getAnalyticsConsentValue();
+  const consent = getAnalyticsConsentValue();
 
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); }
   window.gtag = window.gtag || gtag;
   window.gtag('consent', 'default', {
-    analytics_storage: consentValue,
-    ad_storage: consentValue,
-    ad_user_data: consentValue,
-    ad_personalization: consentValue,
+    analytics_storage: consent.analytics ? 'granted' : 'denied',
+    ad_storage: consent.ads ? 'granted' : 'denied',
+    ad_user_data: consent.ads ? 'granted' : 'denied',
+    ad_personalization: consent.ads ? 'granted' : 'denied',
     wait_for_update: 500,
   });
 
@@ -94,6 +80,7 @@ import EncuestasPage from './pages/EncuestasPage.jsx';
 import NuevaNoticiaPage from './pages/NuevaNoticiaPage.jsx';
 import EditarNoticiaPage from './pages/EditarNoticiaPage.jsx';
 import LegalPage from './pages/LegalPage.jsx';
+import CookieBanner from './components/CookieBanner.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 
 function Layout({ children }) {
@@ -207,6 +194,7 @@ function Layout({ children }) {
         onOpenDrawer={() => setMobileNavOpen(true)}
       />
       <Fab siteVersion={siteVersion} appPlatform={appPlatform} />
+      <CookieBanner />
     </div>
     </>
   );

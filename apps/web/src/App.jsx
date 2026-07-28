@@ -33,6 +33,8 @@ const BlogAdminPage = lazy(() => import('@/pages/BlogAdminPage.jsx'));
 const BlogArticleFormPage = lazy(() => import('@/pages/BlogArticleFormPage.jsx'));
 const ProxiesPanel = lazy(() => import('@/pages/ProxiesPanel.jsx'));
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage.jsx'));
+const TermsPage = lazy(() => import('@/pages/TermsPage.jsx'));
+const CookiePolicyPage = lazy(() => import('@/pages/CookiePolicyPage.jsx'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage.jsx'));
 const FutureFeaturesPage = lazy(() => import('@/pages/FutureFeaturesPage.jsx'));
 
@@ -91,6 +93,9 @@ function App() {
                   <Route path="/blog/:slug" element={<BlogPostPage />} />
                   <Route path="/proxies" element={<ProxiesPanel />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/cookies" element={<CookiePolicyPage />} />
                   <Route path="/roadmap" element={<FutureFeaturesPage />} />
                   
                   <Route

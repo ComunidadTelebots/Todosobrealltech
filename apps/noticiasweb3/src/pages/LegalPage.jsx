@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { COOKIE_CONSENT_KEY } from '../utils/cookieConsent.js';
 
 const updatedAt = '28 de julio de 2026';
 const documents = {
@@ -27,9 +28,11 @@ const documents = {
 
 export default function LegalPage({ type }) {
   const document = documents[type] || documents.terms;
+  const reopenConsent = () => { localStorage.removeItem(COOKIE_CONSENT_KEY); window.location.reload(); };
   return <main id="main" className="legal-page">
     <h1>{document.title}</h1><p className="legal-updated">Actualizada el {updatedAt}</p><p>{document.intro}</p>
     {document.sections.map(([title, content]) => <section key={title}><h2>{title}</h2><p>{content}</p></section>)}
+    {type === 'cookies' && <button type="button" className="legal-consent-button" onClick={reopenConsent}>Cambiar preferencias de cookies</button>}
     <p className="legal-links"><Link to="/terminos">Términos</Link> · <Link to="/privacidad">Privacidad</Link> · <Link to="/cookies">Cookies</Link></p>
   </main>;
 }
