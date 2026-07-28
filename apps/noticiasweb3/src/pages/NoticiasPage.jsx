@@ -108,7 +108,7 @@ const tabStyle = (active) => ({
   position: 'relative',
 });
 
-export default function NoticiasPage({ siteVersion }) {
+export default function NoticiasPage({ siteVersion, appPlatform }) {
   const { isAuthenticated } = useAuth();
   const [activeEgg, setActiveEgg] = useState(null);
   const eggTimer = useRef(null);
@@ -732,6 +732,7 @@ export default function NoticiasPage({ siteVersion }) {
                     <AdSense
                       slot={ADSENSE_SLOT_INLINE}
                       placement="inline"
+                      platform={appPlatform}
                       className="ad-preview-inline"
                       style={{ minHeight: 110 }}
                     />

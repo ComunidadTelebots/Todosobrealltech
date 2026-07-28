@@ -31,7 +31,7 @@ function loadScript() {
   document.head.appendChild(s);
 }
 
-export default function AdSense({ slot, placement = 'inline', style, className = '' }) {
+export default function AdSense({ slot, placement = 'inline', platform = '', style, className = '' }) {
   const slotText = String(slot || '').trim();
   const hasRealSlot = Boolean(slotText && !slotText.startsWith('SLOT_'));
   const adRef = useRef(null);
@@ -76,7 +76,7 @@ export default function AdSense({ slot, placement = 'inline', style, className =
 
   const showGoogle = adsAllowed && CLIENT && hasRealSlot && status !== 'unfilled';
   return (
-    <div className={`ad-stack ad-stack-${placement}`}>
+    <div className={`ad-stack ad-stack-${placement} ${platform ? `ad-stack-platform-${platform}` : ''}`}>
       {houseAd ? (
         <a className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }} href={`/hcgi/api/community-cards/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored">
           {houseAd.image && <img src={houseAd.image} alt="" />}
