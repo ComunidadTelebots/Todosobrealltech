@@ -14,10 +14,21 @@ const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad
 const mediaDir = '/data/house-ad-media';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 const OFFICIAL_ADS = [
-  { id: 'official-todosobrealltech', title: 'TodoSobreAllTech en Telegram', description: 'Noticias de tecnología, IA, Web3 y seguridad en nuestro canal oficial.', cta: 'Unirme al canal', url: 'https://t.me/TodoSobreAllTech', placement: 'all', priority: -100, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#e9f8ff,#d8f0ff)', foreground: '#12324a', accent: '#168acd', builtin: true },
-  { id: 'official-comunidadtelebots', title: 'Comunidad TeleBots', description: 'Descubre bots, herramientas y proyectos abiertos para Telegram.', cta: 'Abrir comunidad', url: 'https://comunidadtelebots.todosobreall.tech', placement: 'all', priority: -101, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f4ecff,#e7ddff)', foreground: '#2f2350', accent: '#7157c8', builtin: true },
+  { id: 'official-todosobrealltech', title: 'TodoSobreAllTech en Telegram', description: 'Noticias de tecnología, IA, Web3 y seguridad en nuestro canal oficial.', cta: 'Unirme al canal', url: 'https://t.me/TodoSobreAllTech', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#e9f8ff,#d8f0ff)', foreground: '#12324a', accent: '#168acd', builtin: true },
+  { id: 'official-comunidadtelebots', title: 'Comunidad TeleBots', description: 'Canales, grupos, bots y proyectos abiertos de nuestra comunidad Telegram.', cta: 'Abrir comunidad', url: 'https://t.me/comunidadtelebots', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f4ecff,#e7ddff)', foreground: '#2f2350', accent: '#7157c8', builtin: true },
+  { id: 'official-resistencia-censura', title: 'Resistencia a la Censura', description: 'Privacidad, acceso libre a la información y resistencia digital.', cta: 'Ver canal', url: 'https://t.me/resistencia_censura', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', foreground: '#7c2d12', accent: '#ea580c', builtin: true },
+  { id: 'official-todosobregameplays', title: 'Todo Sobre Gameplays', description: 'Vídeos, directos y novedades para la comunidad gaming.', cta: 'Ver gameplays', url: 'https://t.me/TodoSobreGameplaysCanal', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', foreground: '#4c1d95', accent: '#7c3aed', builtin: true },
+  { id: 'official-instagram', title: 'TodoSobreAllTech en Instagram', description: 'Noticias, tecnología e inteligencia artificial en formato visual.', cta: 'Seguir en Instagram', url: 'https://www.instagram.com/todosobrealltech/', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#fff1f2,#fae8ff)', foreground: '#831843', accent: '#db2777', builtin: true },
 ];
 const officialAdsFor = (placement = '') => OFFICIAL_ADS.filter((ad) => !placement || ['all', placement].includes(ad.placement));
+const ROTATION_MS = 10 * 60 * 1000;
+const rotatedOfficialAdsFor = (placement = '', now = Date.now()) => {
+  const ads = officialAdsFor(placement);
+  if (ads.length < 2) return ads;
+  const offset = [...placement].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+  const index = (Math.floor(now / ROTATION_MS) + offset) % ads.length;
+  return [...ads.slice(index), ...ads.slice(0, index)];
+};
 
 async function moon(options = {}) {
   let lastError;
@@ -38,20 +49,21 @@ router.get('/', async (req, res) => {
     const rawBody = await response.text();
     let data;
     try { data = JSON.parse(rawBody); }
-    catch { return res.json({ ok: true, ads: officialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status }); }
-    if (!response.ok) return res.json({ ok: true, ads: officialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status });
+    catch { return res.json({ ok: true, ads: rotatedOfficialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status }); }
+    if (!response.ok) return res.json({ ok: true, ads: rotatedOfficialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status });
     let ads = (data.ads || []).filter((ad) => ad.enabled !== false && !['pending', 'rejected'].includes(ad.approval_status) && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
     if (!ads.length) ads = officialAdsFor(placement);
     if (placement && ads.length) {
       const highestPriority = Math.max(...ads.map((ad) => Number(ad.priority || 0)));
       const candidates = ads.filter((ad) => Number(ad.priority || 0) === highestPriority)
-        .sort((left, right) => Number(left.impressions_by_placement?.[placement] || 0) - Number(right.impressions_by_placement?.[placement] || 0));
-      ads = candidates.slice(0, 1);
+        .sort((left, right) => String(left.id).localeCompare(String(right.id)));
+      const offset = [...placement].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+      ads = [candidates[(Math.floor(Date.now() / ROTATION_MS) + offset) % candidates.length]];
       moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement }) }).catch(() => {});
     }
     return res.json({ ok: true, ads });
   } catch {
-    const ads = officialAdsFor(placement).slice(0, 1);
+    const ads = rotatedOfficialAdsFor(placement).slice(0, 1);
     return res.json({ ok: true, ads, fallback: true });
   }
 });
