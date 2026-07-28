@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### API 1.0.0 y actualización de seguridad - 2026-07-28
+- La API pasa de Node.js 20, ya fuera de soporte, a Node.js 24 LTS.
+- Axios, Express, GeoIP Lite y Morgan se actualizan a versiones corregidas y fijadas para evitar cambios inesperados.
+- El contenedor utiliza `npm ci` y el lockfile específico de la API para construcciones reproducibles.
+- La auditoría final de dependencias de producción informa de cero vulnerabilidades.
+
 ### Roadmap técnico verificable - 2026-07-28
 - El roadmap separa funciones implementadas, estructuras parciales, especificaciones y propuestas sin comenzar.
 - Añade el contador real pendiente y el porcentaje verificado, evitando presentar una definición como código operativo.

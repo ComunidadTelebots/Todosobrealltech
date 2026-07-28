@@ -1,7 +1,7 @@
 {
   "name": "api",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "node --trace-deprecation src/main.js",
@@ -10,16 +10,16 @@
   },
   "dependencies": {
     "@vitalets/google-translate-api": "^9.2.1",
-    "axios": "^1.6.0",
+    "axios": "1.18.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^5.0.1",
-    "geoip-lite": "^1.4.10",
+    "express": "5.2.1",
     "express-rate-limit": "^8.5.2",
+    "geoip-lite": "2.0.3",
     "helmet": "^8.0.0",
-    "morgan": "^1.10.0",
-    "pocketbase": "^0.25.0",
-    "jose": "^5.9.6"
+    "jose": "^5.9.6",
+    "morgan": "1.11.0",
+    "pocketbase": "^0.25.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

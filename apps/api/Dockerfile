@@ -1,9 +1,9 @@
-FROM node:20-slim
+FROM node:24-slim
 
 WORKDIR /app
 
 COPY apps/api/package*.json ./
-RUN npm install --omit=dev --ignore-scripts
+RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 
 COPY apps/api/src ./src
 
