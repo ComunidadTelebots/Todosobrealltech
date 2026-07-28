@@ -93,6 +93,7 @@ import GrupoPage from './pages/GrupoPage.jsx';
 import EncuestasPage from './pages/EncuestasPage.jsx';
 import NuevaNoticiaPage from './pages/NuevaNoticiaPage.jsx';
 import EditarNoticiaPage from './pages/EditarNoticiaPage.jsx';
+import LegalPage from './pages/LegalPage.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 
 function Layout({ children }) {
@@ -198,6 +199,7 @@ function Layout({ children }) {
       </div>
       <div id="footer">
         <p>© {new Date().getFullYear()} NW3 - Noticiasweb3</p>
+        <p className="footer-legal"><a href="/terminos">Términos de servicio</a> · <a href="/privacidad">Privacidad</a> · <a href="/cookies">Cookies</a></p>
       </div>
       <BottomNav
         siteVersion={siteVersion}
@@ -258,6 +260,9 @@ export default function App() {
         <Route path="/contacto" element={<Layout><ContactoPage /></Layout>} />
         <Route path="/grupo" element={<Layout><GrupoPage /></Layout>} />
         <Route path="/encuestas" element={<Layout><EncuestasPage /></Layout>} />
+        <Route path="/terminos" element={<Layout><LegalPage type="terms" /></Layout>} />
+        <Route path="/privacidad" element={<Layout><LegalPage type="privacy" /></Layout>} />
+        <Route path="/cookies" element={<Layout><LegalPage type="cookies" /></Layout>} />
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </Router>

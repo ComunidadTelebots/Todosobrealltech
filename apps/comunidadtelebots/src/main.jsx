@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertCircle, BarChart3, CalendarClock, ExternalLink, Image, Instagram, RefreshCw, Radio, Search, Send } from 'lucide-react';
+import { AlertCircle, Archive, BarChart3, Bot, CalendarClock, ExternalLink, Image, Instagram, RefreshCw, Radio, Search, Send } from 'lucide-react';
 import './styles.css';
 
 const CHANNEL = 'comunidadtelebots';
@@ -127,11 +127,37 @@ function PostCard({ post }) {
   );
 }
 
+const archivePosts = [
+  {
+    date: '25 de mayo de 2016', tone: 'sky', icon: Send, imageSide: 'left', title: 'Posible vulnerabilidad y el spam',
+    body: <><p>Desde el equipo TeleBots informamos que hay usuarios que usan una supuesta vulnerabilidad de Telegram para enviar mensajes no deseados (spam) a grupos sin estar dentro.</p><p><strong>Principales efectos en los grupos:</strong></p><ul><li>Poder enviar mensajes a los grupos sin entrar.</li><li>No constar en la lista de miembros ni en la de usuarios bloqueados.</li></ul><p><strong>Principales efectos en los bots:</strong></p><ul><li>Al no constar como miembros no pueden ser expulsados y pueden enviar mensajes sin control.</li><li>Pueden leer mensajes de los grupos sin consentimiento de los administradores y usuarios.</li></ul><p>Recomendamos actuar con cautela mientras Telegram investiga y corrige el problema.</p><p><strong>Actualización:</strong> Telegram actualizó sus servidores para corregir la vulnerabilidad y el servicio volvió a la normalidad.</p><p className="archive-signature">Atentamente<br/>Equipo de TeleBots<br/>25 de mayo de 2016</p></>,
+  },
+  {
+    date: 'mayo de 2016', tone: 'violet', icon: Bot, imageSide: 'right', title: 'Nuevo Bot en las listas',
+    body: <><p>Tenemos buenas noticias.</p><p>El administrador del bot QuickSilver Bot nos cedió su lista de usuarios bloqueados.</p><p>A partir de ese momento se podía consultar la nueva lista y contactar con TeleBots si un usuario aparecía en ella.</p><p>El equipo ofrecía ayuda para revisar y retirar un bloqueo cuando se hubiera aplicado por un motivo injustificado.</p><p className="archive-signature">Atentamente<br/>Equipo de TeleBots</p></>,
+  },
+  {
+    date: '19 de mayo de 2016', tone: 'blue', icon: Bot, imageSide: 'right', title: 'Inconvenientes solucionados en el bot Andrea',
+    body: <><p>Desde la comunidad TeleBots pedimos disculpas por los inconvenientes que hubiera podido ocasionar @Andrea7221.</p><p>El equipo detectó problemas en el servicio de almacenamiento donde estaba alojado el bot y comunicó que ya estaban solucionados.</p><p>Para recuperar su funcionamiento fue necesario configurar de nuevo los grupos.</p><p><strong>Actualización:</strong> los grupos fueron configurados de nuevo y el bot dejó de mostrar inconvenientes.</p><p className="archive-signature">Atentamente<br/>Comunidad TeleBots<br/>19 de mayo de 2016</p></>,
+  },
+];
+
+function Archive2016() {
+  return <section className="history-archive" aria-labelledby="archive-title">
+    <div className="archive-grid">
+      {archivePosts.map(({ icon: Icon, ...post }) => <article className={`archive-card archive-${post.tone} image-${post.imageSide}`} key={post.title}>
+        <div className="archive-card-icon"><Icon size={58}/></div><div className="archive-card-copy"><h2>{post.title}</h2>{post.body}</div>
+      </article>)}
+    </div>
+  </section>;
+}
+
 function App() {
   const [payload, setPayload] = useState(null);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState('');
+  const [view, setView] = useState('channel');
 
   async function loadChannel() {
     setStatus('loading');
@@ -153,6 +179,11 @@ function App() {
     loadChannel();
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle('telebots-legacy', view === 'archive');
+    return () => document.body.classList.remove('telebots-legacy');
+  }, [view]);
+
   const posts = payload?.messages || [];
   const filteredPosts = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -162,6 +193,11 @@ function App() {
 
   return (
     <main>
+      <nav className="site-tabs" aria-label="Secciones de Comunidad TeleBots">
+        <button className={view === 'channel' ? 'active' : ''} onClick={() => setView('channel')}><Radio size={16}/> Canal actual</button>
+        <button className={view === 'archive' ? 'active' : ''} onClick={() => setView('archive')}><Archive size={16}/> Archivo 2016</button>
+      </nav>
+      {view === 'archive' ? <Archive2016 /> : <>
       <section className="channel-hero">
         <div className="hero-content">
           <div className="channel-mark">
@@ -232,6 +268,7 @@ function App() {
         </section>
         <AdPreview position="side" />
       </div>
+      </>}
     </main>
   );
 }

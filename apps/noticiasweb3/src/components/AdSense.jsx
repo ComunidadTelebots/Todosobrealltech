@@ -31,14 +31,17 @@ function loadScript() {
 }
 
 export default function AdSense({ slot, placement = 'inline', style, className = '' }) {
-  const hasRealSlot = Boolean(slot && !String(slot).startsWith('SLOT_'));
+  const slotText = String(slot || '').trim();
+  const hasRealSlot = Boolean(slotText && !slotText.startsWith('SLOT_'));
   const adRef = useRef(null);
   const [status, setStatus] = useState('loading');
   const [houseAd, setHouseAd] = useState(null);
+  const [houseError, setHouseError] = useState('');
 
   useEffect(() => {
-    if (!CLIENT || !hasRealSlot) return;
+    if (!CLIENT) return;
     loadScript();
+    if (!hasRealSlot) return;
     const ad = adRef.current;
     const updateStatus = () => {
       const next = ad?.getAttribute('data-ad-status');
@@ -57,9 +60,10 @@ export default function AdSense({ slot, placement = 'inline', style, className =
   }, [hasRealSlot]);
 
   useEffect(() => {
-    if (hasRealSlot && status !== 'unfilled') return;
+    if (status === 'filled') return;
     fetch(`/hcgi/api/house-ads?placement=${encodeURIComponent(placement)}`)
-      .then((response) => response.json()).then((data) => setHouseAd(data.ads?.[0] || null)).catch(() => {});
+      .then((response) => response.json()).then((data) => setHouseAd(data.ads?.[0] || null))
+      .catch((error) => { setHouseError(error?.message || 'No se pudo consultar anuncios propios'); });
   }, [hasRealSlot, placement, status]);
 
   if ((!CLIENT || !hasRealSlot || status === 'unfilled') && houseAd) return (
@@ -69,7 +73,18 @@ export default function AdSense({ slot, placement = 'inline', style, className =
       <b>{houseAd.cta || 'Abrir'}</b>
     </a>
   );
-  if (!CLIENT || !hasRealSlot || status === 'unfilled') return null;
+  if (!CLIENT || !hasRealSlot || status === 'unfilled') {
+    if (!houseAd) {
+      return (
+        <div className={`ad-slot ${className}`} style={style} role="note" aria-label={`Publicidad (${placement})`}>
+          <div className="ad-preview ad-preview-inline">
+            {houseError ? 'Sin anuncios propios disponibles' : 'Cargando publicidad...'}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
   return (
     <div className={`ad-slot ${status === 'loading' ? 'ad-slot-loading' : 'ad-slot-filled'} ${className}`} style={style} role="complementary" aria-label="Publicidad">

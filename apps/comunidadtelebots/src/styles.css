@@ -19,6 +19,37 @@ body {
     linear-gradient(180deg, rgba(176, 52, 40, 0.2), rgba(16, 17, 20, 0) 360px),
     #101114;
 }
+body.telebots-legacy {
+  background: #fff;
+  color: #151515;
+}
+body.telebots-legacy main {
+  width: min(940px, calc(100% - 20px));
+  padding-top: 8px;
+}
+body.telebots-legacy .site-tabs {
+  justify-content: flex-end;
+  margin: 0 0 8px;
+  padding: 7px 10px;
+  background: #eef2f5;
+}
+body.telebots-legacy .site-tabs button {
+  min-height: 32px;
+  border-color: #93a4b5;
+  border-radius: 2px;
+  background: #fff;
+  color: #26384a;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+body.telebots-legacy .site-tabs button.active {
+  border-color: #66798c;
+  background: #d8e4ef;
+  color: #111;
+}
+body.telebots-legacy .history-archive {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
 a {
   color: inherit;
@@ -34,6 +65,32 @@ main {
   margin: 0 auto;
   padding: 28px 0 48px;
 }
+.site-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.site-tabs button { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid rgba(244,241,234,.18); border-radius: 999px; background: #191b20; color: #d8d3ca; cursor: pointer; }
+.site-tabs button.active { border-color: #ffd36f; background: #f4f1ea; color: #17181b; font-weight: 800; }
+.history-archive { display: grid; gap: 27px; padding: 0 0 18px; background: #fff; color: #111; }
+.archive-hero { display: flex; align-items: center; justify-content: space-between; min-height: 250px; padding: 38px; overflow: hidden; border: 1px solid rgba(244,241,234,.16); border-radius: 8px; background: linear-gradient(135deg,#138fd0,#96b4e6); color: #101c2c; box-shadow: 0 24px 70px rgba(0,0,0,.28); }
+.archive-hero h2 { margin: 5px 0 10px; font-size: clamp(2.8rem,7vw,5.8rem); line-height: .95; }
+.archive-hero p { max-width: 690px; margin: 0; font-size: 1.08rem; line-height: 1.65; }
+.archive-label { font-size: .76rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.archive-hero > svg { flex: 0 0 auto; margin-left: 22px; opacity: .42; }
+.archive-notice { display: flex; gap: 10px; padding: 14px 16px; border: 1px solid rgba(255,211,111,.3); border-radius: 8px; background: rgba(255,211,111,.08); color: #ded8cc; }
+.archive-notice p { margin: 0; line-height: 1.5; }
+.archive-sections { display: flex; flex-wrap: wrap; gap: 7px; }
+.archive-sections span { padding: 7px 10px; border: 1px solid rgba(244,241,234,.15); border-radius: 999px; background: #191b20; color: #cbc7bf; font-size: .78rem; }
+.archive-grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.archive-card { display: grid; grid-template-columns: 185px minmax(0,1fr); gap: 22px; min-height: 280px; padding: 14px 18px 20px; border: 1px solid #d7d7d7; border-radius: 0; color: #151515; box-shadow: none; }
+.archive-card.image-right { grid-template-columns: minmax(0,1fr) 185px; }.archive-card.image-right .archive-card-icon { grid-column: 2; grid-row: 1; }.archive-card.image-right .archive-card-copy { grid-column: 1; grid-row: 1; }
+.archive-card-icon { display: grid; place-items: center; align-self: start; width: 165px; height: 165px; margin-top: -3px; border-radius: 50%; background: rgba(0,169,229,.82); color: #fff; }
+.archive-card-copy h2 { margin: 0 0 12px; color: #101010; font-size: 1.55rem; line-height: 1.15; }
+.archive-card-copy p { margin: 0 0 10px; line-height: 1.42; }.archive-card-copy ul { margin: 0 0 12px; padding-left: 20px; }.archive-card-copy li { margin: 2px 0; }
+.archive-signature { margin-top: 18px!important; }
+.archive-sky { background: #a9c5e8; }.archive-violet { background: #746bd0; }.archive-blue { background: #5f91e8; }
+.archive-violet .archive-card-icon { justify-self: end; border-radius: 0; background: rgba(255,255,255,.9); color: #6057b8; }
+.archive-blue .archive-card-icon { justify-self: end; border-radius: 0; background: rgba(255,255,255,.2); color: #fff; }
+.archive-legacy { padding: 26px; border: 1px solid rgba(244,241,234,.16); border-radius: 8px; background: #181a1f; }
+.archive-legacy h3 { margin: 0 0 8px; font-size: 1.5rem; }.archive-legacy p { color: #d5d0c7; line-height: 1.65; }
+.archive-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }.archive-links a { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border-radius: 6px; background: #f4f1ea; color: #17181b; font-weight: 800; text-decoration: none; }
 
 .channel-hero {
   display: grid;
@@ -408,4 +465,5 @@ h1 {
   .social-button {
     width: 100%;
   }
+  .site-tabs { overflow-x: auto; }.site-tabs button { flex: 0 0 auto; }.archive-hero { padding: 24px; }.archive-hero > svg { display: none; }.archive-card, .archive-card.image-right { grid-template-columns: 1fr; padding: 18px; }.archive-card.image-right .archive-card-icon, .archive-card.image-right .archive-card-copy { grid-column: 1; grid-row: auto; }.archive-card-icon { width: 110px; height: 110px; }
 }

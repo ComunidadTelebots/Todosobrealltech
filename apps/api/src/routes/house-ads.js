@@ -13,6 +13,11 @@ const headers = () => ({ Accept: 'application/json', 'Content-Type': 'applicatio
 const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad.starts_at) <= now) && (!ad.ends_at || Date.parse(ad.ends_at) >= now);
 const mediaDir = '/data/house-ad-media';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+const OFFICIAL_ADS = [
+  { id: 'official-todosobrealltech', title: 'TodoSobreAllTech en Telegram', description: 'Noticias de tecnología, IA, Web3 y seguridad en nuestro canal oficial.', cta: 'Unirme al canal', url: 'https://t.me/TodoSobreAllTech', placement: 'all', priority: -100, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#e9f8ff,#d8f0ff)', foreground: '#12324a', accent: '#168acd', builtin: true },
+  { id: 'official-comunidadtelebots', title: 'Comunidad TeleBots', description: 'Descubre bots, herramientas y proyectos abiertos para Telegram.', cta: 'Abrir comunidad', url: 'https://comunidadtelebots.todosobreall.tech', placement: 'all', priority: -101, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f4ecff,#e7ddff)', foreground: '#2f2350', accent: '#7157c8', builtin: true },
+];
+const officialAdsFor = (placement = '') => OFFICIAL_ADS.filter((ad) => !placement || ['all', placement].includes(ad.placement));
 
 async function moon(options = {}) {
   let lastError;
@@ -27,15 +32,16 @@ async function moon(options = {}) {
 }
 
 router.get('/', async (req, res) => {
+  const placement = String(req.query.placement || '');
   try {
     const response = await moon();
     const rawBody = await response.text();
     let data;
     try { data = JSON.parse(rawBody); }
-    catch { return res.status(502).json({ ok: false, error: 'Moonbot devolvió una respuesta no válida', upstream_status: response.status }); }
-    if (!response.ok) return res.status(response.status).json(data);
-    const placement = String(req.query.placement || '');
+    catch { return res.json({ ok: true, ads: officialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status }); }
+    if (!response.ok) return res.json({ ok: true, ads: officialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status });
     let ads = (data.ads || []).filter((ad) => ad.enabled !== false && !['pending', 'rejected'].includes(ad.approval_status) && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
+    if (!ads.length) ads = officialAdsFor(placement);
     if (placement && ads.length) {
       const highestPriority = Math.max(...ads.map((ad) => Number(ad.priority || 0)));
       const candidates = ads.filter((ad) => Number(ad.priority || 0) === highestPriority)
@@ -44,7 +50,10 @@ router.get('/', async (req, res) => {
       moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement }) }).catch(() => {});
     }
     return res.json({ ok: true, ads });
-  } catch { return res.status(502).json({ ok: false, error: 'Catálogo propio no disponible' }); }
+  } catch {
+    const ads = officialAdsFor(placement).slice(0, 1);
+    return res.json({ ok: true, ads, fallback: true });
+  }
 });
 
 router.post('/', async (req, res) => {
@@ -86,6 +95,8 @@ router.get('/media/:filename', async (req, res) => {
 });
 
 router.get('/:id/click', async (req, res) => {
+  const officialAd = OFFICIAL_ADS.find((item) => item.id === String(req.params.id));
+  if (officialAd) return res.redirect(302, officialAd.url);
   try {
     const current = await moon();
     const rawBody = await current.text();
