@@ -4,6 +4,7 @@
 - Cada grupo dispone de una lista propia de fuentes RSS o Atom en su panel independiente.
 - El master puede añadir, probar, activar, pausar y eliminar fuentes desde la web; las operaciones se envían a Moonbot mediante la API interna protegida.
 - La interfaz muestra el último chequeo y los errores de cada fuente sin mezclar este sistema con el RSS editorial de NoticiasWeb3.
+- Cada fuente admite palabras obligatorias y excluidas, plantilla de publicación y un tema concreto de Telegram como destino.
 
 ### Correlación de incidencias multigrupo - 2026-07-28
 - El centro de seguridad puede agrupar incidentes relacionados de varios grupos por tiempo, tipo y términos compartidos.
