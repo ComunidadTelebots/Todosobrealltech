@@ -214,6 +214,25 @@ router.all('/groups/:id/ads', async (req, res) => {
   }
 });
 
+router.all('/groups/:id/rss', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const cid = String(req.params.id || '');
+  if (!/^-\d+$/.test(cid)) return res.status(400).json({ ok: false, error: 'ID de grupo no válido' });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const response = await moonRequest(`/api/internal/groups/${encodeURIComponent(cid)}/rss`, {
+      method: req.method,
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+      timeoutMs: req.body?.action === 'test' ? 15000 : 6000,
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-group-rss] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudieron consultar las fuentes RSS' });
+  }
+});
+
 router.get('/users', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;

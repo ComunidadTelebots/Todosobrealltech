@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### RSS automático por grupo - 2026-07-28
+- Cada grupo dispone de una lista propia de fuentes RSS o Atom en su panel independiente.
+- El master puede añadir, probar, activar, pausar y eliminar fuentes desde la web; las operaciones se envían a Moonbot mediante la API interna protegida.
+- La interfaz muestra el último chequeo y los errores de cada fuente sin mezclar este sistema con el RSS editorial de NoticiasWeb3.
+
 ### Correlación de incidencias multigrupo - 2026-07-28
 - El centro de seguridad puede agrupar incidentes relacionados de varios grupos por tiempo, tipo y términos compartidos.
 - El resultado muestra riesgo, grupos afectados, número de eventos, periodo y señales comunes.
