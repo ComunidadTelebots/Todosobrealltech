@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Reacciones contextuales de Telegram - 2026-07-28
+- El panel de cada grupo permite activar perfiles selectivo, equilibrado o activo y ajustar frecuencia y espera.
+- La configuración se comparte con Moonbot y la WebApp; el análisis evita comandos y mensajes sensibles.
+
 ### API 1.0.0 y actualización de seguridad - 2026-07-28
 - La API pasa de Node.js 20, ya fuera de soporte, a Node.js 24 LTS.
 - Axios, Express, GeoIP Lite y Morgan se actualizan a versiones corregidas y fijadas para evitar cambios inesperados.
