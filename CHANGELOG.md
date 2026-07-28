@@ -1,5 +1,21 @@
 # Changelog - TodoSobreAllTech
 
+### Filtro de imágenes reforzado para terrorismo y abuso sexual infantil - 2026-07-28
+- El centro de seguridad de Moonbot ahora permite configurar una política activa de imágenes por nivel de riesgo y acción (revisión, aviso, mute o ban).
+- Se habilitaron categorías de riesgo ampliadas: terrorismo/propaganda violenta, pornografía sexual con menores, violencia extrema, armas, autolesión, drogas, discursos de odio, contenido sexual adulto, desnudez, malware/fraude técnico, deepfakes/manipulación y contenido ilegal no especificado.
+- El filtro admite umbral de confianza, proveedor (VirusTotal, safe-search, local o combinado), y opción de borrado automático opcional.
+- La configuración se persiste en `image_policy` desde la web protegida y se envía vía `POST /moonbot-admin/security` con acción `set_image_policy`.
+- Se dejó trazabilidad en resultados/incidencias para validar cada ajuste y poder revertir rápidamente la acción.
+- Se añadió compatibilidad inicial de vídeos de Telegram en la misma política de seguridad:
+  - activación de escaneo de vídeos en `video_policy`/`media_policy` manteniendo `image_policy` para compatibilidad;
+  - selector de alcance (solo imágenes o imágenes + vídeos) en el panel;
+  - envío seguro de `media_kinds` para que el bot interno pueda aplicar filtros por tipo de contenido.
+
+### Excepciones de captcha por grupo y usuario - 2026-07-28
+- En el panel de grupo (TodoSobreAllTech Web) se añadió gestión de excepción de captcha por **usuarios** y **grupos**.
+- Se persiste la configuración en `join_config` (`exempt_user_ids` y `exempt_group_ids`) para que la regla se aplique por grupo desde la misma ficha de administración.
+- La captura de IDs ahora valida formato y evita valores no numéricos antes de enviarlos al endpoint de Moonbot.
+
 ### Reacciones contextuales de Telegram - 2026-07-28
 - El panel de cada grupo permite activar perfiles selectivo, equilibrado o activo y ajustar frecuencia y espera.
 - La configuración se comparte con Moonbot y la WebApp; el análisis evita comandos y mensajes sensibles.
@@ -798,6 +814,17 @@
 - Programación mensual de reverificación y administración de usuarios exentos desde web y MiniApp.
 - El panel de grupos de Moonbot permite activar el modo estricto por grupo.
 - El estado se mantiene sincronizado con la MiniApp y fuerza el mute hasta superar la verificación.
+- Nuevas opciones de administración por grupo:
+  - activar/desactivar acceso condicional,
+  - perfiles de captcha (permisivo, equilibrado y estricto),
+  - re-verificación periódica programable (0, 7, 15, 30 y 90 días),
+  - re-verificación personalizada por días.
+- Se añadieron ajustes operativos de captcha:
+  - máximo de intentos por usuario,
+  - tiempo de caducidad del reto,
+  - tiempo de gracia para escribir mensajes,
+  - cadencia de reenvío de recordatorio.
+- Se añadió acceso rápido para limpiar lista de exentos y alternar envío de aviso privado al unir.
 # Publicidad automática de canales del master en NoticiasWeb3
 
 - La API detecta respuestas HTML o corruptas de Moonbot y devuelve un error JSON controlado.

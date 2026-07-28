@@ -8,9 +8,80 @@ import pocketbaseClient from '../utils/pocketbaseClient.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
+const SECURITY_IMAGE_CATEGORIES = [
+  'terrorism',
+  'childSexual',
+  'violence',
+  'weapons',
+  'selfHarm',
+  'drugs',
+  'hateSpeech',
+  'sexualContent',
+  'nudity',
+  'malware',
+  'fraud',
+  'spam',
+  'illicitContent',
+  'copyright',
+  'deepfake',
+];
+const SECURITY_ACTIONS = ['ban', 'mute', 'review', 'warn'];
+const SECURITY_PROVIDERS = ['vt', 'safe_search', 'local', 'ensemble'];
 const CACHE_TTL_MS = 15 * 1000;
 let cache = null;
 let cacheAt = 0;
+
+const clampNumber = (value, min, max, fallback) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
+};
+
+const sanitizeImagePolicy = (raw = {}) => {
+  const source = raw.image_policy || {};
+  const videoSource = raw.video_policy || raw.media_policy || {};
+  const categories = source.categories || {};
+  const sanitizedCategories = SECURITY_IMAGE_CATEGORIES.reduce((acc, key) => {
+    acc[key] = Boolean(categories[key]);
+    return acc;
+  }, {});
+  const mediaKinds = Array.isArray(videoSource.media_kinds) ? videoSource.media_kinds : [];
+  const includeVideos = Boolean(videoSource.scan_videos || mediaKinds.includes('video'));
+
+  return {
+    ...raw,
+    image_policy: {
+      ...source,
+      enabled: Boolean(source.enabled),
+      action: SECURITY_ACTIONS.includes(source.action) ? source.action : 'review',
+      provider: SECURITY_PROVIDERS.includes(source.provider) ? source.provider : 'ensemble',
+      min_confidence: clampNumber(source.min_confidence ?? source.minConfidence, 0, 100, 75),
+      auto_delete: Boolean(source.auto_delete || source.autoDelete),
+      categories: sanitizedCategories,
+      scan_videos: Boolean(source.scan_videos || includeVideos),
+    },
+    video_policy: {
+      enabled: Boolean(source.enabled),
+      scan_videos: Boolean(source.scan_videos || includeVideos),
+      action: SECURITY_ACTIONS.includes(source.action) ? source.action : 'review',
+      provider: SECURITY_PROVIDERS.includes(source.provider) ? source.provider : 'ensemble',
+      min_confidence: clampNumber(source.min_confidence ?? source.minConfidence, 0, 100, 75),
+      auto_delete: Boolean(source.auto_delete || source.autoDelete),
+      categories: sanitizedCategories,
+      media_kinds: ['image', 'photo', ...(Boolean(source.scan_videos || includeVideos) ? ['video'] : [])],
+    },
+    media_policy: {
+      enabled: Boolean(source.enabled),
+      scan_videos: Boolean(source.scan_videos || includeVideos),
+      action: SECURITY_ACTIONS.includes(source.action) ? source.action : 'review',
+      provider: SECURITY_PROVIDERS.includes(source.provider) ? source.provider : 'ensemble',
+      min_confidence: clampNumber(source.min_confidence ?? source.minConfidence, 0, 100, 75),
+      auto_delete: Boolean(source.auto_delete || source.autoDelete),
+      categories: sanitizedCategories,
+      media_kinds: ['image', 'photo', ...(Boolean(source.scan_videos || includeVideos) ? ['video'] : [])],
+    },
+  };
+};
 
 router.post('/account-tools/sign', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
@@ -273,7 +344,11 @@ router.all('/security', async (req, res) => {
   try {
     const response = await moonRequest('/api/internal/security', {
       method: req.method,
-      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+      body: req.method === 'POST'
+        ? JSON.stringify(
+          req.body?.action === 'set_image_policy' ? sanitizeImagePolicy(req.body || {}) : (req.body || {}),
+        )
+        : undefined,
     });
     return res.status(response.status).json(await response.json());
   } catch (error) {
