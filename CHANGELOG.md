@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap técnico verificable - 2026-07-28
+- El roadmap separa funciones implementadas, estructuras parciales, especificaciones y propuestas sin comenzar.
+- Añade el contador real pendiente y el porcentaje verificado, evitando presentar una definición como código operativo.
+- La automatización RSS de grupos queda registrada como implementación comprobada en Moonbot y Telegram WebApp.
+
 ### RSS automático por grupo - 2026-07-28
 - Cada grupo dispone de una lista propia de fuentes RSS o Atom en su panel independiente.
 - El master puede añadir, probar, activar, pausar y eliminar fuentes desde la web; las operaciones se envían a Moonbot mediante la API interna protegida.

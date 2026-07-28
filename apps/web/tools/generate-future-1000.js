@@ -123,6 +123,8 @@ const implemented = new Set([
   'future-2197', 'future-2744',
   // Correlación temporal y semántica de incidencias en motor, web y WebApp.
   'future-2121', 'future-2365', 'future-2938',
+  // Automatización RSS por grupo verificada en Moonbot y administración WebApp.
+  'future-0428', 'future-0701',
 ]);
 const items = [];
 for (const product of products) {
@@ -144,7 +146,7 @@ for (const product of products) {
         priority,
         difficulty: difficulty || difficultyCycle[index % difficultyCycle.length],
         dependency,
-        status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'routed',
+        status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'scaffolded',
       });
       index += 1;
     }
@@ -171,7 +173,7 @@ for (const product of products) {
         priority,
         difficulty,
         dependency,
-        status: 'completed',
+        status: 'specified',
       });
       index += 1;
     }
@@ -212,9 +214,11 @@ const catalog = {
   generated_at: new Date().toISOString(),
   status: 'in_progress',
   implemented: items.filter((item) => item.status === 'implemented').length,
-  routed: items.filter((item) => item.status === 'routed').length,
-  completed: items.filter((item) => item.status === 'completed').length,
+  scaffolded: items.filter((item) => item.status === 'scaffolded').length,
+  specified: items.filter((item) => item.status === 'specified').length,
   proposed: items.filter((item) => item.status === 'proposed').length,
+  remaining_real: items.filter((item) => item.status !== 'implemented').length,
+  verified_percent: Number((items.filter((item) => item.status === 'implemented').length * 100 / items.length).toFixed(2)),
   totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 3])),
   total: items.length,
   items,
