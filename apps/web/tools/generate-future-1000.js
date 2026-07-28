@@ -121,6 +121,8 @@ const implemented = new Set([
   'future-2147', 'future-2571', 'future-2814',
   // Bóveda personal cifrada y consentida en privacidad web y perfil WebApp.
   'future-2197', 'future-2744',
+  // Correlación temporal y semántica de incidencias en motor, web y WebApp.
+  'future-2121', 'future-2365', 'future-2938',
 ]);
 const items = [];
 for (const product of products) {

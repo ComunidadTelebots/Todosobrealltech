@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Correlación de incidencias multigrupo - 2026-07-28
+- El centro de seguridad puede agrupar incidentes relacionados de varios grupos por tiempo, tipo y términos compartidos.
+- El resultado muestra riesgo, grupos afectados, número de eventos, periodo y señales comunes.
+- La API mantiene la clave administrativa fuera del navegador y limita la operación a cuentas autorizadas.
+
 ### Bóveda personal cifrada - 2026-07-28
 - Nueva bóveda de notas privadas dentro de Ajustes, almacenada únicamente en el dispositivo.
 - Cifrado AES-GCM de 256 bits con clave derivada mediante PBKDF2-SHA-256 y 250.000 iteraciones.

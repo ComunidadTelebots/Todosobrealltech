@@ -396,7 +396,7 @@ router.all('/horizon/:slug', async (req, res) => {
 router.post('/roadmap/action', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;
-  const allowed = new Set(['rule_impact', 'library', 'report_schedule', 'translation', 'public_announcement']);
+  const allowed = new Set(['rule_impact', 'library', 'report_schedule', 'translation', 'public_announcement', 'incident_correlation']);
   const action = String(req.body?.action || '');
   if (!allowed.has(action)) return res.status(400).json({ ok: false, error: 'Acción no permitida' });
   try {
