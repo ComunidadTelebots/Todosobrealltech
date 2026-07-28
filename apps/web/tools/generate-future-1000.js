@@ -117,6 +117,8 @@ const implemented = new Set([
   'future-0247', 'future-0248', 'future-0431', 'future-0432', 'future-0704', 'future-0705',
   // Exenciones granulares y calendario de reverificación en los tres paneles.
   'future-0251', 'future-0254', 'future-0435', 'future-0438', 'future-0708', 'future-0711',
+  // Control por voz real: navegación web, análisis multimedia Moonbot y acciones rápidas WebApp.
+  'future-2147', 'future-2571', 'future-2814',
 ]);
 const items = [];
 for (const product of products) {
@@ -192,7 +194,7 @@ for (const product of products) {
         priority,
         difficulty,
         dependency,
-        status: 'proposed',
+        status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'proposed',
       });
       index += 1;
     }

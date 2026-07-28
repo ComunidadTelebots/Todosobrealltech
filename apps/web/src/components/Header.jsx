@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { useAnalytics } from '@/contexts/AnalyticsProvider.jsx';
 import { Button } from '@/components/ui/button';
-import { Shield, Menu, X, LogOut, Globe, User, Settings, Cookie } from 'lucide-react';
+import { Shield, Menu, X, LogOut, Globe, User, Settings, Cookie, Mic } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -44,6 +44,8 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [voiceListening, setVoiceListening] = React.useState(false);
+  const voiceSupported = typeof window !== 'undefined' && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
 
   const handleLogout = () => {
     pb.authStore.clear();
@@ -71,6 +73,31 @@ const Header = () => {
       navLinks.push({ name: getTranslation('nav_creator'), path: '/creator' });
     }
   }
+
+  const startVoiceNavigation = () => {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition || voiceListening) return;
+    const recognition = new Recognition();
+    recognition.lang = currentLanguage || 'es-ES';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => setVoiceListening(true);
+    recognition.onend = () => setVoiceListening(false);
+    recognition.onerror = () => setVoiceListening(false);
+    recognition.onresult = (event) => {
+      const spoken = event.results?.[0]?.[0]?.transcript?.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '') || '';
+      const destinations = [
+        { words: ['inicio', 'home'], path: '/' }, { words: ['blog'], path: '/blog' },
+        { words: ['proxy', 'proxies'], path: '/proxies' }, { words: ['roadmap', 'hoja de ruta'], path: '/roadmap' },
+        { words: ['panel', 'dashboard'], path: '/dashboard' }, { words: ['administracion', 'admin'], path: '/admin' },
+        { words: ['creador', 'creator'], path: '/creator' }, { words: ['ajustes', 'settings'], path: '/settings' },
+        { words: ['perfil', 'profile'], path: '/profile' },
+      ];
+      const destination = destinations.find((item) => item.words.some((word) => spoken.includes(word)));
+      if (destination) { navigate(destination.path); setIsMobileMenuOpen(false); }
+    };
+    recognition.start();
+  };
 
   const LanguageSelector = () => (
     <DropdownMenu>
@@ -191,6 +218,7 @@ const Header = () => {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
+            {voiceSupported && <Button variant="ghost" size="icon" onClick={startVoiceNavigation} aria-label={voiceListening ? 'Escuchando comando de voz' : 'Navegar por voz'} title="Navegar por voz"><Mic className={`h-4 w-4 ${voiceListening ? 'animate-pulse text-primary' : 'text-muted-foreground'}`}/></Button>}
             {!currentUser && (
               <Button variant="ghost" size="icon" onClick={openCookieModal} title="Configuración de Cookies" className="text-muted-foreground">
                 <Cookie className="w-4 h-4" />
@@ -214,6 +242,7 @@ const Header = () => {
 
           {/* Mobile Menu Toggle & Actions */}
           <div className="flex items-center gap-2 md:hidden">
+            {voiceSupported && <Button variant="ghost" size="icon" onClick={startVoiceNavigation} aria-label={voiceListening ? 'Escuchando comando de voz' : 'Navegar por voz'}><Mic className={`h-4 w-4 ${voiceListening ? 'animate-pulse text-primary' : ''}`}/></Button>}
             <LanguageSelector />
             {currentUser && <UserMenu />}
             <button

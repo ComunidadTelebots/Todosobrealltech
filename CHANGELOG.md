@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Navegación por voz auditada - 2026-07-28
+- Auditoría del historial remoto y del código de Web, Moonbot y WebApp antes de implementar para evitar duplicados.
+- La cabecera permite abrir inicio, blog, proxies, roadmap, panel, administración, creador, ajustes y perfil mediante voz.
+- El control aparece solo en navegadores compatibles y ofrece estado visual mientras escucha.
+- El roadmap marca como integradas únicamente las tres capacidades de voz comprobadas en sus módulos reales.
+
 ### Comparador del roadmap sin duplicar funciones - 2026-07-27
 - Auditoría cruzada de Web, API, Moonbot y WebApp para descartar capacidades ya existentes antes de desarrollar.
 - Nuevo comparador de hasta tres entradas con estado, prioridad, dificultad y dependencia visibles en paralelo.
