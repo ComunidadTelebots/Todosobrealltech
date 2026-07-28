@@ -13,6 +13,18 @@ function normalizePublisherId(value) {
 
 const CLIENT = normalizePublisherId(import.meta.env.VITE_ADSENSE_ID);
 
+function CommunityCampaign({ ad, placement, className, style }) {
+  const items = Array.isArray(ad.community_items) ? ad.community_items.filter((item) => item?.url) : [];
+  if (!items.length) return null;
+  return <section className={`house-ad house-ad-community house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': ad.background, '--house-fg': ad.foreground, '--house-accent': ad.accent }} aria-label={`Comunidad recomendada: ${ad.title}`}>
+    <header><small>Comunidad recomendada</small><strong>{ad.title}</strong></header>
+    <div className="house-ad-community-grid">{items.map((item) => <a key={item.id} href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored">
+      {item.image ? <img src={item.image} alt=""/> : <span className="house-ad-community-avatar">{String(item.title || 'T').slice(0, 1).toUpperCase()}</span>}
+      <span><b>{item.title}</b><small>{item.type === 'channel' ? 'Canal' : 'Grupo'}</small></span>
+    </a>)}</div>
+  </section>;
+}
+
 function loadScript() {
   if (!CLIENT || document.getElementById('adsense-script')) return;
 
@@ -77,7 +89,7 @@ export default function AdSense({ slot, placement = 'inline', platform = '', sty
   const showGoogle = adsAllowed && CLIENT && hasRealSlot && status !== 'unfilled';
   return (
     <div className={`ad-stack ad-stack-${placement} ${platform ? `ad-stack-platform-${platform}` : ''}`}>
-      {houseAd ? (
+      {houseAd ? (houseAd.community_items?.length ? <CommunityCampaign ad={houseAd} placement={placement} className={className} style={style}/> :
         <a className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }} href={`/hcgi/api/community-cards/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored">
           {houseAd.image && <img src={houseAd.image} alt="" />}
           <span className="house-ad-copy"><small>Recomendado por nuestra comunidad</small><strong>{houseAd.title}</strong><span><SafeMarkdown>{houseAd.description}</SafeMarkdown></span></span>

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import apiServerClient from '@/lib/apiServerClient';
 import pb from '@/lib/pocketbaseClient';
 
-const empty = { title: '', description: '', url: '', image: '', placement: 'all', priority: 50, enabled: true, cta: 'Abrir', background: '#eef7ff', foreground: '#155f9b', accent: '#1982d1', starts_at: '', ends_at: '', max_clicks: 0 };
+const empty = { title: '', description: '', url: '', image: '', placement: 'all', priority: 50, enabled: true, cta: 'Abrir', background: '#eef7ff', foreground: '#155f9b', accent: '#1982d1', starts_at: '', ends_at: '', max_clicks: 0, community_id: '', community_items: [] };
 const formats = { all: 'Todos los huecos', top: 'Superior panorámico', right: 'Lateral vertical', inline: 'Entre noticias' };
 const recommendations = {
   top: { title: 'Únete a nuestra comunidad', description: 'Noticias, tecnología y conversación en un mismo canal.', cta: 'Unirme ahora', background: '#ecfeff', foreground: '#155e75', accent: '#0891b2', priority: 80 },
@@ -18,6 +18,7 @@ const countrySummary = (values = {}) => Object.entries(values).sort((a, b) => b[
 
 function AdPreview({ ad }) {
   const shape = ad.placement === 'right' ? 'max-w-[250px] min-h-52 flex-col text-center' : 'w-full min-h-24';
+  if (ad.community_items?.length) return <div className={`overflow-hidden rounded-xl border p-3 shadow-sm ${shape}`} style={{ background: ad.background, color: ad.foreground, borderColor: `${ad.accent}55` }}><small className="text-[10px] uppercase tracking-wider opacity-70">Comunidad Telegram</small><strong className="mb-2 block text-base">{ad.title}</strong><div className={`grid gap-1 ${ad.placement === 'right' ? 'grid-cols-1' : 'grid-cols-2'}`}>{ad.community_items.map((item) => <div key={item.id} className="flex min-w-0 items-center gap-2 rounded-lg border bg-white/50 p-2"><div className="grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full text-xs text-white" style={{ background: ad.accent }}>{item.image ? <img src={item.image} alt="" className="h-full w-full object-cover"/> : String(item.title || 'T').slice(0, 1)}</div><span className="truncate text-xs font-semibold">{item.title}</span></div>)}</div></div>;
   return <div className={`flex items-center gap-3 overflow-hidden rounded-xl border p-4 shadow-sm ${shape}`} style={{ background: ad.background, color: ad.foreground, borderColor: `${ad.accent}55` }}>
     {ad.image ? <img src={ad.image} alt="" className={ad.placement === 'right' ? 'h-24 w-full rounded-lg object-cover' : 'h-16 w-16 rounded-lg object-cover'} /> : <div className="grid h-16 w-16 shrink-0 place-items-center rounded-lg" style={{ background: `${ad.accent}22` }}><Palette /></div>}
     <div className="min-w-0 flex-1"><small className="text-[10px] uppercase tracking-wider opacity-70">{ad.automatic ? 'Canal del master · automático' : 'Recomendado'}</small><strong className="block text-lg">{ad.title || 'Tu anuncio personalizado'}</strong><span className="block whitespace-pre-line text-sm opacity-80"><SafeMarkdownText text={ad.description || 'Añade aquí una descripción breve.'}/></span></div>
@@ -57,6 +58,14 @@ export default function HouseAdsManager({ groups = [] }) {
       return result;
     }, {});
   }, [groups, communitySearch]);
+  const telegramCommunities = useMemo(() => Object.values(groups.reduce((result, group) => {
+    const record = group.community || {};
+    const communityId = String(record.community_id || record.community?.id || '');
+    if (!record.active || !communityId) return result;
+    if (!result[communityId]) result[communityId] = { id: communityId, title: record.community?.title || record.community?.name || `Comunidad ${communityId}`, chats: [] };
+    result[communityId].chats.push(group);
+    return result;
+  }, {})), [groups]);
   const request = async (body) => { const response = await apiServerClient.fetch('/house-ads', { method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); const data = await response.json(); if (!response.ok) throw new Error(data.error); setAds(data.ads || []); };
   useEffect(() => { let active = true; const load = () => apiServerClient.fetch('/house-ads').then((r) => r.json()).then((d) => { if (active) setAds(d.ads || []); }).catch(() => { if (active) setError('No se pudo cargar el catálogo'); }); load(); const timer = window.setInterval(load, 30000); return () => { active = false; window.clearInterval(timer); }; }, []);
   const save = async () => { try { setError(''); await request({ action: 'upsert', ad: draft }); setDraft(empty); setAdvice(''); } catch (e) { setError(e.message); } };
@@ -66,8 +75,17 @@ export default function HouseAdsManager({ groups = [] }) {
     if (!group) return;
     const username = String(group.username || group.public_username || '').replace(/^@/, '');
     const photo = group.photo_url || group.photo || group.image || '';
-    setDraft((current) => ({ ...current, title: group.name || current.title, description: current.description || `Únete a ${group.name || 'nuestra comunidad'} en Telegram.`, url: username ? `https://t.me/${username}` : current.url, image: photo || current.image, cta: group.ctype === 'channel' ? 'Seguir canal' : 'Unirme al grupo' }));
+    setDraft((current) => ({ ...current, title: group.name || current.title, description: current.description || `Únete a ${group.name || 'nuestra comunidad'} en Telegram.`, url: username ? `https://t.me/${username}` : current.url, image: photo || current.image, cta: group.ctype === 'channel' ? 'Seguir canal' : 'Unirme al grupo', community_id: '', community_items: [] }));
     setAdvice(username ? `Destino seleccionado: ${group.name}.` : `${group.name} no tiene enlace público detectado; escribe su enlace de invitación.`);
+  };
+  const selectTelegramCommunity = (community) => {
+    const items = community.chats.map((group) => {
+      const username = String(group.username || group.public_username || '').replace(/^@/, '');
+      return username ? { id: String(group.id), title: group.name || username, url: `https://t.me/${username}`, image: group.photo_url || group.photo || group.image || '', type: group.ctype === 'channel' ? 'channel' : 'group' } : null;
+    }).filter(Boolean).slice(0, 16);
+    if (!items.length) { setAdvice('La comunidad está detectada, pero ninguno de sus chats tiene enlace público.'); return; }
+    setDraft((current) => ({ ...current, title: community.title, description: `${items.length} espacios de esta comunidad en Telegram.`, url: items[0].url, image: '', cta: 'Abrir comunidad', community_id: community.id, community_items: items }));
+    setAdvice(`Campaña comunitaria preparada con ${items.length} chats públicos. El espacio se dividirá automáticamente entre ellos.`);
   };
   const uploadImage = (file) => {
     if (!file) return;
@@ -90,6 +108,7 @@ export default function HouseAdsManager({ groups = [] }) {
     {error && <p className="mb-3 text-sm text-destructive">{error}</p>}
     {advice && <p className="mb-3 rounded-lg border border-cyan-200 bg-cyan-50 p-3 text-sm text-cyan-900">{advice}</p>}
     {ads.some((ad) => ad.automatic) && <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3"><p className="mb-2 text-sm font-semibold">Publicidad de canales del master</p><div className="flex flex-wrap gap-2">{ads.filter((ad) => ad.automatic).map((ad) => <Button key={ad.id} size="sm" variant={ad.enabled ? 'default' : 'outline'} onClick={() => request({ action: 'upsert', ad: { ...ad, enabled: !ad.enabled, goal_reached: false } })}>{ad.enabled ? `Detener · ${ad.title}` : `Activar · ${ad.title}`}</Button>)}</div></div>}
+    {telegramCommunities.length > 0 && <div className="mb-4 rounded-xl border border-sky-500/30 bg-sky-500/5 p-3"><p className="text-sm font-semibold">Anunciar una comunidad completa</p><p className="mb-3 text-xs text-muted-foreground">Cada campaña divide el hueco de NoticiasWeb3 entre los chats públicos de la comunidad.</p><div className="grid gap-2 md:grid-cols-2">{telegramCommunities.map((community) => <button key={community.id} type="button" onClick={() => selectTelegramCommunity(community)} className={`rounded-lg border bg-background p-3 text-left hover:border-sky-500 ${draft.community_id === community.id ? 'border-sky-500 ring-1 ring-sky-500' : ''}`}><b className="block text-sm">{community.title}</b><span className="text-xs text-muted-foreground">{community.chats.length} chats detectados · {community.chats.filter((group) => group.username || group.public_username).length} anunciables</span></button>)}</div></div>}
     <div className="mb-4 rounded-xl border bg-muted/20 p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><p className="text-sm font-semibold">Añadir una comunidad de Telegram</p><p className="text-xs text-muted-foreground">Elige visualmente un canal o grupo administrado. Se agrupan por bot asociado.</p></div><div className="relative w-full sm:w-72"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"/><Input className="pl-9" placeholder="Buscar comunidad o bot" value={communitySearch} onChange={(event) => setCommunitySearch(event.target.value)}/></div></div>
       {Object.keys(communitiesByBot).length ? <div className="max-h-80 space-y-2 overflow-y-auto pr-1">{Object.entries(communitiesByBot).map(([bot, sections], botIndex) => <details key={bot} open={botIndex === 0 || Boolean(communitySearch)} className="rounded-lg border bg-background"><summary className="cursor-pointer select-none px-3 py-2 text-sm font-semibold">@{bot} · {sections.channels.length + sections.groups.length} comunidades</summary><div className="space-y-3 border-t p-3">{[['channels', 'Canales'], ['groups', 'Grupos']].map(([type, label]) => sections[type].length ? <div key={type}><p className="mb-2 flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{type === 'channels' ? <Radio className="h-3.5 w-3.5"/> : <Users className="h-3.5 w-3.5"/>}{label} · {sections[type].length}</p><div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{sections[type].map((group) => { const username = String(group.username || group.public_username || '').replace(/^@/, ''); const selected = draft.title === group.name && (!username || draft.url === `https://t.me/${username}`); return <button key={`${bot}-${group.id}`} type="button" onClick={() => selectCommunity(String(group.id))} className={`flex min-w-0 items-center gap-2 rounded-lg border p-2 text-left transition hover:border-primary hover:bg-primary/5 ${selected ? 'border-primary bg-primary/10' : ''}`}><div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-sky-100 text-sky-700">{group.photo_url || group.photo || group.image ? <img src={group.photo_url || group.photo || group.image} alt="" className="h-full w-full object-cover"/> : type === 'channels' ? <Radio className="h-4 w-4"/> : <Users className="h-4 w-4"/>}</div><span className="min-w-0"><strong className="block truncate text-xs">{group.name || group.id}</strong><span className="block truncate text-[11px] text-muted-foreground">{username ? `@${username}` : 'Requiere enlace de invitación'}{Number(group.subscribers || group.members || group.member_count) > 0 ? ` · ${Number(group.subscribers || group.members || group.member_count).toLocaleString('es-ES')} miembros` : ''}</span></span></button>; })}</div></div> : null)}</div></details>)}</div> : <p className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">No hay comunidades que coincidan con la búsqueda.</p>}

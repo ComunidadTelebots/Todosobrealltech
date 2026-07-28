@@ -132,8 +132,13 @@ router.get('/:id/click', async (req, res) => {
     try { data = JSON.parse(rawBody); } catch { return res.redirect(302, 'https://todosobreall.tech'); }
     const ad = (data.ads || []).find((item) => String(item.id) === String(req.params.id));
     if (!ad || !ad.enabled || ['pending', 'rejected'].includes(ad.approval_status) || !isScheduledNow(ad)) return res.redirect(302, 'https://todosobreall.tech');
-    await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, country }) });
-    return res.redirect(302, ad.url.startsWith('tg://') ? ad.url.replace('tg://', 'https://t.me/') : ad.url);
+    const requestedItem = String(req.query.chat || '').slice(0, 64);
+    const communityItem = Array.isArray(ad.community_items)
+      ? ad.community_items.find((item) => String(item.id) === requestedItem)
+      : null;
+    const destination = String(communityItem?.url || ad.url || 'https://todosobreall.tech');
+    await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, country, item_id: communityItem?.id || '' }) });
+    return res.redirect(302, destination.startsWith('tg://') ? destination.replace('tg://', 'https://t.me/') : destination);
   } catch { return res.redirect(302, 'https://todosobreall.tech'); }
 });
 

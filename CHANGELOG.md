@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Campañas publicitarias para comunidades Telegram - 2026-07-28
+- El creador permite seleccionar una comunidad completa detectada por Moonbot y preparar una única campaña con sus grupos y canales públicos.
+- NoticiasWeb3 divide el hueco publicitario en un mosaico adaptable, enlazando cada fragmento con el chat correspondiente.
+- Los clics conservan país y ubicación, y además se contabilizan individualmente por chat de la comunidad.
+
 ### Comunidades reales de Telegram - 2026-07-28
 - El panel de cada grupo muestra si pertenece a una comunidad de Telegram, sus chats ya vinculados y los chats administrados que todavía se pueden añadir.
 - Se incorporan detección Bot API 10.2, comprobación conjunta y accesos para completar la vinculación en Telegram.
