@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Formatos publicitarios discretos para Telegram - 2026-07-28
+- El creador puede elegir formato automático, mosaico, fila compacta, tarjetas, recomendación rotatoria o cinta de accesos para las campañas comunitarias.
+- Todos los formatos evitan ventanas emergentes y conservan la medición individual por chat.
+
 ### Campañas publicitarias para comunidades Telegram - 2026-07-28
 - El creador permite seleccionar una comunidad completa detectada por Moonbot y preparar una única campaña con sus grupos y canales públicos.
 - NoticiasWeb3 divide el hueco publicitario en un mosaico adaptable, enlazando cada fragmento con el chat correspondiente.
