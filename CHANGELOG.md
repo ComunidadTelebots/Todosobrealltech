@@ -1,5 +1,22 @@
 # Changelog - TodoSobreAllTech
 
+### Vista "roadmap por producto" y panel de progreso en Moonbot - 2026-07-28
+- Se agregó `/api/moonbot-admin/roadmap-summary` para mostrar, desde la API protegida por admin/creator, el inventario verificable del roadmap 3000 por estado y producto.
+- El centro Moonbot de la web ahora incluye una tarjeta de progreso con:
+  - totales globales,
+  - porcentaje de implementación por producto (`web`, `moonbot`, `webapp`),
+  - vista de las funciones implementadas y propuestas de cada producto,
+  - atajos directos al Roadmap con filtros rápidos.
+- Se mantiene compatibilidad total con la estructura anterior del roadmap y la navegación existente.
+- Se añadió un bloque de **acciones rápidas** en el panel Moonbot Admin para registrar operaciones internas de administración.
+- Nuevo endpoint privado `POST /api/moonbot-admin/quick-actions` para trazar y mostrar acciones operativas (limite temporal, sin persistir en analytics sensibles).
+
+### Anuncios propios como fallback robusto en NoticiasWeb3 - 2026-07-28
+- Se corrige `AdSense` para que los anuncios propios se muestren aunque el hueco no tenga slot real de AdSense.
+- La lógica de fallback ya no depende de `data-ad-status='unfilled'` para buscar `/hcgi/api/house-ads`.
+- Si no hay slot configurado o AdSense no devuelve anuncio, se consulta siempre el endpoint interno y se muestra una vista alternativa visible.
+- Se evita render vacío total por fallos de script/estado de anuncio y se muestra mensaje de estado cuando no hay campaña propia disponible.
+
 ### Filtro de imágenes reforzado para terrorismo y abuso sexual infantil - 2026-07-28
 - El centro de seguridad de Moonbot ahora permite configurar una política activa de imágenes por nivel de riesgo y acción (revisión, aviso, mute o ban).
 - Se habilitaron categorías de riesgo ampliadas: terrorismo/propaganda violenta, pornografía sexual con menores, violencia extrema, armas, autolesión, drogas, discursos de odio, contenido sexual adulto, desnudez, malware/fraude técnico, deepfakes/manipulación y contenido ilegal no especificado.

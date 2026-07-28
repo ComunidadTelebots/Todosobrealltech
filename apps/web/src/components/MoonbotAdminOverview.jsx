@@ -20,6 +20,7 @@ const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienc
 const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotModerationProductivity.jsx'));
 const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
 const MoonbotTelegramChat = lazy(() => import('@/components/MoonbotTelegramChat.jsx'));
+const RoadmapProgressPanel = lazy(() => import('@/components/RoadmapProgressPanel.jsx'));
 
 const MASTER_SECTIONS = [
   ['Experiencia y preferencias', 'moon-experience'],
@@ -126,6 +127,7 @@ const MoonbotAdminOverview = () => {
       <CardContent className="space-y-6">
         {error && <div className="flex gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
         {data && <>
+          <RoadmapProgressPanel />
           {!!data.notifications?.length && <section className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4"><h3 className="mb-3 flex items-center gap-2 font-semibold"><BellRing className="h-5 w-5 text-violet-600" />Avisos de Moonbot</h3><div className="space-y-2">{data.notifications.slice(0, 3).map((notice) => <div key={notice.id} className="rounded-lg border bg-background/80 p-3 text-sm"><div className="flex flex-wrap items-center justify-between gap-2"><b>{notice.title}</b><Badge variant={notice.status === 'failed' ? 'destructive' : 'secondary'}>{notice.status === 'failed' ? 'Falló' : 'Entregada'}</Badge></div><p className="mt-1 text-muted-foreground">{notice.body}</p><time className="mt-1 block text-xs text-muted-foreground">{notice.created_at ? new Date(notice.created_at).toLocaleString() : ''}</time></div>)}</div></section>}
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <Metric icon={Bot} label="Instancias conectadas" value={summary.instances_online} />

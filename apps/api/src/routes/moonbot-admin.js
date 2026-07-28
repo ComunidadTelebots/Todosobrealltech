@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
@@ -30,6 +31,76 @@ const SECURITY_PROVIDERS = ['vt', 'safe_search', 'local', 'ensemble'];
 const CACHE_TTL_MS = 15 * 1000;
 let cache = null;
 let cacheAt = 0;
+const roadmapCache = new Map();
+const QUICK_ACTIONS_FILE = '/data/quick-actions-log.json';
+const QUICK_ACTIONS_MAX = 40;
+const QUICK_ACTIONS_ALLOWED = new Set([
+  'refresh_dashboard',
+  'open_roadmap',
+  'export_pending',
+  'create_campaign',
+  'open_groups_overview',
+  'open_webapp_admin',
+]);
+
+const getRoadmapCatalog = async () => {
+  const cacheKey = 'roadmap-v1';
+  const cached = roadmapCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < 60_000) return cached.value;
+
+  const filePath = path.resolve(process.cwd(), 'data/future-features-1000.json');
+  const raw = await fs.readFile(filePath, 'utf8');
+  const catalog = JSON.parse(raw);
+  const summary = {
+    total: catalog.total || catalog.items?.length || 0,
+    implemented: catalog.implemented || 0,
+    scaffolded: catalog.scaffolded || 0,
+    specified: catalog.specified || 0,
+    proposed: catalog.proposed || 0,
+    remaining_real: catalog.remaining_real || 0,
+    verified_percent: catalog.verified_percent || 0,
+  };
+  const byProduct = {};
+  for (const item of catalog.items || []) {
+    byProduct[item.product] ||= { total: 0, implemented: 0, proposed: 0, scaffolded: 0, specified: 0 };
+    byProduct[item.product].total += 1;
+    if (item.status in byProduct[item.product]) byProduct[item.product][item.status] += 1;
+  }
+  const completed = (catalog.items || []).filter((item) => item.status === 'implemented');
+  const preview = completed
+    .sort((a, b) => Number(String(b.id).replace('future-', '')) - Number(String(a.id).replace('future-', '')))
+    .slice(0, 12);
+
+  const next = (catalog.items || []).filter((item) => item.status === 'proposed').slice(0, 12);
+  const payload = {
+    summary,
+    byProduct,
+    implementedPreview: preview,
+    proposedPreview: next,
+    generated_at: catalog.generated_at || null,
+    version: catalog.version || 'roadmap',
+  };
+  roadmapCache.set(cacheKey, { at: Date.now(), value: payload });
+  return payload;
+};
+
+const readQuickActions = async () => {
+  try {
+    const raw = await fs.readFile(QUICK_ACTIONS_FILE, 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  }
+};
+
+const appendQuickAction = async (entry) => {
+  const existing = await readQuickActions();
+  const next = [entry, ...existing].slice(0, QUICK_ACTIONS_MAX);
+  await fs.writeFile(QUICK_ACTIONS_FILE, JSON.stringify(next, null, 2), { mode: 0o600 });
+  return next;
+};
 
 const clampNumber = (value, min, max, fallback) => {
   const parsed = Number(value);
@@ -177,6 +248,62 @@ router.get('/dashboard', async (req, res) => {
     logger.warn(`[moonbot-admin] ${error.message}`);
     if (cache) return res.json({ ...cache, stale: true });
     return res.status(502).json({ ok: false, error: 'Moonbot no responde en este momento' });
+  }
+});
+
+router.get('/roadmap-summary', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  const product = String(req.query.product || 'all');
+  try {
+    const payload = await getRoadmapCatalog();
+    const byProduct = product === 'all' ? payload.byProduct : { [product]: payload.byProduct[product] || { total: 0, implemented: 0, proposed: 0, scaffolded: 0, specified: 0 } };
+    return res.json({
+      ok: true,
+      product,
+      generated_at: payload.generated_at,
+      summary: payload.summary,
+      byProduct,
+      implementedPreview: payload.implementedPreview,
+      proposedPreview: payload.proposedPreview,
+      version: payload.version,
+    });
+  } catch (error) {
+    logger.warn(`[moonbot-admin roadmap-summary] ${error.message}`);
+    return res.status(500).json({ ok: false, error: 'No se pudo leer el catálogo de roadmap' });
+  }
+});
+
+router.get('/quick-actions', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const entries = await readQuickActions();
+    return res.json({ ok: true, actions: entries });
+  } catch (error) {
+    logger.warn(`[moonbot-admin quick-actions] ${error.message}`);
+    return res.status(500).json({ ok: false, error: 'No se pudieron leer las acciones rápidas' });
+  }
+});
+
+router.post('/quick-actions', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  const action = String(req.body?.action || '').trim();
+  const details = String(req.body?.details || '');
+  if (!QUICK_ACTIONS_ALLOWED.has(action)) return res.status(400).json({ ok: false, error: 'Acción rápida no permitida' });
+  if (details.length > 500) return res.status(400).json({ ok: false, error: 'Detalles demasiado largos' });
+  try {
+    const entry = {
+      id: crypto.randomUUID(),
+      action,
+      details: details || null,
+      actor_id: String(req.user?.id || req.user?.sub || 'system'),
+      created_at: new Date().toISOString(),
+      status: 'registered',
+    };
+    const entries = await appendQuickAction(entry);
+    return res.json({ ok: true, action: entry, actions: entries.slice(0, 10) });
+  } catch (error) {
+    logger.warn(`[moonbot-admin quick-actions create] ${error.message}`);
+    return res.status(500).json({ ok: false, error: 'No se pudo registrar la acción rápida' });
   }
 });
 
