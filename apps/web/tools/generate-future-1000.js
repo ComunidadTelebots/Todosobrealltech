@@ -119,6 +119,8 @@ const implemented = new Set([
   'future-0251', 'future-0254', 'future-0435', 'future-0438', 'future-0708', 'future-0711',
   // Control por voz real: navegación web, análisis multimedia Moonbot y acciones rápidas WebApp.
   'future-2147', 'future-2571', 'future-2814',
+  // Bóveda personal cifrada y consentida en privacidad web y perfil WebApp.
+  'future-2197', 'future-2744',
 ]);
 const items = [];
 for (const product of products) {

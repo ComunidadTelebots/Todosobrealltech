@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Bóveda personal cifrada - 2026-07-28
+- Nueva bóveda de notas privadas dentro de Ajustes, almacenada únicamente en el dispositivo.
+- Cifrado AES-GCM de 256 bits con clave derivada mediante PBKDF2-SHA-256 y 250.000 iteraciones.
+- Incluye creación, desbloqueo, bloqueo, actualización y eliminación definitiva, sin enviar contraseña ni contenido al servidor.
+
 ### Navegación por voz auditada - 2026-07-28
 - Auditoría del historial remoto y del código de Web, Moonbot y WebApp antes de implementar para evitar duplicados.
 - La cabecera permite abrir inicio, blog, proxies, roadmap, panel, administración, creador, ajustes y perfil mediante voz.

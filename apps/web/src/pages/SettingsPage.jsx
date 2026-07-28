@@ -13,11 +13,13 @@ import {
   Loader2,
   KeyRound,
   Cookie,
+  DatabaseZap,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { useAnalytics } from '@/contexts/AnalyticsProvider.jsx';
 import pb from '@/lib/pocketbaseClient.js';
+import { hasPersonalVault, openPersonalVault, removePersonalVault, savePersonalVault } from '@/lib/personalVault.js';
 
 const getPreferenceKey = (userId) => `settings:${userId}`;
 
@@ -86,6 +88,11 @@ export default function SettingsPage() {
   const [savedSnapshot, setSavedSnapshot] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReset, setIsSendingReset] = useState(false);
+  const [vaultExists, setVaultExists] = useState(() => hasPersonalVault(currentUser.id));
+  const [vaultPassphrase, setVaultPassphrase] = useState('');
+  const [vaultText, setVaultText] = useState('');
+  const [vaultUnlocked, setVaultUnlocked] = useState(false);
+  const [vaultBusy, setVaultBusy] = useState(false);
 
   const currentSnapshot = JSON.stringify({
     name,
@@ -227,6 +234,21 @@ export default function SettingsPage() {
     navigate('/login');
   };
 
+  const unlockVault = async () => {
+    setVaultBusy(true);
+    try { setVaultText(await openPersonalVault(currentUser.id, vaultPassphrase)); setVaultUnlocked(true); toast.success('Bóveda desbloqueada en este dispositivo'); }
+    catch (error) { toast.error(error.message); }
+    finally { setVaultBusy(false); }
+  };
+  const saveVault = async () => {
+    setVaultBusy(true);
+    try { await savePersonalVault(currentUser.id, vaultPassphrase, vaultText); setVaultExists(true); setVaultUnlocked(true); toast.success('Bóveda cifrada y guardada localmente'); }
+    catch (error) { toast.error(error.message); }
+    finally { setVaultBusy(false); }
+  };
+  const lockVault = () => { setVaultText(''); setVaultPassphrase(''); setVaultUnlocked(false); };
+  const deleteVault = () => { if (!window.confirm('¿Eliminar definitivamente la bóveda de este dispositivo?')) return; removePersonalVault(currentUser.id); lockVault(); setVaultExists(false); toast.success('Bóveda eliminada'); };
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="mb-8">
@@ -364,6 +386,14 @@ export default function SettingsPage() {
               </span>
             </span>
           </button>
+        </Section>
+
+        <Section icon={DatabaseZap} title="Bóveda de datos personales">
+          <p className="text-sm text-muted-foreground">Guarda notas privadas cifradas en este dispositivo. No se sincronizan ni se envían a TodoSobreAllTech.</p>
+          <label className="block"><span className="mb-2 block text-sm font-medium">Contraseña local de cifrado</span><input type="password" value={vaultPassphrase} onChange={(event) => setVaultPassphrase(event.target.value)} className="w-full rounded-xl border bg-background px-4 py-2" autoComplete="new-password" minLength={8}/></label>
+          {vaultUnlocked && <label className="block"><span className="mb-2 block text-sm font-medium">Contenido privado</span><textarea value={vaultText} onChange={(event) => setVaultText(event.target.value)} className="min-h-40 w-full rounded-xl border bg-background p-4" maxLength={50000}/></label>}
+          <div className="flex flex-wrap gap-2">{vaultExists && !vaultUnlocked && <button type="button" disabled={vaultBusy || !vaultPassphrase} onClick={unlockVault} className="rounded-xl bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50">Desbloquear</button>}{(!vaultExists || vaultUnlocked) && <button type="button" disabled={vaultBusy || vaultPassphrase.length < 8} onClick={saveVault} className="rounded-xl bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50">{vaultExists ? 'Guardar cifrada' : 'Crear bóveda cifrada'}</button>}{vaultUnlocked && <button type="button" onClick={lockVault} className="rounded-xl border px-4 py-2">Bloquear</button>}{vaultExists && <button type="button" onClick={deleteVault} className="rounded-xl border border-destructive px-4 py-2 text-destructive">Eliminar</button>}</div>
+          <p className="text-xs text-muted-foreground">AES-GCM de 256 bits · PBKDF2-SHA-256 con 250.000 iteraciones · sin recuperación de contraseña.</p>
         </Section>
 
         <Section icon={Plug} title="Integraciones">

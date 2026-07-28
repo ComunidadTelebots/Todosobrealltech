@@ -1,11 +1,11 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-28T11:17:50.804Z",
+  "generated_at": "2026-07-28T11:28:06.320Z",
   "status": "in_progress",
-  "implemented": 32,
+  "implemented": 34,
   "routed": 971,
   "completed": 1000,
-  "proposed": 997,
+  "proposed": 995,
   "totals": {
     "web": 1002,
     "moonbot": 999,
@@ -32966,7 +32966,7 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "cifrado y consentimiento",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-2198",
@@ -41171,7 +41171,7 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "cifrado y consentimiento",
-      "status": "proposed"
+      "status": "implemented"
     },
     {
       "id": "future-2745",
