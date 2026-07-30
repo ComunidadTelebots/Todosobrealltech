@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T10:54:06.998Z",
+  "generated_at": "2026-07-30T11:04:29.675Z",
   "status": "in_progress",
-  "implemented": 1233,
-  "scaffolded": 340,
-  "specified": 978,
-  "proposed": 3449,
-  "remaining_real": 4767,
-  "verified_percent": 20.55,
+  "implemented": 1557,
+  "scaffolded": 328,
+  "specified": 726,
+  "proposed": 3389,
+  "remaining_real": 4443,
+  "verified_percent": 25.95,
   "totals": {
     "web": 2004,
     "moonbot": 1998,
@@ -7404,9 +7404,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "historial agregado",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0332",
@@ -7421,9 +7426,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ayuda contextual",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0333",
@@ -7438,9 +7448,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0334",
@@ -7455,9 +7470,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "cola de tareas",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0335",
@@ -19960,9 +19980,13 @@
       "priority": "low",
       "difficulty": "easy",
       "dependency": "preferencias",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0994",
@@ -19977,9 +20001,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "backups",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0995",
@@ -19994,9 +20022,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "programador",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0996",
@@ -20011,9 +20043,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "aislamiento",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0997",
@@ -20028,9 +20064,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0998",
@@ -20045,9 +20085,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "historial agregado",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0999",
@@ -20062,9 +20106,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ayuda contextual",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1000",
@@ -20079,9 +20127,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1001",
@@ -20448,9 +20500,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1018",
@@ -20465,9 +20522,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1019",
@@ -20482,9 +20544,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1020",
@@ -20499,9 +20566,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1021",
@@ -20516,9 +20588,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1022",
@@ -20533,9 +20610,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1023",
@@ -20550,9 +20632,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1024",
@@ -20567,9 +20654,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1025",
@@ -20584,9 +20676,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1026",
@@ -20601,9 +20698,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1027",
@@ -20618,9 +20720,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1028",
@@ -20635,9 +20742,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1029",
@@ -20652,9 +20764,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1030",
@@ -20669,9 +20786,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1031",
@@ -20686,9 +20808,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1032",
@@ -20703,9 +20830,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1033",
@@ -20720,9 +20852,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1034",
@@ -20737,9 +20874,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1035",
@@ -20754,9 +20896,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1036",
@@ -20771,9 +20918,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1037",
@@ -20788,9 +20940,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1038",
@@ -20805,9 +20962,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1039",
@@ -20822,9 +20984,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1040",
@@ -20839,9 +21006,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1041",
@@ -20856,9 +21028,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1042",
@@ -20873,9 +21050,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1043",
@@ -20890,9 +21072,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1044",
@@ -20907,9 +21094,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1045",
@@ -20924,9 +21116,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1046",
@@ -20941,9 +21138,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1047",
@@ -20958,9 +21160,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1048",
@@ -20975,9 +21182,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1049",
@@ -20992,9 +21204,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1050",
@@ -21009,9 +21226,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1051",
@@ -21026,9 +21248,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1052",
@@ -21043,9 +21270,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1053",
@@ -21060,9 +21292,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1054",
@@ -21077,9 +21314,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1055",
@@ -21094,9 +21336,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1056",
@@ -21111,9 +21358,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1057",
@@ -21128,9 +21380,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1058",
@@ -21145,9 +21402,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1059",
@@ -21162,9 +21424,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1060",
@@ -21179,9 +21446,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1061",
@@ -21196,9 +21468,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1062",
@@ -21213,9 +21490,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1063",
@@ -21230,9 +21512,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1064",
@@ -21247,9 +21534,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1065",
@@ -21264,9 +21556,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1066",
@@ -21281,9 +21578,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1067",
@@ -21298,9 +21600,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1068",
@@ -21315,9 +21622,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1069",
@@ -21332,9 +21644,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1070",
@@ -21349,9 +21666,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1071",
@@ -21366,9 +21688,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1072",
@@ -21383,9 +21710,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1073",
@@ -21400,9 +21732,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1074",
@@ -21417,9 +21754,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1075",
@@ -21434,9 +21776,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1076",
@@ -21451,9 +21798,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1077",
@@ -21468,9 +21820,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1078",
@@ -21485,9 +21842,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1079",
@@ -21502,9 +21864,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1080",
@@ -21519,9 +21886,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1081",
@@ -21536,9 +21908,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1082",
@@ -21553,9 +21930,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1083",
@@ -21570,9 +21952,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1084",
@@ -21587,9 +21974,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1085",
@@ -21604,9 +21996,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1086",
@@ -21621,9 +22018,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1087",
@@ -21638,9 +22040,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1088",
@@ -21655,9 +22062,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1089",
@@ -21672,9 +22084,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1090",
@@ -21689,9 +22106,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1091",
@@ -21706,9 +22128,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1092",
@@ -21723,9 +22150,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1093",
@@ -21740,9 +22172,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1094",
@@ -21757,9 +22194,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1095",
@@ -21774,9 +22216,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1096",
@@ -21791,9 +22238,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1097",
@@ -21808,9 +22260,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1098",
@@ -21825,9 +22282,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1099",
@@ -21842,9 +22304,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1100",
@@ -21859,9 +22326,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1101",
@@ -21876,9 +22348,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1102",
@@ -21893,9 +22370,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1103",
@@ -21910,9 +22392,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1104",
@@ -21927,9 +22414,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1105",
@@ -21944,9 +22436,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1106",
@@ -21961,9 +22458,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1107",
@@ -21978,9 +22480,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1108",
@@ -21995,9 +22502,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1109",
@@ -22012,9 +22524,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1110",
@@ -22029,9 +22546,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1111",
@@ -22046,9 +22568,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1112",
@@ -22063,9 +22590,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1113",
@@ -22080,9 +22612,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1114",
@@ -22097,9 +22634,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1115",
@@ -22114,9 +22656,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1116",
@@ -22131,9 +22678,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotFeatureCenter.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1117",
@@ -31527,9 +32079,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1669",
@@ -31544,9 +32100,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1670",
@@ -31561,9 +32121,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1671",
@@ -31578,9 +32142,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1672",
@@ -31595,9 +32163,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1673",
@@ -31612,9 +32184,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1674",
@@ -31629,9 +32205,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1675",
@@ -31646,9 +32226,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1676",
@@ -31663,9 +32247,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1677",
@@ -31680,9 +32268,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1678",
@@ -31697,9 +32289,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1679",
@@ -31714,9 +32310,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1680",
@@ -31731,9 +32331,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1681",
@@ -31748,9 +32352,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1682",
@@ -31765,9 +32373,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1683",
@@ -31782,9 +32394,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1684",
@@ -31799,9 +32415,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1685",
@@ -31816,9 +32436,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1686",
@@ -31833,9 +32457,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1687",
@@ -31850,9 +32478,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1688",
@@ -31867,9 +32499,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1689",
@@ -31884,9 +32520,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1690",
@@ -31901,9 +32541,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1691",
@@ -31918,9 +32562,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1692",
@@ -31935,9 +32583,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1693",
@@ -31952,9 +32604,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1694",
@@ -31969,9 +32625,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1695",
@@ -31986,9 +32646,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1696",
@@ -32003,9 +32667,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1697",
@@ -32020,9 +32688,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1698",
@@ -32037,9 +32709,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1699",
@@ -32054,9 +32730,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1700",
@@ -32071,9 +32751,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1701",
@@ -32109,9 +32793,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1703",
@@ -32126,9 +32814,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1704",
@@ -32143,9 +32835,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1705",
@@ -32160,9 +32856,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1706",
@@ -32177,9 +32877,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1707",
@@ -32194,9 +32898,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1708",
@@ -32211,9 +32919,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1709",
@@ -32228,9 +32940,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1710",
@@ -32265,9 +32981,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1712",
@@ -32282,9 +33002,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1713",
@@ -32299,9 +33023,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1714",
@@ -32316,9 +33044,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1715",
@@ -32333,9 +33065,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1716",
@@ -32350,9 +33086,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1717",
@@ -32367,9 +33107,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1718",
@@ -32384,9 +33128,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1719",
@@ -32401,9 +33149,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1720",
@@ -32418,9 +33170,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1721",
@@ -32435,9 +33191,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1722",
@@ -32452,9 +33212,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1723",
@@ -32469,9 +33233,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1724",
@@ -32486,9 +33254,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1725",
@@ -32503,9 +33275,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1726",
@@ -32520,9 +33296,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1727",
@@ -32537,9 +33317,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1728",
@@ -32554,9 +33338,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1729",
@@ -32571,9 +33359,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1730",
@@ -32588,9 +33380,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1731",
@@ -32605,9 +33401,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1732",
@@ -32622,9 +33422,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1733",
@@ -32639,9 +33443,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1734",
@@ -32656,9 +33464,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1735",
@@ -32673,9 +33485,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1736",
@@ -32690,9 +33506,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1737",
@@ -32707,9 +33527,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1738",
@@ -32724,9 +33548,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1739",
@@ -32741,9 +33569,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1740",
@@ -32758,9 +33590,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1741",
@@ -32775,9 +33611,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1742",
@@ -32792,9 +33632,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1743",
@@ -32809,9 +33653,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1744",
@@ -32826,9 +33674,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1745",
@@ -32843,9 +33695,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1746",
@@ -32860,9 +33716,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1747",
@@ -32877,9 +33737,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1748",
@@ -32894,9 +33758,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1749",
@@ -32911,9 +33779,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1750",
@@ -32928,9 +33800,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1751",
@@ -32945,9 +33821,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1752",
@@ -32962,9 +33842,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1753",
@@ -32979,9 +33863,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1754",
@@ -32996,9 +33884,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1755",
@@ -33013,9 +33905,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1756",
@@ -33030,9 +33926,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1757",
@@ -33047,9 +33947,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1758",
@@ -33064,9 +33968,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1759",
@@ -33081,9 +33989,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1760",
@@ -33098,9 +34010,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1761",
@@ -33115,9 +34031,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1762",
@@ -33132,9 +34052,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1763",
@@ -33149,9 +34073,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1764",
@@ -33166,9 +34094,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1765",
@@ -33183,9 +34115,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1766",
@@ -33200,9 +34136,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1767",
@@ -33217,9 +34157,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1768",
@@ -33234,9 +34178,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1769",
@@ -33251,9 +34199,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1770",
@@ -33268,9 +34220,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1771",
@@ -33285,9 +34241,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1772",
@@ -33302,9 +34262,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1773",
@@ -33319,9 +34283,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1774",
@@ -33336,9 +34304,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1775",
@@ -33353,9 +34325,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1776",
@@ -33370,9 +34346,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1777",
@@ -33387,9 +34367,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1778",
@@ -33404,9 +34388,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1779",
@@ -33421,9 +34409,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1780",
@@ -33438,9 +34430,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1781",
@@ -33455,9 +34451,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1782",
@@ -33472,9 +34472,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1783",
@@ -33489,9 +34493,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1784",
@@ -33506,9 +34514,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1785",
@@ -33523,9 +34535,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1786",
@@ -33540,9 +34556,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1787",
@@ -33557,9 +34577,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1788",
@@ -33574,9 +34598,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1789",
@@ -33591,9 +34619,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1790",
@@ -33608,9 +34640,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1791",
@@ -33625,9 +34661,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1792",
@@ -33642,9 +34682,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "trazas de decisión",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1793",
@@ -33659,9 +34703,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1794",
@@ -33676,9 +34724,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "validación transaccional",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1795",
@@ -33693,9 +34745,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "identidad y permisos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1796",
@@ -33710,9 +34766,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "clasificación semántica",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1797",
@@ -33727,9 +34787,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "eventos agregados",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1798",
@@ -33744,9 +34808,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "programador temporal",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1799",
@@ -33761,9 +34829,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "planes de recuperación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1800",
@@ -33778,9 +34850,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1801",
@@ -33795,9 +34871,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "métricas de progreso",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1802",
@@ -33812,9 +34892,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "telemetría anonimizada",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1803",
@@ -33829,9 +34913,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "sandbox",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1804",
@@ -33846,9 +34934,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "registro de consentimiento",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1805",
@@ -33863,9 +34955,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "mapa de tareas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1806",
@@ -33880,9 +34976,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "identidad portable",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1807",
@@ -33897,9 +34997,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1808",
@@ -33914,9 +35018,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría y límites",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1809",
@@ -33931,9 +35039,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "métricas agregadas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1810",
@@ -33948,9 +35060,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "memoria de traducción",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1811",
@@ -33965,9 +35081,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1812",
@@ -33982,9 +35102,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "versionado de configuración",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1813",
@@ -33999,9 +35123,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "auditoría",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1814",
@@ -34016,9 +35144,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas WCAG",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1815",
@@ -34033,9 +35165,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "API de archivos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1816",
@@ -34050,9 +35186,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "zonas horarias",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1817",
@@ -34067,9 +35207,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "series históricas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1818",
@@ -34084,9 +35228,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "inventario de servicios",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1819",
@@ -34101,9 +35249,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "motor de reglas",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1820",
@@ -34118,9 +35270,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "flujos de aprobación",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1821",
@@ -34135,9 +35291,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "auditoría diferencial",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:web/hub.html",
+        "moon-multibot:tests/test_feature_runtime.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1822",
@@ -87187,9 +88347,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4623",
@@ -87244,9 +88408,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4626",
@@ -87301,9 +88469,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4629",
@@ -87358,9 +88530,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4632",
@@ -87415,9 +88591,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4635",
@@ -87472,9 +88652,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4638",
@@ -87529,9 +88713,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4641",
@@ -87586,9 +88774,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4644",
@@ -87643,9 +88835,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4647",
@@ -87700,9 +88896,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4650",
@@ -87757,9 +88957,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4653",
@@ -87814,9 +89018,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "moderation contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4656",
@@ -87871,9 +89079,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4659",
@@ -87928,9 +89140,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4662",
@@ -87985,9 +89201,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4665",
@@ -88042,9 +89262,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4668",
@@ -88099,9 +89323,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4671",
@@ -88156,9 +89384,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "integrations contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4674",
@@ -88213,9 +89445,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4677",
@@ -88270,9 +89506,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4680",
@@ -88327,9 +89567,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "accessibility contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4683",
@@ -88384,9 +89628,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4686",
@@ -88441,9 +89689,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4689",
@@ -88498,9 +89750,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ux contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4692",
@@ -88555,9 +89811,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4695",
@@ -88612,9 +89872,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4698",
@@ -88669,9 +89933,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "operations contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4701",
@@ -88726,9 +89994,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "identity contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4704",
@@ -88783,9 +90055,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4707",
@@ -88840,9 +90116,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "planning contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4710",
@@ -88897,9 +90177,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4713",
@@ -88954,9 +90238,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4716",
@@ -89011,9 +90299,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4719",
@@ -89068,9 +90360,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "operations contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4722",
@@ -89125,9 +90421,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "operations contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4725",
@@ -89182,9 +90482,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "moderation contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4728",
@@ -89239,9 +90543,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4731",
@@ -89296,9 +90604,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "i18n contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4734",
@@ -89353,9 +90665,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4737",
@@ -89410,9 +90726,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4740",
@@ -89467,9 +90787,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ux contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4743",
@@ -89524,9 +90848,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4746",
@@ -89581,9 +90909,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4749",
@@ -89638,9 +90970,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4752",
@@ -89695,9 +91031,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4755",
@@ -89752,9 +91092,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4758",
@@ -89809,9 +91153,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "planning contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4761",
@@ -89866,9 +91214,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "accessibility contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4764",
@@ -89923,9 +91275,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4767",
@@ -89980,9 +91336,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4770",
@@ -90037,9 +91397,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4773",
@@ -90094,9 +91458,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4776",
@@ -90151,9 +91519,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4779",
@@ -90208,9 +91580,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4782",
@@ -90265,9 +91641,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4785",
@@ -90322,9 +91702,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4788",
@@ -90379,9 +91763,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4791",
@@ -90436,9 +91824,13 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4794",
@@ -90493,9 +91885,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4797",
@@ -90550,9 +91946,13 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "moon-multibot:core/feature_runtime.py",
+        "moon-multibot:tests/test_feature_runtime.py",
+        "moon-multibot:core/routes_public.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-4800",
@@ -113375,15 +114775,15 @@
     }
   ],
   "completion": {
-    "implemented": 1233,
-    "partial": 340,
-    "not_implemented": 4427
+    "implemented": 1557,
+    "partial": 328,
+    "not_implemented": 4115
   },
   "data_quality": {
     "unique_ids": 6000,
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T10:54:06.998Z"
+    "verified_at": "2026-07-30T11:04:29.675Z"
   }
 }

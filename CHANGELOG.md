@@ -4,7 +4,7 @@
 - El panel master incorpora una pestaña para buscar, inspeccionar y ejecutar funciones registradas de Moonbot desde la web.
 - La API de TodoSobreAllTech actúa como pasarela autenticada hacia el registro interno y nunca expone la clave administrativa al navegador.
 - El runtime usa una lista explícita de manifiestos, valida argumentos y rechaza módulos, funciones o IDs no registrados.
-- Los primeros 1.180 contratos verificados quedan disponibles de forma compartida para Moonbot, web y Telegram WebApp.
+- Los primeros 1.500 contratos verificados quedan disponibles de forma compartida para Moonbot, web y Telegram WebApp.
 
 ### Catálogo ampliado a 6.000 funciones sin nombres repetidos - 2026-07-30
 - El roadmap incorpora 3.000 capacidades nuevas mediante contratos operación–recurso con nombres funcionales únicos.
