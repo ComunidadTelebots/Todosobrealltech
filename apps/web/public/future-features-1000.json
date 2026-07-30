@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T08:50:37.889Z",
+  "generated_at": "2026-07-30T08:54:07.178Z",
   "status": "in_progress",
-  "implemented": 42,
-  "scaffolded": 972,
+  "implemented": 43,
+  "scaffolded": 971,
   "specified": 994,
   "proposed": 992,
-  "remaining_real": 2958,
-  "verified_percent": 1.4,
+  "remaining_real": 2957,
+  "verified_percent": 1.43,
   "totals": {
     "web": 1002,
     "moonbot": 999,
@@ -28,9 +28,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "historial agregado",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountForecast.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/CreatorAccountProxyManager.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0002",
@@ -51126,8 +51130,8 @@
     }
   ],
   "completion": {
-    "implemented": 42,
-    "partial": 972,
+    "implemented": 43,
+    "partial": 971,
     "not_implemented": 1986
   },
   "data_quality": {
@@ -51135,6 +51139,6 @@
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T08:50:37.889Z"
+    "verified_at": "2026-07-30T08:54:07.178Z"
   }
 }

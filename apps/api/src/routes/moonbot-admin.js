@@ -9,6 +9,7 @@ import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
 import { createRoleApproval, decideRoleApproval } from '../utils/accountApprovals.js';
+import { forecastAccounts } from '../utils/accountForecast.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -171,6 +172,16 @@ router.post('/account-tools/sign', async (req, res) => {
 const accountHistoryFile = '/data/account-change-history.json';
 const accountBulkFile = '/data/account-bulk-transactions.json';
 const accountApprovalsFile = '/data/account-role-approvals.json';
+router.get('/account-tools/forecast', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const users = await pocketbaseClient.collection('users').getFullList({ sort: '-created', fields: 'id,created' });
+    return res.json({ ok: true, forecast: forecastAccounts(users), checked_at: new Date().toISOString() });
+  } catch (error) {
+    logger.error(`[moonbot-admin] Previsión de cuentas falló: ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo calcular la previsión' });
+  }
+});
 router.all('/account-tools/approvals', async (req, res) => {
   const auth = await authorizeAdminOrCreator(req);
   if (auth.error) {

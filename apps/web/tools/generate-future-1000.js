@@ -120,6 +120,7 @@ const cleanText = (value) => {
 };
 const implementedEvidence = new Map([
   ['future-0003', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  ['future-0001', ['apps/api/src/utils/accountForecast.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/CreatorAccountProxyManager.jsx']],
   ['future-0004', ['apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0006', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
   ['future-0007', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],

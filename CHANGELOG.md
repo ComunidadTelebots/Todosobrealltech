@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Previsión explicable de altas - 2026-07-30
+- El panel de cuentas proyecta las altas de los próximos 30 días usando ocho semanas de historial y mayor peso para las semanas recientes.
+- Muestra intervalo estimado, tendencia, tamaño de muestra, confianza y explicación del cálculo.
+- Se añaden pruebas deterministas y se completa la función predictiva parcial del roadmap.
+
 ### Flujo de aprobación de cuentas - 2026-07-30
 - Las elevaciones al rol administrador generan una solicitud persistente en vez de aplicarse directamente.
 - Solo creator puede aprobarlas, el solicitante no puede aprobar su propia petición y la cuenta creator permanece protegida.

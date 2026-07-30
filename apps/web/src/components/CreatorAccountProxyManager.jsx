@@ -25,6 +25,7 @@ const CreatorAccountProxyManager = () => {
   const [editingProxyId, setEditingProxyId] = useState('');
   const [proxyDraft, setProxyDraft] = useState({});
   const [approvals, setApprovals] = useState([]);
+  const [accountForecast, setAccountForecast] = useState(null);
   const [privacyMode, setPrivacyMode] = useState(() => getAccountPrivacyMode(currentUser.id));
   const [revealSensitive, setRevealSensitive] = useState(false);
 
@@ -69,9 +70,18 @@ const CreatorAccountProxyManager = () => {
     } catch { setApprovals([]); }
   };
 
+  const fetchAccountForecast = async () => {
+    try {
+      const response = await apiServerClient.fetch('/moonbot-admin/account-tools/forecast', { headers: { Authorization: `Bearer ${pb.authStore.token}` } });
+      const data = await response.json();
+      if (response.ok) setAccountForecast(data.forecast || null);
+    } catch { setAccountForecast(null); }
+  };
+
   useEffect(() => {
     fetchResources();
     fetchApprovals();
+    fetchAccountForecast();
   }, []);
 
   const usersById = useMemo(
@@ -312,7 +322,7 @@ const CreatorAccountProxyManager = () => {
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
-        <div className="rounded-xl border bg-background p-4"><TrendingUp className="mb-2 h-5 w-5 text-emerald-600" /><p className="text-2xl font-bold">{accountInsights.forecast}</p><p className="text-xs text-muted-foreground">Previsión explicable de altas este mes, basada en el ritmo actual.</p></div>
+        <div className="rounded-xl border bg-background p-4"><TrendingUp className="mb-2 h-5 w-5 text-emerald-600" /><p className="text-2xl font-bold">{accountForecast?.projected_30d ?? accountInsights.forecast}</p><p className="text-xs text-muted-foreground">Altas previstas en 30 días{accountForecast ? ` · intervalo ${accountForecast.interval.min}–${accountForecast.interval.max} · confianza ${accountForecast.confidence}` : ', basada en el ritmo actual'}.</p>{accountForecast?.explanation && <p className="mt-1 text-xs text-muted-foreground">{accountForecast.explanation}</p>}</div>
         <div className="rounded-xl border bg-background p-4"><Activity className="mb-2 h-5 w-5 text-blue-600" /><p className="text-2xl font-bold">{accountInsights.current} <span className="text-sm font-normal">({accountInsights.change >= 0 ? '+' : ''}{accountInsights.change}%)</span></p><p className="text-xs text-muted-foreground">Altas actuales frente a {accountInsights.previous} el mes anterior.</p></div>
         <div className="rounded-xl border bg-background p-4"><AlertTriangle className="mb-2 h-5 w-5 text-amber-600" /><p className="text-2xl font-bold">{accountInsights.alerts.length}</p><p className="text-xs text-muted-foreground">Alertas adaptativas: {accountInsights.alerts.join(' · ') || 'ninguna incidencia'}.</p></div>
       </div>
