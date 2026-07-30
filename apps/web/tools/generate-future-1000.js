@@ -225,7 +225,15 @@ const implementedEvidence = new Map([
 
 // Contratos operativos publicados en Moonbot y accesibles desde el centro master.
 // Se enumeran por los rangos realmente probados; no se infiere implementación por título.
-for (let number = 31; number <= 310; number += 1) {
+for (let number = 31; number <= 330; number += 1) {
+  implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
+    'moon-multibot:core/feature_runtime.py',
+    'moon-multibot:tests/test_feature_runtime.py',
+    'apps/api/src/routes/moonbot-admin.js',
+    'apps/web/src/components/MoonbotFeatureCenter.jsx',
+  ]);
+}
+for (let number = 1001; number <= 1016; number += 1) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
     'moon-multibot:core/feature_runtime.py',
     'moon-multibot:tests/test_feature_runtime.py',
@@ -236,7 +244,7 @@ for (let number = 31; number <= 310; number += 1) {
 const verifiedWebappIds = [
   ...Array.from({ length: 33 }, (_, index) => 668 + index),
   702, 703, 706, 707, 709, 710, 712,
-  ...Array.from({ length: 240 }, (_, index) => 713 + index),
+  ...Array.from({ length: 280 }, (_, index) => 713 + index),
 ];
 for (const number of verifiedWebappIds) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
@@ -245,7 +253,7 @@ for (const number of verifiedWebappIds) {
     'moon-multibot:tests/test_feature_runtime.py',
   ]);
 }
-for (let number = 3002; number <= 4379; number += 3) {
+for (let number = 3002; number <= 4619; number += 3) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
     'moon-multibot:core/feature_runtime.py',
     'moon-multibot:tests/test_feature_runtime.py',
