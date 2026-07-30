@@ -17,4 +17,6 @@ test('web and Moonbot must agree on account and Telegram identity', () => {
   assert.match(route, /account_id=.*telegram_id=.*enabled=true/);
   assert.match(route, /La cuenta debe vincular primero Telegram/);
   assert.match(route, /X-Moon-Release-Channel/);
+  assert.match(route, /Cache-Control': 'private, no-store, max-age=0'/);
+  assert.match(route, /Vary: 'Authorization'/);
 });

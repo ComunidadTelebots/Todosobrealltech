@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
+import { releaseChannel, releaseLabel } from '@/lib/releaseChannel.js';
 
 const LANGUAGES = [
   { code: 'es', name: 'Español' },
@@ -45,7 +47,19 @@ const Header = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [voiceListening, setVoiceListening] = React.useState(false);
+  const [entitledChannel, setEntitledChannel] = React.useState('stable');
   const voiceSupported = typeof window !== 'undefined' && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  React.useEffect(() => {
+    if (!currentUser || !pb.authStore.token) { setEntitledChannel('stable'); return undefined; }
+    const controller = new AbortController();
+    apiServerClient.fetch('/moonbot-admin/feature-release-access/me', {
+      headers: { Authorization: `Bearer ${pb.authStore.token}` }, signal: controller.signal,
+    }).then((response) => response.ok ? apiServerClient.readJson(response) : null)
+      .then((payload) => payload?.release_channel && setEntitledChannel(payload.release_channel))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [currentUser]);
 
   const handleLogout = () => {
     pb.authStore.clear();
@@ -187,6 +201,7 @@ const Header = () => {
               </div>
               <span className="font-bold text-xl tracking-tight">Todo sobre alltech</span>
             </Link>
+            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide ${releaseChannel === 'stable' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700' : 'border-amber-500/40 bg-amber-500/10 text-amber-700'}`} title={`Canal ejecutado: ${releaseLabel}. Acceso asignado: ${entitledChannel}.`}>{releaseLabel}</span>
           </div>
 
           {/* Desktop Navigation */}

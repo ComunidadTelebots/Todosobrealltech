@@ -6,6 +6,8 @@ services:
       args:
         VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
         VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
+        VITE_RELEASE_CHANNEL: stable
+        VITE_RELEASE_VERSION: ${WEB_STABLE_VERSION:-local}
     restart: unless-stopped
     depends_on:
       api:

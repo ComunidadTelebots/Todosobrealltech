@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Estructura de builds web por canal - 2026-07-30
+- Mantiene `web` como despliegue stable predeterminado y aÃ±ade servicios opt-in separados para RC, beta y alpha.
+- Cada imagen hornea su canal y versiÃ³n, mostrados permanentemente junto al nombre de la web.
+- La etiqueta diferencia el bundle ejecutado del canal autorizado para la cuenta autenticada.
+- Los servicios superiores permanecen internos y deshabilitados en Traefik hasta incorporar el gateway autenticado.
+- Las respuestas de permisos y catÃ¡logos usan cachÃ© privada desactivada para impedir cruces entre cuentas o canales.
+
 ### Canales de funciones Alpha, Beta y RC - 2026-07-30
 - AÃ±ade a las cuentas el canal progresivo `stable`, `rc`, `beta` o `alpha`, vinculado con su ID de Telegram.
 - El creador puede asignar el canal desde el panel de cuentas y comprobar si Telegram estÃ¡ vinculado.

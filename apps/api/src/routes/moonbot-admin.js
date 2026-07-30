@@ -734,7 +734,17 @@ const releaseChannelForUser = async (user, actorRole) => {
   }
 };
 
+router.get('/feature-release-access/me', async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  const actorRole = moonRoleFor(auth.user.role);
+  const releaseChannel = await releaseChannelForUser(auth.user, actorRole);
+  return res.json({ ok: true, release_channel: releaseChannel });
+});
+
 router.all('/feature-release-access', express.json({ limit: '32kb' }), async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
   const auth = await authorizeAuthenticatedUser(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   if (auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede asignar canales' });
@@ -762,6 +772,7 @@ router.all('/feature-release-access', express.json({ limit: '32kb' }), async (re
 });
 
 router.get('/features', async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
   const auth = await authorizeAuthenticatedUser(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   if (!serviceConfig(res)) return;
@@ -784,6 +795,7 @@ router.get('/features', async (req, res) => {
 });
 
 router.post('/features', express.json({ limit: '128kb' }), async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
   const auth = await authorizeAuthenticatedUser(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   if (!serviceConfig(res)) return;

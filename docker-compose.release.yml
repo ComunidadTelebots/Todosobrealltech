@@ -1,0 +1,70 @@
+# Canales web aislados y opt-in. Este archivo no sustituye ni modifica el servicio `web` stable.
+# Ejemplo: docker compose -f docker-compose.yml -f docker-compose.release.yml --profile rc up -d --build web-rc
+services:
+  web-rc:
+    profiles: ["rc"]
+    image: todosobrealltech-web:${WEB_RC_VERSION:-rc-local}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+        VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
+        VITE_RELEASE_CHANNEL: rc
+        VITE_RELEASE_VERSION: ${WEB_RC_VERSION:-rc-local}
+    restart: unless-stopped
+    networks: [default, traefik]
+    labels:
+      # Los bundles superiores permanecen internos hasta activar el gateway
+      # autenticado. No pongas esta variable a true exponiendo los hosts sin él.
+      - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.todosobrealltech-rc.rule=Host(`${WEB_RC_HOST:-rc.todosobreall.tech}`)"
+      - "traefik.http.routers.todosobrealltech-rc.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.todosobrealltech-rc.tls=true"
+      - "traefik.http.routers.todosobrealltech-rc.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.todosobrealltech-rc.loadbalancer.server.port=80"
+
+  web-beta:
+    profiles: ["beta"]
+    image: todosobrealltech-web:${WEB_BETA_VERSION:-beta-local}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+        VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
+        VITE_RELEASE_CHANNEL: beta
+        VITE_RELEASE_VERSION: ${WEB_BETA_VERSION:-beta-local}
+    restart: unless-stopped
+    networks: [default, traefik]
+    labels:
+      - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.todosobrealltech-beta.rule=Host(`${WEB_BETA_HOST:-beta.todosobreall.tech}`)"
+      - "traefik.http.routers.todosobrealltech-beta.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.todosobrealltech-beta.tls=true"
+      - "traefik.http.routers.todosobrealltech-beta.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.todosobrealltech-beta.loadbalancer.server.port=80"
+
+  web-alpha:
+    profiles: ["alpha"]
+    image: todosobrealltech-web:${WEB_ALPHA_VERSION:-alpha-local}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
+        VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
+        VITE_RELEASE_CHANNEL: alpha
+        VITE_RELEASE_VERSION: ${WEB_ALPHA_VERSION:-alpha-local}
+    restart: unless-stopped
+    networks: [default, traefik]
+    labels:
+      - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.todosobrealltech-alpha.rule=Host(`${WEB_ALPHA_HOST:-alpha.todosobreall.tech}`)"
+      - "traefik.http.routers.todosobrealltech-alpha.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.todosobrealltech-alpha.tls=true"
+      - "traefik.http.routers.todosobrealltech-alpha.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.services.todosobrealltech-alpha.loadbalancer.server.port=80"
