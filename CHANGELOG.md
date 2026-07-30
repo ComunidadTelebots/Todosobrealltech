@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Compatibilidad con Inside Ads e IFTTT - 2026-07-31
+- Los posts nuevos de `@TodoSobreAllTech` contienen únicamente el titular, una frase breve y el enlace a NoticiasWeb3.
+- El backfill deja de sustituir esos mensajes por el artículo completo y conserva el bloque y los enlaces añadidos por `@InsideAds_bot`.
+- Las ediciones de posts externos esperan cinco minutos y utilizan el texto vivo del canal; si no puede leerse, se omite la edición para no borrar publicidad.
+- Los enlaces cortos de IFTTT se reconocen como fuente, se importan en NoticiasWeb3 y dejan de ser descartados por confundir Inside Ads con contenido patrocinado.
+
 ### Dependencias y compilaciones reproducibles - 2026-07-31
 - Actualiza Canales y NoticiasWeb3 a Vite 7.3.6, `@vitejs/plugin-react` 5.2.0 y React Router 7.18.2, eliminando las versiones afectadas por lectura de archivos, redirección abierta y XSS.
 - Regenera los lockfiles de API, ComunidadTelebots, Resistencia Censura, TodoSobreGameplays y scripts con `js-yaml`, PostCSS, esbuild, Babel e `ip-address` corregidos.
