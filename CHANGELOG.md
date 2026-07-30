@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Formularios específicos y builds reproducibles - 2026-07-30
+- Añade formularios seguros para sandbox, gobernanza, impacto, archivado y revisión de calidad.
+- Mejora accesibilidad del popup y conserva la revisión JSON antes de ejecutar contratos verificados.
+- ComunidadTelebots, Resistencia Censura y TodoSobreGameplays pasan a `npm ci` reproducible usando sus lockfiles.
+
 ### Formularios específicos Moonbot - 2026-07-30
 - Nuevo centro de operaciones con formularios guiados para energía, antiabuso, migración, federación, continuidad y asistencia contextual.
 - Cada operación se abre en un popup con flecha atrás, prepara el contrato JSON y exige revisión antes de ejecutarlo.

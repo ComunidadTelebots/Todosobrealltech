@@ -3,7 +3,7 @@ FROM node:20-slim AS build
 WORKDIR /app
 
 COPY apps/resistencia-censura/package*.json ./
-RUN npm install
+RUN npm ci --no-audit --no-fund
 
 COPY apps/resistencia-censura .
 
