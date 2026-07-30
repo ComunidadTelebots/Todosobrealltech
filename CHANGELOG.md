@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Seguridad web y 20 familias de formularios - 2026-07-30
+- Actualiza Vite, React Router, PostCSS y Concurrently a revisiones compatibles y reduce avisos conocidos de dependencias.
+- Valida los destinos de campañas para impedir redirecciones a esquemas peligrosos y normaliza enlaces profundos de Telegram.
+- Sanitiza identificadores y colores antes de generar los estilos dinámicos de las gráficas.
+- Añade formularios específicos para incidencias, flujos, delegación, abuso coordinado, copiloto, capacidad, lotes, espacios colaborativos, multimedia, informes, escalado, continuidad, confianza, campañas, intención, integraciones, bóveda, lectura fácil, sesiones y editorial.
+- Integra esos formularios en el panel emergente existente, con flecha atrás, revisión JSON y ejecución autenticada.
+
 ### Formularios específicos y builds reproducibles - 2026-07-30
 - Añade formularios seguros para sandbox, gobernanza, impacto, archivado y revisión de calidad.
 - Mejora accesibilidad del popup y conserva la revisión JSON antes de ejecutar contratos verificados.

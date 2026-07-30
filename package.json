@@ -16,7 +16,7 @@
     "check": "npm run lint && npm run test && npm run build:webs"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.4"
   },
   "workspaces": [
     "apps/*"

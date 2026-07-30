@@ -14,6 +14,25 @@ const headers = () => ({ Accept: 'application/json', 'Content-Type': 'applicatio
 const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad.starts_at) <= now) && (!ad.ends_at || Date.parse(ad.ends_at) >= now);
 const mediaDir = '/data/house-ad-media';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+const safeAdDestination = (value) => {
+  const fallback = 'https://todosobreall.tech';
+  try {
+    const raw = String(value || '').trim();
+    if (raw.startsWith('tg://')) {
+      const telegram = new URL(raw);
+      if (!['resolve', 'join'].includes(telegram.hostname)) return fallback;
+      const domain = telegram.searchParams.get('domain');
+      const invite = telegram.searchParams.get('invite');
+      if (domain && /^[A-Za-z0-9_]{5,32}$/.test(domain)) return `https://t.me/${domain}`;
+      if (invite && /^[A-Za-z0-9_-]{8,128}$/.test(invite)) return `https://t.me/+${invite}`;
+      return fallback;
+    }
+    const destination = new URL(raw);
+    return destination.protocol === 'https:' ? destination.toString() : fallback;
+  } catch {
+    return fallback;
+  }
+};
 const OFFICIAL_ADS = [
   { id: 'official-todosobrealltech', title: 'TodoSobreAllTech en Telegram', description: 'Noticias de tecnología, IA, Web3 y seguridad en nuestro canal oficial.', cta: 'Unirme al canal', url: 'https://t.me/TodoSobreAllTech', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#e9f8ff,#d8f0ff)', foreground: '#12324a', accent: '#168acd', builtin: true },
   { id: 'official-comunidadtelebots', title: 'Comunidad TeleBots', description: 'Canales, grupos, bots y proyectos abiertos de nuestra comunidad Telegram.', cta: 'Abrir comunidad', url: 'https://t.me/comunidadtelebots', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f4ecff,#e7ddff)', foreground: '#2f2350', accent: '#7157c8', builtin: true },
@@ -138,7 +157,7 @@ router.get('/:id/click', async (req, res) => {
       : null;
     const destination = String(communityItem?.url || ad.url || 'https://todosobreall.tech');
     await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, country, item_id: communityItem?.id || '' }) });
-    return res.redirect(302, destination.startsWith('tg://') ? destination.replace('tg://', 'https://t.me/') : destination);
+    return res.redirect(302, safeAdDestination(destination));
   } catch { return res.redirect(302, 'https://todosobreall.tech'); }
 });
 

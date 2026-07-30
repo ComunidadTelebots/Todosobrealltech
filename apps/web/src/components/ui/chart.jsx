@@ -49,7 +49,17 @@ const ChartStyle = ({
   id,
   config
 }) => {
-  const colorConfig = Object.entries(config).filter(([, config]) => config.theme || config.color)
+  const safeCssName = (value) => String(value).replace(/[^a-zA-Z0-9_-]/g, "")
+  const safeCssColor = (value) => {
+    const color = String(value || "").trim()
+    return /^(#[0-9a-fA-F]{3,8}|(?:rgb|hsl)a?\([0-9.,%\s]+\)|var\(--[a-zA-Z0-9_-]+\)|[a-zA-Z]{3,20})$/.test(color)
+      ? color
+      : null
+  }
+  const safeId = safeCssName(id)
+  const colorConfig = Object.entries(config)
+    .map(([key, value]) => [safeCssName(key), value])
+    .filter(([key, value]) => key && (value.theme || value.color))
 
   if (!colorConfig.length) {
     return null
@@ -60,12 +70,12 @@ const ChartStyle = ({
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+${prefix} [data-chart=${safeId}] {
 ${colorConfig
 .map(([key, itemConfig]) => {
-const color =
+const color = safeCssColor(
   itemConfig.theme?.[theme] ||
-  itemConfig.color
+  itemConfig.color)
 return color ? `  --color-${key}: ${color};` : null
 })
 .join("\n")}
