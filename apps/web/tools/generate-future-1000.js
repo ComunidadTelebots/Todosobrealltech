@@ -222,6 +222,36 @@ const implementedEvidence = new Map([
   ['future-2134', ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js']],
   ['future-2254', ['apps/web/src/components/HouseAdsManager.jsx', 'apps/api/src/routes/house-ads.js', 'apps/noticiasweb3/src/components/AdSense.jsx']],
 ]);
+
+// Contratos operativos publicados en Moonbot y accesibles desde el centro master.
+// Se enumeran por los rangos realmente probados; no se infiere implementación por título.
+for (let number = 31; number <= 190; number += 1) {
+  implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
+    'moon-multibot:core/feature_runtime.py',
+    'moon-multibot:tests/test_feature_runtime.py',
+    'apps/api/src/routes/moonbot-admin.js',
+    'apps/web/src/components/MoonbotFeatureCenter.jsx',
+  ]);
+}
+const verifiedWebappIds = [
+  ...Array.from({ length: 33 }, (_, index) => 668 + index),
+  702, 703, 706, 707, 709, 710, 712,
+  ...Array.from({ length: 120 }, (_, index) => 713 + index),
+];
+for (const number of verifiedWebappIds) {
+  implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
+    'moon-multibot:core/feature_runtime.py',
+    'moon-multibot:web/hub.html',
+    'moon-multibot:tests/test_feature_runtime.py',
+  ]);
+}
+for (let number = 3002; number <= 3599; number += 3) {
+  implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
+    'moon-multibot:core/feature_runtime.py',
+    'moon-multibot:tests/test_feature_runtime.py',
+    'moon-multibot:core/routes_public.py',
+  ]);
+}
 const trackedTasks = [
   { id: 'task-master-interface-parity', title: 'Equiparar las funciones del master entre TodoSobreAllTech y el Hub', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.', evidence: ['apps/web/src/components/CreatorAccountProxyManager.jsx', 'apps/web/src/components/AccountInteroperableConnector.jsx', 'moon-multibot:web/hub.html'] },
   { id: 'task-community-ads-main', title: 'Mostrar campañas comunitarias de Telegram en todosobreall.tech', products: ['web'], status: 'implemented', detail: 'La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.', evidence: ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js'] },
