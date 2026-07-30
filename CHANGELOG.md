@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+### Directorio unificado de bloqueos - 2026-07-31
+- `/admin` reúne los usuarios que Moonbot registró como detectados por CAS, los GBAN, los baneos locales y los bloqueos web.
+- El contador CAS ya no representa el export completo: cuenta únicamente detecciones registradas por Moonbot.
+- Añade búsqueda y filtros por origen, conserva la separación entre bloqueos Telegram y cuentas web y evita escrituras directas desde el navegador.
+- Corrige la validación manual y traduce los controles principales del directorio.
+- Añade al master un control global para iniciar captcha en todos los grupos únicamente a usuarios que todavía no lo superaron, con porcentaje y métricas en directo.
+- Conserva la campaña en Moonbot y muestra al reabrir `/admin` el estado por grupo, usuarios restantes y cada protocolo pendiente.
+
 ### Verificación Telegram para administradores web - 2026-07-31
 - Las invitaciones y elevaciones dejan el acceso pendiente hasta verificar por mensaje privado la cuenta de Telegram indicada.
 - Genera códigos de un solo uso con quince minutos de validez y almacena exclusivamente su huella criptográfica.

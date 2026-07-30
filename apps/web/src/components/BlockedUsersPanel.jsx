@@ -10,13 +10,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Search, DownloadCloud, Trash2, ShieldAlert, Loader2, CheckCircle2, XCircle, FileText, UploadCloud, History, RefreshCw, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient.js';
 import apiServerClient from '@/lib/apiServerClient.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 
 const BlockedUsersPanel = () => {
+  const { currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [registrySource, setRegistrySource] = useState('all');
+  const [registryStats, setRegistryStats] = useState({ cas: 0, moonbot: 0, global: 0, local: 0, web: 0 });
+  const [globalCaptcha, setGlobalCaptcha] = useState({ status: 'idle', percentage: 0 });
+  const [globalCaptchaBusy, setGlobalCaptchaBusy] = useState(false);
   
   // Status State
   const [importStatus, setImportStatus] = useState({
@@ -28,7 +33,7 @@ const BlockedUsersPanel = () => {
   const [statusLoading, setStatusLoading] = useState(false);
 
   // Import State
-  const [importSource, setImportSource] = useState('cas');
+  const [importSource, setImportSource] = useState('manual');
   const [fileData, setFileData] = useState('');
   const [fileName, setFileName] = useState('');
   const [manualData, setManualData] = useState({ user_id: '', username: '', reason: '' });
@@ -67,17 +72,18 @@ const BlockedUsersPanel = () => {
     }
   };
 
-  const fetchBlockedUsers = async () => {
+  const fetchBlockedUsers = async (query = searchQuery, source = registrySource) => {
     try {
       setLoading(true);
-      const records = await pb.collection('blocked_users').getFullList({
-        sort: '-imported_date',
-        $autoCancel: false
-      });
-      setUsers(records);
+      const params = new URLSearchParams({ q: query, source, page: '1', per_page: '100' });
+      const response = await apiServerClient.fetch(`/blocked-users?${params}`);
+      const data = await apiServerClient.readJson(response);
+      if (!response.ok) throw new Error(data.error || 'No se pudo cargar el directorio');
+      setUsers(data.records || []);
+      setRegistryStats(data.stats || {});
     } catch (error) {
       console.error('Failed to fetch blocked users:', error);
-      toast.error('Failed to load blocked users list');
+      toast.error('No se pudo cargar la lista de bloqueos web');
     } finally {
       setLoading(false);
     }
@@ -87,6 +93,35 @@ const BlockedUsersPanel = () => {
     fetchStatus();
     fetchBlockedUsers();
   }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => fetchBlockedUsers(searchQuery, registrySource), 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery, registrySource]);
+  const fetchGlobalCaptcha = async () => {
+    try {
+      const response = await apiServerClient.fetch('/blocked-users/captcha-global');
+      const data = await apiServerClient.readJson(response);
+      if (response.ok) setGlobalCaptcha(data.campaign || {});
+    } catch { /* El panel conserva el último estado conocido. */ }
+  };
+  useEffect(() => {
+    if (currentUser?.role !== 'creator') return undefined;
+    fetchGlobalCaptcha();
+    const timer = setInterval(fetchGlobalCaptcha, 5000);
+    return () => clearInterval(timer);
+  }, [currentUser?.role]);
+  const controlGlobalCaptcha = async (action) => {
+    if (action === 'start' && !window.confirm('Se silenciará en todos los grupos a los usuarios conocidos que aún no hayan superado el captcha. Se comprobarán CAS y canales obligatorios. ¿Continuar?')) return;
+    setGlobalCaptchaBusy(true);
+    try {
+      const response = await apiServerClient.fetch('/blocked-users/captcha-global', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) });
+      const data = await apiServerClient.readJson(response);
+      if (!response.ok) throw new Error(data.error || 'No se pudo controlar la campaña');
+      setGlobalCaptcha(data.campaign || {});
+      toast.success(action === 'start' ? 'Reverificación global iniciada' : 'Cancelación solicitada');
+    } catch (error) { toast.error(error.message); } finally { setGlobalCaptchaBusy(false); }
+  };
 
   const validateLocalData = (text, source) => {
     setLocalValidationError(null);
@@ -171,7 +206,7 @@ const BlockedUsersPanel = () => {
         if (!fileData) throw new Error('Please select a file first');
         testData = fileData;
       } else if (importSource === 'manual') {
-        if (!manualData.user_id || !manualData.username) throw new Error('User ID and Username are required');
+        if (!manualData.user_id) throw new Error('El ID de la cuenta es obligatorio');
         testData = manualData;
       }
 
@@ -266,24 +301,27 @@ const BlockedUsersPanel = () => {
 
   const handleToggleActive = async (id, currentStatus) => {
     try {
-      await pb.collection('blocked_users').update(id, {
-        is_active: !currentStatus
-      }, { $autoCancel: false });
+      const response = await apiServerClient.fetch(`/blocked-users/${encodeURIComponent(id)}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !currentStatus }),
+      });
+      if (!response.ok) throw new Error('update_failed');
       
       setUsers(users.map(u => u.id === id ? { ...u, is_active: !currentStatus } : u));
-      toast.success(`User block ${!currentStatus ? 'activated' : 'deactivated'}`);
+      toast.success(`Bloqueo ${!currentStatus ? 'activado' : 'desactivado'}`);
     } catch (error) {
       toast.error('Failed to update status');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to remove this user from the blocklist?')) return;
+    if (!window.confirm('¿Quieres retirar este bloqueo de acceso web?')) return;
     
     try {
-      await pb.collection('blocked_users').delete(id, { $autoCancel: false });
+      const response = await apiServerClient.fetch(`/blocked-users/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('delete_failed');
       setUsers(users.filter(u => u.id !== id));
-      toast.success('User removed from blocklist');
+      toast.success('Bloqueo eliminado');
     } catch (error) {
       toast.error('Failed to delete record');
     }
@@ -297,13 +335,18 @@ const BlockedUsersPanel = () => {
   };
 
   const filteredUsers = users.filter(u => 
-    u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.user_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    String(u.username || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    String(u.user_id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (u.source && u.source.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
     <div className="space-y-6">
+      {currentUser?.role === 'creator' && <Card className="border-amber-500/30 bg-amber-500/5">
+        <CardHeader><CardTitle className="flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-amber-600"/>Captcha global de usuarios pendientes</CardTitle><CardDescription>Control master independiente de cada grupo. Solo procesa usuarios conocidos que aún no lo superaron y aplica mute de Telegram, captcha, CAS, canales obligatorios y apelación.</CardDescription></CardHeader>
+        <CardContent className="space-y-3"><div className="flex flex-wrap gap-4 text-sm"><span><b>{globalCaptcha.processed || 0}</b>/{globalCaptcha.total || 0} solicitudes</span><span>{globalCaptcha.groups || 0} grupos</span><span>{globalCaptcha.private_sent || 0} privados entregados</span><span>{globalCaptcha.private_blocked || 0} privados bloqueados</span></div><div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full bg-amber-500 transition-all" style={{ width: `${Math.max(0, Math.min(100, Number(globalCaptcha.percentage || 0)))}%` }}/></div><div className="flex flex-wrap items-center justify-between gap-2"><b>{Number(globalCaptcha.percentage || 0).toLocaleString('es-ES')}% procesado</b><div className="flex gap-2"><Button variant="destructive" disabled={globalCaptchaBusy || globalCaptcha.status === 'running'} onClick={() => controlGlobalCaptcha('start')}>Iniciar captcha para pendientes</Button>{globalCaptcha.status === 'running' && <Button variant="outline" disabled={globalCaptchaBusy} onClick={() => controlGlobalCaptcha('cancel')}>Cancelar</Button>}</div></div></CardContent>
+        <CardContent className="grid gap-4 border-t pt-4 xl:grid-cols-2"><section className="max-h-72 overflow-auto rounded-lg border bg-background/70 p-3"><h4 className="font-semibold">Estado guardado por grupo</h4><p className="mb-2 text-xs text-muted-foreground">{globalCaptcha.total_remaining || 0} usuarios pendientes. El estado permanece en Moonbot aunque cierres el navegador.</p><div className="space-y-2">{(globalCaptcha.group_details || []).map((group) => <div key={group.group_id} className="flex items-center justify-between gap-2 rounded border p-2 text-xs"><span className="truncate">{group.name}</span><span>{group.processed}/{group.total} · {group.remaining} pendientes · {group.status}</span></div>)}{!(globalCaptcha.group_details || []).length && <p className="text-sm text-muted-foreground">Todavía no hay una campaña guardada.</p>}</div></section><aside className="max-h-72 overflow-auto rounded-lg border bg-background/80 p-3"><h4 className="font-semibold">Usuarios restantes y protocolos</h4><div className="mt-2 space-y-2">{(globalCaptcha.remaining_users || []).map((user) => <div key={`${user.group_id}:${user.user_id}`} className="rounded-lg border p-2 text-xs"><div className="flex justify-between gap-2"><b>{user.name}</b><code>{user.user_id}</code></div><p className="truncate text-muted-foreground">{user.group_name}</p><div className="mt-2 flex flex-wrap gap-1">{Object.entries(user.protocols || {}).map(([name, status]) => <Badge key={name} variant={status === 'passed' || status === 'applied' || status === 'not_required' ? 'default' : status === 'flagged' || status === 'failed' ? 'destructive' : 'outline'} className="text-[10px]">{name}: {status}</Badge>)}</div></div>)}{!(globalCaptcha.remaining_users || []).length && <p className="text-sm text-muted-foreground">No quedan usuarios pendientes.</p>}{globalCaptcha.remaining_truncated && <p className="text-xs text-amber-700">Se muestran los primeros 250; el contador incluye todos.</p>}</div></aside></CardContent>
+      </Card>}
       {/* Import Section */}
       <Card className="border-primary/20 shadow-sm">
         <CardHeader className="bg-muted/30 pb-4">
@@ -311,9 +354,9 @@ const BlockedUsersPanel = () => {
             <div>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <DownloadCloud className="w-5 h-5 text-primary" />
-                Import Blocked Users
+                Bloquear cuentas web
               </CardTitle>
-              <CardDescription>Sync from CAS API or upload custom blocklists.</CardDescription>
+              <CardDescription>Restringe el acceso a TodoSobreAllTech. CAS y los GBAN se administran en Seguridad de Moonbot.</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={scrollToLogs}>
               <History className="w-4 h-4 mr-2" />
@@ -336,27 +379,13 @@ const BlockedUsersPanel = () => {
                     <SelectValue placeholder="Select source" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cas" disabled={!importStatus.cas_available}>
-                      <div className="flex items-center justify-between w-full">
-                        <span>CAS API (Automatic)</span>
-                        {!importStatus.cas_available && <Badge variant="destructive" className="ml-2 text-[10px] px-1 py-0">Offline</Badge>}
-                      </div>
-                    </SelectItem>
                     <SelectItem value="csv">CSV File</SelectItem>
                     <SelectItem value="json">JSON File</SelectItem>
                     <SelectItem value="manual">Manual Entry</SelectItem>
                   </SelectContent>
                 </Select>
                 
-                {!importStatus.cas_available && importSource !== 'cas' && (
-                  <p className="text-xs text-destructive flex items-start gap-1 mt-1">
-                    <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-                    CAS API is currently offline. Other sources are fully functional.
-                  </p>
-                )}
-
                 <p className="text-xs text-muted-foreground mt-2">
-                  {importSource === 'cas' && "Automatically fetches the latest blocklist from the CAS global database."}
                   {importSource === 'csv' && "Upload a CSV file with headers: user_id, username, reason."}
                   {importSource === 'json' && "Upload a JSON array of user objects."}
                   {importSource === 'manual' && "Manually enter a single user to block."}
@@ -443,16 +472,16 @@ const BlockedUsersPanel = () => {
                 {importSource === 'manual' && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="m_user_id">User ID *</Label>
-                      <Input id="m_user_id" value={manualData.user_id} onChange={e => setManualData({...manualData, user_id: e.target.value})} placeholder="e.g. 123456789" />
+                      <Label htmlFor="m_user_id">ID de cuenta web *</Label>
+                      <Input id="m_user_id" value={manualData.user_id} onChange={e => setManualData({...manualData, user_id: e.target.value})} placeholder="ID de PocketBase" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="m_username">Username *</Label>
-                      <Input id="m_username" value={manualData.username} onChange={e => setManualData({...manualData, username: e.target.value})} placeholder="e.g. @baduser" />
+                      <Label htmlFor="m_username">Nombre o correo</Label>
+                      <Input id="m_username" value={manualData.username} onChange={e => setManualData({...manualData, username: e.target.value})} placeholder="Referencia opcional" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="m_reason">Reason</Label>
-                      <Input id="m_reason" value={manualData.reason} onChange={e => setManualData({...manualData, reason: e.target.value})} placeholder="Violation..." />
+                      <Label htmlFor="m_reason">Motivo</Label>
+                      <Input id="m_reason" value={manualData.reason} onChange={e => setManualData({...manualData, reason: e.target.value})} placeholder="Motivo del bloqueo" />
                     </div>
                   </div>
                 )}
@@ -478,14 +507,14 @@ const BlockedUsersPanel = () => {
             disabled={isValidating || isImporting || !!localValidationError || ((importSource === 'csv' || importSource === 'json') && !fileData)}
           >
             {isValidating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Validate Data
+            Validar datos
           </Button>
           <Button 
             onClick={handleImport} 
             disabled={isImporting || isValidating || !!localValidationError || (!validationResult?.isValid && importSource !== 'cas')}
           >
             {isImporting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Execute Import
+            Aplicar bloqueo
           </Button>
         </CardFooter>
       </Card>
@@ -496,35 +525,39 @@ const BlockedUsersPanel = () => {
           <div>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <ShieldAlert className="w-5 h-5" />
-              Blocked Users Directory
+              Directorio unificado de bloqueos
             </CardTitle>
-            <CardDescription>Manage users currently restricted from accessing the platform.</CardDescription>
+            <CardDescription>Usuarios detectados por CAS mediante Moonbot, GBAN, baneos locales y bloqueos de acceso web.</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center mb-4">
+          <div className="mb-4 grid grid-cols-2 gap-2 md:grid-cols-5">
+            {[['CAS detectados', registryStats.cas], ['Moonbot', registryStats.moonbot], ['Globales', registryStats.global], ['Locales', registryStats.local], ['Web', registryStats.web]].map(([label, value]) => <div key={label} className="rounded-lg border bg-muted/20 p-3"><p className="text-xs text-muted-foreground">{label}</p><b className="text-xl">{Number(value || 0).toLocaleString('es-ES')}</b></div>)}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search by username, ID, or source..."
+                placeholder="Buscar por nombre, ID u origen…"
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            <Select value={registrySource} onValueChange={setRegistrySource}><SelectTrigger className="w-[190px]"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="all">Todos los registros</SelectItem><SelectItem value="cas">Detectados por CAS</SelectItem><SelectItem value="moonbot">Otros de Moonbot</SelectItem><SelectItem value="web">Bloqueos web</SelectItem></SelectContent></Select>
           </div>
 
           <div className="rounded-md border overflow-hidden">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Date Added</TableHead>
-                  <TableHead className="text-center">Active</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>Usuario</TableHead>
+                  <TableHead>Motivo</TableHead>
+                  <TableHead>Origen</TableHead>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead className="text-center">Activo</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -532,15 +565,15 @@ const BlockedUsersPanel = () => {
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                      Loading blocked users...
+                      Cargando registros de seguridad…
                     </TableCell>
                   </TableRow>
                 ) : filteredUsers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-12">
                       <ShieldAlert className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-                      <p className="text-lg font-medium text-foreground">No blocked users found</p>
-                      <p className="text-sm text-muted-foreground">The directory is currently empty or no users match your search.</p>
+                      <p className="text-lg font-medium text-foreground">No hay cuentas web bloqueadas</p>
+                      <p className="text-sm text-muted-foreground">El directorio está vacío o no coincide con la búsqueda.</p>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -548,12 +581,12 @@ const BlockedUsersPanel = () => {
                     <TableRow key={user.id} className={!user.is_active ? 'opacity-60 bg-muted/30' : ''}>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">{user.username}</span>
+                          <span className="font-medium">{user.username || `Usuario ${user.user_id}`}</span>
                           <span className="text-xs text-muted-foreground font-mono">{user.user_id}</span>
                         </div>
                       </TableCell>
                       <TableCell className="max-w-[250px] truncate" title={user.reason}>
-                        {user.reason || <span className="text-muted-foreground italic">No reason provided</span>}
+                        {user.reason || <span className="text-muted-foreground italic">Sin motivo registrado</span>}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={
@@ -565,18 +598,15 @@ const BlockedUsersPanel = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {new Date(user.imported_date || user.created).toLocaleDateString()}
+                        {user.imported_date || user.created || user.timestamp ? new Date(user.imported_date || user.created || user.timestamp).toLocaleDateString('es-ES') : '—'}
                       </TableCell>
                       <TableCell className="text-center">
-                        <Switch 
-                          checked={user.is_active} 
-                          onCheckedChange={() => handleToggleActive(user.id, user.is_active)}
-                        />
+                        {user.registry === 'web' ? <Switch checked={user.is_active} onCheckedChange={() => handleToggleActive(user.id, user.is_active)}/> : <Badge variant="outline">{user.status || 'active'}</Badge>}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(user.id)}>
+                        {user.registry === 'web' && <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(user.id)}>
                           <Trash2 className="w-4 h-4" />
-                        </Button>
+                        </Button>}
                       </TableCell>
                     </TableRow>
                   ))
