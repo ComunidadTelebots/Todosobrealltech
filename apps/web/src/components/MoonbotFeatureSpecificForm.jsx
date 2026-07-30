@@ -1,0 +1,12 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+const defs=[
+[(x)=>x.startsWith('optimize_')&&x.endsWith('_energy'),['Carga','Wh','Elementos'],['worker-1','20','10'],(v)=>({args:[[{workload_id:v[0],energy_wh:Number(v[1]),items:Number(v[2])}]],kwargs:{target_reduction:10}})],
+[(x)=>x.startsWith('limit_')&&x.endsWith('_abuse'),['Sujeto','Evento','Límite'],['user-1','event-1','10'],(v)=>({args:[[{subject_id:v[0],event_id:v[1],occurred_at:new Date().toISOString()}],{window_seconds:60,limit:Number(v[2]),burst:2}],kwargs:{}})],
+[(x)=>x.endsWith('_guided_migration'),['Registro','Origen','Destino'],['record-1','v1','v2'],(v)=>({args:[[{id:v[0]}],{source_version:v[1],target_version:v[2],required_fields:[]}],kwargs:{}})],
+[(x)=>x.endsWith('_federated_compatibility'),['Origen','Sujeto','Esquema'],['node-1','item-1','v1'],(v)=>({args:[{origin:v[0],subject_id:v[1],schema_version:v[2],issued_at:new Date().toISOString(),expires_at:new Date(Date.now()+86400000).toISOString()},{allowed_origins:[v[0]],schema_versions:[v[2]]}],kwargs:{}})],
+[(x)=>x.endsWith('_operational_continuity'),['Servicio','RTO','RPO'],['service-1','60','15'],(v)=>({args:[[{service_id:v[0],dependencies:[],backup_available:true,fallback_available:true}]],kwargs:{rto_minutes:Number(v[1]),rpo_minutes:Number(v[2])}})],
+[(x)=>x.endsWith('_contextually'),['Contexto','Estado','Severidad'],['context-1','pending','warning'],(v)=>({args:[{context_id:v[0],state:v[1],severity:v[2],missing_fields:[]}],kwargs:{}})],
+];
+export default function MoonbotFeatureSpecificForm({feature,onPrepare}){const d=useMemo(()=>defs.find(([test])=>test(feature?.api||'')),[feature]);const[v,setV]=useState([]);useEffect(()=>setV(d?.[2]||[]),[feature?.id,d]);if(!d)return null;return <section className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4"><b>Formulario específico</b><div className="grid gap-2 sm:grid-cols-3">{d[1].map((label,i)=><label key={label} className="text-xs">{label}<Input className="mt-1" value={v[i]||''} onChange={(e)=>setV((old)=>old.map((x,p)=>p===i?e.target.value:x))}/></label>)}</div><Button size="sm" variant="secondary" onClick={()=>onPrepare(JSON.stringify(d[3](v),null,2))}>Preparar solicitud</Button><p className="text-xs text-muted-foreground">No ejecuta cambios: prepara el contrato para revisarlo.</p></section>}

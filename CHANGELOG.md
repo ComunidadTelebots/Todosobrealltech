@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Formularios específicos Moonbot - 2026-07-30
+- Nuevo centro de operaciones con formularios guiados para energía, antiabuso, migración, federación, continuidad y asistencia contextual.
+- Cada operación se abre en un popup con flecha atrás, prepara el contrato JSON y exige revisión antes de ejecutarlo.
+- Se conserva el registro genérico como respaldo para todas las demás funciones verificadas.
+
 ### Paneles emergentes del registro Moonbot - 2026-07-30
 - Las funciones verificadas dejan de formar una lista larga y se agrupan automáticamente por ámbito operativo.
 - Cada grupo abre una vista superior independiente con flecha de regreso, filtro por rol y contador de funciones.
