@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Validación segura de creación Onion - 2026-07-30
+- Se elimina la aceptación insegura de JWT decodificados sin comprobar su firma.
+- Crear una Onion Web exige ahora validación real contra PocketBase y rol administrativo o creador.
+- Se evita modificar el `authStore` superuser compartido con tokens suministrados por clientes.
+
 ### Registro por roles ampliado a 1.800 funciones - 2026-07-30
 - Cada contrato queda clasificado para usuario, administrador de grupo, creador del grupo o master, con alcance y nivel de riesgo visibles.
 - La web y el Hub incorporan filtros equivalentes por rol; el runtime impide ejecutar una capacidad por debajo de su rol mínimo.
