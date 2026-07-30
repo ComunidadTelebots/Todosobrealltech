@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import dns from 'node:dns/promises';
 import logger from '../utils/logger.js';
-import { authorizeAdminOrCreator } from './stats.js';
+import { authorizeAdminOrCreator, authorizeAuthenticatedUser } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
@@ -25,6 +25,7 @@ import { createAccountMetricsSnapshot, createAccountMetricsState,
   ingestAccountMetricEvent } from '../utils/accountRealtimeMetrics.js';
 import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
+import { canUseMoonbotFeature, filterMoonbotFeatures, moonRoleFor } from '../utils/moonbotFeatureAccess.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -717,12 +718,15 @@ router.get('/dashboard', async (req, res) => {
 });
 
 router.get('/features', async (req, res) => {
-  if (!await requireAdmin(req, res)) return;
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   if (!serviceConfig(res)) return;
   try {
-    const response = await moonRequest('/api/internal/features', { timeoutMs: 10_000 });
+    const actorRole = moonRoleFor(auth.user.role);
+    const response = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: { 'X-Moon-Actor-Role': actorRole } });
     const payload = await response.json();
-    return res.status(response.status).json(payload);
+    const features = filterMoonbotFeatures(payload.features, actorRole);
+    return res.status(response.status).json({ ...payload, features, count: features.length, actor_role: actorRole });
   } catch (error) {
     logger.warn(`[moonbot-admin features] ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudo consultar el registro de funciones de Moonbot' });
@@ -730,11 +734,22 @@ router.get('/features', async (req, res) => {
 });
 
 router.post('/features', express.json({ limit: '128kb' }), async (req, res) => {
-  if (!await requireAdmin(req, res)) return;
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   if (!serviceConfig(res)) return;
   try {
+    const actorRole = moonRoleFor(auth.user.role);
+    const featureId = String(req.body?.feature_id || '').trim();
+    if (!featureId) return res.status(400).json({ ok: false, error: 'feature_id es obligatorio' });
+    const catalogResponse = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: { 'X-Moon-Actor-Role': actorRole } });
+    const catalog = await catalogResponse.json();
+    if (!catalogResponse.ok) return res.status(catalogResponse.status).json(catalog);
+    const feature = (catalog.features || []).find((item) => item.id === featureId);
+    if (!feature || !canUseMoonbotFeature(actorRole, feature)) {
+      return res.status(403).json({ ok: false, error: 'La función no está permitida para este rol' });
+    }
     const response = await moonRequest('/api/internal/features', {
-      method: 'POST', timeoutMs: 15_000, body: JSON.stringify(req.body || {}),
+      method: 'POST', timeoutMs: 15_000, headers: { 'X-Moon-Actor-Role': actorRole }, body: JSON.stringify(req.body || {}),
     });
     const payload = await response.json();
     return res.status(response.status).json(payload);

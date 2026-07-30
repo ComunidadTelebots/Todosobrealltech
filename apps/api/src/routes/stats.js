@@ -106,7 +106,7 @@ function decideByRole(user) {
   return { user };
 }
 
-export async function authorizeAdminOrCreator(req) {
+async function authorizeUser(req, adminOnly) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return { status: 401, error: 'Authorization header is required' };
@@ -123,7 +123,7 @@ export async function authorizeAdminOrCreator(req) {
   // Caché válida → no se llama a authRefresh.
   const hit = tokenCache.get(key);
   if (hit && hit.expiresAt > now) {
-    return decideByRole(hit.user);
+    return adminOnly ? decideByRole(hit.user) : { user: hit.user };
   }
 
   // El panel carga muchos widgets a la vez. Una sola renovación compartida
@@ -150,8 +150,11 @@ export async function authorizeAdminOrCreator(req) {
   pruneTokenCache(now);
   tokenCache.set(key, { user, expiresAt: now + TOKEN_CACHE_TTL_MS });
 
-  return decideByRole(user);
+  return adminOnly ? decideByRole(user) : { user };
 }
+
+export const authorizeAuthenticatedUser = (req) => authorizeUser(req, false);
+export const authorizeAdminOrCreator = (req) => authorizeUser(req, true);
 
 /**
  * Agrega todas las métricas del dashboard usando el cliente superuser.

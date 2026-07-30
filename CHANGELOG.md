@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Interfaces completas por contrato y rol - 2026-07-30
+- TodoSobreAllTech genera formularios para las 2.740 funciones activas usando el contrato entregado por Moonbot.
+- Los usuarios ven únicamente herramientas de usuario; administradores, creadores y master reciben acceso acumulativo según su rol verificado.
+- El servidor deriva el rol desde PocketBase, filtra el catálogo y vuelve a comprobar cada ejecución antes de enviarla a Moonbot.
+- Añade controles específicos de texto, número, booleano y JSON, validación de obligatorios y un modo JSON avanzado.
+- Los usuarios sin permisos administrativos disponen ahora de su propio centro de funciones dentro del dashboard.
+
 ### Seguridad web y 20 familias de formularios - 2026-07-30
 - Actualiza Vite, React Router, PostCSS y Concurrently a revisiones compatibles y reduce avisos conocidos de dependencias.
 - Valida los destinos de campañas para impedir redirecciones a esquemas peligrosos y normaliza enlaces profundos de Telegram.
