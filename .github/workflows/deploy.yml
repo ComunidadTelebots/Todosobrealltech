@@ -9,9 +9,18 @@ jobs:
   deploy:
     name: Deploy noticiasweb3
     runs-on: ubuntu-latest
+    environment: production
+    env:
+      VPS_CONFIGURED: ${{ secrets.VPS_HOST != '' && secrets.VPS_USER != '' && secrets.VPS_SSH_KEY != '' }}
 
     steps:
+      - name: Deployment configuration status
+        run: |
+          if [ "$VPS_CONFIGURED" != "true" ]; then
+            echo "Deployment skipped: configure VPS_HOST, VPS_USER and VPS_SSH_KEY in GitHub Actions secrets."
+          fi
       - name: SSH deploy
+        if: env.VPS_CONFIGURED == 'true'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -20,6 +29,6 @@ jobs:
           script: |
             docker network create traefik 2>/dev/null || true
             cd /root/Todosobrealltech
-            git pull origin main
-            docker compose up -d --build noticiasweb3
+            git pull --ff-only origin main
+            docker compose up -d --build --no-deps noticiasweb3
             docker image prune -f

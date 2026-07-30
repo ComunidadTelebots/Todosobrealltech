@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Validación continua y despliegue seguro - 2026-07-30
+- GitHub Actions valida lint, pruebas de API y compilación de las seis webs sin utilizar credenciales reales.
+- El despliegue se omite de forma segura cuando faltan los secretos del VPS y usa actualización `--ff-only` cuando están configurados.
+- Se añaden pruebas del reescritor editorial y Dependabot para npm, Docker y GitHub Actions.
+- Se corrigen tres errores detectados por ESLint en las herramientas administrativas de Moonbot.
+
 ### Publicación resiliente de NoticiasWeb3 - 2026-07-28
 - Un timeout de Telegram ya no interrumpe la creación del artículo propio en PocketBase ni su ruta interna de NoticiasWeb3.
 - El publicador continúa procesando el lote aunque la fuente completa o Telegram no respondan temporalmente.

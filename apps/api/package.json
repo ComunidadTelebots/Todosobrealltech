@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --trace-deprecation src/main.js",
     "start": "node src/main.js",
-    "lint": "eslint . --quiet"
+    "lint": "eslint . --quiet",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "@vitalets/google-translate-api": "^9.2.1",

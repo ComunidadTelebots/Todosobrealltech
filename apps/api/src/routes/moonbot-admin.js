@@ -139,7 +139,7 @@ const sanitizeImagePolicy = (raw = {}) => {
       min_confidence: clampNumber(source.min_confidence ?? source.minConfidence, 0, 100, 75),
       auto_delete: Boolean(source.auto_delete || source.autoDelete),
       categories: sanitizedCategories,
-      media_kinds: ['image', 'photo', ...(Boolean(source.scan_videos || includeVideos) ? ['video'] : [])],
+      media_kinds: ['image', 'photo', ...(source.scan_videos || includeVideos ? ['video'] : [])],
     },
     media_policy: {
       enabled: Boolean(source.enabled),
@@ -149,7 +149,7 @@ const sanitizeImagePolicy = (raw = {}) => {
       min_confidence: clampNumber(source.min_confidence ?? source.minConfidence, 0, 100, 75),
       auto_delete: Boolean(source.auto_delete || source.autoDelete),
       categories: sanitizedCategories,
-      media_kinds: ['image', 'photo', ...(Boolean(source.scan_videos || includeVideos) ? ['video'] : [])],
+      media_kinds: ['image', 'photo', ...(source.scan_videos || includeVideos ? ['video'] : [])],
     },
   };
 };
@@ -202,7 +202,13 @@ router.post('/account-tools/bulk', async (req, res) => {
     for (const id of ids) { const record = await pocketbaseClient.collection('users').getOne(id); if (record.role === 'creator') throw new Error('creator protegido'); items.push({ id, before: { role: record.role }, after: { role } }); }
     for (const item of items) await pocketbaseClient.collection('users').update(item.id, item.after);
   } catch (error) {
-    for (const item of items) { try { await pocketbaseClient.collection('users').update(item.id, item.before); } catch {} }
+    for (const item of items) {
+      try {
+        await pocketbaseClient.collection('users').update(item.id, item.before);
+      } catch (rollbackError) {
+        logger.error(`[moonbot-admin] No se pudo revertir el rol de ${item.id}: ${rollbackError.message}`);
+      }
+    }
     return res.status(500).json({ ok: false, error: 'La operación falló y se revirtió' });
   }
   const transaction = { id: crypto.randomUUID(), status: 'applied', items, created_at: new Date().toISOString() };
