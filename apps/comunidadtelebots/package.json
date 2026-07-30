@@ -9,8 +9,8 @@
     "preview": "vite preview --host :: --port 3003"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.4",
-    "vite": "^7.3.1",
+    "@vitejs/plugin-react": "^6.0.5",
+    "vite": "^8.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "lucide-react": "^0.469.0"
