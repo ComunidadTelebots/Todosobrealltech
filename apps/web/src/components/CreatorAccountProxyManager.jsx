@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, AlertTriangle, Edit2, Eye, EyeOff, Loader2, Search, Snowflake, Trash2, TrendingUp, UserCog, Users, WandSparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import pb from '@/lib/pocketbaseClient.js';
@@ -11,11 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AccountHorizonTools from '@/components/AccountHorizonTools.jsx';
 import { getAccountPrivacyMode, maskEmail, maskName, maskProxyUrl } from '@/lib/accountPrivacy.js';
+import AccountAccessibilityControls from '@/components/AccountAccessibilityControls.jsx';
 
 const ROLE_OPTIONS = ['user', 'moderator', 'admin'];
 
 const CreatorAccountProxyManager = () => {
   const { currentUser } = useAuth();
+  const panelRef = useRef(null);
   const [users, setUsers] = useState([]);
   const [proxies, setProxies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -327,11 +329,12 @@ const CreatorAccountProxyManager = () => {
   }
 
   return (
-    <section className="space-y-5">
+    <section ref={panelRef} className="space-y-5">
       <div>
         <h2 className="text-2xl font-bold">Administración de cuentas y proxies</h2>
         <p className="text-muted-foreground">Gestiona los recursos de la plataforma directamente desde este panel.</p>
       </div>
+      <AccountAccessibilityControls containerRef={panelRef} />
 
       <div className="grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border bg-background p-4"><TrendingUp className="mb-2 h-5 w-5 text-emerald-600" /><p className="text-2xl font-bold">{accountForecast?.projected_30d ?? accountInsights.forecast}</p><p className="text-xs text-muted-foreground">Altas previstas en 30 días{accountForecast ? ` · intervalo ${accountForecast.interval.min}–${accountForecast.interval.max} · confianza ${accountForecast.confidence}` : ', basada en el ritmo actual'}.</p>{accountForecast?.explanation && <p className="mt-1 text-xs text-muted-foreground">{accountForecast.explanation}</p>}</div>

@@ -10,6 +10,8 @@ import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
 import { createRoleApproval, decideRoleApproval } from '../utils/accountApprovals.js';
 import { compareAccountPeriods, forecastAccounts } from '../utils/accountForecast.js';
+import { recommendAccounts } from '../utils/accountRecommendations.js';
+import { buildAccountReportSchedule, nextAccountReportRun } from '../utils/accountReportSchedule.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -172,6 +174,100 @@ router.post('/account-tools/sign', async (req, res) => {
 const accountHistoryFile = '/data/account-change-history.json';
 const accountBulkFile = '/data/account-bulk-transactions.json';
 const accountApprovalsFile = '/data/account-role-approvals.json';
+const accountReportSchedulesFile = '/data/account-report-schedules.json';
+const accountReportsDirectory = '/data/account-reports';
+
+const readAccountReportSchedules = async () => {
+  try { return JSON.parse(await fs.readFile(accountReportSchedulesFile, 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+};
+
+const generateAccountReport = async (schedule) => {
+  const [users, proxies] = await Promise.all([
+    pocketbaseClient.collection('users').getFullList({ fields: 'id,role,verified,is_frozen,created' }),
+    pocketbaseClient.collection('user_proxies').getFullList({ fields: 'id,user_id,status,created' }),
+  ]);
+  const generatedAt = new Date().toISOString();
+  const summary = { users: users.length, verified: users.filter((item) => item.verified).length,
+    frozen: users.filter((item) => item.is_frozen).length, admins: users.filter((item) => item.role === 'admin').length,
+    proxies: proxies.length, inactive_proxies: proxies.filter((item) => item.status !== 'active').length };
+  const stamp = generatedAt.replaceAll(/[:.]/g, '-');
+  const filename = `${schedule.id}-${stamp}.${schedule.format}`;
+  await fs.mkdir(accountReportsDirectory, { recursive: true, mode: 0o700 });
+  const content = schedule.format === 'csv'
+    ? `metric,value\n${Object.entries(summary).map(([key, value]) => `${key},${value}`).join('\n')}\n`
+    : JSON.stringify({ generated_at: generatedAt, summary }, null, 2);
+  await fs.writeFile(path.join(accountReportsDirectory, filename), content, { mode: 0o600 });
+  return { filename, generated_at: generatedAt, summary };
+};
+
+const processDueAccountReports = async () => {
+  const schedules = await readAccountReportSchedules();
+  let changed = false;
+  for (const schedule of schedules) {
+    if (!schedule.enabled || new Date(schedule.next_run) > new Date()) continue;
+    const report = await generateAccountReport(schedule);
+    schedule.last_report = report;
+    schedule.last_run = report.generated_at;
+    schedule.next_run = nextAccountReportRun(schedule, new Date(Date.now() + 60000));
+    changed = true;
+  }
+  if (changed) await fs.writeFile(accountReportSchedulesFile, JSON.stringify(schedules.slice(-100)), { mode: 0o600 });
+};
+
+const accountReportTimer = setInterval(() => processDueAccountReports().catch((error) => {
+  logger.error(`[moonbot-admin] Informes programados fallaron: ${error.message}`);
+}), 60000);
+accountReportTimer.unref?.();
+
+router.get('/account-tools/recommendations', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const [users, proxies] = await Promise.all([
+      pocketbaseClient.collection('users').getFullList({ sort: '-created' }),
+      pocketbaseClient.collection('user_proxies').getFullList({ sort: '-updated' }),
+    ]);
+    return res.json({ ok: true, recommendations: recommendAccounts(users, proxies).slice(0, 100), checked_at: new Date().toISOString() });
+  } catch (error) {
+    logger.error(`[moonbot-admin] Recomendaciones de cuentas fallaron: ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudieron calcular recomendaciones' });
+  }
+});
+
+router.get('/account-tools/reports/:filename', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  const schedules = await readAccountReportSchedules();
+  const filename = String(req.params.filename || '');
+  if (!schedules.some((item) => item.last_report?.filename === filename) || path.basename(filename) !== filename) {
+    return res.status(404).json({ ok: false, error: 'Informe no encontrado' });
+  }
+  return res.download(path.join(accountReportsDirectory, filename));
+});
+
+router.all('/account-tools/reports', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const schedules = await readAccountReportSchedules();
+    if (req.method === 'GET') return res.json({ ok: true, schedules: schedules.slice().reverse() });
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    if (req.body?.action === 'save') {
+      const built = buildAccountReportSchedule(req.body.schedule);
+      const schedule = { id: crypto.randomUUID(), ...built, enabled: true, created_at: new Date().toISOString() };
+      schedules.push(schedule);
+      await fs.writeFile(accountReportSchedulesFile, JSON.stringify(schedules.slice(-100)), { mode: 0o600 });
+      return res.status(201).json({ ok: true, schedule });
+    }
+    const schedule = schedules.find((item) => item.id === req.body?.schedule_id);
+    if (!schedule) return res.status(404).json({ ok: false, error: 'Programación no encontrada' });
+    if (req.body?.action === 'toggle') schedule.enabled = Boolean(req.body.enabled);
+    else if (req.body?.action === 'run_now') { schedule.last_report = await generateAccountReport(schedule); schedule.last_run = schedule.last_report.generated_at; }
+    else return res.status(400).json({ ok: false, error: 'Acción no válida' });
+    await fs.writeFile(accountReportSchedulesFile, JSON.stringify(schedules.slice(-100)), { mode: 0o600 });
+    return res.json({ ok: true, schedule });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
 router.get('/account-tools/forecast', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   try {

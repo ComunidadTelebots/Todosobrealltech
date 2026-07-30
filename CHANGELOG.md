@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Recomendaciones, accesibilidad e informes de cuentas - 2026-07-30
+- El servidor genera recomendaciones explicables y priorizadas por cuenta sin ejecutar acciones automáticas.
+- El panel incorpora escala de texto, alto contraste, reducción de movimiento y lectura por voz acotados al área de cuentas.
+- Los informes JSON o CSV se programan con zona horaria, se generan realmente en segundo plano y pueden pausarse, ejecutarse y descargarse desde el panel.
+- Se completan tres funciones parciales con validación de destinatarios, horarios, zonas IANA y cambios de horario estacional.
+
 ### Comparador temporal de cuentas - 2026-07-30
 - El panel compara altas en ventanas consecutivas equivalentes de 7, 30 o 90 días.
 - Muestra valores actual y anterior, diferencia absoluta, porcentaje y dirección de tendencia calculados en servidor.
