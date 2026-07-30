@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Asistente, webhooks e idioma de cuentas - 2026-07-30
+- El panel incorpora un asistente que prioriza anomalías, aprobaciones, recomendaciones y proxies degradados con explicaciones y confirmación manual obligatoria.
+- Se añaden webhooks HTTPS firmados con HMAC para eventos de cuentas, bloqueo de destinos privados, activación, pausa, prueba individual y registro del último envío.
+- Cada creador puede guardar el idioma y la dirección de lectura del panel de cuentas; se incluye soporte de derecha a izquierda para árabe sin alterar el resto de la web.
+- Las tres funciones quedan vinculadas a pruebas y evidencias reales en el roadmap, sin retirar herramientas existentes.
+
 ### Recomendaciones, accesibilidad e informes de cuentas - 2026-07-30
 - El servidor genera recomendaciones explicables y priorizadas por cuenta sin ejecutar acciones automáticas.
 - El panel incorpora escala de texto, alto contraste, reducción de movimiento y lectura por voz acotados al área de cuentas.

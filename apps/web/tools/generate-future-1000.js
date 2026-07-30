@@ -119,6 +119,7 @@ const cleanText = (value) => {
   return result;
 };
 const implementedEvidence = new Map([
+  ['future-0002', ['apps/api/src/utils/accountGuidance.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0003', ['apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0001', ['apps/api/src/utils/accountForecast.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/CreatorAccountProxyManager.jsx']],
   ['future-0004', ['apps/web/src/components/AccountHorizonTools.jsx']],
@@ -137,6 +138,8 @@ const implementedEvidence = new Map([
   ['future-0016', ['apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0017', ['apps/api/src/utils/accountRecommendations.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0021', ['apps/web/src/components/AccountAccessibilityControls.jsx', 'apps/web/src/components/CreatorAccountProxyManager.jsx']],
+  ['future-0022', ['apps/api/src/utils/accountWebhooks.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountWebhooksPanel.jsx']],
+  ['future-0025', ['apps/web/src/lib/accountLanguage.js', 'apps/web/src/components/AccountLanguageControls.jsx', 'apps/web/src/components/CreatorAccountProxyManager.jsx']],
   ['future-0028', ['apps/api/src/utils/accountReportSchedule.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-1133', ['apps/web/src/components/MoonbotGroupsManager.jsx', 'core/routes_public.py']],
   ['future-1437', ['core/routes_public.py']],

@@ -3,6 +3,7 @@ import express from 'express';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import dns from 'node:dns/promises';
 import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
@@ -12,6 +13,9 @@ import { createRoleApproval, decideRoleApproval } from '../utils/accountApproval
 import { compareAccountPeriods, forecastAccounts } from '../utils/accountForecast.js';
 import { recommendAccounts } from '../utils/accountRecommendations.js';
 import { buildAccountReportSchedule, nextAccountReportRun } from '../utils/accountReportSchedule.js';
+import { buildAccountGuidance } from '../utils/accountGuidance.js';
+import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
+  isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -176,6 +180,84 @@ const accountBulkFile = '/data/account-bulk-transactions.json';
 const accountApprovalsFile = '/data/account-role-approvals.json';
 const accountReportSchedulesFile = '/data/account-report-schedules.json';
 const accountReportsDirectory = '/data/account-reports';
+const accountWebhooksFile = '/data/account-webhooks.json';
+
+const readAccountWebhooks = async () => {
+  try { return JSON.parse(await fs.readFile(accountWebhooksFile, 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+};
+
+const publicAccountWebhook = ({ secret, ...webhook }) => ({ ...webhook, secret_configured: Boolean(secret) });
+
+const dispatchAccountWebhookEvent = async (event, account, data = {}, onlyWebhookId = '') => {
+  const webhooks = await readAccountWebhooks();
+  let changed = false;
+  for (const webhook of webhooks.filter((item) => onlyWebhookId ? item.id === onlyWebhookId : (item.active && item.events.includes(event)))) {
+    try {
+      const url = new URL(webhook.url);
+      const addresses = await dns.lookup(url.hostname, { all: true });
+      if (!addresses.length || addresses.some((item) => isPrivateAccountWebhookAddress(item.address))) {
+        throw new Error('El DNS del webhook resolvió a una red privada');
+      }
+      const payload = createAccountWebhookPayload({ id: crypto.randomUUID(), event,
+        timestamp: new Date().toISOString(), account: { id: account.id || account.account_id }, data });
+      const delivery = prepareAccountWebhookDelivery({ url: webhook.url, secret: webhook.secret, payload });
+      const response = await fetch(delivery.url, { method: delivery.method, headers: delivery.headers,
+        body: delivery.body, signal: AbortSignal.timeout(5000), redirect: 'error' });
+      webhook.last_delivery = { ok: response.ok, status: response.status, at: new Date().toISOString() };
+    } catch (error) {
+      webhook.last_delivery = { ok: false, error: String(error.message || error).slice(0, 200), at: new Date().toISOString() };
+    }
+    changed = true;
+  }
+  if (changed) await fs.writeFile(accountWebhooksFile, JSON.stringify(webhooks.slice(-100)), { mode: 0o600 });
+};
+
+router.get('/account-tools/guidance', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const [users, proxies, approvals] = await Promise.all([
+      pocketbaseClient.collection('users').getFullList({ sort: '-created' }),
+      pocketbaseClient.collection('user_proxies').getFullList({ sort: '-updated' }),
+      fs.readFile(accountApprovalsFile, 'utf8').then(JSON.parse).catch((error) => error.code === 'ENOENT' ? [] : Promise.reject(error)),
+    ]);
+    const anomalies = detectAccountAnomalies(users, proxies);
+    const recommendations = recommendAccounts(users, proxies);
+    return res.json({ ok: true, steps: buildAccountGuidance({ anomalies, recommendations, approvals, proxies }) });
+  } catch (error) {
+    return res.status(502).json({ ok: false, error: 'No se pudo construir el asistente guiado' });
+  }
+});
+
+router.all('/account-tools/webhooks', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const webhooks = await readAccountWebhooks();
+    if (req.method === 'GET') return res.json({ ok: true, events: ACCOUNT_WEBHOOK_EVENTS, webhooks: webhooks.map(publicAccountWebhook) });
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    if (req.body?.action === 'create') {
+      const draft = req.body.webhook || req.body;
+      const id = crypto.randomUUID();
+      const valid = createAccountWebhook({ id, url: draft.url, events: draft.events, secret: draft.secret });
+      webhooks.push({ ...valid, secret: draft.secret, created_at: new Date().toISOString() });
+    } else {
+      const index = webhooks.findIndex((item) => item.id === req.body?.webhook_id);
+      if (index < 0) return res.status(404).json({ ok: false, error: 'Webhook no encontrado' });
+      if (req.body?.action === 'toggle') webhooks[index].active = Boolean(req.body.active ?? req.body.enabled);
+      else if (req.body?.action === 'delete') webhooks.splice(index, 1);
+      else if (req.body?.action === 'test') {
+        await dispatchAccountWebhookEvent(webhooks[index].events[0], { id: 'webhook-test' }, { test: true }, webhooks[index].id);
+        const refreshed = await readAccountWebhooks();
+        return res.json({ ok: true, webhooks: refreshed.map(publicAccountWebhook) });
+      }
+      else return res.status(400).json({ ok: false, error: 'Acción no válida' });
+    }
+    await fs.writeFile(accountWebhooksFile, JSON.stringify(webhooks.slice(-100)), { mode: 0o600 });
+    return res.json({ ok: true, webhooks: webhooks.map(publicAccountWebhook) });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
 
 const readAccountReportSchedules = async () => {
   try { return JSON.parse(await fs.readFile(accountReportSchedulesFile, 'utf8')); }
@@ -318,6 +400,9 @@ router.all('/account-tools/approvals', async (req, res) => {
         const account = await pocketbaseClient.collection('users').getOne(decided.account_id);
         if (account.role === 'creator') return res.status(409).json({ ok: false, error: 'La cuenta creator está protegida' });
         await pocketbaseClient.collection('users').update(decided.account_id, { role: decided.change.after });
+        dispatchAccountWebhookEvent('account.role_changed', { id: decided.account_id }, {
+          before: decided.change.before, after: decided.change.after, approval_id: decided.id,
+        }).catch((error) => logger.warn(`[moonbot-admin] Webhook de rol falló: ${error.message}`));
       }
       approvals[index] = decided;
       await fs.writeFile(accountApprovalsFile, JSON.stringify(approvals.slice(-1000)), { mode: 0o600 });
@@ -354,6 +439,10 @@ router.all('/account-tools/history', async (req, res) => {
   rows.push({ id: crypto.randomUUID(), account_id: String(event.account_id), action: event.action,
     before: event.before ?? null, after: event.after ?? null, actor_id: String(event.actor_id || ''), created_at: new Date().toISOString() });
   await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000)), { mode: 0o600 });
+  const webhookEvent = event.action === 'role' ? 'account.role_changed' : event.action === 'freeze' ? 'account.frozen' : null;
+  if (webhookEvent) dispatchAccountWebhookEvent(webhookEvent, { id: event.account_id }, {
+    before: event.before, after: event.after,
+  }).catch((error) => logger.warn(`[moonbot-admin] Webhook de cuenta falló: ${error.message}`));
   return res.json({ ok: true });
 });
 
@@ -384,6 +473,9 @@ router.post('/account-tools/recover', async (req, res) => {
     source_event_id: event.id, created_at: new Date().toISOString(),
   });
   await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000)), { mode: 0o600 });
+  dispatchAccountWebhookEvent('account.recovered', { id: event.account_id }, {
+    before: preview.current, after: preview.restore, source_event_id: event.id,
+  }).catch((error) => logger.warn(`[moonbot-admin] Webhook de recuperación falló: ${error.message}`));
   return res.json({ ok: true, preview, account: updated });
 });
 
