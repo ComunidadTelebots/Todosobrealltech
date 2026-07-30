@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
-  normalizeTelegramClaim, publicAdminInvite } from '../src/utils/webAdminInvites.js';
+  normalizeGroupDelegation, normalizeTelegramClaim, normalizeWebAdminProfile, publicAdminInvite,
+  WEB_ADMIN_PROFILES } from '../src/utils/webAdminInvites.js';
 
 test('creates expiring administration links without persisting the bearer token', () => {
   const now = new Date('2026-07-31T10:00:00.000Z');
@@ -22,13 +23,26 @@ test('rejects unsafe roles, excessive validity and downgrades', () => {
   assert.equal(canElevateWebRole('creator', 'admin'), false);
 });
 
-test('routes keep web administration independent from Telegram group permissions', () => {
+test('routes keep web profiles independent from explicitly delegated Telegram groups', () => {
   const route = fs.readFileSync(new URL('../src/routes/moonbot-admin.js', import.meta.url), 'utf8');
   assert.match(route, /web-admin-invitations\/redeem/);
   assert.match(route, /auth\.user\.role !== 'creator'/);
   assert.match(route, /hashAdminInviteToken/);
   assert.match(route, /pending_verification: true/);
-  assert.doesNotMatch(route.match(/router\.all\('\/web-admin-invitations'[\s\S]*?router\.all\('\/account-tools\/approvals'/)?.[0] || '', /X-Moon-Actor-Role|group_id|chat_id/);
+  assert.match(route, /normalizeGroupDelegation/);
+  assert.match(route, /group_scope/);
+  const accessRoute = route.match(/router\.all\('\/web-admin-invitations'[\s\S]*?router\.all\('\/account-tools\/approvals'/)?.[0] || '';
+  assert.doesNotMatch(accessRoute, /X-Moon-Actor-Role/);
+});
+
+test('validates predefined web profiles and explicit group delegation', () => {
+  assert.equal(normalizeWebAdminProfile('security'), 'security');
+  assert.ok(WEB_ADMIN_PROFILES.full.capabilities.includes('*'));
+  assert.deepEqual(normalizeGroupDelegation(undefined), { scope: 'none', group_ids: [] });
+  assert.deepEqual(normalizeGroupDelegation('selected', ['-1001234567890', '-1001234567890']),
+    { scope: 'selected', group_ids: ['-1001234567890'] });
+  assert.throws(() => normalizeGroupDelegation('selected', []));
+  assert.throws(() => normalizeWebAdminProfile('creator'));
 });
 
 test('PocketBase prevents clients from assigning or changing their own web role', () => {

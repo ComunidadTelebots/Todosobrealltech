@@ -28,7 +28,7 @@ import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPaylo
 import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
   moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
 import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
-  normalizeTelegramClaim, publicAdminInvite, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
+  normalizeGroupDelegation, normalizeTelegramClaim, normalizeWebAdminProfile, publicAdminInvite, WEB_ADMIN_PROFILES, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
@@ -197,6 +197,7 @@ const accountBulkFile = '/data/account-bulk-transactions.json';
 const accountApprovalsFile = '/data/account-role-approvals.json';
 const webAdminInvitesFile = '/data/web-admin-invitations.json';
 const webAdminVerificationsFile = '/data/web-admin-verifications.json';
+const webAdminProfilesFile = '/data/web-admin-profiles.json';
 const accountReportSchedulesFile = '/data/account-report-schedules.json';
 const accountReportsDirectory = '/data/account-reports';
 const accountWebhooksFile = '/data/account-webhooks.json';
@@ -233,6 +234,22 @@ const readWebAdminVerifications = async () => {
     if (error.code === 'ENOENT') return [];
     throw error;
   }
+};
+const readWebAdminProfiles = async () => {
+  try {
+    const parsed = JSON.parse(await fs.readFile(webAdminProfilesFile, 'utf8'));
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch (error) { if (error.code === 'ENOENT') return {}; throw error; }
+};
+const assignWebAdminProfile = async (accountId, profile, actorId, groupScope = 'none', groupIds = []) => {
+  const profiles = await readWebAdminProfiles();
+  const key = String(accountId || '');
+  const groupDelegation = normalizeGroupDelegation(groupScope, groupIds);
+  profiles[key] = { account_id: key, profile: normalizeWebAdminProfile(profile), enabled: true,
+    group_scope: groupDelegation.scope, group_ids: groupDelegation.group_ids,
+    assigned_by: String(actorId || ''), updated_at: new Date().toISOString() };
+  await fs.writeFile(webAdminProfilesFile, JSON.stringify(profiles, null, 2), { mode: 0o600 });
+  return profiles[key];
 };
 const writeWebAdminVerifications = (records) => fs.writeFile(webAdminVerificationsFile,
   JSON.stringify(records.slice(-2000), null, 2), { mode: 0o600 });
@@ -611,10 +628,12 @@ router.post('/web-admin-invitations/redeem', express.json({ limit: '8kb' }), asy
       record.used_by = [...new Set([...(record.used_by || []), auth.user.id])].slice(-25);
       record.last_used_at = new Date().toISOString();
       if (record.uses >= Number(record.max_uses || 1)) record.enabled = false;
-      return { role: record.role, invitation_id: record.id };
+      return { role: record.role, profile: normalizeWebAdminProfile(record.profile),
+        group_scope: record.group_scope || 'none', group_ids: record.group_ids || [], invitation_id: record.id };
     });
-    const verification = createTelegramVerification({ accountId: auth.user.id, role: result.role,
+    const verification = createTelegramVerification({ accountId: auth.user.id, role: result.role, profile: result.profile,
       claim: req.body?.telegram, invitationId: result.invitation_id });
+    verification.record.group_scope = result.group_scope; verification.record.group_ids = result.group_ids;
     const verifications = await readWebAdminVerifications();
     for (const item of verifications) {
       if (item.account_id === auth.user.id && item.status === 'pending') item.status = 'superseded';
@@ -622,7 +641,7 @@ router.post('/web-admin-invitations/redeem', express.json({ limit: '8kb' }), asy
     verifications.push(verification.record);
     await writeWebAdminVerifications(verifications);
     const bot = String(process.env.WEB_ADMIN_VERIFY_BOT_USERNAME || 'CintiaBot').replace(/^@/, '');
-    return res.json({ ok: true, pending_verification: true, role: result.role,
+    return res.json({ ok: true, pending_verification: true, role: result.role, profile: result.profile,
       verification_id: verification.record.id, verification_code: verification.code,
       bot_username: bot, expires_at: verification.record.expires_at,
       message: 'Envía el código al bot desde la cuenta de Telegram indicada para activar la administración web' });
@@ -638,7 +657,7 @@ router.get('/web-admin-verifications/me', async (req, res) => {
   try {
     const record = (await readWebAdminVerifications()).filter((item) => item.account_id === auth.user.id).at(-1);
     return res.json({ ok: true, verification: record ? { id: record.id, status: record.status,
-      role: record.role, expires_at: record.expires_at, verified_at: record.verified_at || null,
+      role: record.role, profile: normalizeWebAdminProfile(record.profile), expires_at: record.expires_at, verified_at: record.verified_at || null,
       telegram_id: record.telegram_id || null } : null });
   } catch (error) {
     return res.status(503).json({ ok: false, error: 'No se pudo consultar la verificación' });
@@ -671,6 +690,8 @@ router.post('/web-admin-verifications/confirm', express.json({ limit: '8kb' }), 
     const updated = await pocketbaseClient.collection('users').update(record.account_id, {
       role: record.role, telegram_id: senderId, ...(username ? { telegram_username: username } : {}),
     });
+    await assignWebAdminProfile(record.account_id, record.profile, `telegram:${senderId}`,
+      record.group_scope, record.group_ids);
     record.status = 'verified'; record.verified_at = new Date().toISOString();
     record.telegram_id = senderId; record.telegram_username = username;
     await writeWebAdminVerifications(verifications);
@@ -678,7 +699,7 @@ router.post('/web-admin-verifications/confirm', express.json({ limit: '8kb' }), 
       before: { role: account.role }, after: { role: record.role }, invitation_id: record.invitation_id,
       verification_id: record.id, source: 'telegram_verified_invitation' });
     recordAccountMetric('account.role_changed', { role: record.role, source: 'telegram_verified_invitation' });
-    return res.json({ ok: true, role: record.role, account_id: updated.id });
+    return res.json({ ok: true, role: record.role, profile: normalizeWebAdminProfile(record.profile), account_id: updated.id });
   } catch (error) {
     logger.warn(`[web-admin-verifications] ${error.message}`);
     return res.status(400).json({ ok: false, error: error.message });
@@ -695,12 +716,15 @@ router.all('/web-admin-invitations', express.json({ limit: '16kb' }), async (req
       const invitations = (await readWebAdminInvites()).slice(-200).reverse().map((item) => ({
         ...publicAdminInvite(item), created_at: item.created_at, created_by: item.created_by,
       }));
-      return res.json({ ok: true, invitations, roles: WEB_ADMIN_ROLES });
+      const assignments = Object.values(await readWebAdminProfiles());
+      return res.json({ ok: true, invitations, roles: WEB_ADMIN_ROLES, profiles: WEB_ADMIN_PROFILES, assignments });
     }
     if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
     if (req.body?.action === 'create') {
-      const created = createAdminInvite({ role: req.body.role, expiresHours: Number(req.body.expires_hours || 24),
+      const created = createAdminInvite({ role: req.body.role, profile: req.body.profile, expiresHours: Number(req.body.expires_hours || 24),
         maxUses: Number(req.body.max_uses || 1), creatorId: auth.user.id });
+      const delegation = normalizeGroupDelegation(req.body.group_scope, req.body.group_ids);
+      created.record.group_scope = delegation.scope; created.record.group_ids = delegation.group_ids;
       await mutateWebAdminInvites((records) => { records.push(created.record); return created.record; });
       const base = String(process.env.PUBLIC_WEB_URL || 'https://todosobreall.tech').replace(/\/$/, '');
       return res.status(201).json({ ok: true, invitation: publicAdminInvite(created.record),
@@ -726,7 +750,9 @@ router.all('/web-admin-invitations', express.json({ limit: '16kb' }), async (req
       const account = await pocketbaseClient.collection('users').getOne(accountId);
       if (!canElevateWebRole(account.role, role)) return res.status(400).json({ ok: false, error: 'La elevación solicitada no aumenta el nivel actual' });
       const claim = req.body.telegram || account.telegram_id || account.telegram_username;
-      const verification = createTelegramVerification({ accountId, role, claim, invitationId: `master:${auth.user.id}` });
+      const verification = createTelegramVerification({ accountId, role, profile: req.body.profile, claim, invitationId: `master:${auth.user.id}` });
+      const delegation = normalizeGroupDelegation(req.body.group_scope, req.body.group_ids);
+      verification.record.group_scope = delegation.scope; verification.record.group_ids = delegation.group_ids;
       verification.record.requested_by = auth.user.id; verification.record.reason = reason;
       const verifications = await readWebAdminVerifications();
       for (const item of verifications) {
@@ -736,8 +762,20 @@ router.all('/web-admin-invitations', express.json({ limit: '16kb' }), async (req
       await writeWebAdminVerifications(verifications);
       const bot = String(process.env.WEB_ADMIN_VERIFY_BOT_USERNAME || 'CintiaBot').replace(/^@/, '');
       return res.json({ ok: true, pending_verification: true, verification_code: verification.code,
-        bot_username: bot, expires_at: verification.record.expires_at,
+        profile: verification.record.profile, bot_username: bot, expires_at: verification.record.expires_at,
         message: 'Elevación pendiente: el usuario debe verificar su Telegram con el bot' });
+    }
+    if (req.body?.action === 'set_profile') {
+      const accountId = String(req.body.account_id || '');
+      if (!accountId || accountId === auth.user.id) return res.status(400).json({ ok: false, error: 'Cuenta no válida' });
+      const account = await pocketbaseClient.collection('users').getOne(accountId);
+      if (account.role !== 'admin') return res.status(400).json({ ok: false, error: 'La cuenta todavía no es administradora web' });
+      if (!account.telegram_id) return res.status(400).json({ ok: false, error: 'La cuenta debe verificar primero su Telegram' });
+      const assignment = await assignWebAdminProfile(accountId, req.body.profile, auth.user.id,
+        req.body.group_scope, req.body.group_ids);
+      await appendAccountHistory({ account_id: accountId, action: 'web_admin_profile', actor_id: auth.user.id,
+        after: { profile: assignment.profile }, source: 'master_profile_assignment' });
+      return res.json({ ok: true, assignment });
     }
     return res.status(400).json({ ok: false, error: 'Acción no válida' });
   } catch (error) {

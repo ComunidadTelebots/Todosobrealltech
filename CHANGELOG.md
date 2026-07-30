@@ -1091,3 +1091,8 @@
 - Los canales administrados por el master generan campañas propias medibles automáticamente.
 - La entrega rota entre campañas con la misma prioridad según sus impresiones por ubicación.
 - El panel identifica las campañas automáticas y mantiene AdSense como alternativa.
+# Administración web: perfiles predefinidos
+
+- Añadidos perfiles rápidos de soporte, contenido, seguridad, analítica, operaciones y administración completa.
+- Separada explícitamente la autorización web del acceso a grupos Telegram; el master puede delegar grupos de forma adicional.
+- Los perfiles se aplican desde invitaciones, elevaciones verificadas y cambios posteriores auditados.
