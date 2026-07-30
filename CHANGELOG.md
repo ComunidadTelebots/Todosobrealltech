@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap verificable por evidencia - 2026-07-30
+- Cada función completada incluye ahora los archivos que prueban su implementación real.
+- Se corrigen siete falsos positivos del inventario: permanecen pendientes sin eliminarse del roadmap.
+- Una validación automática bloquea IDs duplicados, estados incoherentes, texto mal codificado y funciones completadas sin evidencia.
+- El roadmap y su exportación CSV muestran la evidencia técnica de las funciones verificadas.
+
 ### Validación continua y despliegue seguro - 2026-07-30
 - GitHub Actions valida lint, pruebas de API y compilación de las seis webs sin utilizar credenciales reales.
 - El despliegue se omite de forma segura cuando faltan los secretos del VPS y usa actualización `--ff-only` cuando están configurados.

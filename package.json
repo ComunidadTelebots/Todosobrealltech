@@ -11,7 +11,8 @@
     "build": "concurrently --raw \"npm run build --prefix apps/web\"",
     "start": "concurrently --kill-others --raw \"npm run start --prefix apps/api\" \"npm run start --prefix apps/pocketbase\"",
     "lint": "npm run lint --prefix apps/web && npm run lint --prefix apps/api",
-    "test": "npm run test --prefix apps/api",
+    "test": "npm run test --prefix apps/api && npm run roadmap:validate",
+    "roadmap:validate": "node apps/web/tools/validate-future-roadmap.js",
     "check": "npm run lint && npm run test && npm run build:webs"
   },
   "devDependencies": {

@@ -109,23 +109,51 @@ const nextCapabilities = [
 ];
 
 const difficultyCycle = ['easy', 'medium', 'advanced'];
-const implemented = new Set([
-  'future-0001', 'future-0002', 'future-0003', 'future-0004', 'future-0005', 'future-0006',
-  'future-0007', 'future-0008', 'future-0009', 'future-0010', 'future-0011', 'future-0012',
-  'future-0013', 'future-0014', 'future-0015', 'future-0016', 'future-0017',
-  // Vista previa e historial de campañas de captcha, equilibrados entre productos.
-  'future-0247', 'future-0248', 'future-0431', 'future-0432', 'future-0704', 'future-0705',
-  // Exenciones granulares y calendario de reverificación en los tres paneles.
-  'future-0251', 'future-0254', 'future-0435', 'future-0438', 'future-0708', 'future-0711',
-  // Control por voz real: navegación web, análisis multimedia Moonbot y acciones rápidas WebApp.
-  'future-2147', 'future-2571', 'future-2814',
-  // Bóveda personal cifrada y consentida en privacidad web y perfil WebApp.
-  'future-2197', 'future-2744',
-  // Correlación temporal y semántica de incidencias en motor, web y WebApp.
-  'future-2121', 'future-2365', 'future-2938',
-  // Automatización RSS por grupo verificada en Moonbot y administración WebApp.
-  'future-0428', 'future-0701',
+const mojibake = new Map([
+  ['ÃƒÂ¡', 'á'], ['ÃƒÂ©', 'é'], ['ÃƒÂ­', 'í'], ['ÃƒÂ³', 'ó'], ['ÃƒÂº', 'ú'], ['ÃƒÂ±', 'ñ'],
+  ['Ã¡', 'á'], ['Ã©', 'é'], ['Ã­', 'í'], ['Ã³', 'ó'], ['Ãº', 'ú'], ['Ã±', 'ñ'], ['Â', ''],
 ]);
+const cleanText = (value) => {
+  let result = value;
+  for (const [broken, fixed] of mojibake) result = result.split(broken).join(fixed);
+  return result;
+};
+const implementedEvidence = new Map([
+  ['future-0003', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  ['future-0004', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  ['future-0006', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
+  ['future-0007', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
+  ['future-0008', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
+  ['future-0010', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  ['future-0011', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
+  ['future-0012', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  ['future-0013', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
+  ['future-0016', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  // Vista previa e historial de campañas de captcha, equilibrados entre productos.
+  ['future-0247', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
+  ['future-0248', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
+  ['future-0431', ['core/routes_public.py']], ['future-0432', ['core/routes_public.py']],
+  ['future-0704', ['web/hub.html']], ['future-0705', ['web/hub.html']],
+  // Exenciones granulares y calendario de reverificación en los tres paneles.
+  ['future-0251', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
+  ['future-0254', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
+  ['future-0435', ['core/routes_public.py']], ['future-0438', ['core/routes_public.py']],
+  ['future-0708', ['web/hub.html']], ['future-0711', ['web/hub.html']],
+  // Control por voz real: navegación web, análisis multimedia Moonbot y acciones rápidas WebApp.
+  ['future-2147', ['apps/web/src/components/VoiceNavigation.jsx']],
+  ['future-2571', ['core/media_analyzer.py']], ['future-2814', ['web/hub.html']],
+  // Bóveda personal cifrada y consentida en privacidad web y perfil WebApp.
+  ['future-2197', ['apps/web/src/lib/personalVault.js']],
+  ['future-2744', ['apps/web/src/lib/personalVault.js', 'web/hub.html']],
+  // Correlación temporal y semántica de incidencias en motor, web y WebApp.
+  ['future-2121', ['apps/web/src/components/MoonbotSecurityCenter.jsx']],
+  ['future-2365', ['roadmap_engine.py', 'core/routes_public.py']],
+  ['future-2938', ['web/hub.html', 'core/routes_public.py']],
+  // Automatización RSS por grupo verificada en Moonbot y administración WebApp.
+  ['future-0428', ['group_rss.py', 'core/routes_public.py']],
+  ['future-0701', ['web/hub.html', 'core/routes_public.py']],
+]);
+const implemented = new Set(implementedEvidence.keys());
 const items = [];
 for (const product of products) {
   let index = 0;
@@ -173,7 +201,7 @@ for (const product of products) {
         priority,
         difficulty,
         dependency,
-        status: 'specified',
+        status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'specified',
       });
       index += 1;
     }
@@ -222,6 +250,19 @@ const catalog = {
   totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 3])),
   total: items.length,
   items,
+};
+for (const item of catalog.items) {
+  for (const key of ['product_name', 'capability', 'context', 'title', 'description', 'dependency']) {
+    item[key] = cleanText(item[key]);
+  }
+  item.evidence = implementedEvidence.get(item.id) || [];
+}
+catalog.data_quality = {
+  unique_ids: new Set(catalog.items.map((item) => item.id)).size,
+  duplicate_ids: catalog.items.length - new Set(catalog.items.map((item) => item.id)).size,
+  implemented_without_evidence: catalog.items.filter((item) => item.status === 'implemented' && !item.evidence.length).length,
+  encoding_errors: catalog.items.filter((item) => /[ÃÂ]/.test(`${item.title} ${item.description} ${item.dependency}`)).length,
+  verified_at: catalog.generated_at,
 };
 const output = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'public', 'future-features-1000.json');
 fs.writeFileSync(output, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
