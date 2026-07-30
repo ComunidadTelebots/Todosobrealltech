@@ -1,8 +1,12 @@
 import express from 'express';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
+import adminOrCreatorMiddleware from '../middleware/admin-or-creator.js';
 
 const router = express.Router();
+
+// Every endpoint either contacts CAS or reads/writes privileged blocklist data.
+router.use(adminOrCreatorMiddleware);
 
 // Helper function to implement exponential backoff retry logic
 async function fetchWithRetry(url, options = {}, maxAttempts = 3) {

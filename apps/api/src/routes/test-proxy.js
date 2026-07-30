@@ -1,8 +1,12 @@
 import express from 'express';
 import axios from 'axios';
 import logger from '../utils/logger.js';
+import adminOrCreatorMiddleware from '../middleware/admin-or-creator.js';
 
 const router = express.Router();
+
+// Prevent unauthenticated callers from using the server as a network scanner.
+router.use(adminOrCreatorMiddleware);
 
 /**
  * Helper function to build proxy URL from components

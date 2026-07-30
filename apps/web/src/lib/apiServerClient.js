@@ -1,8 +1,14 @@
+import pb from './pocketbaseClient.js';
+
 const API_SERVER_URL = "/hcgi/api";
 
 const apiServerClient = {
     fetch: async (url, options = {}) => {
-        return await window.fetch(API_SERVER_URL + url, options);
+        const headers = new Headers(options.headers || {});
+        if (pb.authStore.token && !headers.has('Authorization')) {
+            headers.set('Authorization', `Bearer ${pb.authStore.token}`);
+        }
+        return await window.fetch(API_SERVER_URL + url, { ...options, headers });
     },
     readJson: async (response) => {
         const text = await response.text();

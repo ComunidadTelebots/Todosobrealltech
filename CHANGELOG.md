@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Seguridad de importaciones y diagnóstico proxy - 2026-07-30
+- Las importaciones y escrituras de listas de bloqueados exigen ahora un usuario administrador o creador autenticado.
+- Las pruebas de proxy dejan de estar expuestas sin autenticación, evitando su uso como escáner de la red interna.
+- El cliente web conserva la compatibilidad adjuntando automáticamente el token Bearer disponible.
+
 ### Validación segura de creación Onion - 2026-07-30
 - Se elimina la aceptación insegura de JWT decodificados sin comprobar su firma.
 - Crear una Onion Web exige ahora validación real contra PocketBase y rol administrativo o creador.
