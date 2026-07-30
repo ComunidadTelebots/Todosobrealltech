@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { forecastAccounts } from '../src/utils/accountForecast.js';
+import { compareAccountPeriods, forecastAccounts } from '../src/utils/accountForecast.js';
 
 const now = new Date('2026-07-30T12:00:00Z');
 const daysAgo = (days) => new Date(now.getTime() - days * 86400000).toISOString();
@@ -17,4 +17,11 @@ test('returns a bounded interval and low confidence for sparse history', () => {
   assert.equal(result.confidence, 'low');
   assert.ok(result.interval.min >= 0);
   assert.ok(result.interval.max >= result.projected_30d);
+});
+
+test('compares adjacent windows of equal length', () => {
+  const result = compareAccountPeriods([
+    { created: daysAgo(2) }, { created: daysAgo(5) }, { created: daysAgo(10) },
+  ], 7, now);
+  assert.deepEqual(result, { days: 7, current: 2, previous: 1, difference: 1, change_percent: 100, direction: 'up' });
 });

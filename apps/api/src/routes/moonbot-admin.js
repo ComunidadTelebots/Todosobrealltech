@@ -9,7 +9,7 @@ import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
 import { createRoleApproval, decideRoleApproval } from '../utils/accountApprovals.js';
-import { forecastAccounts } from '../utils/accountForecast.js';
+import { compareAccountPeriods, forecastAccounts } from '../utils/accountForecast.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -180,6 +180,16 @@ router.get('/account-tools/forecast', async (req, res) => {
   } catch (error) {
     logger.error(`[moonbot-admin] Previsión de cuentas falló: ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudo calcular la previsión' });
+  }
+});
+router.get('/account-tools/compare', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const users = await pocketbaseClient.collection('users').getFullList({ sort: '-created', fields: 'id,created' });
+    return res.json({ ok: true, comparison: compareAccountPeriods(users, req.query.days), checked_at: new Date().toISOString() });
+  } catch (error) {
+    logger.error(`[moonbot-admin] Comparación de cuentas falló: ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo comparar el periodo' });
   }
 });
 router.all('/account-tools/approvals', async (req, res) => {

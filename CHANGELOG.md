@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Comparador temporal de cuentas - 2026-07-30
+- El panel compara altas en ventanas consecutivas equivalentes de 7, 30 o 90 días.
+- Muestra valores actual y anterior, diferencia absoluta, porcentaje y dirección de tendencia calculados en servidor.
+- Se añaden pruebas de límites temporales y se completa la función parcial del roadmap.
+
 ### Previsión explicable de altas - 2026-07-30
 - El panel de cuentas proyecta las altas de los próximos 30 días usando ocho semanas de historial y mayor peso para las semanas recientes.
 - Muestra intervalo estimado, tendencia, tamaño de muestra, confianza y explicación del cálculo.

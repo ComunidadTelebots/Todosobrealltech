@@ -26,6 +26,8 @@ const CreatorAccountProxyManager = () => {
   const [proxyDraft, setProxyDraft] = useState({});
   const [approvals, setApprovals] = useState([]);
   const [accountForecast, setAccountForecast] = useState(null);
+  const [accountPeriod, setAccountPeriod] = useState(30);
+  const [accountComparison, setAccountComparison] = useState(null);
   const [privacyMode, setPrivacyMode] = useState(() => getAccountPrivacyMode(currentUser.id));
   const [revealSensitive, setRevealSensitive] = useState(false);
 
@@ -78,11 +80,21 @@ const CreatorAccountProxyManager = () => {
     } catch { setAccountForecast(null); }
   };
 
+  const fetchAccountComparison = async (days) => {
+    try {
+      const response = await apiServerClient.fetch(`/moonbot-admin/account-tools/compare?days=${days}`, { headers: { Authorization: `Bearer ${pb.authStore.token}` } });
+      const data = await response.json();
+      if (response.ok) setAccountComparison(data.comparison || null);
+    } catch { setAccountComparison(null); }
+  };
+
   useEffect(() => {
     fetchResources();
     fetchApprovals();
     fetchAccountForecast();
   }, []);
+
+  useEffect(() => { fetchAccountComparison(accountPeriod); }, [accountPeriod, users.length]);
 
   const usersById = useMemo(
     () => new Map(users.map((user) => [user.id, user])),
@@ -323,7 +335,7 @@ const CreatorAccountProxyManager = () => {
 
       <div className="grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border bg-background p-4"><TrendingUp className="mb-2 h-5 w-5 text-emerald-600" /><p className="text-2xl font-bold">{accountForecast?.projected_30d ?? accountInsights.forecast}</p><p className="text-xs text-muted-foreground">Altas previstas en 30 días{accountForecast ? ` · intervalo ${accountForecast.interval.min}–${accountForecast.interval.max} · confianza ${accountForecast.confidence}` : ', basada en el ritmo actual'}.</p>{accountForecast?.explanation && <p className="mt-1 text-xs text-muted-foreground">{accountForecast.explanation}</p>}</div>
-        <div className="rounded-xl border bg-background p-4"><Activity className="mb-2 h-5 w-5 text-blue-600" /><p className="text-2xl font-bold">{accountInsights.current} <span className="text-sm font-normal">({accountInsights.change >= 0 ? '+' : ''}{accountInsights.change}%)</span></p><p className="text-xs text-muted-foreground">Altas actuales frente a {accountInsights.previous} el mes anterior.</p></div>
+        <div className="rounded-xl border bg-background p-4"><div className="flex items-start justify-between gap-2"><Activity className="mb-2 h-5 w-5 text-blue-600" /><select aria-label="Periodo de comparación" value={accountPeriod} onChange={(event) => setAccountPeriod(Number(event.target.value))} className="rounded border bg-background px-2 py-1 text-xs"><option value="7">7 días</option><option value="30">30 días</option><option value="90">90 días</option></select></div><p className="text-2xl font-bold">{accountComparison?.current ?? accountInsights.current} <span className="text-sm font-normal">({(accountComparison?.change_percent ?? accountInsights.change) >= 0 ? '+' : ''}{accountComparison?.change_percent ?? accountInsights.change}%)</span></p><p className="text-xs text-muted-foreground">Altas frente a la ventana anterior equivalente: {accountComparison?.previous ?? accountInsights.previous}. Diferencia: {accountComparison?.difference ?? (accountInsights.current - accountInsights.previous)}.</p></div>
         <div className="rounded-xl border bg-background p-4"><AlertTriangle className="mb-2 h-5 w-5 text-amber-600" /><p className="text-2xl font-bold">{accountInsights.alerts.length}</p><p className="text-xs text-muted-foreground">Alertas adaptativas: {accountInsights.alerts.join(' · ') || 'ninguna incidencia'}.</p></div>
       </div>
       <div className="flex items-center gap-2 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 text-sm"><WandSparkles className="h-5 w-5 text-violet-600" /><span><b>Asistente de cuentas:</b> revisa primero las alertas, después los roles y finalmente los proxies inactivos.</span></div>

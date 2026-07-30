@@ -29,3 +29,23 @@ export const forecastAccounts = (users = [], nowInput = new Date()) => {
     explanation: `Media semanal ponderada con mayor peso en las cuatro semanas recientes; muestra de ${sample} altas.`,
   };
 };
+
+export const compareAccountPeriods = (users = [], days = 30, nowInput = new Date()) => {
+  const windowDays = [7, 30, 90].includes(Number(days)) ? Number(days) : 30;
+  const now = new Date(nowInput).getTime();
+  const windowMs = windowDays * 86400000;
+  let current = 0;
+  let previous = 0;
+  for (const user of users) {
+    const age = now - new Date(user.created).getTime();
+    if (!Number.isFinite(age) || age < 0) continue;
+    if (age < windowMs) current += 1;
+    else if (age < windowMs * 2) previous += 1;
+  }
+  return {
+    days: windowDays, current, previous,
+    difference: current - previous,
+    change_percent: previous ? Math.round((current - previous) * 100 / previous) : current ? 100 : 0,
+    direction: current > previous ? 'up' : current < previous ? 'down' : 'stable',
+  };
+};
