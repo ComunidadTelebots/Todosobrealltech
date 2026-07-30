@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Dependencias y compilaciones reproducibles - 2026-07-31
+- Actualiza Canales y NoticiasWeb3 a Vite 7.3.6, `@vitejs/plugin-react` 5.2.0 y React Router 7.18.2, eliminando las versiones afectadas por lectura de archivos, redirección abierta y XSS.
+- Regenera los lockfiles de API, ComunidadTelebots, Resistencia Censura, TodoSobreGameplays y scripts con `js-yaml`, PostCSS, esbuild, Babel e `ip-address` corregidos.
+- Añade un lockfile propio a Canales y sustituye instalaciones Docker no deterministas por `npm ci` o por el lockfile raíz del monorepo.
+- Actualiza GitHub Actions a `checkout@v7` y `setup-node@v7` y corrige el único incumplimiento previo del lint de la API.
+- Se conserva React Router 7.18.2 como última versión publicada; la alerta residual afecta al modo RSC, que estas aplicaciones SPA no habilitan. La otra alerta residual procede de `brace-expansion` dentro del lint de desarrollo y todavía no dispone de una actualización compatible aguas arriba.
+
 ### Directorio unificado de bloqueos - 2026-07-31
 - `/admin` reúne los usuarios que Moonbot registró como detectados por CAS, los GBAN, los baneos locales y los bloqueos web.
 - El contador CAS ya no representa el export completo: cuenta únicamente detecciones registradas por Moonbot.

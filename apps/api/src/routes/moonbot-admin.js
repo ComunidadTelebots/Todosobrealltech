@@ -1082,7 +1082,9 @@ router.all('/feature-release-access', express.json({ limit: '32kb' }), async (re
   const telegramId = String(account.telegram_id || '');
   if (!/^\d+$/.test(telegramId)) return res.status(409).json({ ok: false, error: 'La cuenta debe vincular primero Telegram' });
   let existing = null;
-  try { existing = await pocketbaseClient.collection('feature_release_access').getFirstListItem(`account_id="${accountId}"`); } catch {}
+  try { existing = await pocketbaseClient.collection('feature_release_access').getFirstListItem(`account_id="${accountId}"`); } catch {
+    // No previous assignment is the normal path when a release channel is granted for the first time.
+  }
   const data = { account_id: accountId, telegram_id: telegramId, release_channel: channel,
     enabled: req.body?.enabled !== false, assigned_by: auth.user.id };
   const record = existing

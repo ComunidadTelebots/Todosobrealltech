@@ -1,11 +1,13 @@
 FROM node:20-slim AS build
 
-WORKDIR /app
+WORKDIR /repo
 
-COPY apps/proxy/package*.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+COPY apps/proxy/package.json apps/proxy/package.json
+RUN npm ci --workspace apps/proxy --include-workspace-root --ignore-scripts --no-audit --no-fund
 
-COPY apps/proxy .
+COPY apps/proxy apps/proxy
+WORKDIR /repo/apps/proxy
 
 ARG VITE_GOOGLE_ANALYTICS_ID
 ENV VITE_GOOGLE_ANALYTICS_ID=$VITE_GOOGLE_ANALYTICS_ID
@@ -19,6 +21,6 @@ RUN npm run build
 FROM nginx:1.27-alpine
 
 COPY apps/proxy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /repo/apps/proxy/dist /usr/share/nginx/html
 
 EXPOSE 80
