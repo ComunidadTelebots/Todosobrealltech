@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Invitaciones y elevación de administración web - 2026-07-31
+- Permite al master crear enlaces de acceso caducables, revocables y de uno o varios usos para convertir cuentas en administradores de la web.
+- Los enlaces guardan únicamente una huella SHA-256 del token y se consumen de forma cerrada antes de aplicar la elevación.
+- Añade una pantalla de aceptación que conserva el enlace durante el inicio de sesión o el registro.
+- Permite al master elevar directamente usuarios existentes con motivo obligatorio y registro de auditoría.
+- Separa expresamente el rol administrativo web de los permisos de grupos Telegram y bloquea desde PocketBase la autoelevación o la asignación de roles durante el registro.
+
 ### Gateway autenticado para canales web - 2026-07-31
 - Protege los bundles RC, beta y alpha completos —HTML, JavaScript y recursos— mediante ForwardAuth antes de servirlos.
 - Emite una sesión breve en cookie `HttpOnly`, `Secure` y firmada con HMAC tras autenticar la cuenta en PocketBase.

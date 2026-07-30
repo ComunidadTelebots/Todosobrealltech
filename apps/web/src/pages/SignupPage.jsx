@@ -11,6 +11,11 @@ import { UserPlus, AlertCircle } from 'lucide-react';
 const SignupPage = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
+  const afterSignup = () => {
+    const target = sessionStorage.getItem('post_auth_path');
+    sessionStorage.removeItem('post_auth_path');
+    navigate(target?.startsWith('/admin/invite/') ? target : '/dashboard');
+  };
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -58,7 +63,7 @@ const SignupPage = () => {
     );
     
     if (result.success) {
-      navigate('/dashboard');
+      afterSignup();
     } else {
       setError(result.error || 'Failed to create account');
     }

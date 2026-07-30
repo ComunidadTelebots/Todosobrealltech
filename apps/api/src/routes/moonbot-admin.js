@@ -27,6 +27,8 @@ import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPaylo
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
   moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
+import { canElevateWebRole, createAdminInvite, hashAdminInviteToken,
+  publicAdminInvite, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
@@ -193,6 +195,7 @@ router.post('/account-tools/sign', async (req, res) => {
 const accountHistoryFile = '/data/account-change-history.json';
 const accountBulkFile = '/data/account-bulk-transactions.json';
 const accountApprovalsFile = '/data/account-role-approvals.json';
+const webAdminInvitesFile = '/data/web-admin-invitations.json';
 const accountReportSchedulesFile = '/data/account-report-schedules.json';
 const accountReportsDirectory = '/data/account-reports';
 const accountWebhooksFile = '/data/account-webhooks.json';
@@ -200,6 +203,34 @@ const accountTemplatesFile = '/data/account-config-templates.json';
 const accountReviewSchedulesFile = '/data/account-review-schedules.json';
 const accountAdminThreadsFile = '/data/account-admin-threads.json';
 let accountMetricsState = createAccountMetricsState();
+let webAdminInviteMutation = Promise.resolve();
+
+const readWebAdminInvites = async () => {
+  try {
+    const parsed = JSON.parse(await fs.readFile(webAdminInvitesFile, 'utf8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  }
+};
+const mutateWebAdminInvites = (operation) => {
+  const pending = webAdminInviteMutation.then(async () => {
+    const records = await readWebAdminInvites();
+    const result = await operation(records);
+    await fs.writeFile(webAdminInvitesFile, JSON.stringify(records.slice(-1000), null, 2), { mode: 0o600 });
+    return result;
+  });
+  webAdminInviteMutation = pending.catch(() => {});
+  return pending;
+};
+const appendAccountHistory = async (entry) => {
+  let rows = [];
+  try { rows = JSON.parse(await fs.readFile(accountHistoryFile, 'utf8')); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+  rows.push({ id: crypto.randomUUID(), ...entry, created_at: new Date().toISOString() });
+  await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000), null, 2), { mode: 0o600 });
+};
 
 const readAccountTemplates = async () => {
   try { return JSON.parse(await fs.readFile(accountTemplatesFile, 'utf8')); }
@@ -534,6 +565,107 @@ router.get('/account-tools/compare', async (req, res) => {
     return res.status(502).json({ ok: false, error: 'No se pudo comparar el periodo' });
   }
 });
+
+router.get('/web-admin-invitations/inspect', async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache' });
+  const token = String(req.query.token || '');
+  if (!/^[A-Za-z0-9_-]{40,64}$/.test(token)) return res.status(404).json({ ok: false, error: 'Invitación no válida' });
+  try {
+    const record = (await readWebAdminInvites()).find((item) => item.token_hash === hashAdminInviteToken(token));
+    const invitation = record ? publicAdminInvite(record) : null;
+    if (!invitation?.valid) return res.status(410).json({ ok: false, error: 'La invitación ha caducado, fue revocada o agotó sus usos' });
+    return res.json({ ok: true, invitation });
+  } catch (error) {
+    logger.error(`[web-admin-invitations] inspección falló: ${error.message}`);
+    return res.status(503).json({ ok: false, error: 'Servicio de invitaciones no disponible' });
+  }
+});
+
+router.post('/web-admin-invitations/redeem', express.json({ limit: '8kb' }), async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  const token = String(req.body?.token || '');
+  if (!/^[A-Za-z0-9_-]{40,64}$/.test(token)) return res.status(400).json({ ok: false, error: 'Invitación no válida' });
+  try {
+    const result = await mutateWebAdminInvites((records) => {
+      const record = records.find((item) => item.token_hash === hashAdminInviteToken(token));
+      const invitation = record ? publicAdminInvite(record) : null;
+      if (!invitation?.valid) throw new Error('La invitación ha caducado, fue revocada o agotó sus usos');
+      if (auth.user.role === 'creator') throw new Error('La cuenta master ya tiene el nivel máximo');
+      if (!canElevateWebRole(auth.user.role, record.role)) throw new Error('La cuenta ya tiene este nivel administrativo o uno superior');
+      record.uses = Number(record.uses || 0) + 1;
+      record.used_by = [...new Set([...(record.used_by || []), auth.user.id])].slice(-25);
+      record.last_used_at = new Date().toISOString();
+      if (record.uses >= Number(record.max_uses || 1)) record.enabled = false;
+      return { role: record.role, invitation_id: record.id };
+    });
+    const updated = await pocketbaseClient.collection('users').update(auth.user.id, { role: result.role });
+    await appendAccountHistory({ account_id: auth.user.id, action: 'role', actor_id: 'master_invitation',
+      before: { role: auth.user.role }, after: { role: result.role }, invitation_id: result.invitation_id });
+    recordAccountMetric('account.role_changed', { role: result.role, source: 'master_invitation' });
+    return res.json({ ok: true, role: result.role, user: updated, invitation_id: result.invitation_id,
+      message: 'Cuenta elevada para administrar la web; los permisos de grupos Telegram no han cambiado' });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.all('/web-admin-invitations', express.json({ limit: '16kb' }), async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  if (auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el master puede gestionar accesos web' });
+  try {
+    if (req.method === 'GET') {
+      const invitations = (await readWebAdminInvites()).slice(-200).reverse().map((item) => ({
+        ...publicAdminInvite(item), created_at: item.created_at, created_by: item.created_by,
+      }));
+      return res.json({ ok: true, invitations, roles: WEB_ADMIN_ROLES });
+    }
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    if (req.body?.action === 'create') {
+      const created = createAdminInvite({ role: req.body.role, expiresHours: Number(req.body.expires_hours || 24),
+        maxUses: Number(req.body.max_uses || 1), creatorId: auth.user.id });
+      await mutateWebAdminInvites((records) => { records.push(created.record); return created.record; });
+      const base = String(process.env.PUBLIC_WEB_URL || 'https://todosobreall.tech').replace(/\/$/, '');
+      return res.status(201).json({ ok: true, invitation: publicAdminInvite(created.record),
+        url: `${base}/admin/invite/${created.token}` });
+    }
+    if (req.body?.action === 'revoke') {
+      const invitation = await mutateWebAdminInvites((records) => {
+        const record = records.find((item) => item.id === String(req.body.invitation_id || ''));
+        if (!record) throw new Error('Invitación no encontrada');
+        record.enabled = false;
+        record.revoked_at = new Date().toISOString();
+        record.revoked_by = auth.user.id;
+        return publicAdminInvite(record);
+      });
+      return res.json({ ok: true, invitation });
+    }
+    if (req.body?.action === 'elevate') {
+      const accountId = String(req.body.account_id || '');
+      const role = String(req.body.role || '');
+      const reason = String(req.body.reason || '').trim().slice(0, 300);
+      if (!reason) return res.status(400).json({ ok: false, error: 'Indica el motivo de la elevación' });
+      if (accountId === auth.user.id) return res.status(400).json({ ok: false, error: 'No puedes modificar tu propia cuenta' });
+      const account = await pocketbaseClient.collection('users').getOne(accountId);
+      if (!canElevateWebRole(account.role, role)) return res.status(400).json({ ok: false, error: 'La elevación solicitada no aumenta el nivel actual' });
+      const updated = await pocketbaseClient.collection('users').update(accountId, { role });
+      await appendAccountHistory({ account_id: accountId, action: 'role', actor_id: auth.user.id,
+        before: { role: account.role }, after: { role }, reason, source: 'master_elevation' });
+      recordAccountMetric('account.role_changed', { role, source: 'master_elevation' });
+      return res.json({ ok: true, user: updated, audit: { actor_id: auth.user.id, account_id: accountId,
+        before: account.role, after: role, reason, created_at: new Date().toISOString() },
+      message: 'Rol web actualizado sin modificar permisos de grupos Telegram' });
+    }
+    return res.status(400).json({ ok: false, error: 'Acción no válida' });
+  } catch (error) {
+    logger.warn(`[web-admin-invitations] ${error.message}`);
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
 router.all('/account-tools/approvals', async (req, res) => {
   const auth = await authorizeAdminOrCreator(req);
   if (auth.error) {

@@ -20,6 +20,7 @@ import AccountLearningCenter from '@/components/AccountLearningCenter.jsx';
 import AccountSearchReviewPanel from '@/components/AccountSearchReviewPanel.jsx';
 import AccountCollaborationMetricsPanel from '@/components/AccountCollaborationMetricsPanel.jsx';
 import AccountInteroperableConnector from '@/components/AccountInteroperableConnector.jsx';
+import WebAdminAccessManager from '@/components/WebAdminAccessManager.jsx';
 
 const ROLE_OPTIONS = ['user', 'moderator', 'admin'];
 const RELEASE_CHANNEL_OPTIONS = ['stable', 'rc', 'beta', 'alpha'];
@@ -402,6 +403,7 @@ const CreatorAccountProxyManager = () => {
       <div id="account-tool-learning"><AccountLearningCenter userId={currentUser.id} /></div>
       <div id="account-tool-collaboration"><span id="account-tool-metrics" /><AccountCollaborationMetricsPanel users={users} /></div>
       <div id="account-tool-connector"><AccountInteroperableConnector accounts={users} onValidatedPackage={() => toast.success('Paquete validado; pendiente de revisión manual')} /></div>
+      {currentUser.role === 'creator' && <WebAdminAccessManager users={users} onChanged={fetchResources} />}
       <section className="rounded-xl border bg-background p-4"><h3 className="mb-1 font-semibold">Aprobaciones de cuentas</h3><p className="mb-3 text-sm text-muted-foreground">Las elevaciones a administrador requieren revisión de creator y no pueden ser aprobadas por quien las solicitó.</p><div className="space-y-2">{approvals.filter((item) => item.status === 'pending').map((item) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-sm"><span><b>{displayEmail(usersById.get(item.account_id)?.email)}</b> · {item.change.before} → {item.change.after}<small className="block text-muted-foreground">Solicitada por {item.requested_by}</small></span>{currentUser.role === 'creator' && <span className="flex gap-2"><Button size="sm" disabled={processingId === item.id || item.requested_by === currentUser.id} onClick={() => decideApproval(item, 'approved')}>Aprobar</Button><Button size="sm" variant="outline" disabled={processingId === item.id} onClick={() => decideApproval(item, 'rejected')}>Rechazar</Button></span>}</div>)}{!approvals.some((item) => item.status === 'pending') && <p className="text-sm text-muted-foreground">No hay solicitudes pendientes.</p>}</div></section>
 
       <Tabs defaultValue="accounts">

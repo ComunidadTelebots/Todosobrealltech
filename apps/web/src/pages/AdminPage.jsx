@@ -166,13 +166,18 @@ const AdminPage = () => {
   };
 
   const handleUpdateRole = async () => {
-    if (!selectedUser || !newRole) return;
+    if (!selectedUser || newRole !== 'admin' || pb.authStore.model?.role !== 'creator') return;
+    const reason = window.prompt('Motivo de la elevación a administrador web:')?.trim();
+    if (!reason) return;
     
     setIsUpdating(true);
     try {
-      await pb.collection('users').update(selectedUser.id, {
-        role: newRole
-      }, { $autoCancel: false });
+      const response = await apiServerClient.fetch('/moonbot-admin/web-admin-invitations', {
+        method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'elevate', account_id: selectedUser.id, role: 'admin', reason }),
+      });
+      const payload = await apiServerClient.readJson(response);
+      if (!response.ok) throw new Error(payload.error || 'No se pudo elevar la cuenta');
       
       toast.success(`Role updated to ${newRole} for ${selectedUser.email}`);
       setIsRoleModalOpen(false);
@@ -327,7 +332,7 @@ const AdminPage = () => {
                         users={users.slice(0, 5)} 
                         onUpdate={fetchData}
                         onDelete={handleDeleteUser}
-                        onRoleChange={handleOpenRoleModal}
+                        onRoleChange={pb.authStore.model?.role === 'creator' ? handleOpenRoleModal : undefined}
                       />
                       {users.length > 5 && (
                         <div className="mt-4 text-center">
@@ -413,8 +418,6 @@ const AdminPage = () => {
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User (Default)</SelectItem>
-                  <SelectItem value="moderator">Moderator</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
