@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Paneles emergentes del registro Moonbot - 2026-07-30
+- Las funciones verificadas dejan de formar una lista larga y se agrupan automáticamente por ámbito operativo.
+- Cada grupo abre una vista superior independiente con flecha de regreso, filtro por rol y contador de funciones.
+- Cada función conserva su editor JSON y ejecución autenticada dentro de su panel, sin exponer operaciones a usuarios sin rol master.
+
 ### Seguridad de importaciones y diagnóstico proxy - 2026-07-30
 - Las importaciones y escrituras de listas de bloqueados exigen ahora un usuario administrador o creador autenticado.
 - Las pruebas de proxy dejan de estar expuestas sin autenticación, evitando su uso como escáner de la red interna.
