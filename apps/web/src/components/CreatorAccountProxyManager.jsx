@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Activity, AlertTriangle, Edit2, Loader2, Search, Snowflake, Trash2, TrendingUp, UserCog, Users, WandSparkles } from 'lucide-react';
+import { Activity, AlertTriangle, Edit2, Eye, EyeOff, Loader2, Search, Snowflake, Trash2, TrendingUp, UserCog, Users, WandSparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import pb from '@/lib/pocketbaseClient.js';
 import apiServerClient from '@/lib/apiServerClient.js';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AccountHorizonTools from '@/components/AccountHorizonTools.jsx';
+import { getAccountPrivacyMode, maskEmail, maskName, maskProxyUrl } from '@/lib/accountPrivacy.js';
 
 const ROLE_OPTIONS = ['user', 'moderator', 'admin', 'creator'];
 
@@ -23,6 +24,24 @@ const CreatorAccountProxyManager = () => {
   const [proxyQuery, setProxyQuery] = useState('');
   const [editingProxyId, setEditingProxyId] = useState('');
   const [proxyDraft, setProxyDraft] = useState({});
+  const [privacyMode, setPrivacyMode] = useState(() => getAccountPrivacyMode(currentUser.id));
+  const [revealSensitive, setRevealSensitive] = useState(false);
+
+  useEffect(() => {
+    const updatePrivacy = (event) => {
+      if (event.detail?.userId === currentUser.id) {
+        setPrivacyMode(event.detail.enabled);
+        setRevealSensitive(false);
+      }
+    };
+    window.addEventListener('accountPrivacyUpdate', updatePrivacy);
+    return () => window.removeEventListener('accountPrivacyUpdate', updatePrivacy);
+  }, [currentUser.id]);
+
+  const conceal = privacyMode && !revealSensitive;
+  const displayEmail = (value) => conceal ? maskEmail(value) : (value || 'Sin correo');
+  const displayName = (value) => conceal ? maskName(value) : (value || 'Sin nombre');
+  const displayProxy = (value) => conceal ? maskProxyUrl(value) : value;
 
   const fetchResources = async () => {
     setLoading(true);
@@ -267,6 +286,7 @@ const CreatorAccountProxyManager = () => {
         </TabsList>
 
         <TabsContent value="accounts" className="space-y-4">
+          {privacyMode && <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm"><span>{conceal ? 'Datos personales ocultos en esta pantalla.' : 'Datos visibles temporalmente durante esta sesión.'}</span><Button type="button" variant="outline" size="sm" onClick={() => setRevealSensitive((value) => !value)}>{conceal ? <Eye className="mr-2 h-4 w-4" /> : <EyeOff className="mr-2 h-4 w-4" />}{conceal ? 'Revelar' : 'Ocultar'}</Button></div>}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input value={userQuery} onChange={(event) => setUserQuery(event.target.value)} placeholder="Buscar cuenta…" className="pl-9" />
@@ -278,8 +298,8 @@ const CreatorAccountProxyManager = () => {
                   <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
                     <Users className="h-5 w-5 shrink-0 text-primary" />
                     <div className="min-w-0">
-                      <p className="truncate font-semibold">{user.name || 'Sin nombre'}</p>
-                      <p className="truncate text-xs font-normal text-muted-foreground">{user.email}</p>
+                      <p className="truncate font-semibold">{displayName(user.name)}</p>
+                      <p className="truncate text-xs font-normal text-muted-foreground">{displayEmail(user.email)}</p>
                     </div>
                     <Badge variant="outline" className="ml-auto capitalize">{user.role || 'user'}</Badge>
                     {user.is_frozen && <Badge variant="secondary">Congelada</Badge>}
@@ -328,8 +348,8 @@ const CreatorAccountProxyManager = () => {
                     <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
                       <Activity className="h-5 w-5 shrink-0 text-primary" />
                       <div className="min-w-0">
-                        <p className="truncate font-mono text-sm font-semibold">{proxy.proxy_url}</p>
-                        <p className="truncate text-xs font-normal text-muted-foreground">{owner?.email || 'Propietario desconocido'}</p>
+                        <p className="truncate font-mono text-sm font-semibold">{displayProxy(proxy.proxy_url)}</p>
+                        <p className="truncate text-xs font-normal text-muted-foreground">{owner ? displayEmail(owner.email) : 'Propietario desconocido'}</p>
                       </div>
                       <Badge variant={proxy.status === 'active' ? 'default' : 'secondary'} className="ml-auto capitalize">
                         {proxy.status || 'sin probar'}

@@ -20,6 +20,7 @@ import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { useAnalytics } from '@/contexts/AnalyticsProvider.jsx';
 import pb from '@/lib/pocketbaseClient.js';
 import { hasPersonalVault, openPersonalVault, removePersonalVault, savePersonalVault } from '@/lib/personalVault.js';
+import { getAccountPrivacyMode, setAccountPrivacyMode } from '@/lib/accountPrivacy.js';
 
 const getPreferenceKey = (userId) => `settings:${userId}`;
 
@@ -85,6 +86,7 @@ export default function SettingsPage() {
   const [emailAlerts, setEmailAlerts] = useState(initialPreferences.emailAlerts);
   const [pushAlerts, setPushAlerts] = useState(initialPreferences.pushAlerts);
   const [analytics, setAnalytics] = useState(analyticsEnabled);
+  const [accountPrivacy, setAccountPrivacy] = useState(() => getAccountPrivacyMode(currentUser.id));
   const [savedSnapshot, setSavedSnapshot] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReset, setIsSendingReset] = useState(false);
@@ -102,11 +104,13 @@ export default function SettingsPage() {
     emailAlerts,
     pushAlerts,
     analytics,
+    accountPrivacy,
   });
   const hasChanges = savedSnapshot !== '' && currentSnapshot !== savedSnapshot;
 
   useEffect(() => {
     setAnalytics(analyticsEnabled);
+    setAccountPrivacy(getAccountPrivacyMode(currentUser.id));
   }, [analyticsEnabled]);
 
   useEffect(() => {
@@ -144,6 +148,7 @@ export default function SettingsPage() {
       emailAlerts: preferences.emailAlerts,
       pushAlerts: preferences.pushAlerts,
       analytics: analyticsEnabled,
+      accountPrivacy: getAccountPrivacyMode(currentUser.id),
     });
     setSavedSnapshot(snapshot);
     toast.info('Cambios descartados');
@@ -194,6 +199,7 @@ export default function SettingsPage() {
       window.dispatchEvent(new CustomEvent('themePreferenceUpdate', { detail: theme }));
       setLanguage(language);
       setAnalyticsEnabled(analytics);
+      setAccountPrivacyMode(currentUser.id, accountPrivacy);
 
       const snapshot = JSON.stringify({
         name: updatedUser.name || '',
@@ -203,6 +209,7 @@ export default function SettingsPage() {
         emailAlerts,
         pushAlerts: savedPushAlerts,
         analytics,
+        accountPrivacy,
       });
       setName(updatedUser.name || '');
       setEmail(updatedUser.email || '');
@@ -367,6 +374,12 @@ export default function SettingsPage() {
         </Section>
 
         <Section icon={Lock} title="Privacidad">
+          <Toggle
+            label="Modo de privacidad reforzada para cuentas"
+            description="Oculta nombres, correos y direcciones proxy en el panel de administración hasta que los reveles durante la sesión."
+            checked={accountPrivacy}
+            onChange={setAccountPrivacy}
+          />
           <Toggle
             label="Analítica"
             description="Permite medir el uso para mejorar la plataforma."

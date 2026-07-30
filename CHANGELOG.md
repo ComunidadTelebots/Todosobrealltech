@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Privacidad reforzada de cuentas - 2026-07-30
+- Los nombres, correos y direcciones proxy del panel de cuentas quedan ocultos por defecto cuando se activa el modo reforzado.
+- El creador puede revelarlos únicamente durante la sesión actual y volver a ocultarlos de inmediato.
+- La preferencia se configura desde Ajustes y completa una función que figuraba como parcial en el roadmap.
+
 ### Auditoría de configuración sensible - 2026-07-30
 - El panel de cada grupo muestra los cambios reales de seguridad y moderación, con autor, origen, riesgo y campos afectados.
 - La web comparte el historial generado por Moonbot con la MiniApp y evita duplicar registros cuando la configuración no cambia.
