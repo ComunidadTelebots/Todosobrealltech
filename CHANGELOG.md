@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Catálogo ampliado a 6.000 funciones sin nombres repetidos - 2026-07-30
+- El roadmap incorpora 3.000 capacidades nuevas mediante contratos operación–recurso con nombres funcionales únicos.
+- Cada ampliación tiene una clave estable y el validador rechaza capacidades repetidas antes de generar la web.
+- Las nuevas entradas nacen como pendientes; solo pasarán a implementadas cuando exista código, integración y prueba específica para su recurso.
+- El reparto queda equilibrado entre TodoSobreAllTech, Moonbot y Telegram WebApp sin duplicar una misma entrada por pantalla o contexto.
+
 ### Seguimiento verificable de tareas nuevas - 2026-07-30
 - `/roadmap` muestra ahora las peticiones recientes con estado independiente: implementada, parcial o no implementada, junto con su evidencia técnica.
 - Se reconocen como verificadas las campañas comunitarias de NoticiasWeb3, la portada y las comunidades; el catálogo pasa de 58 a 61 funciones comprobadas.

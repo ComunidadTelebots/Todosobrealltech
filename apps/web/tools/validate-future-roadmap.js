@@ -8,6 +8,7 @@ const allowedStatuses = new Set(['implemented', 'scaffolded', 'specified', 'prop
 const allowedCompletionStates = new Set(['implemented', 'partial', 'not_implemented']);
 const ids = new Set();
 const trackedIds = new Set();
+const expansionCapabilities = new Set();
 
 if (!Array.isArray(catalog.items) || catalog.items.length !== catalog.total) {
   throw new Error('El total del roadmap no coincide con sus elementos.');
@@ -27,7 +28,14 @@ for (const item of catalog.items) {
   if (item.status !== 'implemented' && item.evidence?.length) {
     throw new Error(`Evidencia contradictoria en ${item.id}`);
   }
+  if (item.expansion_unique) {
+    const key = String(item.capability || '').trim().toLocaleLowerCase('es');
+    if (!item.capability_key || expansionCapabilities.has(key)) throw new Error(`Capacidad ampliada repetida: ${item.id}`);
+    expansionCapabilities.add(key);
+  }
 }
+
+if (expansionCapabilities.size !== 3000) throw new Error(`La ampliacion debe contener 3000 capacidades unicas y contiene ${expansionCapabilities.size}`);
 
 for (const state of allowedCompletionStates) {
   const actual = catalog.items.filter((item) => item.completion_state === state).length;

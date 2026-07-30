@@ -108,6 +108,45 @@ const nextCapabilities = [
   ['Gemelo digital operativo', 'analytics', 'medium', 'advanced', 'modelo de simulación'],
 ];
 
+// 60 operaciones × 50 recursos = 3.000 capacidades nuevas y únicas.
+// Cada combinación representa un contrato funcional y se publica una sola vez.
+const expansionOperations = [
+  'Pronóstico de demanda para', 'Detección de deriva en', 'Simulación de impacto sobre', 'Recuperación selectiva de',
+  'Auditoría causal de', 'Validación continua de', 'Orquestación por eventos de', 'Priorización adaptativa de',
+  'Delegación temporal sobre', 'Versionado semántico de', 'Importación transaccional de', 'Exportación firmada de',
+  'Retención revocable de', 'Consentimiento granular para', 'Diagnóstico autónomo de', 'Comparación histórica de',
+  'Búsqueda semántica en', 'Resumen privado de', 'Alertas escalables para', 'Modo sin conexión de',
+  'Pruebas automáticas de', 'Plantillas componibles para', 'Acciones masivas reversibles sobre', 'Recomendaciones explicables para',
+  'Panel en tiempo real de', 'Control presupuestario de', 'Sincronización federada de', 'Reconciliación de conflictos en',
+  'Anonimización verificable de', 'Clasificación asistida de', 'Detección de duplicados en', 'Caducidad automática de',
+  'Aprobación multinivel de', 'Firma criptográfica de', 'Trazabilidad extremo a extremo de', 'Cuotas dinámicas para',
+  'Escalado de incidentes en', 'Correlación temporal de', 'Revisión colaborativa de', 'Explicación accesible de',
+  'Localización cultural de', 'Lectura fácil para', 'Navegación por voz de', 'Notificación agrupada de',
+  'Enrutamiento inteligente de', 'Caché reconciliable de', 'Rotación segura de', 'Archivado programado de',
+  'Restauración por punto temporal de', 'Observabilidad distribuida de', 'Control de calidad para', 'Sandbox aislado de',
+  'Gobernanza mediante propuestas de', 'Métricas de impacto para', 'Optimización energética de', 'Limitación antiabuso de',
+  'Migración guiada de', 'Compatibilidad federada de', 'Continuidad operativa de', 'Asistencia contextual para',
+];
+const expansionResources = [
+  ['sesiones administrativas', 'security'], ['roles temporales', 'governance'], ['cuentas creadoras', 'identity'],
+  ['perfiles comunitarios', 'community'], ['grupos administrados', 'moderation'], ['canales asociados', 'community'],
+  ['comunidades Telegram', 'community'], ['mensajes programados', 'automation'], ['campañas comunitarias', 'planning'],
+  ['anuncios propios', 'planning'], ['feeds RSS', 'content'], ['artículos editoriales', 'content'],
+  ['notas de voz', 'accessibility'], ['vídeos de Telegram', 'content'], ['imágenes moderadas', 'security'],
+  ['archivos sospechosos', 'security'], ['listas de bloqueo', 'security'], ['apelaciones de usuarios', 'governance'],
+  ['decisiones de captcha', 'security'], ['suscripciones obligatorias', 'governance'], ['proxies MTProto', 'operations'],
+  ['bots administrados', 'automation'], ['webhooks firmados', 'integrations'], ['tareas persistentes', 'operations'],
+  ['recordatorios recurrentes', 'notifications'], ['horarios silenciosos', 'automation'], ['reglas de moderación', 'moderation'],
+  ['eventos de seguridad', 'security'], ['incidentes correlacionados', 'security'], ['métricas lingüísticas', 'analytics'],
+  ['mapas regionales', 'analytics'], ['preferencias accesibles', 'accessibility'], ['traducciones comunitarias', 'i18n'],
+  ['copias de seguridad', 'resilience'], ['secretos de integración', 'privacy'], ['consentimientos personales', 'privacy'],
+  ['datos de aprendizaje IA', 'ai'], ['respuestas contextuales', 'ai'], ['reacciones Telegram', 'community'],
+  ['comandos enriquecidos', 'content'], ['menús de la MiniApp', 'ux'], ['paneles del master', 'ux'],
+  ['notificaciones del Hub', 'notifications'], ['estadísticas por bot', 'analytics'], ['directorios de canales', 'content'],
+  ['políticas de cookies', 'privacy'], ['preferencias publicitarias', 'privacy'], ['enlaces externos', 'security'],
+  ['historial Wayback', 'resilience'], ['colas de procesamiento', 'operations'],
+];
+
 const difficultyCycle = ['easy', 'medium', 'advanced'];
 const mojibake = new Map([
   ['ÃƒÂ¡', 'á'], ['ÃƒÂ©', 'é'], ['ÃƒÂ­', 'í'], ['ÃƒÂ³', 'ó'], ['ÃƒÂº', 'ú'], ['ÃƒÂ±', 'ñ'],
@@ -186,9 +225,9 @@ const implementedEvidence = new Map([
 const trackedTasks = [
   { id: 'task-master-interface-parity', title: 'Equiparar las funciones del master entre TodoSobreAllTech y el Hub', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.', evidence: ['apps/web/src/components/CreatorAccountProxyManager.jsx', 'apps/web/src/components/AccountInteroperableConnector.jsx', 'moon-multibot:web/hub.html'] },
   { id: 'task-community-ads-main', title: 'Mostrar campañas comunitarias de Telegram en todosobreall.tech', products: ['web'], status: 'implemented', detail: 'La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.', evidence: ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js'] },
-  { id: 'task-global-quiet-hours', title: 'Políticas globales de horario silencioso por grupo', products: ['moonbot', 'webapp'], status: 'partial', detail: 'El motor de decisión, zonas horarias y excepciones está creado y probado; faltan persistencia, rutas y controles de interfaz.', evidence: ['moon-multibot:quiet_hours_policy.py', 'moon-multibot:tests/test_quiet_hours_policy.py'] },
-  { id: 'task-persistent-reminders', title: 'Recordatorios persistentes con recurrencia y zona horaria', products: ['moonbot', 'webapp'], status: 'partial', detail: 'El almacén determinista y las reglas de recurrencia están probados; falta conectarlos al runtime, API y Hub.', evidence: ['moon-multibot:plugins/reminder_store.py', 'moon-multibot:tests/test_reminder_store.py'] },
-  { id: 'task-secure-voice-transcription', title: 'Transcripción segura y consentida de notas de voz', products: ['moonbot', 'webapp'], status: 'partial', detail: 'La validación, consentimiento y borrado temporal están probados; falta integrar un proveedor real y el flujo de Telegram.', evidence: ['moon-multibot:voice_transcription_pipeline.py', 'moon-multibot:tests/test_voice_transcription_pipeline.py'] },
+  { id: 'task-global-quiet-hours', title: 'Políticas globales de horario silencioso por grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Motor, persistencia canónica, migración heredada, aplazamiento de acciones, rutas y controles del Hub integrados y probados.', evidence: ['moon-multibot:quiet_hours_policy.py', 'moon-multibot:group_suite.py', 'moon-multibot:group_rss.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_integrated_quiet_reminders.py'] },
+  { id: 'task-persistent-reminders', title: 'Recordatorios persistentes con recurrencia y zona horaria', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Almacén persistente, recurrencia, zona horaria, entrega idempotente, posponer/cancelar, API y controles del Hub integrados.', evidence: ['moon-multibot:plugins/reminder_store.py', 'moon-multibot:community_members.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_integrated_quiet_reminders.py'] },
+  { id: 'task-secure-voice-transcription', title: 'Transcripción segura y consentida de notas de voz', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Flujo real Telegram/OpenAI con consentimiento por grupo, límites, descarga segura, borrado temporal y controles del Hub.', evidence: ['moon-multibot:voice_transcription_pipeline.py', 'moon-multibot:voice_transcription_service.py', 'moon-multibot:moon_multibot.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_voice_transcription_service.py'] },
   ...[
     ['task-personal-tasks', 'Tareas personales por usuario y grupo'], ['task-shared-notes', 'Notas compartidas por grupo'],
     ['task-local-group-digest', 'Resumen local y privado del grupo'], ['task-wayback-history', 'Consulta segura de historial Wayback'],
@@ -279,7 +318,31 @@ for (const product of products) {
   }
 }
 
-if (items.length !== 3000) throw new Error(`Se esperaban 3000 funciones y se generaron ${items.length}`);
+let expansionIndex = 0;
+for (const operation of expansionOperations) {
+  for (const [resource, category] of expansionResources) {
+    const product = products[expansionIndex % products.length];
+    const context = product.contexts[Math.floor(expansionIndex / products.length) % product.contexts.length];
+    const number = items.length + 1;
+    const capability = `${operation} ${resource}`;
+    items.push({
+      id: `future-${String(number).padStart(4, '0')}`,
+      product: product.id, product_name: product.name, category,
+      capability_index: capabilities.length + completedCapabilities.length + nextCapabilities.length + expansionIndex + 1,
+      capability, capability_key: `expansion-${String(expansionIndex + 1).padStart(4, '0')}`,
+      expansion_unique: true, context,
+      title: `${capability} en ${product.name}`,
+      description: `${capability}, con un contrato independiente, entradas verificables, resultado auditable y pruebas específicas antes de activarlo.`,
+      priority: ['security', 'privacy', 'resilience'].includes(category) ? 'critical' : 'high',
+      difficulty: difficultyCycle[expansionIndex % difficultyCycle.length],
+      dependency: `${category} contract v1`,
+      status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'proposed',
+    });
+    expansionIndex += 1;
+  }
+}
+
+if (items.length !== 6000) throw new Error(`Se esperaban 6000 funciones y se generaron ${items.length}`);
 const catalog = {
   version: 'Roadmap',
   generated_at: new Date().toISOString(),
@@ -290,7 +353,7 @@ const catalog = {
   proposed: items.filter((item) => item.status === 'proposed').length,
   remaining_real: items.filter((item) => item.status !== 'implemented').length,
   verified_percent: Number((items.filter((item) => item.status === 'implemented').length * 100 / items.length).toFixed(2)),
-  totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 3])),
+  totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 6])),
   total: items.length,
   tracked_tasks: trackedTasks,
   items,
