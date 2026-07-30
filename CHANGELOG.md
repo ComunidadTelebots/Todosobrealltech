@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Flujo de aprobación de cuentas - 2026-07-30
+- Las elevaciones al rol administrador generan una solicitud persistente en vez de aplicarse directamente.
+- Solo creator puede aprobarlas, el solicitante no puede aprobar su propia petición y la cuenta creator permanece protegida.
+- El panel permite aprobar o rechazar solicitudes y se añaden pruebas de separación de funciones.
+
 ### Detección explicable de anomalías de cuentas - 2026-07-30
 - El panel identifica IDs de Telegram o correos duplicados, cuentas privilegiadas sin verificar, creator congelado y concentración anormal de proxies.
 - Cada señal incluye gravedad, cuentas afectadas y una explicación visible; el análisis se calcula en el servidor con acceso administrativo.

@@ -8,6 +8,7 @@ import { authorizeAdminOrCreator } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
+import { createRoleApproval, decideRoleApproval } from '../utils/accountApprovals.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -169,6 +170,47 @@ router.post('/account-tools/sign', async (req, res) => {
 
 const accountHistoryFile = '/data/account-change-history.json';
 const accountBulkFile = '/data/account-bulk-transactions.json';
+const accountApprovalsFile = '/data/account-role-approvals.json';
+router.all('/account-tools/approvals', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) {
+    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+    return res.status(auth.status).json({ ok: false, error: auth.error });
+  }
+  let approvals = [];
+  try { approvals = JSON.parse(await fs.readFile(accountApprovalsFile, 'utf8')); }
+  catch (error) { if (error.code !== 'ENOENT') return res.status(500).json({ ok: false, error: 'No se pudo leer aprobaciones' }); }
+  if (req.method === 'GET') return res.json({ ok: true, approvals: approvals.slice(-200).reverse() });
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    if (req.body?.action === 'request') {
+      const account = await pocketbaseClient.collection('users').getOne(String(req.body?.account_id || ''));
+      if (approvals.some((item) => item.status === 'pending' && item.account_id === account.id)) {
+        return res.status(409).json({ ok: false, error: 'La cuenta ya tiene una solicitud pendiente' });
+      }
+      const approval = createRoleApproval({ accountId: account.id, currentRole: account.role,
+        requestedRole: req.body?.role, requester: auth.user });
+      approvals.push(approval);
+      await fs.writeFile(accountApprovalsFile, JSON.stringify(approvals.slice(-1000)), { mode: 0o600 });
+      return res.status(201).json({ ok: true, approval });
+    }
+    if (req.body?.action === 'decide') {
+      const index = approvals.findIndex((item) => item.id === req.body?.approval_id);
+      const decided = decideRoleApproval(approvals[index], auth.user, req.body?.decision);
+      if (decided.status === 'approved') {
+        const account = await pocketbaseClient.collection('users').getOne(decided.account_id);
+        if (account.role === 'creator') return res.status(409).json({ ok: false, error: 'La cuenta creator está protegida' });
+        await pocketbaseClient.collection('users').update(decided.account_id, { role: decided.change.after });
+      }
+      approvals[index] = decided;
+      await fs.writeFile(accountApprovalsFile, JSON.stringify(approvals.slice(-1000)), { mode: 0o600 });
+      return res.json({ ok: true, approval: decided });
+    }
+    return res.status(400).json({ ok: false, error: 'Acción no válida' });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
 router.get('/account-tools/anomalies', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   try {

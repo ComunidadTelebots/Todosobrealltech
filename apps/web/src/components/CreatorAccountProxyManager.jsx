@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AccountHorizonTools from '@/components/AccountHorizonTools.jsx';
 import { getAccountPrivacyMode, maskEmail, maskName, maskProxyUrl } from '@/lib/accountPrivacy.js';
 
-const ROLE_OPTIONS = ['user', 'moderator', 'admin', 'creator'];
+const ROLE_OPTIONS = ['user', 'moderator', 'admin'];
 
 const CreatorAccountProxyManager = () => {
   const { currentUser } = useAuth();
@@ -24,6 +24,7 @@ const CreatorAccountProxyManager = () => {
   const [proxyQuery, setProxyQuery] = useState('');
   const [editingProxyId, setEditingProxyId] = useState('');
   const [proxyDraft, setProxyDraft] = useState({});
+  const [approvals, setApprovals] = useState([]);
   const [privacyMode, setPrivacyMode] = useState(() => getAccountPrivacyMode(currentUser.id));
   const [revealSensitive, setRevealSensitive] = useState(false);
 
@@ -60,8 +61,17 @@ const CreatorAccountProxyManager = () => {
     }
   };
 
+  const fetchApprovals = async () => {
+    try {
+      const response = await apiServerClient.fetch('/moonbot-admin/account-tools/approvals', { headers: { Authorization: `Bearer ${pb.authStore.token}` } });
+      const data = await response.json();
+      if (response.ok) setApprovals(data.approvals || []);
+    } catch { setApprovals([]); }
+  };
+
   useEffect(() => {
     fetchResources();
+    fetchApprovals();
   }, []);
 
   const usersById = useMemo(
@@ -119,6 +129,21 @@ const CreatorAccountProxyManager = () => {
 
     setProcessingId(user.id);
     try {
+      if (role === 'creator') {
+        toast.error('El rol creator no se asigna desde este panel');
+        return;
+      }
+      if (role === 'admin' && user.role !== 'admin') {
+        const response = await apiServerClient.fetch('/moonbot-admin/account-tools/approvals', {
+          method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'request', account_id: user.id, role }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+        await fetchApprovals();
+        toast.success('Elevación enviada al flujo de aprobación');
+        return;
+      }
       const updated = await pb.collection('users').update(user.id, { role }, { $autoCancel: false });
       await recordAccountChange({ account_id: user.id, action: 'role', before: { role: user.role }, after: { role } });
       updateLocalUser(updated);
@@ -129,6 +154,21 @@ const CreatorAccountProxyManager = () => {
     } finally {
       setProcessingId('');
     }
+  };
+
+  const decideApproval = async (approval, decision) => {
+    setProcessingId(approval.id);
+    try {
+      const response = await apiServerClient.fetch('/moonbot-admin/account-tools/approvals', {
+        method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'decide', approval_id: approval.id, decision }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      await Promise.all([fetchApprovals(), fetchResources()]);
+      toast.success(decision === 'approved' ? 'Elevación aprobada' : 'Solicitud rechazada');
+    } catch (error) { toast.error(error.message || 'No se pudo revisar la solicitud'); }
+    finally { setProcessingId(''); }
   };
 
   const handleFreeze = async (user) => {
@@ -278,6 +318,7 @@ const CreatorAccountProxyManager = () => {
       </div>
       <div className="flex items-center gap-2 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 text-sm"><WandSparkles className="h-5 w-5 text-violet-600" /><span><b>Asistente de cuentas:</b> revisa primero las alertas, después los roles y finalmente los proxies inactivos.</span></div>
       <AccountHorizonTools users={users} proxies={proxies} onRefresh={fetchResources} />
+      <section className="rounded-xl border bg-background p-4"><h3 className="mb-1 font-semibold">Aprobaciones de cuentas</h3><p className="mb-3 text-sm text-muted-foreground">Las elevaciones a administrador requieren revisión de creator y no pueden ser aprobadas por quien las solicitó.</p><div className="space-y-2">{approvals.filter((item) => item.status === 'pending').map((item) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-sm"><span><b>{displayEmail(usersById.get(item.account_id)?.email)}</b> · {item.change.before} → {item.change.after}<small className="block text-muted-foreground">Solicitada por {item.requested_by}</small></span>{currentUser.role === 'creator' && <span className="flex gap-2"><Button size="sm" disabled={processingId === item.id || item.requested_by === currentUser.id} onClick={() => decideApproval(item, 'approved')}>Aprobar</Button><Button size="sm" variant="outline" disabled={processingId === item.id} onClick={() => decideApproval(item, 'rejected')}>Rechazar</Button></span>}</div>)}{!approvals.some((item) => item.status === 'pending') && <p className="text-sm text-muted-foreground">No hay solicitudes pendientes.</p>}</div></section>
 
       <Tabs defaultValue="accounts">
         <TabsList className="grid w-full max-w-md grid-cols-2">
