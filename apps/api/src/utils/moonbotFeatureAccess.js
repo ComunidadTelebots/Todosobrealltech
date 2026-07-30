@@ -19,3 +19,44 @@ export const canUseMoonbotFeature = (actorRole, feature) => {
 export const filterMoonbotFeatures = (features, actorRole) => (
   Array.isArray(features) ? features.filter((feature) => canUseMoonbotFeature(actorRole, feature)) : []
 );
+
+const GROUP_PARAMETER_NAMES = new Set(['group_id', 'chat_id', 'channel_id']);
+
+export const featureGroupParameter = (feature) => (
+  (feature?.input_schema?.parameters || []).find((parameter) => GROUP_PARAMETER_NAMES.has(parameter?.name)) || null
+);
+
+export const normalizeFeatureGroups = (groups) => {
+  const seen = new Set();
+  return (Array.isArray(groups) ? groups : []).flatMap((group) => {
+    const id = String(group?.id ?? group?.chat_id ?? '').trim();
+    if (!/^-?\d+$/.test(id) || seen.has(id)) return [];
+    seen.add(id);
+    return [{
+      id,
+      name: String(group?.name || group?.title || `Grupo ${id}`).slice(0, 160),
+      access_role: String(group?.access_role || group?.admin_status || 'group_admin'),
+      type: String(group?.type || group?.ctype || 'group'),
+    }];
+  });
+};
+
+export const payloadGroupId = (feature, payload) => {
+  const parameter = featureGroupParameter(feature);
+  if (!parameter) return null;
+  if (parameter.binding === 'args') {
+    const parameters = feature.input_schema.parameters || [];
+    const position = parameters.filter((item) => item.binding === 'args').indexOf(parameter);
+    return String(payload?.args?.[position] ?? '').trim();
+  }
+  return String(payload?.kwargs?.[parameter.name] ?? '').trim();
+};
+
+export const canUseFeatureInGroup = (feature, payload, groups, actorRole) => {
+  const parameter = featureGroupParameter(feature);
+  if (!parameter) return true;
+  const groupId = payloadGroupId(feature, payload);
+  if (!groupId) return false;
+  if (moonRoleFor(actorRole) === 'master') return /^-?\d+$/.test(groupId);
+  return normalizeFeatureGroups(groups).some((group) => group.id === groupId);
+};

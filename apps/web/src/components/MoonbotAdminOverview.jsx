@@ -22,7 +22,6 @@ const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
 const MoonbotTelegramChat = lazy(() => import('@/components/MoonbotTelegramChat.jsx'));
 const RoadmapProgressPanel = lazy(() => import('@/components/RoadmapProgressPanel.jsx'));
 const MoonbotFeatureCenter = lazy(() => import('@/components/MoonbotFeatureCenter.jsx'));
-const MoonbotSpecificOperationsCenter = lazy(() => import('@/components/MoonbotSpecificOperationsCenter.jsx'));
 
 const MASTER_SECTIONS = [
   ['Experiencia y preferencias', 'moon-experience'],
@@ -42,7 +41,6 @@ const MASTER_SECTIONS = [
   ['Integraciones', 'moon-integrations'],
   ['Operaciones', 'moon-operations'],
   ['Funciones verificadas', 'moon-features'],
-  ['Operaciones con formulario', 'moon-specific-operations'],
 ];
 
 const Metric = ({ icon: Icon, label, value }) => (
@@ -120,8 +118,7 @@ const MoonbotAdminOverview = () => {
                           : activeSection === 'moon-automations' ? <MoonbotAutomationsCenter groups={data?.groups || []} />
                             : activeSection === 'moon-integrations' ? <MoonbotIntegrationsCenter groups={data?.groups || []} />
                               : activeSection === 'moon-operations' ? <MoonbotOperationsCenter groups={data?.groups || []} />
-                                : activeSection === 'moon-features' ? <MoonbotFeatureCenter />
-                                  : activeSection === 'moon-specific-operations' ? <MoonbotSpecificOperationsCenter /> : null;
+                                : activeSection === 'moon-features' ? <MoonbotFeatureCenter /> : null;
 
   return (
     <>

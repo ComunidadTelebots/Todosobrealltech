@@ -25,7 +25,8 @@ import { createAccountMetricsSnapshot, createAccountMetricsState,
   ingestAccountMetricEvent } from '../utils/accountRealtimeMetrics.js';
 import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
-import { canUseMoonbotFeature, filterMoonbotFeatures, moonRoleFor } from '../utils/moonbotFeatureAccess.js';
+import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
+  moonRoleFor, normalizeFeatureGroups } from '../utils/moonbotFeatureAccess.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -723,10 +724,14 @@ router.get('/features', async (req, res) => {
   if (!serviceConfig(res)) return;
   try {
     const actorRole = moonRoleFor(auth.user.role);
-    const response = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: { 'X-Moon-Actor-Role': actorRole } });
+    const actorId = String(auth.user.telegram_id || '');
+    const response = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: {
+      'X-Moon-Actor-Role': actorRole, 'X-Moon-Actor-Id': actorId,
+    } });
     const payload = await response.json();
     const features = filterMoonbotFeatures(payload.features, actorRole);
-    return res.status(response.status).json({ ...payload, features, count: features.length, actor_role: actorRole });
+    const groups = normalizeFeatureGroups(payload.groups || payload.allowed_groups);
+    return res.status(response.status).json({ ...payload, features, groups, count: features.length, actor_role: actorRole });
   } catch (error) {
     logger.warn(`[moonbot-admin features] ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudo consultar el registro de funciones de Moonbot' });
@@ -739,17 +744,23 @@ router.post('/features', express.json({ limit: '128kb' }), async (req, res) => {
   if (!serviceConfig(res)) return;
   try {
     const actorRole = moonRoleFor(auth.user.role);
+    const actorId = String(auth.user.telegram_id || '');
     const featureId = String(req.body?.feature_id || '').trim();
     if (!featureId) return res.status(400).json({ ok: false, error: 'feature_id es obligatorio' });
-    const catalogResponse = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: { 'X-Moon-Actor-Role': actorRole } });
+    const actorHeaders = { 'X-Moon-Actor-Role': actorRole, 'X-Moon-Actor-Id': actorId };
+    const catalogResponse = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: actorHeaders });
     const catalog = await catalogResponse.json();
     if (!catalogResponse.ok) return res.status(catalogResponse.status).json(catalog);
     const feature = (catalog.features || []).find((item) => item.id === featureId);
     if (!feature || !canUseMoonbotFeature(actorRole, feature)) {
       return res.status(403).json({ ok: false, error: 'La función no está permitida para este rol' });
     }
+    const groups = normalizeFeatureGroups(catalog.groups || catalog.allowed_groups);
+    if (!canUseFeatureInGroup(feature, req.body?.payload, groups, actorRole)) {
+      return res.status(403).json({ ok: false, error: 'No puedes ejecutar esta función en el grupo solicitado' });
+    }
     const response = await moonRequest('/api/internal/features', {
-      method: 'POST', timeoutMs: 15_000, headers: { 'X-Moon-Actor-Role': actorRole }, body: JSON.stringify(req.body || {}),
+      method: 'POST', timeoutMs: 15_000, headers: actorHeaders, body: JSON.stringify(req.body || {}),
     });
     const payload = await response.json();
     return res.status(response.status).json(payload);

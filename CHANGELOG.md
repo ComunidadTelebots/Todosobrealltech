@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Permisos contextuales y centro unificado Moonbot - 2026-07-30
+- Las funciones usan exclusivamente los roles existentes `user`, `group_admin`, `group_creator` y `master`.
+- Las operaciones de grupo exigen seleccionar un grupo administrable y el servidor vuelve a validar y fijar su identificador.
+- El master mantiene acceso completo; cada administrador o creador solo actÃºa sobre sus propios grupos.
+- Unifica el catÃ¡logo en un solo panel emergente con flecha atrÃ¡s, selector de grupo y formularios derivados de `input_schema`.
+- Bloquea cambios de grupo introducidos manualmente en el editor JSON y mantiene la autorizaciÃ³n cerrada por defecto.
+
 ### Interfaces completas por contrato y rol - 2026-07-30
 - TodoSobreAllTech genera formularios para las 2.740 funciones activas usando el contrato entregado por Moonbot.
 - Los usuarios ven únicamente herramientas de usuario; administradores, creadores y master reciben acceso acumulativo según su rol verificado.

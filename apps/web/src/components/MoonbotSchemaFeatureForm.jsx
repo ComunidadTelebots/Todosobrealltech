@@ -33,12 +33,17 @@ const buildPayload = (parameters, values) => {
   return { args, kwargs };
 };
 
-export default function MoonbotSchemaFeatureForm({ feature, onPayload, onValidityChange }) {
+const isGroupParameter = (parameter) => ['group_id', 'chat_id', 'channel_id'].includes(parameter?.name);
+
+export default function MoonbotSchemaFeatureForm({ feature, groupId = '', onPayload, onValidityChange }) {
   const parameters = useMemo(() => feature?.input_schema?.parameters || [], [feature]);
+  const effectiveGroupId = groupId || feature?.selected_group_id || '';
   const [values, setValues] = useState([]);
   const [error, setError] = useState('');
 
-  useEffect(() => { setValues(parameters.map(initialValue)); }, [parameters]);
+  useEffect(() => {
+    setValues(parameters.map((parameter) => (isGroupParameter(parameter) && effectiveGroupId ? effectiveGroupId : initialValue(parameter))));
+  }, [parameters, effectiveGroupId]);
   useEffect(() => {
     try {
       const payload = buildPayload(parameters, values);

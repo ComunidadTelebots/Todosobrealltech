@@ -8,6 +8,18 @@ import pb from '@/lib/pocketbaseClient';
 import MoonbotSchemaFeatureForm from '@/components/MoonbotSchemaFeatureForm.jsx';
 
 const auth = () => ({ Authorization: `Bearer ${pb.authStore.token}` });
+const groupParameter = (feature) => (feature?.input_schema?.parameters || [])
+  .find((parameter) => ['group_id', 'chat_id', 'channel_id'].includes(parameter.name));
+const bindSelectedGroup = (feature, payload, groupId) => {
+  const parameter = groupParameter(feature);
+  if (!parameter || !groupId) return payload;
+  const next = { args: [...(payload.args || [])], kwargs: { ...(payload.kwargs || {}) } };
+  if (parameter.binding === 'args') {
+    const position = (feature.input_schema.parameters || []).filter((item) => item.binding === 'args').indexOf(parameter);
+    next.args[position] = groupId;
+  } else next.kwargs[parameter.name] = groupId;
+  return next;
+};
 
 export default function MoonbotFeatureCenter() {
   const [features, setFeatures] = useState([]);
@@ -21,6 +33,8 @@ export default function MoonbotFeatureCenter() {
   const [busy, setBusy] = useState(false);
   const [formValid, setFormValid] = useState(true);
   const [actorRole, setActorRole] = useState('user');
+  const [accessibleGroups, setAccessibleGroups] = useState([]);
+  const [groupId, setGroupId] = useState('');
 
   const load = async () => {
     setBusy(true); setError('');
@@ -28,8 +42,11 @@ export default function MoonbotFeatureCenter() {
       const response = await apiServerClient.fetch('/moonbot-admin/features', { headers: auth() });
       const body = await apiServerClient.readJson(response);
       if (!response.ok || !body.ok) throw new Error(body.error || `HTTP ${response.status}`);
-      setFeatures(body.features || []);
+      const initialGroupId = String(body.groups?.[0]?.id || '');
+      setFeatures((body.features || []).map((feature) => ({ ...feature, selected_group_id: initialGroupId })));
       setActorRole(body.actor_role || 'user');
+      setAccessibleGroups(body.groups || []);
+      setGroupId((current) => current || initialGroupId);
     } catch (reason) { setError(reason.message); } finally { setBusy(false); }
   };
   useEffect(() => { load(); }, []);
@@ -54,7 +71,7 @@ export default function MoonbotFeatureCenter() {
     if (!selected) return;
     setBusy(true); setError(''); setResult(null);
     try {
-      const parsed = JSON.parse(payload);
+      const parsed = bindSelectedGroup(selected, JSON.parse(payload), groupId);
       const response = await apiServerClient.fetch('/moonbot-admin/features', { method: 'POST', headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ feature_id: selected.id, payload: parsed }) });
       const body = await apiServerClient.readJson(response);
       if (!response.ok || !body.ok) throw new Error(body.error || `HTTP ${response.status}`);
@@ -66,6 +83,7 @@ export default function MoonbotFeatureCenter() {
     <CardHeader><CardTitle>Paneles de funciones por rol</CardTitle><CardDescription>Las funciones verificadas se agrupan en paneles cortos. Abre uno para administrarlo en una vista independiente.</CardDescription></CardHeader>
     <CardContent className="space-y-4">
       <div className="flex flex-wrap gap-2"><div className="relative min-w-64 flex-1"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/><input className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por ID, capacidad o API"/></div><select className="h-10 rounded-md border bg-background px-3 text-sm" value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} aria-label="Filtrar por rol"><option value="all">Todos los roles</option><option value="user">Usuario</option><option value="group_admin">Administrador</option><option value="group_creator">Creador del grupo</option><option value="master">Master</option></select><Button variant="outline" onClick={load} disabled={busy}><RefreshCw className={`mr-2 h-4 w-4 ${busy ? 'animate-spin' : ''}`}/>Actualizar</Button></div>
+      {!!accessibleGroups.length && <label className="block max-w-xl text-sm font-medium">Grupo administrable<select className="mt-1 h-10 w-full rounded-md border bg-background px-3" value={groupId} onChange={(event) => { const value = event.target.value; setGroupId(value); setSelected((current) => current ? { ...current, selected_group_id: value } : current); }}>{accessibleGroups.map((group) => <option key={group.id} value={group.id}>{group.name} · {group.access_role}</option>)}</select></label>}
       <p className="text-sm text-muted-foreground">{visible.length} de {features.length} funciones accesibles · {groups.length} paneles · rol efectivo <Badge variant="secondary">{actorRole}</Badge></p>
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{groups.map(([key, items]) => <button type="button" key={key} onClick={() => { setActiveGroup(key); setSelected(null); }} className="flex items-center gap-3 rounded-xl border p-4 text-left transition hover:border-primary/40 hover:bg-muted/40"><span className="rounded-lg bg-primary/10 p-2 text-primary"><Layers3 className="h-5 w-5"/></span><span className="min-w-0 flex-1"><b className="block truncate capitalize">{key.replaceAll('_', ' ')}</b><small className="text-muted-foreground">{items.length} funciones</small></span><ChevronRight className="h-5 w-5 text-muted-foreground"/></button>)}</div>
