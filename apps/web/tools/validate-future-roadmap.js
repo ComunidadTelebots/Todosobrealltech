@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(webRoot, 'public', 'future-features-1000.json'), 'utf8'));
 const allowedStatuses = new Set(['implemented', 'scaffolded', 'specified', 'proposed']);
+const allowedCompletionStates = new Set(['implemented', 'partial', 'not_implemented']);
 const ids = new Set();
 
 if (!Array.isArray(catalog.items) || catalog.items.length !== catalog.total) {
@@ -15,6 +16,7 @@ for (const item of catalog.items) {
   if (ids.has(item.id)) throw new Error(`ID duplicado: ${item.id}`);
   ids.add(item.id);
   if (!allowedStatuses.has(item.status)) throw new Error(`Estado no valido en ${item.id}`);
+  if (!allowedCompletionStates.has(item.completion_state)) throw new Error(`Situacion no valida en ${item.id}`);
   if (/[ÃÂ]/.test(`${item.title} ${item.description} ${item.dependency}`)) {
     throw new Error(`Texto mal codificado en ${item.id}`);
   }
@@ -24,6 +26,11 @@ for (const item of catalog.items) {
   if (item.status !== 'implemented' && item.evidence?.length) {
     throw new Error(`Evidencia contradictoria en ${item.id}`);
   }
+}
+
+for (const state of allowedCompletionStates) {
+  const actual = catalog.items.filter((item) => item.completion_state === state).length;
+  if (catalog.completion?.[state] !== actual) throw new Error(`Contador incorrecto para ${state}`);
 }
 
 for (const status of allowedStatuses) {

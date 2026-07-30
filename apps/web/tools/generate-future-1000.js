@@ -259,7 +259,15 @@ for (const item of catalog.items) {
     item[key] = cleanText(item[key]);
   }
   item.evidence = implementedEvidence.get(item.id) || [];
+  item.completion_state = item.status === 'implemented'
+    ? 'implemented'
+    : item.status === 'scaffolded' ? 'partial' : 'not_implemented';
 }
+catalog.completion = {
+  implemented: catalog.items.filter((item) => item.completion_state === 'implemented').length,
+  partial: catalog.items.filter((item) => item.completion_state === 'partial').length,
+  not_implemented: catalog.items.filter((item) => item.completion_state === 'not_implemented').length,
+};
 catalog.data_quality = {
   unique_ids: new Set(catalog.items.map((item) => item.id)).size,
   duplicate_ids: catalog.items.length - new Set(catalog.items.map((item) => item.id)).size,

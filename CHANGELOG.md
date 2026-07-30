@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Estados claros del roadmap - 2026-07-30
+- El roadmap separa todas las funciones entre implementadas, parcialmente implementadas y no implementadas.
+- Las funciones no implementadas conservan el detalle de si están especificadas o únicamente propuestas.
+- Se añaden contadores, filtros directos y la situación principal a la exportación CSV.
+
 ### Historial efectivo de permisos - 2026-07-30
 - El panel de cada grupo conserva los cambios reales de permisos por bot sin duplicar comprobaciones idénticas.
 - Web y MiniApp muestran cuándo apareció o se corrigió una carencia, qué permiso faltaba y quién comprobó el estado.
