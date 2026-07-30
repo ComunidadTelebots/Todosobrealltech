@@ -13,6 +13,9 @@ services:
         VITE_RELEASE_CHANNEL: rc
         VITE_RELEASE_VERSION: ${WEB_RC_VERSION:-rc-local}
     restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+      pocketbase: { condition: service_started }
     networks: [default, traefik]
     labels:
       # Los bundles superiores permanecen internos hasta activar el gateway
@@ -23,6 +26,13 @@ services:
       - "traefik.http.routers.todosobrealltech-rc.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.todosobrealltech-rc.tls=true"
       - "traefik.http.routers.todosobrealltech-rc.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.todosobrealltech-rc.middlewares=release-rc-auth,release-rc-cache"
+      - "traefik.http.middlewares.release-rc-auth.forwardauth.address=http://api:3001/moonbot-admin/release-forward-auth/rc"
+      - "traefik.http.middlewares.release-rc-auth.forwardauth.trustForwardHeader=false"
+      - "traefik.http.middlewares.release-rc-auth.forwardauth.authRequestHeaders=Cookie"
+      - "traefik.http.middlewares.release-rc-cache.headers.customResponseHeaders.Cache-Control=private, no-store, max-age=0"
+      - "traefik.http.middlewares.release-rc-cache.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.release-rc-cache.headers.customResponseHeaders.Vary=Cookie"
       - "traefik.http.services.todosobrealltech-rc.loadbalancer.server.port=80"
 
   web-beta:
@@ -37,6 +47,9 @@ services:
         VITE_RELEASE_CHANNEL: beta
         VITE_RELEASE_VERSION: ${WEB_BETA_VERSION:-beta-local}
     restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+      pocketbase: { condition: service_started }
     networks: [default, traefik]
     labels:
       - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"
@@ -45,6 +58,13 @@ services:
       - "traefik.http.routers.todosobrealltech-beta.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.todosobrealltech-beta.tls=true"
       - "traefik.http.routers.todosobrealltech-beta.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.todosobrealltech-beta.middlewares=release-beta-auth,release-beta-cache"
+      - "traefik.http.middlewares.release-beta-auth.forwardauth.address=http://api:3001/moonbot-admin/release-forward-auth/beta"
+      - "traefik.http.middlewares.release-beta-auth.forwardauth.trustForwardHeader=false"
+      - "traefik.http.middlewares.release-beta-auth.forwardauth.authRequestHeaders=Cookie"
+      - "traefik.http.middlewares.release-beta-cache.headers.customResponseHeaders.Cache-Control=private, no-store, max-age=0"
+      - "traefik.http.middlewares.release-beta-cache.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.release-beta-cache.headers.customResponseHeaders.Vary=Cookie"
       - "traefik.http.services.todosobrealltech-beta.loadbalancer.server.port=80"
 
   web-alpha:
@@ -59,6 +79,9 @@ services:
         VITE_RELEASE_CHANNEL: alpha
         VITE_RELEASE_VERSION: ${WEB_ALPHA_VERSION:-alpha-local}
     restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+      pocketbase: { condition: service_started }
     networks: [default, traefik]
     labels:
       - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"
@@ -67,4 +90,11 @@ services:
       - "traefik.http.routers.todosobrealltech-alpha.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
       - "traefik.http.routers.todosobrealltech-alpha.tls=true"
       - "traefik.http.routers.todosobrealltech-alpha.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.todosobrealltech-alpha.middlewares=release-alpha-auth,release-alpha-cache"
+      - "traefik.http.middlewares.release-alpha-auth.forwardauth.address=http://api:3001/moonbot-admin/release-forward-auth/alpha"
+      - "traefik.http.middlewares.release-alpha-auth.forwardauth.trustForwardHeader=false"
+      - "traefik.http.middlewares.release-alpha-auth.forwardauth.authRequestHeaders=Cookie"
+      - "traefik.http.middlewares.release-alpha-cache.headers.customResponseHeaders.Cache-Control=private, no-store, max-age=0"
+      - "traefik.http.middlewares.release-alpha-cache.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.release-alpha-cache.headers.customResponseHeaders.Vary=Cookie"
       - "traefik.http.services.todosobrealltech-alpha.loadbalancer.server.port=80"

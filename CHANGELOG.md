@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Gateway autenticado para canales web - 2026-07-31
+- Protege los bundles RC, beta y alpha completos —HTML, JavaScript y recursos— mediante ForwardAuth antes de servirlos.
+- Emite una sesión breve en cookie `HttpOnly`, `Secure` y firmada con HMAC tras autenticar la cuenta en PocketBase.
+- Fija el canal requerido en la ruta interna de cada middleware y no confía en cabeceras ni valores enviados por el navegador.
+- Revalida en cada acceso la cuenta, su ID de Telegram, su estado y el canal asignado; cualquier fallo del backend deniega el acceso.
+- Mantiene stable como canal público y deja los canales superiores desactivados hasta configurar el secreto y habilitar su publicación.
+
 ### Estructura de builds web por canal - 2026-07-30
 - Mantiene `web` como despliegue stable predeterminado y aÃ±ade servicios opt-in separados para RC, beta y alpha.
 - Cada imagen hornea su canal y versiÃ³n, mostrados permanentemente junto al nombre de la web.

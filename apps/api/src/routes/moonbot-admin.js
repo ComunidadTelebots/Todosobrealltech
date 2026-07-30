@@ -29,6 +29,9 @@ import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
   moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
 
 const router = express.Router();
+const RELEASE_SESSION_COOKIE = 'moon_release_session';
+const RELEASE_SESSION_TTL_SECONDS = 600;
+const releaseLevel = Object.freeze({ stable: 0, rc: 1, beta: 2, alpha: 3 });
 const RELEASE_CHANNELS = new Set(['stable', 'rc', 'beta', 'alpha']);
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
 const SECURITY_IMAGE_CATEGORIES = [
@@ -733,6 +736,79 @@ const releaseChannelForUser = async (user, actorRole) => {
     return 'stable';
   }
 };
+
+const releaseCookieHeader = (value, maxAge = RELEASE_SESSION_TTL_SECONDS) => {
+  const domain = String(process.env.RELEASE_COOKIE_DOMAIN || '.todosobreall.tech').trim();
+  if (!/^\.?[a-z0-9.-]+$/i.test(domain)) throw new Error('Dominio de cookie de releases no válido');
+  return `${RELEASE_SESSION_COOKIE}=${value}; Domain=${domain}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
+};
+const releaseSessionSecret = () => String(process.env.RELEASE_FORWARD_AUTH_SECRET || '').trim();
+const signReleaseSession = (payload) => {
+  const secret = releaseSessionSecret();
+  if (secret.length < 32) throw new Error('Release ForwardAuth no configurado');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', secret).update(body).digest('base64url');
+  return `${body}.${signature}`;
+};
+const verifyReleaseSession = (token) => {
+  const secret = releaseSessionSecret();
+  if (secret.length < 32 || typeof token !== 'string') return null;
+  const [body, signature, extra] = token.split('.');
+  if (!body || !signature || extra) return null;
+  const expected = crypto.createHmac('sha256', secret).update(body).digest();
+  let supplied;
+  try { supplied = Buffer.from(signature, 'base64url'); } catch { return null; }
+  if (supplied.length !== expected.length || !crypto.timingSafeEqual(supplied, expected)) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+    const now = Math.floor(Date.now() / 1000);
+    if (!RELEASE_CHANNELS.has(String(payload.channel || '')) || !Number.isInteger(payload.iat)
+      || !Number.isInteger(payload.exp) || payload.iat > now + 30 || payload.exp <= now
+      || payload.exp - payload.iat > RELEASE_SESSION_TTL_SECONDS) return null;
+    return payload;
+  } catch { return null; }
+};
+const cookieValue = (req, name) => String(req.headers.cookie || '').split(';').map((part) => part.trim())
+  .find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1) || '';
+
+router.all('/release-session', async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization, Cookie' });
+  if (req.method === 'DELETE') {
+    res.setHeader('Set-Cookie', releaseCookieHeader('', 0));
+    return res.status(204).end();
+  }
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  const actorRole = moonRoleFor(auth.user.role);
+  const channel = await releaseChannelForUser(auth.user, actorRole);
+  const issuedAt = Math.floor(Date.now() / 1000);
+  const token = signReleaseSession({ sub: String(auth.user.id), telegram_id: String(auth.user.telegram_id || ''),
+    channel, iat: issuedAt, exp: issuedAt + RELEASE_SESSION_TTL_SECONDS });
+  res.setHeader('Set-Cookie', releaseCookieHeader(token));
+  return res.json({ ok: true, release_channel: channel, expires_in: RELEASE_SESSION_TTL_SECONDS });
+});
+
+router.get('/release-forward-auth/:channel', async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Cookie' });
+  const required = String(req.params.channel || '').toLowerCase();
+  if (!['rc', 'beta', 'alpha'].includes(required)) return res.status(404).end();
+  const session = verifyReleaseSession(cookieValue(req, RELEASE_SESSION_COOKIE));
+  if (!session || releaseLevel[session.channel] === undefined || releaseLevel[session.channel] < releaseLevel[required]) {
+    return res.status(403).json({ ok: false, error: 'Release channel access denied' });
+  }
+  try {
+    const user = await pocketbaseClient.collection('users').getOne(String(session.sub));
+    if (user.is_frozen || String(user.telegram_id || '') !== String(session.telegram_id || '')) return res.status(403).end();
+    const actorRole = moonRoleFor(user.role);
+    const currentChannel = await releaseChannelForUser(user, actorRole);
+    if (releaseLevel[currentChannel] < releaseLevel[required]) return res.status(403).end();
+    return res.status(204).end();
+  } catch (error) {
+    logger.warn(`[release-forward-auth] fail closed: ${error.message}`);
+    return res.status(503).json({ ok: false, error: 'Authorization backend unavailable' });
+  }
+});
 
 router.get('/feature-release-access/me', async (req, res) => {
   res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });

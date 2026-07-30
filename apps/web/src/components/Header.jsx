@@ -58,10 +58,12 @@ const Header = () => {
     }).then((response) => response.ok ? apiServerClient.readJson(response) : null)
       .then((payload) => payload?.release_channel && setEntitledChannel(payload.release_channel))
       .catch(() => {});
+    apiServerClient.fetch('/moonbot-admin/release-session', { method: 'POST', signal: controller.signal }).catch(() => {});
     return () => controller.abort();
   }, [currentUser]);
 
   const handleLogout = () => {
+    apiServerClient.fetch('/moonbot-admin/release-session', { method: 'DELETE' }).catch(() => {});
     pb.authStore.clear();
     navigate('/');
   };

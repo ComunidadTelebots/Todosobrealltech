@@ -19,4 +19,9 @@ test('web and Moonbot must agree on account and Telegram identity', () => {
   assert.match(route, /X-Moon-Release-Channel/);
   assert.match(route, /Cache-Control': 'private, no-store, max-age=0'/);
   assert.match(route, /Vary: 'Authorization'/);
+  assert.match(route, /HttpOnly; Secure; SameSite=Lax/);
+  assert.match(route, /releaseLevel\[currentChannel\] < releaseLevel\[required\]/);
+  assert.match(route, /release-forward-auth\/:channel/);
+  assert.match(route, /payload\.exp - payload\.iat > RELEASE_SESSION_TTL_SECONDS/);
+  assert.doesNotMatch(route, /requestedReleaseChannel|x-forwarded-host/);
 });
