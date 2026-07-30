@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Bot, Code2, Gamepad2, Newspaper, Radio, Shield, Sparkles, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import CommunityCampaignSlot from '@/components/CommunityCampaignSlot.jsx';
 
 const HomePage = () => {
   const { isAuthenticated } = useAuth();
@@ -145,6 +146,8 @@ const HomePage = () => {
           </motion.div>
         </div>
       </div>
+
+      <CommunityCampaignSlot placement="home" />
 
       <section className="py-24 bg-muted/50">
         <div className="container">

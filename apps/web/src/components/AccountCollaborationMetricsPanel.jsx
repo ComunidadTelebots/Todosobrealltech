@@ -1,0 +1,31 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Activity, MessageSquareText, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
+import apiServerClient from '@/lib/apiServerClient';
+import pb from '@/lib/pocketbaseClient';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+const AccountCollaborationMetricsPanel = ({ users }) => {
+  const [threads, setThreads] = useState([]);
+  const [snapshot, setSnapshot] = useState(null);
+  const [accountId, setAccountId] = useState('');
+  const [body, setBody] = useState('');
+  const [reply, setReply] = useState({});
+  const [busy, setBusy] = useState(false);
+  const headers = useMemo(() => ({ Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' }), []);
+  const usersById = useMemo(() => new Map(users.map((item) => [item.id, item])), [users]);
+  useEffect(() => { if (!accountId && users[0]?.id) setAccountId(users[0].id); }, [accountId, users]);
+  const load = useCallback(async () => { const [threadResponse, metricResponse] = await Promise.all([apiServerClient.fetch('/moonbot-admin/account-tools/threads', { headers }), apiServerClient.fetch('/moonbot-admin/account-tools/realtime-metrics?window_ms=3600000', { headers })]); const [threadData, metricData] = await Promise.all([threadResponse.json(), metricResponse.json()]); if (threadResponse.ok) setThreads(threadData.threads || []); if (metricResponse.ok) setSnapshot(metricData.snapshot || null); }, [headers]);
+  useEffect(() => { load().catch(() => {}); const timer = window.setInterval(() => load().catch(() => {}), 10000); return () => window.clearInterval(timer); }, [load]);
+  const act = async (payload, message) => { setBusy(true); try { const response = await apiServerClient.fetch('/moonbot-admin/account-tools/threads', { method: 'POST', headers, body: JSON.stringify(payload) }); const data = await response.json(); if (!response.ok) throw new Error(data.error); setThreads(data.threads || []); toast.success(message); } catch (error) { toast.error(error.message); } finally { setBusy(false); } };
+  const create = async () => { await act({ action: 'create', account_id: accountId, body }, 'Hilo creado'); setBody(''); };
+  const comment = async (threadId) => { await act({ action: 'comment', thread_id: threadId, body: reply[threadId] }, 'Comentario añadido'); setReply((value) => ({ ...value, [threadId]: '' })); };
+  return <section className="grid gap-4 rounded-xl border bg-background p-4 xl:grid-cols-2">
+    <div className="space-y-3"><h3 className="flex items-center gap-2 font-semibold"><MessageSquareText className="h-4 w-4" />Colaboración administrativa</h3><p className="text-xs text-muted-foreground">Hilos auditables por cuenta, menciones seguras y resolución reservada al equipo administrador.</p><select className="h-10 w-full rounded border bg-background px-2" value={accountId} onChange={(event) => setAccountId(event.target.value)}><option value="">Selecciona cuenta</option>{users.map((item) => <option key={item.id} value={item.id}>{item.name || item.email || item.id}</option>)}</select><Input value={body} onChange={(event) => setBody(event.target.value)} placeholder="Motivo de revisión o @mención autorizada" maxLength={4000} /><Button size="sm" disabled={busy || !accountId || !body.trim()} onClick={create}>Abrir hilo</Button><div className="max-h-96 space-y-2 overflow-auto">{threads.slice().reverse().map((thread) => <article key={thread.id} className="rounded-lg border p-3 text-sm"><div className="flex items-center justify-between gap-2"><b>{usersById.get(thread.account_id)?.name || usersById.get(thread.account_id)?.email || thread.account_id}</b><Badge variant={thread.status === 'open' ? 'default' : 'secondary'}>{thread.status}</Badge></div>{thread.comments.map((item) => <p key={item.id} className="mt-2 rounded bg-muted/40 p-2">{item.body}<small className="block text-muted-foreground">{new Date(item.created_at).toLocaleString()}</small></p>)}{thread.status === 'open' && <div className="mt-2 flex gap-2"><Input value={reply[thread.id] || ''} onChange={(event) => setReply((value) => ({ ...value, [thread.id]: event.target.value }))} placeholder="Responder" /><Button size="sm" disabled={busy || !reply[thread.id]?.trim()} onClick={() => comment(thread.id)}>Enviar</Button></div>}<div className="mt-2 flex gap-2"><Button size="sm" variant="outline" disabled={busy} onClick={() => act({ action: thread.status === 'open' ? 'resolve' : 'reopen', thread_id: thread.id }, thread.status === 'open' ? 'Hilo resuelto' : 'Hilo reabierto')}>{thread.status === 'open' ? 'Resolver' : 'Reabrir'}</Button></div></article>)}</div></div>
+    <div className="space-y-3"><div className="flex items-center justify-between"><h3 className="flex items-center gap-2 font-semibold"><Activity className="h-4 w-4" />Métricas en tiempo real</h3><Button size="icon" variant="ghost" title="Actualizar" onClick={() => load()}><RefreshCw className="h-4 w-4" /></Button></div><p className="text-xs text-muted-foreground">Ventana móvil de una hora, deduplicada y sin nombres, correos, IDs de cuentas, IP ni identificadores de proxy.</p><div className="grid grid-cols-3 gap-2"><div className="rounded-lg border p-3"><b className="text-xl">{snapshot?.totals?.events || 0}</b><small className="block text-muted-foreground">Eventos</small></div><div className="rounded-lg border p-3"><b className="text-xl">{snapshot?.totals?.account_events || 0}</b><small className="block text-muted-foreground">Cuentas</small></div><div className="rounded-lg border p-3"><b className="text-xl">{snapshot?.totals?.proxy_events || 0}</b><small className="block text-muted-foreground">Proxies</small></div></div><div className="space-y-2">{Object.entries(snapshot?.by_type || {}).map(([type, total]) => <div key={type} className="flex justify-between rounded border px-3 py-2 text-sm"><span>{type}</span><b>{total}</b></div>)}</div><p className="text-xs text-muted-foreground">Actualización automática cada 10 segundos. Los eventos solo viven en la memoria del proceso y contienen dimensiones cerradas.</p></div>
+  </section>;
+};
+
+export default AccountCollaborationMetricsPanel;

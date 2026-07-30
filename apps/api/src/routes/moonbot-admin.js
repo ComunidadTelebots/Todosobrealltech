@@ -19,6 +19,10 @@ import { addAccountConfigTemplateVersion, createAccountConfigTemplate,
 import { simulateAccountBatch } from '../utils/accountSandbox.js';
 import { searchAccountsSemantically } from '../utils/accountSemanticSearch.js';
 import { createAccountReviewSchedule, nextAccountReviewRun } from '../utils/accountReviewCalendar.js';
+import { addAccountAdminComment, createAccountAdminThread,
+  transitionAccountAdminThread } from '../utils/accountAdminThreads.js';
+import { createAccountMetricsSnapshot, createAccountMetricsState,
+  ingestAccountMetricEvent } from '../utils/accountRealtimeMetrics.js';
 import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 
@@ -188,6 +192,8 @@ const accountReportsDirectory = '/data/account-reports';
 const accountWebhooksFile = '/data/account-webhooks.json';
 const accountTemplatesFile = '/data/account-config-templates.json';
 const accountReviewSchedulesFile = '/data/account-review-schedules.json';
+const accountAdminThreadsFile = '/data/account-admin-threads.json';
+let accountMetricsState = createAccountMetricsState();
 
 const readAccountTemplates = async () => {
   try { return JSON.parse(await fs.readFile(accountTemplatesFile, 'utf8')); }
@@ -197,6 +203,19 @@ const readAccountTemplates = async () => {
 const readAccountReviewSchedules = async () => {
   try { return JSON.parse(await fs.readFile(accountReviewSchedulesFile, 'utf8')); }
   catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+};
+
+const readAccountAdminThreads = async () => {
+  try { return JSON.parse(await fs.readFile(accountAdminThreadsFile, 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+};
+
+const recordAccountMetric = (type, dimensions = {}) => {
+  try {
+    accountMetricsState = ingestAccountMetricEvent(accountMetricsState, {
+      id: crypto.randomUUID(), type, timestamp: new Date().toISOString(), ...dimensions,
+    });
+  } catch (error) { logger.warn(`[account-metrics] ${error.message}`); }
 };
 
 const readAccountWebhooks = async () => {
@@ -360,6 +379,44 @@ router.all('/account-tools/reviews', async (req, res) => {
   }
 });
 
+router.all('/account-tools/threads', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const threads = await readAccountAdminThreads();
+    if (req.method === 'GET') return res.json({ ok: true, threads });
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    const users = await pocketbaseClient.collection('users').getFullList({ fields: 'id,username' });
+    const actor = req.adminUser;
+    if (req.body?.action === 'create') {
+      threads.push(createAccountAdminThread({ id: crypto.randomUUID(), accountId: req.body.account_id,
+        body: req.body.body, actor, mentionableUsers: users }));
+    } else {
+      const index = threads.findIndex((item) => item.id === req.body?.thread_id);
+      if (index < 0) return res.status(404).json({ ok: false, error: 'Hilo no encontrado' });
+      if (req.body?.action === 'comment') {
+        threads[index] = addAccountAdminComment(threads[index], { id: crypto.randomUUID(), body: req.body.body,
+          actor, mentionableUsers: users });
+      } else if (['resolve', 'reopen'].includes(req.body?.action)) {
+        threads[index] = transitionAccountAdminThread(threads[index], { action: req.body.action, actor });
+      } else return res.status(400).json({ ok: false, error: 'Acción no válida' });
+    }
+    await fs.writeFile(accountAdminThreadsFile, JSON.stringify(threads.slice(-500), null, 2), { mode: 0o600 });
+    return res.json({ ok: true, threads });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.get('/account-tools/realtime-metrics', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const windowMs = Math.max(60_000, Math.min(31 * 86400000, Number(req.query.window_ms) || 3600000));
+    return res.json({ ok: true, snapshot: createAccountMetricsSnapshot(accountMetricsState, { window_ms: windowMs }) });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
 const readAccountReportSchedules = async () => {
   try { return JSON.parse(await fs.readFile(accountReportSchedulesFile, 'utf8')); }
   catch (error) { if (error.code === 'ENOENT') return []; throw error; }
@@ -504,6 +561,7 @@ router.all('/account-tools/approvals', async (req, res) => {
         dispatchAccountWebhookEvent('account.role_changed', { id: decided.account_id }, {
           before: decided.change.before, after: decided.change.after, approval_id: decided.id,
         }).catch((error) => logger.warn(`[moonbot-admin] Webhook de rol falló: ${error.message}`));
+        recordAccountMetric('account.role_changed', { role: decided.change.after });
       }
       approvals[index] = decided;
       await fs.writeFile(accountApprovalsFile, JSON.stringify(approvals.slice(-1000)), { mode: 0o600 });
@@ -544,6 +602,7 @@ router.all('/account-tools/history', async (req, res) => {
   if (webhookEvent) dispatchAccountWebhookEvent(webhookEvent, { id: event.account_id }, {
     before: event.before, after: event.after,
   }).catch((error) => logger.warn(`[moonbot-admin] Webhook de cuenta falló: ${error.message}`));
+  if (webhookEvent) recordAccountMetric(webhookEvent, webhookEvent === 'account.role_changed' ? { role: event.after?.role } : {});
   return res.json({ ok: true });
 });
 
@@ -577,6 +636,7 @@ router.post('/account-tools/recover', async (req, res) => {
   dispatchAccountWebhookEvent('account.recovered', { id: event.account_id }, {
     before: preview.current, after: preview.restore, source_event_id: event.id,
   }).catch((error) => logger.warn(`[moonbot-admin] Webhook de recuperación falló: ${error.message}`));
+  recordAccountMetric('account.recovered');
   return res.json({ ok: true, preview, account: updated });
 });
 
@@ -617,7 +677,7 @@ router.post('/account-tools/bulk', async (req, res) => {
 
 async function requireAdmin(req, res) {
   const auth = await authorizeAdminOrCreator(req);
-  if (!auth.error) return true;
+  if (!auth.error) { req.adminUser = auth.user; return true; }
   if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
   res.status(auth.status).json({ ok: false, error: auth.error });
   return false;

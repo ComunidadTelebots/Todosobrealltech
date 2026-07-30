@@ -1,5 +1,16 @@
 # Changelog - TodoSobreAllTech
 
+### Campañas comunitarias en la web principal - 2026-07-30
+- `todosobreall.tech` muestra ahora las campañas rotatorias de Telegram también en la portada, antes del contenido promocional general.
+- Las impresiones y clics reutilizan el mismo endpoint medido por país y ubicación que NoticiasWeb3, evitando contadores paralelos o duplicados.
+- Si Moonbot no está disponible se utiliza la campaña oficial rotatoria de respaldo.
+
+### Colaboración, métricas y conector de cuentas - 2026-07-30
+- El panel master incorpora hilos administrativos por cuenta con comentarios, menciones autorizadas, resolución, reapertura e historial inmutable.
+- Las métricas de cuentas agregan eventos en una ventana móvil, deduplican IDs opacos y excluyen nombres, correos, IP e identificadores internos de los resultados.
+- El conector interoperable exporta paquetes JSON v1, valida alias y campos compatibles y previsualiza importaciones sin aplicar cambios automáticamente.
+- Las funciones nuevas se integran de forma aditiva y se preparan también para el Hub master de Moonbot.
+
 ### Búsqueda semántica, revisiones y aprendizaje de cuentas - 2026-07-30
 - La búsqueda de cuentas interpreta intención, sinónimos, roles, estado, verificación y proxies con ranking explicable y sin servicios externos.
 - Las revisiones administrativas admiten recurrencia diaria, semanal o mensual, prioridades y zonas IANA con cálculo correcto durante cambios de horario.
