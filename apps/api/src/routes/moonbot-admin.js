@@ -716,6 +716,34 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
+router.get('/features', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  try {
+    const response = await moonRequest('/api/internal/features', { timeoutMs: 10_000 });
+    const payload = await response.json();
+    return res.status(response.status).json(payload);
+  } catch (error) {
+    logger.warn(`[moonbot-admin features] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudo consultar el registro de funciones de Moonbot' });
+  }
+});
+
+router.post('/features', express.json({ limit: '128kb' }), async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  try {
+    const response = await moonRequest('/api/internal/features', {
+      method: 'POST', timeoutMs: 15_000, body: JSON.stringify(req.body || {}),
+    });
+    const payload = await response.json();
+    return res.status(response.status).json(payload);
+  } catch (error) {
+    logger.warn(`[moonbot-admin feature execute] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'Moonbot no pudo ejecutar la función' });
+  }
+});
+
 router.get('/roadmap-summary', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   const product = String(req.query.product || 'all');
