@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Network, AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Plus, Search, Network, AlertCircle, RefreshCw, ArrowLeft, Globe2, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import OnionWebCard from '@/components/OnionWebCard.jsx';
 import OnionWebForm from '@/components/OnionWebForm.jsx';
@@ -19,6 +21,10 @@ const OnionWebManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [traefikDomains, setTraefikDomains] = useState([]);
+  const [traefikLoading, setTraefikLoading] = useState(false);
+  const [traefikError, setTraefikError] = useState('');
+  const [importingDomain, setImportingDomain] = useState('');
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,6 +59,24 @@ const OnionWebManagement = () => {
     }
   }, []);
 
+  const fetchTraefikDomains = useCallback(async () => {
+    if (!pb.authStore.isValid) return;
+    setTraefikLoading(true);
+    setTraefikError('');
+    try {
+      const response = await apiServerClient.fetch('/onion/traefik-domains', {
+        headers: { Authorization: `Bearer ${pb.authStore.token}` },
+      });
+      const payload = await apiServerClient.readJson(response);
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      setTraefikDomains(payload.domains || []);
+    } catch (reason) {
+      setTraefikError(reason.message || 'No se pudieron detectar dominios de Traefik');
+    } finally {
+      setTraefikLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const ensureDefaultWeb = async () => {
       if (!pb.authStore.isValid) return;
@@ -80,7 +104,37 @@ const OnionWebManagement = () => {
     fetchOnionWebs().then(() => {
       ensureDefaultWeb();
     });
-  }, [fetchOnionWebs]);
+    fetchTraefikDomains();
+  }, [fetchOnionWebs, fetchTraefikDomains]);
+
+  const linkedDomain = (domain) => onionWebs.some((web) => {
+    try { return new URL(web.redirect_url || '').hostname.toLowerCase() === domain.toLowerCase(); }
+    catch { return false; }
+  });
+
+  const importTraefikDomain = async (domain) => {
+    setImportingDomain(domain);
+    try {
+      const response = await apiServerClient.fetch('/onion/generate', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: domain,
+          description: `Servicio Onion asociado al dominio Traefik ${domain}`,
+          privacy: 'public',
+          redirect_url: `https://${domain}`,
+        }),
+      });
+      const payload = await apiServerClient.readJson(response);
+      if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      toast.success(`Onion Web creada para ${domain}`);
+      await fetchOnionWebs();
+    } catch (reason) {
+      toast.error(reason.message || 'No se pudo crear la Onion Web');
+    } finally {
+      setImportingDomain('');
+    }
+  };
 
   const handleCreate = () => {
     setEditingWeb(null);
@@ -224,6 +278,29 @@ const OnionWebManagement = () => {
               </SelectContent>
             </Select>
           </div>
+
+          <section className="mb-8 rounded-2xl border bg-card p-5 shadow-sm">
+            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="flex items-center gap-2 text-lg font-semibold"><Globe2 className="h-5 w-5 text-primary" />Dominios detectados en Traefik</h2>
+                <p className="text-sm text-muted-foreground">Routers HTTPS descubiertos en la red interna; puedes asociarlos a una Onion Web.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={fetchTraefikDomains} disabled={traefikLoading}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${traefikLoading ? 'animate-spin' : ''}`} />Detectar
+              </Button>
+            </div>
+            {traefikError && <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-300">{traefikError}</div>}
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {traefikDomains.map((item) => {
+                const linked = linkedDomain(item.domain);
+                return <div key={item.domain} className="rounded-xl border p-4">
+                  <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="truncate font-medium">{item.domain}</p><p className="truncate text-xs text-muted-foreground">{item.services.join(', ') || 'Servicio Traefik'}</p></div><Badge variant={item.active ? 'default' : 'secondary'}>{item.active ? 'Activo' : 'Inactivo'}</Badge></div>
+                  <div className="mt-3 flex items-center justify-between gap-2"><span className="flex gap-1">{item.tls && <Badge variant="outline">TLS</Badge>}{linked && <Badge variant="outline">Asociado</Badge>}</span><Button size="sm" disabled={linked || importingDomain === item.domain} onClick={() => importTraefikDomain(item.domain)}><Link2 className="mr-1 h-3.5 w-3.5" />{linked ? 'Añadido' : 'Crear Onion'}</Button></div>
+                </div>;
+              })}
+            </div>
+            {!traefikLoading && !traefikError && !traefikDomains.length && <p className="rounded-xl border border-dashed p-5 text-center text-sm text-muted-foreground">Traefik no ha publicado dominios Host.</p>}
+          </section>
 
           {error ? (
             <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-card rounded-2xl border shadow-sm">

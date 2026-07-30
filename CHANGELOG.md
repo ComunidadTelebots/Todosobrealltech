@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Descubrimiento de dominios Traefik para Onion Webs - 2026-07-30
+- `/admin/onion-webs` detecta routers `Host(...)` mediante la API interna de Traefik y deduplica sus dominios.
+- El panel muestra estado, TLS y servicio, compara el dominio con asociaciones existentes y permite crear una Onion Web con redirección HTTPS.
+- La integración no monta el socket de Docker ni expone reglas completas o credenciales al navegador.
+
 ### Contadores reales del panel `/admin` - 2026-07-30
 - `Total Bots` y `Active Onion Webs` se obtienen desde `/stats` mediante agregación autenticada en servidor.
 - Un fallo de permisos en una colección del navegador ya no pone a cero todas las métricas ni bloquea el resto del panel.
