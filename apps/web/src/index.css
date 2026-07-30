@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Densidad acotada al panel de cuentas; nunca modifica el documento global. */
+[data-account-density="compact"] :where(.rounded-xl) {
+  padding: var(--account-item-padding, 0.625rem);
+}
+[data-account-density="compact"] :where(.space-y-2, .space-y-3, .space-y-4, .space-y-5) > :not([hidden]) ~ :not([hidden]) {
+  margin-top: var(--account-item-gap, 0.5rem);
+}
+[data-account-density="compact"] :where(input, select, button) {
+  min-height: var(--account-control-height, 2rem);
+}
+
 .moon-admin-contrast { filter: contrast(1.12); }
 .moon-admin-compact .mt-8 { margin-top: 1rem; }
 .moon-admin-compact .p-4 { padding: .7rem; }

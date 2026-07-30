@@ -14,6 +14,9 @@ import { compareAccountPeriods, forecastAccounts } from '../utils/accountForecas
 import { recommendAccounts } from '../utils/accountRecommendations.js';
 import { buildAccountReportSchedule, nextAccountReportRun } from '../utils/accountReportSchedule.js';
 import { buildAccountGuidance } from '../utils/accountGuidance.js';
+import { addAccountConfigTemplateVersion, createAccountConfigTemplate,
+  previewAccountConfigTemplate } from '../utils/accountConfigTemplates.js';
+import { simulateAccountBatch } from '../utils/accountSandbox.js';
 import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 
@@ -181,6 +184,12 @@ const accountApprovalsFile = '/data/account-role-approvals.json';
 const accountReportSchedulesFile = '/data/account-report-schedules.json';
 const accountReportsDirectory = '/data/account-reports';
 const accountWebhooksFile = '/data/account-webhooks.json';
+const accountTemplatesFile = '/data/account-config-templates.json';
+
+const readAccountTemplates = async () => {
+  try { return JSON.parse(await fs.readFile(accountTemplatesFile, 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+};
 
 const readAccountWebhooks = async () => {
   try { return JSON.parse(await fs.readFile(accountWebhooksFile, 'utf8')); }
@@ -254,6 +263,50 @@ router.all('/account-tools/webhooks', async (req, res) => {
     }
     await fs.writeFile(accountWebhooksFile, JSON.stringify(webhooks.slice(-100)), { mode: 0o600 });
     return res.json({ ok: true, webhooks: webhooks.map(publicAccountWebhook) });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.all('/account-tools/templates', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const templates = await readAccountTemplates();
+    if (req.method === 'GET') return res.json({ ok: true, templates });
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    const actor = req.adminUser?.id || req.user?.id || 'admin';
+    if (req.body?.action === 'create') {
+      const template = createAccountConfigTemplate({ id: crypto.randomUUID(), name: req.body.name,
+        description: req.body.description, config: req.body.config, createdBy: actor });
+      templates.push(template);
+      await fs.writeFile(accountTemplatesFile, JSON.stringify(templates.slice(-100), null, 2), { mode: 0o600 });
+      return res.json({ ok: true, templates });
+    }
+    const index = templates.findIndex((item) => item.id === req.body?.template_id);
+    if (index < 0) return res.status(404).json({ ok: false, error: 'Plantilla no encontrada' });
+    if (req.body?.action === 'version') {
+      templates[index] = addAccountConfigTemplateVersion(templates[index], { config: req.body.config, createdBy: actor });
+      await fs.writeFile(accountTemplatesFile, JSON.stringify(templates.slice(-100), null, 2), { mode: 0o600 });
+      return res.json({ ok: true, templates });
+    }
+    if (req.body?.action === 'preview') {
+      const account = await pocketbaseClient.collection('users').getOne(String(req.body.account_id || ''));
+      return res.json({ ok: true, preview: previewAccountConfigTemplate(templates[index], account, req.body.version) });
+    }
+    return res.status(400).json({ ok: false, error: 'Acción no válida' });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.post('/account-tools/sandbox', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const ids = [...new Set((Array.isArray(req.body?.account_ids) ? req.body.account_ids : []).map(String))].slice(0, 100);
+    if (!ids.length) return res.status(400).json({ ok: false, error: 'Selecciona cuentas para el sandbox' });
+    const accounts = await Promise.all(ids.map((id) => pocketbaseClient.collection('users').getOne(id)));
+    const result = simulateAccountBatch(accounts, req.body.changes);
+    return res.json({ ok: true, result });
   } catch (error) {
     return res.status(400).json({ ok: false, error: error.message });
   }

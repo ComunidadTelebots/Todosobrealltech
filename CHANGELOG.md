@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Plantillas, sandbox y vista compacta de cuentas - 2026-07-30
+- Las configuraciones de cuentas pueden guardarse como plantillas validadas y versionadas, con comparación previa antes de cualquier uso.
+- El nuevo sandbox simula cambios de rol, congelación y proxy sobre copias, calcula diferencias y riesgos y garantiza cero efectos en PocketBase.
+- El panel ofrece densidad cómoda o compacta persistente por creador, con estilos limitados exclusivamente al área de cuentas.
+- Las implementaciones incluyen pruebas de inmutabilidad y seguridad y no sustituyen ninguna función anterior.
+
 ### Asistente, webhooks e idioma de cuentas - 2026-07-30
 - El panel incorpora un asistente que prioriza anomalías, aprobaciones, recomendaciones y proxies degradados con explicaciones y confirmación manual obligatoria.
 - Se añaden webhooks HTTPS firmados con HMAC para eventos de cuentas, bloqueo de destinos privados, activación, pausa, prueba individual y registro del último envío.
