@@ -277,7 +277,7 @@ const CreatorAccountProxyManager = () => {
         <div className="rounded-xl border bg-background p-4"><AlertTriangle className="mb-2 h-5 w-5 text-amber-600" /><p className="text-2xl font-bold">{accountInsights.alerts.length}</p><p className="text-xs text-muted-foreground">Alertas adaptativas: {accountInsights.alerts.join(' · ') || 'ninguna incidencia'}.</p></div>
       </div>
       <div className="flex items-center gap-2 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 text-sm"><WandSparkles className="h-5 w-5 text-violet-600" /><span><b>Asistente de cuentas:</b> revisa primero las alertas, después los roles y finalmente los proxies inactivos.</span></div>
-      <AccountHorizonTools users={users} proxies={proxies} />
+      <AccountHorizonTools users={users} proxies={proxies} onRefresh={fetchResources} />
 
       <Tabs defaultValue="accounts">
         <TabsList className="grid w-full max-w-md grid-cols-2">

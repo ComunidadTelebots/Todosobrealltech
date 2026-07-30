@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Recuperación selectiva de cuentas - 2026-07-30
+- El historial permite elegir y recuperar únicamente el rol o el estado congelado de una cuenta.
+- La restauración exige una vista previa, protege la cuenta creator y registra un nuevo evento auditable con referencia al cambio original.
+- Se añaden pruebas del plan de recuperación y la función parcial queda completada con evidencia en el roadmap.
+
 ### Privacidad reforzada de cuentas - 2026-07-30
 - Los nombres, correos y direcciones proxy del panel de cuentas quedan ocultos por defecto cuando se activa el modo reforzado.
 - El creador puede revelarlos únicamente durante la sesión actual y volver a ocultarlos de inmediato.

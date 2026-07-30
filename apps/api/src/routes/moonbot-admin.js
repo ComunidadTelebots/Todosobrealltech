@@ -6,6 +6,7 @@ import path from 'node:path';
 import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
+import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -179,6 +180,36 @@ router.all('/account-tools/history', async (req, res) => {
     before: event.before ?? null, after: event.after ?? null, actor_id: String(event.actor_id || ''), created_at: new Date().toISOString() });
   await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000)), { mode: 0o600 });
   return res.json({ ok: true });
+});
+
+router.post('/account-tools/recover', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  let rows = [];
+  try {
+    rows = JSON.parse(await fs.readFile(accountHistoryFile, 'utf8'));
+  } catch (error) {
+    if (error.code !== 'ENOENT') return res.status(500).json({ ok: false, error: 'No se pudo leer el historial' });
+  }
+  const event = rows.find((item) => item.id === req.body?.event_id);
+  if (!event || !event.before || event.action === 'delete') {
+    return res.status(404).json({ ok: false, error: 'Evento recuperable no encontrado' });
+  }
+  const record = await pocketbaseClient.collection('users').getOne(event.account_id);
+  let preview;
+  try {
+    preview = createAccountRecoveryPlan(record, event, req.body?.fields);
+  } catch (error) {
+    return res.status(error.message.includes('protegida') ? 409 : 400).json({ ok: false, error: error.message });
+  }
+  if (req.body?.preview !== false) return res.json({ ok: true, preview });
+  const updated = await pocketbaseClient.collection('users').update(event.account_id, preview.restore);
+  rows.push({
+    id: crypto.randomUUID(), account_id: event.account_id, action: 'recovery',
+    before: preview.current, after: preview.restore, actor_id: String(req.body?.actor_id || ''),
+    source_event_id: event.id, created_at: new Date().toISOString(),
+  });
+  await fs.writeFile(accountHistoryFile, JSON.stringify(rows.slice(-2000)), { mode: 0o600 });
+  return res.json({ ok: true, preview, account: updated });
 });
 
 router.post('/account-tools/bulk', async (req, res) => {

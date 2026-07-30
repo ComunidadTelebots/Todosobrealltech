@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T08:38:29.002Z",
+  "generated_at": "2026-07-30T08:43:45.625Z",
   "status": "in_progress",
-  "implemented": 39,
-  "scaffolded": 975,
+  "implemented": 40,
+  "scaffolded": 974,
   "specified": 994,
   "proposed": 992,
-  "remaining_real": 2961,
-  "verified_percent": 1.3,
+  "remaining_real": 2960,
+  "verified_percent": 1.33,
   "totals": {
     "web": 1002,
     "moonbot": 999,
@@ -499,9 +499,13 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "backups",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountRecovery.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountHorizonTools.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0028",
@@ -51114,8 +51118,8 @@
     }
   ],
   "completion": {
-    "implemented": 39,
-    "partial": 975,
+    "implemented": 40,
+    "partial": 974,
     "not_implemented": 1986
   },
   "data_quality": {
@@ -51123,6 +51127,6 @@
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T08:38:29.002Z"
+    "verified_at": "2026-07-30T08:43:45.625Z"
   }
 }
