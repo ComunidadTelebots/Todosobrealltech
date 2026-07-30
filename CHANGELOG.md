@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Auditoría de configuración sensible - 2026-07-30
+- El panel de cada grupo muestra los cambios reales de seguridad y moderación, con autor, origen, riesgo y campos afectados.
+- La web comparte el historial generado por Moonbot con la MiniApp y evita duplicar registros cuando la configuración no cambia.
+- Tres funciones parciales del roadmap pasan a implementadas con evidencia verificable.
+
 ### Estados claros del roadmap - 2026-07-30
 - El roadmap separa todas las funciones entre implementadas, parcialmente implementadas y no implementadas.
 - Las funciones no implementadas conservan el detalle de si están especificadas o únicamente propuestas.

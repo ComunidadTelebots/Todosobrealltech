@@ -132,6 +132,10 @@ const implementedEvidence = new Map([
   ['future-1133', ['apps/web/src/components/MoonbotGroupsManager.jsx', 'core/routes_public.py']],
   ['future-1437', ['core/routes_public.py']],
   ['future-1710', ['web/hub.html', 'core/routes_public.py']],
+  // Auditoría efectiva de cambios sensibles compartida por web, Moonbot y MiniApp.
+  ['future-1124', ['apps/web/src/components/MoonbotGroupsManager.jsx', 'group_suite.py', 'core/routes_public.py']],
+  ['future-1428', ['group_suite.py', 'core/routes_public.py']],
+  ['future-1701', ['web/hub.html', 'group_suite.py', 'core/routes_public.py']],
   // Vista previa e historial de campañas de captcha, equilibrados entre productos.
   ['future-0247', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
   ['future-0248', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
