@@ -7,6 +7,7 @@ const catalog = JSON.parse(fs.readFileSync(path.join(webRoot, 'public', 'future-
 const allowedStatuses = new Set(['implemented', 'scaffolded', 'specified', 'proposed']);
 const allowedCompletionStates = new Set(['implemented', 'partial', 'not_implemented']);
 const ids = new Set();
+const trackedIds = new Set();
 
 if (!Array.isArray(catalog.items) || catalog.items.length !== catalog.total) {
   throw new Error('El total del roadmap no coincide con sus elementos.');
@@ -36,6 +37,15 @@ for (const state of allowedCompletionStates) {
 for (const status of allowedStatuses) {
   const actual = catalog.items.filter((item) => item.status === status).length;
   if (catalog[status] !== actual) throw new Error(`Contador incorrecto para ${status}`);
+}
+
+for (const task of catalog.tracked_tasks || []) {
+  if (!task.id || trackedIds.has(task.id)) throw new Error(`Tarea nueva duplicada o sin ID: ${task.id || 'sin-id'}`);
+  trackedIds.add(task.id);
+  if (!allowedCompletionStates.has(task.status)) throw new Error(`Estado no valido en tarea ${task.id}`);
+  if (!Array.isArray(task.products) || !task.products.length) throw new Error(`Productos no definidos en ${task.id}`);
+  if (!Array.isArray(task.evidence)) throw new Error(`Evidencia invalida en ${task.id}`);
+  if (task.status === 'implemented' && !task.evidence.length) throw new Error(`Tarea implementada sin evidencia: ${task.id}`);
 }
 
 console.log(`Roadmap valido: ${catalog.total} funciones; ${catalog.implemented} verificadas con evidencia.`);

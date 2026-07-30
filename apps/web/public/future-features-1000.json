@@ -1,19 +1,170 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T09:44:14.871Z",
+  "generated_at": "2026-07-30T09:52:04.839Z",
   "status": "in_progress",
-  "implemented": 58,
+  "implemented": 61,
   "scaffolded": 956,
   "specified": 994,
-  "proposed": 992,
-  "remaining_real": 2942,
-  "verified_percent": 1.93,
+  "proposed": 989,
+  "remaining_real": 2939,
+  "verified_percent": 2.03,
   "totals": {
     "web": 1002,
     "moonbot": 999,
     "webapp": 999
   },
   "total": 3000,
+  "tracked_tasks": [
+    {
+      "id": "task-master-interface-parity",
+      "title": "Equiparar las funciones del master entre TodoSobreAllTech y el Hub",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.",
+      "evidence": [
+        "apps/web/src/components/CreatorAccountProxyManager.jsx",
+        "apps/web/src/components/AccountInteroperableConnector.jsx",
+        "moon-multibot:web/hub.html"
+      ]
+    },
+    {
+      "id": "task-community-ads-main",
+      "title": "Mostrar campañas comunitarias de Telegram en todosobreall.tech",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.",
+      "evidence": [
+        "apps/web/src/components/CommunityCampaignSlot.jsx",
+        "apps/web/src/pages/HomePage.jsx",
+        "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-global-quiet-hours",
+      "title": "Políticas globales de horario silencioso por grupo",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "partial",
+      "detail": "El motor de decisión, zonas horarias y excepciones está creado y probado; faltan persistencia, rutas y controles de interfaz.",
+      "evidence": [
+        "moon-multibot:quiet_hours_policy.py",
+        "moon-multibot:tests/test_quiet_hours_policy.py"
+      ]
+    },
+    {
+      "id": "task-persistent-reminders",
+      "title": "Recordatorios persistentes con recurrencia y zona horaria",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "partial",
+      "detail": "El almacén determinista y las reglas de recurrencia están probados; falta conectarlos al runtime, API y Hub.",
+      "evidence": [
+        "moon-multibot:plugins/reminder_store.py",
+        "moon-multibot:tests/test_reminder_store.py"
+      ]
+    },
+    {
+      "id": "task-secure-voice-transcription",
+      "title": "Transcripción segura y consentida de notas de voz",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "partial",
+      "detail": "La validación, consentimiento y borrado temporal están probados; falta integrar un proveedor real y el flujo de Telegram.",
+      "evidence": [
+        "moon-multibot:voice_transcription_pipeline.py",
+        "moon-multibot:tests/test_voice_transcription_pipeline.py"
+      ]
+    },
+    {
+      "id": "task-personal-tasks",
+      "title": "Tareas personales por usuario y grupo",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    },
+    {
+      "id": "task-shared-notes",
+      "title": "Notas compartidas por grupo",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    },
+    {
+      "id": "task-local-group-digest",
+      "title": "Resumen local y privado del grupo",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    },
+    {
+      "id": "task-wayback-history",
+      "title": "Consulta segura de historial Wayback",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    },
+    {
+      "id": "task-managed-task-queue",
+      "title": "Cola de tareas priorizable y cancelable",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    },
+    {
+      "id": "task-url-domain-inspector",
+      "title": "Inspector de URLs y dominios",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    },
+    {
+      "id": "task-named-blocklists",
+      "title": "Listas de bloqueo independientes con nombre",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "not_implemented",
+      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
+      "evidence": []
+    }
+  ],
   "items": [
     {
       "id": "future-0001",
@@ -35424,9 +35575,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "calendario compartido",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/noticiasweb3/src/components/AdSense.jsx",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2075",
@@ -36446,9 +36601,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "calendario compartido",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/web/src/components/CommunityCampaignSlot.jsx",
+        "apps/web/src/pages/HomePage.jsx",
+        "apps/api/src/routes/house-ads.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2135",
@@ -38490,9 +38649,13 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "calendario compartido",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/src/routes/house-ads.js",
+        "apps/noticiasweb3/src/components/AdSense.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2255",
@@ -51191,15 +51354,15 @@
     }
   ],
   "completion": {
-    "implemented": 58,
+    "implemented": 61,
     "partial": 956,
-    "not_implemented": 1986
+    "not_implemented": 1983
   },
   "data_quality": {
     "unique_ids": 3000,
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T09:44:14.871Z"
+    "verified_at": "2026-07-30T09:52:04.839Z"
   }
 }

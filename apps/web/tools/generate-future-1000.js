@@ -179,7 +179,23 @@ const implementedEvidence = new Map([
   // Automatización RSS por grupo verificada en Moonbot y administración WebApp.
   ['future-0428', ['group_rss.py', 'core/routes_public.py']],
   ['future-0701', ['web/hub.html', 'core/routes_public.py']],
+  ['future-2074', ['apps/noticiasweb3/src/components/AdSense.jsx', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/HouseAdsManager.jsx']],
+  ['future-2134', ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js']],
+  ['future-2254', ['apps/web/src/components/HouseAdsManager.jsx', 'apps/api/src/routes/house-ads.js', 'apps/noticiasweb3/src/components/AdSense.jsx']],
 ]);
+const trackedTasks = [
+  { id: 'task-master-interface-parity', title: 'Equiparar las funciones del master entre TodoSobreAllTech y el Hub', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.', evidence: ['apps/web/src/components/CreatorAccountProxyManager.jsx', 'apps/web/src/components/AccountInteroperableConnector.jsx', 'moon-multibot:web/hub.html'] },
+  { id: 'task-community-ads-main', title: 'Mostrar campañas comunitarias de Telegram en todosobreall.tech', products: ['web'], status: 'implemented', detail: 'La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.', evidence: ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js'] },
+  { id: 'task-global-quiet-hours', title: 'Políticas globales de horario silencioso por grupo', products: ['moonbot', 'webapp'], status: 'partial', detail: 'El motor de decisión, zonas horarias y excepciones está creado y probado; faltan persistencia, rutas y controles de interfaz.', evidence: ['moon-multibot:quiet_hours_policy.py', 'moon-multibot:tests/test_quiet_hours_policy.py'] },
+  { id: 'task-persistent-reminders', title: 'Recordatorios persistentes con recurrencia y zona horaria', products: ['moonbot', 'webapp'], status: 'partial', detail: 'El almacén determinista y las reglas de recurrencia están probados; falta conectarlos al runtime, API y Hub.', evidence: ['moon-multibot:plugins/reminder_store.py', 'moon-multibot:tests/test_reminder_store.py'] },
+  { id: 'task-secure-voice-transcription', title: 'Transcripción segura y consentida de notas de voz', products: ['moonbot', 'webapp'], status: 'partial', detail: 'La validación, consentimiento y borrado temporal están probados; falta integrar un proveedor real y el flujo de Telegram.', evidence: ['moon-multibot:voice_transcription_pipeline.py', 'moon-multibot:tests/test_voice_transcription_pipeline.py'] },
+  ...[
+    ['task-personal-tasks', 'Tareas personales por usuario y grupo'], ['task-shared-notes', 'Notas compartidas por grupo'],
+    ['task-local-group-digest', 'Resumen local y privado del grupo'], ['task-wayback-history', 'Consulta segura de historial Wayback'],
+    ['task-managed-task-queue', 'Cola de tareas priorizable y cancelable'], ['task-url-domain-inspector', 'Inspector de URLs y dominios'],
+    ['task-named-blocklists', 'Listas de bloqueo independientes con nombre'],
+  ].map(([id, title]) => ({ id, title, products: ['moonbot', 'webapp'], status: 'not_implemented', detail: 'Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.', evidence: [] })),
+];
 const implemented = new Set(implementedEvidence.keys());
 const items = [];
 for (const product of products) {
@@ -276,6 +292,7 @@ const catalog = {
   verified_percent: Number((items.filter((item) => item.status === 'implemented').length * 100 / items.length).toFixed(2)),
   totals: Object.fromEntries(products.map((product) => [product.id, product.quota * 3])),
   total: items.length,
+  tracked_tasks: trackedTasks,
   items,
 };
 for (const item of catalog.items) {

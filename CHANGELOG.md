@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Seguimiento verificable de tareas nuevas - 2026-07-30
+- `/roadmap` muestra ahora las peticiones recientes con estado independiente: implementada, parcial o no implementada, junto con su evidencia técnica.
+- Se reconocen como verificadas las campañas comunitarias de NoticiasWeb3, la portada y las comunidades; el catálogo pasa de 58 a 61 funciones comprobadas.
+- Horario silencioso global, recordatorios persistentes y transcripción segura permanecen parciales hasta completar su integración con runtime, API e interfaces.
+- Las siete ideas útiles auditadas en DBTeamV2 que todavía no existen se conservan como pendientes, sin presentarlas como código terminado.
+
 ### Campañas comunitarias en la web principal - 2026-07-30
 - `todosobreall.tech` muestra ahora las campañas rotatorias de Telegram también en la portada, antes del contenido promocional general.
 - Las impresiones y clics reutilizan el mismo endpoint medido por país y ubicación que NoticiasWeb3, evitando contadores paralelos o duplicados.
