@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Registro por roles ampliado a 1.800 funciones - 2026-07-30
+- Cada contrato queda clasificado para usuario, administrador de grupo, creador del grupo o master, con alcance y nivel de riesgo visibles.
+- La web y el Hub incorporan filtros equivalentes por rol; el runtime impide ejecutar una capacidad por debajo de su rol mínimo.
+- Se integran 100 funciones nuevas de analítica, privacidad, moderación, contenido, localización, lectura fácil, voz y notificaciones agrupadas.
+
 ### Descubrimiento de dominios Traefik para Onion Webs - 2026-07-30
 - `/admin/onion-webs` detecta routers `Host(...)` mediante la API interna de Traefik y deduplica sus dominios.
 - El panel muestra estado, TLS y servicio, compara el dominio con asociaciones existentes y permite crear una Onion Web con redirección HTTPS.
