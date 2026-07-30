@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Contadores reales del panel `/admin` - 2026-07-30
+- `Total Bots` y `Active Onion Webs` se obtienen desde `/stats` mediante agregación autenticada en servidor.
+- Un fallo de permisos en una colección del navegador ya no pone a cero todas las métricas ni bloquea el resto del panel.
+- Los accesos Onion de los últimos 30 días se calculan en PocketBase sin exponer registros individuales.
+
 ### Conexión HTML con Moonbot restaurada - 2026-07-30
 - El mapa lingüístico vuelve a consultar primero `http://moonbot:5000`, con la URL pública como respaldo controlado.
 - Nginx devuelve un error JSON legible durante reinicios, evitando que la interfaz intente interpretar una página HTML 502 como datos.

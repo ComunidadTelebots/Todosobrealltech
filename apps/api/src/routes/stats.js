@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import http from 'node:http';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
+import { summarizeOnionMetrics } from '../utils/dashboardStats.js';
 
 const router = express.Router();
 
@@ -162,7 +163,10 @@ async function buildStats() {
   const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
     .toISOString().replace('T', ' ');
 
-  const [users, botsList, newsList, newsTodayList, channelsList, snapshots, proxies] = await Promise.all([
+  const thirtyDaysStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString().replace('T', ' ');
+
+  const [users, botsList, newsList, newsTodayList, channelsList, snapshots, proxies, onionWebs, onionAccesses] = await Promise.all([
     pb.collection('users').getFullList({ fields: 'id,role,verified,is_frozen,created' }),
     pb.collection('bots').getList(1, 1),
     pb.collection('nw3_noticias').getList(1, 1),
@@ -172,6 +176,8 @@ async function buildStats() {
     // Último snapshot de cada canal: dedup por chat_id sobre orden -day.
     pb.collection('tg_channel_snapshots').getFullList({ sort: '-day' }),
     pb.collection('user_proxies').getFullList({ sort: '-updated', fields: 'id,user_id,status,last_tested,updated' }),
+    pb.collection('onion_webs').getFullList({ fields: 'id,enabled,created_at,updated' }),
+    pb.collection('onion_access_logs').getList(1, 1, { filter: `access_timestamp >= "${thirtyDaysStart}"` }),
   ]);
 
   const seenChannels = new Set();
@@ -194,6 +200,7 @@ async function buildStats() {
       regular: users.filter((user) => !['admin', 'creator'].includes(user.role)).length,
     },
     bots: botsList.totalItems,
+    onions: summarizeOnionMetrics(onionWebs, onionAccesses.totalItems),
     news: { total: newsList.totalItems, today: newsTodayList.totalItems },
     channels: { total: channelsList.totalItems, subscribers },
     proxies: {

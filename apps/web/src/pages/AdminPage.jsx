@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -56,12 +57,25 @@ const AdminPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [usersList, botsList, onionWebsList, onionLogsList] = await Promise.all([
+      const statsPromise = apiServerClient.fetch('/stats', {
+        headers: { Authorization: `Bearer ${pb.authStore.token}` },
+      }).then(async (response) => {
+        const payload = await apiServerClient.readJson(response);
+        if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+        return payload;
+      });
+      const [usersResult, botsResult, onionWebsResult, onionLogsResult, statsResult] = await Promise.allSettled([
         pb.collection('users').getFullList({ sort: '-created', $autoCancel: false }),
         pb.collection('bots').getFullList({ sort: '-created', expand: 'user_id', $autoCancel: false }),
         pb.collection('onion_webs').getFullList({ sort: '-created_at', $autoCancel: false }),
-        pb.collection('onion_access_logs').getFullList({ sort: '-access_timestamp', $autoCancel: false })
+        pb.collection('onion_access_logs').getFullList({ sort: '-access_timestamp', $autoCancel: false }),
+        statsPromise,
       ]);
+      const usersList = usersResult.status === 'fulfilled' ? usersResult.value : [];
+      const botsList = botsResult.status === 'fulfilled' ? botsResult.value : [];
+      const onionWebsList = onionWebsResult.status === 'fulfilled' ? onionWebsResult.value : [];
+      const onionLogsList = onionLogsResult.status === 'fulfilled' ? onionLogsResult.value : [];
+      const serverStats = statsResult.status === 'fulfilled' ? statsResult.value : null;
 
       setUsers(usersList);
       setBots(botsList);
@@ -94,14 +108,14 @@ const AdminPage = () => {
         activeUsers: activeUsersList.length,
         inactiveUsers: usersList.length - activeUsersList.length,
         newUsers7d: newUsersList.length,
-        totalBots: botsList.length,
+        totalBots: serverStats?.bots ?? botsList.length,
         activeBots: activeBotsList.length,
         inactiveBots: inactiveBotsList.length,
         newBots7d: newBotsList.length,
         activityRate,
         lastActivity: lastActivityDate,
-        activeOnionWebs: activeOnionWebsList.length,
-        onionAccessesMonth: recentOnionLogs.length
+        activeOnionWebs: serverStats?.onions?.active ?? activeOnionWebsList.length,
+        onionAccessesMonth: serverStats?.onions?.accessesMonth ?? recentOnionLogs.length
       });
 
       const activities = [
