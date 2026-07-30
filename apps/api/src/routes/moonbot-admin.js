@@ -26,9 +26,10 @@ import { createAccountMetricsSnapshot, createAccountMetricsState,
 import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
-  moonRoleFor, normalizeFeatureGroups } from '../utils/moonbotFeatureAccess.js';
+  moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
 
 const router = express.Router();
+const RELEASE_CHANNELS = new Set(['stable', 'rc', 'beta', 'alpha']);
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
 const SECURITY_IMAGE_CATEGORIES = [
   'terrorism',
@@ -718,6 +719,48 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
+const releaseChannelForUser = async (user, actorRole) => {
+  if (actorRole === 'master') return 'alpha';
+  const accountId = String(user?.id || '');
+  const telegramId = String(user?.telegram_id || '');
+  if (!/^[a-z0-9]+$/i.test(accountId) || !/^\d+$/.test(telegramId)) return 'stable';
+  try {
+    const record = await pocketbaseClient.collection('feature_release_access').getFirstListItem(
+      `account_id="${accountId}" && telegram_id="${telegramId}" && enabled=true`,
+    );
+    return normalizeReleaseChannel(record.release_channel);
+  } catch {
+    return 'stable';
+  }
+};
+
+router.all('/feature-release-access', express.json({ limit: '32kb' }), async (req, res) => {
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  if (auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede asignar canales' });
+  if (req.method === 'GET') {
+    const records = await pocketbaseClient.collection('feature_release_access').getFullList({ sort: '-updated' });
+    return res.json({ ok: true, records });
+  }
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'MÃ©todo no permitido' });
+  const accountId = String(req.body?.account_id || '');
+  const channel = String(req.body?.release_channel || '').toLowerCase();
+  if (!/^[a-z0-9]+$/i.test(accountId) || !RELEASE_CHANNELS.has(channel)) {
+    return res.status(400).json({ ok: false, error: 'Cuenta o canal no vÃ¡lido' });
+  }
+  const account = await pocketbaseClient.collection('users').getOne(accountId);
+  const telegramId = String(account.telegram_id || '');
+  if (!/^\d+$/.test(telegramId)) return res.status(409).json({ ok: false, error: 'La cuenta debe vincular primero Telegram' });
+  let existing = null;
+  try { existing = await pocketbaseClient.collection('feature_release_access').getFirstListItem(`account_id="${accountId}"`); } catch {}
+  const data = { account_id: accountId, telegram_id: telegramId, release_channel: channel,
+    enabled: req.body?.enabled !== false, assigned_by: auth.user.id };
+  const record = existing
+    ? await pocketbaseClient.collection('feature_release_access').update(existing.id, data)
+    : await pocketbaseClient.collection('feature_release_access').create(data);
+  return res.json({ ok: true, record });
+});
+
 router.get('/features', async (req, res) => {
   const auth = await authorizeAuthenticatedUser(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
@@ -725,13 +768,15 @@ router.get('/features', async (req, res) => {
   try {
     const actorRole = moonRoleFor(auth.user.role);
     const actorId = String(auth.user.telegram_id || '');
+    const releaseChannel = await releaseChannelForUser(auth.user, actorRole);
     const response = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: {
-      'X-Moon-Actor-Role': actorRole, 'X-Moon-Actor-Id': actorId,
+      'X-Moon-Actor-Role': actorRole, 'X-Moon-Actor-Id': actorId, 'X-Moon-Release-Channel': releaseChannel,
     } });
     const payload = await response.json();
-    const features = filterMoonbotFeatures(payload.features, actorRole);
+    const features = filterMoonbotFeatures(payload.features, actorRole, releaseChannel);
     const groups = normalizeFeatureGroups(payload.groups || payload.allowed_groups);
-    return res.status(response.status).json({ ...payload, features, groups, count: features.length, actor_role: actorRole });
+    return res.status(response.status).json({ ...payload, features, groups, count: features.length,
+      actor_role: actorRole, release_channel: releaseChannel });
   } catch (error) {
     logger.warn(`[moonbot-admin features] ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudo consultar el registro de funciones de Moonbot' });
@@ -745,9 +790,11 @@ router.post('/features', express.json({ limit: '128kb' }), async (req, res) => {
   try {
     const actorRole = moonRoleFor(auth.user.role);
     const actorId = String(auth.user.telegram_id || '');
+    const releaseChannel = await releaseChannelForUser(auth.user, actorRole);
     const featureId = String(req.body?.feature_id || '').trim();
     if (!featureId) return res.status(400).json({ ok: false, error: 'feature_id es obligatorio' });
-    const actorHeaders = { 'X-Moon-Actor-Role': actorRole, 'X-Moon-Actor-Id': actorId };
+    const actorHeaders = { 'X-Moon-Actor-Role': actorRole, 'X-Moon-Actor-Id': actorId,
+      'X-Moon-Release-Channel': releaseChannel };
     const catalogResponse = await moonRequest('/api/internal/features', { timeoutMs: 10_000, headers: actorHeaders });
     const catalog = await catalogResponse.json();
     if (!catalogResponse.ok) return res.status(catalogResponse.status).json(catalog);

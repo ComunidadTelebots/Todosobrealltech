@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Canales de funciones Alpha, Beta y RC - 2026-07-30
+- AÃ±ade a las cuentas el canal progresivo `stable`, `rc`, `beta` o `alpha`, vinculado con su ID de Telegram.
+- El creador puede asignar el canal desde el panel de cuentas y comprobar si Telegram estÃ¡ vinculado.
+- La web y el Hub muestran solo las funciones permitidas simultÃ¡neamente por rol y canal.
+- El backend envÃ­a el canal validado a Moonbot y ambos servicios vuelven a comprobarlo antes de ejecutar.
+- El master conserva acceso completo al canal alpha; cualquier valor ausente o invÃ¡lido se reduce a stable.
+
 ### Permisos contextuales y centro unificado Moonbot - 2026-07-30
 - Las funciones usan exclusivamente los roles existentes `user`, `group_admin`, `group_creator` y `master`.
 - Las operaciones de grupo exigen seleccionar un grupo administrable y el servidor vuelve a validar y fijar su identificador.

@@ -1,4 +1,16 @@
 const ROLE_LEVEL = Object.freeze({ user: 0, group_admin: 1, group_creator: 2, master: 3 });
+const RELEASE_LEVEL = Object.freeze({ stable: 0, rc: 1, beta: 2, alpha: 3 });
+
+export const normalizeReleaseChannel = (value) => (
+  Object.hasOwn(RELEASE_LEVEL, String(value || '').toLowerCase())
+    ? String(value).toLowerCase()
+    : 'stable'
+);
+
+export const canUseReleaseFeature = (actorChannel, feature) => (
+  RELEASE_LEVEL[normalizeReleaseChannel(actorChannel)]
+  >= RELEASE_LEVEL[normalizeReleaseChannel(feature?.release_channel)]
+);
 
 export const moonRoleFor = (role) => ({
   creator: 'master',
@@ -16,8 +28,10 @@ export const canUseMoonbotFeature = (actorRole, feature) => {
   return requiredLevel !== undefined && actorLevel >= requiredLevel;
 };
 
-export const filterMoonbotFeatures = (features, actorRole) => (
-  Array.isArray(features) ? features.filter((feature) => canUseMoonbotFeature(actorRole, feature)) : []
+export const filterMoonbotFeatures = (features, actorRole, releaseChannel = 'stable') => (
+  Array.isArray(features)
+    ? features.filter((feature) => canUseMoonbotFeature(actorRole, feature) && canUseReleaseFeature(releaseChannel, feature))
+    : []
 );
 
 const GROUP_PARAMETER_NAMES = new Set(['group_id', 'chat_id', 'channel_id']);
