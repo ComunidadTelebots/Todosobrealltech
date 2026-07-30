@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Búsqueda semántica, revisiones y aprendizaje de cuentas - 2026-07-30
+- La búsqueda de cuentas interpreta intención, sinónimos, roles, estado, verificación y proxies con ranking explicable y sin servicios externos.
+- Las revisiones administrativas admiten recurrencia diaria, semanal o mensual, prioridades y zonas IANA con cálculo correcto durante cambios de horario.
+- El centro de aprendizaje incorpora seis lecciones, progreso persistente por creador, reanudación, navegación accesible y explicaciones contextuales.
+- Las tres funciones se integran en el panel de cuentas sin retirar la búsqueda, el calendario local ni las herramientas existentes.
+
 ### Plantillas, sandbox y vista compacta de cuentas - 2026-07-30
 - Las configuraciones de cuentas pueden guardarse como plantillas validadas y versionadas, con comparación previa antes de cualquier uso.
 - El nuevo sandbox simula cambios de rol, congelación y proxy sobre copias, calcula diferencias y riesgos y garantiza cero efectos en PocketBase.

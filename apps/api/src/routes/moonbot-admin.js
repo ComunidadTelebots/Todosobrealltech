@@ -17,6 +17,8 @@ import { buildAccountGuidance } from '../utils/accountGuidance.js';
 import { addAccountConfigTemplateVersion, createAccountConfigTemplate,
   previewAccountConfigTemplate } from '../utils/accountConfigTemplates.js';
 import { simulateAccountBatch } from '../utils/accountSandbox.js';
+import { searchAccountsSemantically } from '../utils/accountSemanticSearch.js';
+import { createAccountReviewSchedule, nextAccountReviewRun } from '../utils/accountReviewCalendar.js';
 import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPayload,
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 
@@ -185,9 +187,15 @@ const accountReportSchedulesFile = '/data/account-report-schedules.json';
 const accountReportsDirectory = '/data/account-reports';
 const accountWebhooksFile = '/data/account-webhooks.json';
 const accountTemplatesFile = '/data/account-config-templates.json';
+const accountReviewSchedulesFile = '/data/account-review-schedules.json';
 
 const readAccountTemplates = async () => {
   try { return JSON.parse(await fs.readFile(accountTemplatesFile, 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+};
+
+const readAccountReviewSchedules = async () => {
+  try { return JSON.parse(await fs.readFile(accountReviewSchedulesFile, 'utf8')); }
   catch (error) { if (error.code === 'ENOENT') return []; throw error; }
 };
 
@@ -307,6 +315,46 @@ router.post('/account-tools/sandbox', async (req, res) => {
     const accounts = await Promise.all(ids.map((id) => pocketbaseClient.collection('users').getOne(id)));
     const result = simulateAccountBatch(accounts, req.body.changes);
     return res.json({ ok: true, result });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.get('/account-tools/semantic-search', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const query = String(req.query.q || '').trim().slice(0, 200);
+    if (!query) return res.json({ ok: true, results: [] });
+    const [users, proxies] = await Promise.all([
+      pocketbaseClient.collection('users').getFullList({ fields: 'id,name,username,email,role,language,verified,is_frozen,status' }),
+      pocketbaseClient.collection('user_proxies').getFullList({ fields: 'id,user_id,status' }),
+    ]);
+    return res.json({ ok: true, results: searchAccountsSemantically(users, query, { proxies, limit: 30 }) });
+  } catch {
+    return res.status(502).json({ ok: false, error: 'No se pudo realizar la búsqueda semántica' });
+  }
+});
+
+router.all('/account-tools/reviews', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const schedules = await readAccountReviewSchedules();
+    if (req.method === 'GET') return res.json({ ok: true, schedules });
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    if (req.body?.action === 'create') {
+      const schedule = createAccountReviewSchedule({ ...req.body.schedule, id: crypto.randomUUID() });
+      schedules.push(schedule);
+    } else {
+      const index = schedules.findIndex((item) => item.id === req.body?.schedule_id);
+      if (index < 0) return res.status(404).json({ ok: false, error: 'Revisión no encontrada' });
+      if (req.body?.action === 'toggle') {
+        schedules[index].enabled = Boolean(req.body.enabled);
+        schedules[index].next_run = nextAccountReviewRun(schedules[index]);
+      } else if (req.body?.action === 'delete') schedules.splice(index, 1);
+      else return res.status(400).json({ ok: false, error: 'Acción no válida' });
+    }
+    await fs.writeFile(accountReviewSchedulesFile, JSON.stringify(schedules.slice(-200), null, 2), { mode: 0o600 });
+    return res.json({ ok: true, schedules });
   } catch (error) {
     return res.status(400).json({ ok: false, error: error.message });
   }
