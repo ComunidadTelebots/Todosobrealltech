@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Detección explicable de anomalías de cuentas - 2026-07-30
+- El panel identifica IDs de Telegram o correos duplicados, cuentas privilegiadas sin verificar, creator congelado y concentración anormal de proxies.
+- Cada señal incluye gravedad, cuentas afectadas y una explicación visible; el análisis se calcula en el servidor con acceso administrativo.
+- Se añaden pruebas deterministas y se completa la función crítica correspondiente del roadmap.
+
 ### Recuperación selectiva de cuentas - 2026-07-30
 - El historial permite elegir y recuperar únicamente el rol o el estado congelado de una cuenta.
 - La restauración exige una vista previa, protege la cuenta creator y registra un nuevo evento auditable con referencia al cambio original.

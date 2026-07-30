@@ -129,6 +129,7 @@ const implementedEvidence = new Map([
   ['future-0012', ['apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0013', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
   ['future-0015', ['apps/web/src/lib/accountPrivacy.js', 'apps/web/src/pages/SettingsPage.jsx', 'apps/web/src/components/CreatorAccountProxyManager.jsx']],
+  ['future-0023', ['apps/api/src/utils/accountAnomalies.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0027', ['apps/api/src/utils/accountRecovery.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0016', ['apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-1133', ['apps/web/src/components/MoonbotGroupsManager.jsx', 'core/routes_public.py']],

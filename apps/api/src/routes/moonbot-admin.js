@@ -7,6 +7,7 @@ import logger from '../utils/logger.js';
 import { authorizeAdminOrCreator } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
+import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
 
 const router = express.Router();
 const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
@@ -168,6 +169,21 @@ router.post('/account-tools/sign', async (req, res) => {
 
 const accountHistoryFile = '/data/account-change-history.json';
 const accountBulkFile = '/data/account-bulk-transactions.json';
+router.get('/account-tools/anomalies', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  try {
+    const [users, proxies] = await Promise.all([
+      pocketbaseClient.collection('users').getFullList({ sort: '-created' }),
+      pocketbaseClient.collection('user_proxies').getFullList({ sort: '-updated' }),
+    ]);
+    const anomalies = detectAccountAnomalies(users, proxies);
+    return res.json({ ok: true, anomalies, checked_at: new Date().toISOString(),
+      summary: { total: anomalies.length, critical: anomalies.filter((item) => item.severity === 'critical').length } });
+  } catch (error) {
+    logger.error(`[moonbot-admin] Detección de anomalías falló: ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudieron analizar las cuentas' });
+  }
+});
 router.all('/account-tools/history', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   let rows = [];
