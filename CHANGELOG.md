@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Historial efectivo de permisos - 2026-07-30
+- El panel de cada grupo conserva los cambios reales de permisos por bot sin duplicar comprobaciones idénticas.
+- Web y MiniApp muestran cuándo apareció o se corrigió una carencia, qué permiso faltaba y quién comprobó el estado.
+- Las tres implementaciones quedan enlazadas a su evidencia en el roadmap público.
+
 ### Roadmap verificable por evidencia - 2026-07-30
 - Cada función completada incluye ahora los archivos que prueban su implementación real.
 - Se corrigen siete falsos positivos del inventario: permanecen pendientes sin eliminarse del roadmap.

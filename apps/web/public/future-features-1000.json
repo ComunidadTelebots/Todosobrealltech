@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T08:12:14.248Z",
+  "generated_at": "2026-07-30T08:19:00.981Z",
   "status": "in_progress",
-  "implemented": 32,
+  "implemented": 35,
   "scaffolded": 976,
-  "specified": 1000,
+  "specified": 997,
   "proposed": 992,
-  "remaining_real": 2968,
-  "verified_percent": 1.07,
+  "remaining_real": 2965,
+  "verified_percent": 1.17,
   "totals": {
     "web": 1002,
     "moonbot": 999,
@@ -18195,8 +18195,11 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": []
+      "status": "implemented",
+      "evidence": [
+        "apps/web/src/components/MoonbotGroupsManager.jsx",
+        "core/routes_public.py"
+      ]
     },
     {
       "id": "future-1134",
@@ -23059,8 +23062,10 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": []
+      "status": "implemented",
+      "evidence": [
+        "core/routes_public.py"
+      ]
     },
     {
       "id": "future-1438",
@@ -27427,8 +27432,11 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "auditoría de roles",
-      "status": "specified",
-      "evidence": []
+      "status": "implemented",
+      "evidence": [
+        "web/hub.html",
+        "core/routes_public.py"
+      ]
     },
     {
       "id": "future-1711",
@@ -48095,6 +48103,6 @@
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T08:12:14.248Z"
+    "verified_at": "2026-07-30T08:19:00.981Z"
   }
 }

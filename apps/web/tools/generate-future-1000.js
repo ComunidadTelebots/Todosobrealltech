@@ -129,6 +129,9 @@ const implementedEvidence = new Map([
   ['future-0012', ['apps/web/src/components/AccountHorizonTools.jsx']],
   ['future-0013', ['apps/web/src/components/AccountHorizonTools.jsx', 'apps/api/src/routes/moonbot-admin.js']],
   ['future-0016', ['apps/web/src/components/AccountHorizonTools.jsx']],
+  ['future-1133', ['apps/web/src/components/MoonbotGroupsManager.jsx', 'core/routes_public.py']],
+  ['future-1437', ['core/routes_public.py']],
+  ['future-1710', ['web/hub.html', 'core/routes_public.py']],
   // Vista previa e historial de campañas de captcha, equilibrados entre productos.
   ['future-0247', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
   ['future-0248', ['apps/web/src/components/MoonbotGroupsManager.jsx']],
