@@ -8,8 +8,10 @@ services:
         VITE_ADSENSE_ID: ${VITE_ADSENSE_ID:-}
     restart: unless-stopped
     depends_on:
-      - api
-      - pocketbase
+      api:
+        condition: service_healthy
+      pocketbase:
+        condition: service_started
     networks:
       - default
       - traefik
@@ -183,6 +185,12 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+      start_period: 10s
     env_file:
       - .env
     environment:

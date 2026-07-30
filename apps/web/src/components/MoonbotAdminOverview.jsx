@@ -76,7 +76,7 @@ const MoonbotAdminOverview = () => {
       const response = await apiServerClient.fetch('/moonbot-admin/dashboard', {
         headers: { Authorization: `Bearer ${pb.authStore.token}` },
       });
-      const payload = await response.json();
+      const payload = await apiServerClient.readJson(response);
       if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
       setData(payload);
     } catch (reason) {

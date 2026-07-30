@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Conexión HTML con Moonbot restaurada - 2026-07-30
+- El mapa lingüístico vuelve a consultar primero `http://moonbot:5000`, con la URL pública como respaldo controlado.
+- Nginx devuelve un error JSON legible durante reinicios, evitando que la interfaz intente interpretar una página HTML 502 como datos.
+- La web espera a que la API esté saludable al arrancar y valida el cuerpo de las respuestas antes de representarlo.
+
 ### Accesibilidad y localización verificadas - 2026-07-30
 - El registro alcanza 1.700 funciones con 80 contratos adicionales para accesibilidad WebApp, revisión colaborativa y localización cultural.
 - Se reutilizan seis implementaciones ya existentes mediante un único manifiesto, evitando IDs y APIs duplicados.

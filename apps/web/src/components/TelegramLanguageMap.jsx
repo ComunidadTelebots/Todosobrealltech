@@ -21,7 +21,7 @@ const TelegramLanguageMap = () => {
   useEffect(() => {
     apiServerClient.fetch('/telegram-language-map')
       .then(async (response) => {
-        const payload = await response.json();
+        const payload = await apiServerClient.readJson(response);
         if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
         setData(payload);
       })
