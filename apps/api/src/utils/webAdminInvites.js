@@ -6,6 +6,23 @@ const ROLE_LEVEL = Object.freeze({ user: 0, moderator: 1, admin: 2, creator: 3 }
 export const hashAdminInviteToken = (token) => crypto.createHash('sha256')
   .update(String(token || ''), 'utf8').digest('hex');
 
+export const normalizeTelegramClaim = (value) => {
+  const claim = String(value || '').trim().replace(/^@/, '');
+  if (/^[1-9]\d{4,19}$/.test(claim)) return { type: 'id', value: claim };
+  if (/^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(claim)) return { type: 'username', value: claim.toLowerCase() };
+  throw new Error('Indica un ID de Telegram o un usuario válido');
+};
+
+export const createTelegramVerification = ({ accountId, role, claim, invitationId, now = new Date() }) => {
+  const normalized = normalizeTelegramClaim(claim);
+  if (!/^[a-z0-9]+$/i.test(String(accountId || '')) || !WEB_ADMIN_ROLES.includes(role)) throw new Error('Verificación no válida');
+  const code = `WEB-${crypto.randomBytes(9).toString('base64url').toUpperCase()}`;
+  return { code, record: { id: crypto.randomUUID(), account_id: String(accountId), role,
+    telegram_claim_type: normalized.type, telegram_claim: normalized.value,
+    code_hash: hashAdminInviteToken(code), invitation_id: String(invitationId), status: 'pending',
+    created_at: now.toISOString(), expires_at: new Date(now.getTime() + 15 * 60_000).toISOString() } };
+};
+
 export const createAdminInvite = ({ role, expiresHours, maxUses, creatorId, now = new Date() }) => {
   if (!WEB_ADMIN_ROLES.includes(role)) throw new Error('Rol administrativo no válido');
   const hours = Number(expiresHours);

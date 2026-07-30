@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Verificación Telegram para administradores web - 2026-07-31
+- Las invitaciones y elevaciones dejan el acceso pendiente hasta verificar por mensaje privado la cuenta de Telegram indicada.
+- Genera códigos de un solo uso con quince minutos de validez y almacena exclusivamente su huella criptográfica.
+- El bot confirma servidor a servidor el ID y username reales del remitente antes de activar el rol `admin` y vincular Telegram.
+- La web permite comprobar el estado, renovar la sesión autenticada y entrar al panel únicamente después de la confirmación.
+- El Hub reconoce el administrador web por su cuenta PocketBase verificada y muestra un panel propio, sin conceder controles master ni permisos de grupo.
+
 ### Invitaciones y elevación de administración web - 2026-07-31
 - Permite al master crear enlaces de acceso caducables, revocables y de uno o varios usos para convertir cuentas en administradores de la web.
 - Los enlaces guardan únicamente una huella SHA-256 del token y se consumen de forma cerrada antes de aplicar la elevación.

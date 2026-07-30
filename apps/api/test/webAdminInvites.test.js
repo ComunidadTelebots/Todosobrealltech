@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { canElevateWebRole, createAdminInvite, hashAdminInviteToken, publicAdminInvite } from '../src/utils/webAdminInvites.js';
+import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
+  normalizeTelegramClaim, publicAdminInvite } from '../src/utils/webAdminInvites.js';
 
 test('creates expiring administration links without persisting the bearer token', () => {
   const now = new Date('2026-07-31T10:00:00.000Z');
@@ -26,7 +27,7 @@ test('routes keep web administration independent from Telegram group permissions
   assert.match(route, /web-admin-invitations\/redeem/);
   assert.match(route, /auth\.user\.role !== 'creator'/);
   assert.match(route, /hashAdminInviteToken/);
-  assert.match(route, /los permisos de grupos Telegram no han cambiado/);
+  assert.match(route, /pending_verification: true/);
   assert.doesNotMatch(route.match(/router\.all\('\/web-admin-invitations'[\s\S]*?router\.all\('\/account-tools\/approvals'/)?.[0] || '', /X-Moon-Actor-Role|group_id|chat_id/);
 });
 
@@ -35,4 +36,26 @@ test('PocketBase prevents clients from assigning or changing their own web role'
   assert.match(migration, /createRule = "@request\.body\.role = 'user'"/);
   assert.match(migration, /@request\.body\.role:changed = false/);
   assert.match(migration, /@request\.auth\.role = 'creator'/);
+});
+
+test('creates a short Telegram challenge bound to an ID or username', () => {
+  assert.deepEqual(normalizeTelegramClaim('@Cuenta_123'), { type: 'username', value: 'cuenta_123' });
+  assert.deepEqual(normalizeTelegramClaim('163103382'), { type: 'id', value: '163103382' });
+  const created = createTelegramVerification({ accountId: 'account1', role: 'admin', claim: '@Cuenta_123',
+    invitationId: 'invite1', now: new Date('2026-07-31T10:00:00Z') });
+  assert.match(created.code, /^WEB-[A-Z0-9_-]{12}$/);
+  assert.equal(created.record.code, undefined);
+  assert.equal(created.record.code_hash, hashAdminInviteToken(created.code));
+  assert.equal(created.record.expires_at, '2026-07-31T10:15:00.000Z');
+});
+
+test('only the bot can confirm Telegram and the role changes after identity matching', () => {
+  const route = fs.readFileSync(new URL('../src/routes/moonbot-admin.js', import.meta.url), 'utf8');
+  assert.match(route, /web-admin-verifications\/confirm/);
+  assert.match(route, /X-Moon-Admin-Key/);
+  assert.match(route, /timingSafeEqual/);
+  assert.match(route, /identityMatches/);
+  assert.match(route, /telegram_id: senderId/);
+  assert.match(route, /telegram_verified_invitation/);
+  assert.match(route, /La aprobación antigua no verifica Telegram/);
 });

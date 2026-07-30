@@ -9,7 +9,7 @@ import { authorizeAdminOrCreator, authorizeAuthenticatedUser } from './stats.js'
 import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
 import { detectAccountAnomalies } from '../utils/accountAnomalies.js';
-import { createRoleApproval, decideRoleApproval } from '../utils/accountApprovals.js';
+import { decideRoleApproval } from '../utils/accountApprovals.js';
 import { compareAccountPeriods, forecastAccounts } from '../utils/accountForecast.js';
 import { recommendAccounts } from '../utils/accountRecommendations.js';
 import { buildAccountReportSchedule, nextAccountReportRun } from '../utils/accountReportSchedule.js';
@@ -27,8 +27,8 @@ import { ACCOUNT_WEBHOOK_EVENTS, createAccountWebhook, createAccountWebhookPaylo
   isPrivateAccountWebhookAddress, prepareAccountWebhookDelivery } from '../utils/accountWebhooks.js';
 import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
   moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
-import { canElevateWebRole, createAdminInvite, hashAdminInviteToken,
-  publicAdminInvite, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
+import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
+  normalizeTelegramClaim, publicAdminInvite, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
@@ -196,6 +196,7 @@ const accountHistoryFile = '/data/account-change-history.json';
 const accountBulkFile = '/data/account-bulk-transactions.json';
 const accountApprovalsFile = '/data/account-role-approvals.json';
 const webAdminInvitesFile = '/data/web-admin-invitations.json';
+const webAdminVerificationsFile = '/data/web-admin-verifications.json';
 const accountReportSchedulesFile = '/data/account-report-schedules.json';
 const accountReportsDirectory = '/data/account-reports';
 const accountWebhooksFile = '/data/account-webhooks.json';
@@ -224,6 +225,17 @@ const mutateWebAdminInvites = (operation) => {
   webAdminInviteMutation = pending.catch(() => {});
   return pending;
 };
+const readWebAdminVerifications = async () => {
+  try {
+    const parsed = JSON.parse(await fs.readFile(webAdminVerificationsFile, 'utf8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  }
+};
+const writeWebAdminVerifications = (records) => fs.writeFile(webAdminVerificationsFile,
+  JSON.stringify(records.slice(-2000), null, 2), { mode: 0o600 });
 const appendAccountHistory = async (entry) => {
   let rows = [];
   try { rows = JSON.parse(await fs.readFile(accountHistoryFile, 'utf8')); }
@@ -588,6 +600,7 @@ router.post('/web-admin-invitations/redeem', express.json({ limit: '8kb' }), asy
   const token = String(req.body?.token || '');
   if (!/^[A-Za-z0-9_-]{40,64}$/.test(token)) return res.status(400).json({ ok: false, error: 'Invitación no válida' });
   try {
+    normalizeTelegramClaim(req.body?.telegram);
     const result = await mutateWebAdminInvites((records) => {
       const record = records.find((item) => item.token_hash === hashAdminInviteToken(token));
       const invitation = record ? publicAdminInvite(record) : null;
@@ -600,13 +613,74 @@ router.post('/web-admin-invitations/redeem', express.json({ limit: '8kb' }), asy
       if (record.uses >= Number(record.max_uses || 1)) record.enabled = false;
       return { role: record.role, invitation_id: record.id };
     });
-    const updated = await pocketbaseClient.collection('users').update(auth.user.id, { role: result.role });
-    await appendAccountHistory({ account_id: auth.user.id, action: 'role', actor_id: 'master_invitation',
-      before: { role: auth.user.role }, after: { role: result.role }, invitation_id: result.invitation_id });
-    recordAccountMetric('account.role_changed', { role: result.role, source: 'master_invitation' });
-    return res.json({ ok: true, role: result.role, user: updated, invitation_id: result.invitation_id,
-      message: 'Cuenta elevada para administrar la web; los permisos de grupos Telegram no han cambiado' });
+    const verification = createTelegramVerification({ accountId: auth.user.id, role: result.role,
+      claim: req.body?.telegram, invitationId: result.invitation_id });
+    const verifications = await readWebAdminVerifications();
+    for (const item of verifications) {
+      if (item.account_id === auth.user.id && item.status === 'pending') item.status = 'superseded';
+    }
+    verifications.push(verification.record);
+    await writeWebAdminVerifications(verifications);
+    const bot = String(process.env.WEB_ADMIN_VERIFY_BOT_USERNAME || 'CintiaBot').replace(/^@/, '');
+    return res.json({ ok: true, pending_verification: true, role: result.role,
+      verification_id: verification.record.id, verification_code: verification.code,
+      bot_username: bot, expires_at: verification.record.expires_at,
+      message: 'Envía el código al bot desde la cuenta de Telegram indicada para activar la administración web' });
   } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.get('/web-admin-verifications/me', async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache', Vary: 'Authorization' });
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  try {
+    const record = (await readWebAdminVerifications()).filter((item) => item.account_id === auth.user.id).at(-1);
+    return res.json({ ok: true, verification: record ? { id: record.id, status: record.status,
+      role: record.role, expires_at: record.expires_at, verified_at: record.verified_at || null,
+      telegram_id: record.telegram_id || null } : null });
+  } catch (error) {
+    return res.status(503).json({ ok: false, error: 'No se pudo consultar la verificación' });
+  }
+});
+
+router.post('/web-admin-verifications/confirm', express.json({ limit: '8kb' }), async (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store, max-age=0', Pragma: 'no-cache' });
+  const expected = String(process.env.MOON_ADMIN_API_KEY || '');
+  const supplied = String(req.get('X-Moon-Admin-Key') || '');
+  if (!expected || !supplied || expected.length < 32 || supplied.length !== expected.length
+    || !crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) {
+    return res.status(401).json({ ok: false, error: 'unauthorized' });
+  }
+  const code = String(req.body?.code || '').trim().toUpperCase();
+  const senderId = String(req.body?.telegram_id || '').trim();
+  const username = String(req.body?.telegram_username || '').trim().replace(/^@/, '').toLowerCase();
+  if (!/^WEB-[A-Z0-9_-]{12}$/.test(code) || !/^[1-9]\d{4,19}$/.test(senderId)) {
+    return res.status(400).json({ ok: false, error: 'Datos de verificación no válidos' });
+  }
+  try {
+    const verifications = await readWebAdminVerifications();
+    const record = verifications.find((item) => item.status === 'pending' && item.code_hash === hashAdminInviteToken(code));
+    if (!record || new Date(record.expires_at).getTime() <= Date.now()) return res.status(410).json({ ok: false, error: 'Código caducado o ya utilizado' });
+    const identityMatches = record.telegram_claim_type === 'id' ? record.telegram_claim === senderId : record.telegram_claim === username;
+    if (!identityMatches) return res.status(403).json({ ok: false, error: 'El mensaje no procede de la cuenta de Telegram indicada' });
+    const account = await pocketbaseClient.collection('users').getOne(record.account_id);
+    if (account.telegram_id && String(account.telegram_id) !== senderId) return res.status(409).json({ ok: false, error: 'La cuenta web está vinculada a otro Telegram' });
+    if (!canElevateWebRole(account.role, record.role)) return res.status(409).json({ ok: false, error: 'La cuenta ya tiene este nivel o uno superior' });
+    const updated = await pocketbaseClient.collection('users').update(record.account_id, {
+      role: record.role, telegram_id: senderId, ...(username ? { telegram_username: username } : {}),
+    });
+    record.status = 'verified'; record.verified_at = new Date().toISOString();
+    record.telegram_id = senderId; record.telegram_username = username;
+    await writeWebAdminVerifications(verifications);
+    await appendAccountHistory({ account_id: account.id, action: 'role', actor_id: `telegram:${senderId}`,
+      before: { role: account.role }, after: { role: record.role }, invitation_id: record.invitation_id,
+      verification_id: record.id, source: 'telegram_verified_invitation' });
+    recordAccountMetric('account.role_changed', { role: record.role, source: 'telegram_verified_invitation' });
+    return res.json({ ok: true, role: record.role, account_id: updated.id });
+  } catch (error) {
+    logger.warn(`[web-admin-verifications] ${error.message}`);
     return res.status(400).json({ ok: false, error: error.message });
   }
 });
@@ -651,13 +725,19 @@ router.all('/web-admin-invitations', express.json({ limit: '16kb' }), async (req
       if (accountId === auth.user.id) return res.status(400).json({ ok: false, error: 'No puedes modificar tu propia cuenta' });
       const account = await pocketbaseClient.collection('users').getOne(accountId);
       if (!canElevateWebRole(account.role, role)) return res.status(400).json({ ok: false, error: 'La elevación solicitada no aumenta el nivel actual' });
-      const updated = await pocketbaseClient.collection('users').update(accountId, { role });
-      await appendAccountHistory({ account_id: accountId, action: 'role', actor_id: auth.user.id,
-        before: { role: account.role }, after: { role }, reason, source: 'master_elevation' });
-      recordAccountMetric('account.role_changed', { role, source: 'master_elevation' });
-      return res.json({ ok: true, user: updated, audit: { actor_id: auth.user.id, account_id: accountId,
-        before: account.role, after: role, reason, created_at: new Date().toISOString() },
-      message: 'Rol web actualizado sin modificar permisos de grupos Telegram' });
+      const claim = req.body.telegram || account.telegram_id || account.telegram_username;
+      const verification = createTelegramVerification({ accountId, role, claim, invitationId: `master:${auth.user.id}` });
+      verification.record.requested_by = auth.user.id; verification.record.reason = reason;
+      const verifications = await readWebAdminVerifications();
+      for (const item of verifications) {
+        if (item.account_id === accountId && item.status === 'pending') item.status = 'superseded';
+      }
+      verifications.push(verification.record);
+      await writeWebAdminVerifications(verifications);
+      const bot = String(process.env.WEB_ADMIN_VERIFY_BOT_USERNAME || 'CintiaBot').replace(/^@/, '');
+      return res.json({ ok: true, pending_verification: true, verification_code: verification.code,
+        bot_username: bot, expires_at: verification.record.expires_at,
+        message: 'Elevación pendiente: el usuario debe verificar su Telegram con el bot' });
     }
     return res.status(400).json({ ok: false, error: 'Acción no válida' });
   } catch (error) {
@@ -679,17 +759,11 @@ router.all('/account-tools/approvals', async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
   try {
     if (req.body?.action === 'request') {
-      const account = await pocketbaseClient.collection('users').getOne(String(req.body?.account_id || ''));
-      if (approvals.some((item) => item.status === 'pending' && item.account_id === account.id)) {
-        return res.status(409).json({ ok: false, error: 'La cuenta ya tiene una solicitud pendiente' });
-      }
-      const approval = createRoleApproval({ accountId: account.id, currentRole: account.role,
-        requestedRole: req.body?.role, requester: auth.user });
-      approvals.push(approval);
-      await fs.writeFile(accountApprovalsFile, JSON.stringify(approvals.slice(-1000)), { mode: 0o600 });
-      return res.status(201).json({ ok: true, approval });
+      return res.status(410).json({ ok: false, error: 'Las nuevas elevaciones requieren invitación y verificación por Telegram' });
     }
     if (req.body?.action === 'decide') {
+      if (req.body?.decision === 'approved') return res.status(410).json({ ok: false,
+        error: 'La aprobación antigua no verifica Telegram; crea una invitación administrativa nueva' });
       const index = approvals.findIndex((item) => item.id === req.body?.approval_id);
       const decided = decideRoleApproval(approvals[index], auth.user, req.body?.decision);
       if (decided.status === 'approved') {

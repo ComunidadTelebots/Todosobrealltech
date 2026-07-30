@@ -188,14 +188,7 @@ const CreatorAccountProxyManager = () => {
         return;
       }
       if (role === 'admin' && user.role !== 'admin') {
-        const response = await apiServerClient.fetch('/moonbot-admin/account-tools/approvals', {
-          method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'request', account_id: user.id, role }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error);
-        await fetchApprovals();
-        toast.success('Elevación enviada al flujo de aprobación');
+        toast.error('Usa “Accesos de administración web” para exigir la verificación por Telegram');
         return;
       }
       const updated = await pb.collection('users').update(user.id, { role }, { $autoCancel: false });

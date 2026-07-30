@@ -27,6 +27,8 @@ const WebAdminAccessManager = ({ users = [], onChanged }) => {
   const [accountId, setAccountId] = useState('');
   const [elevationRole, setElevationRole] = useState('admin');
   const [reason, setReason] = useState('');
+  const [telegram, setTelegram] = useState('');
+  const [verification, setVerification] = useState(null);
   const [busy, setBusy] = useState(false);
 
   const eligibleUsers = useMemo(() => users.filter((user) => user.role !== 'creator'), [users]);
@@ -53,7 +55,8 @@ const WebAdminAccessManager = ({ users = [], onChanged }) => {
   const elevate = async () => {
     setBusy(true);
     try {
-      await call({ action: 'elevate', account_id: accountId, role: elevationRole, reason });
+      const data = await call({ action: 'elevate', account_id: accountId, role: elevationRole, reason, telegram });
+      setVerification(data);
       setReason('');
       await onChanged?.();
       toast.success('Cuenta elevada para administrar la web');
@@ -74,8 +77,10 @@ const WebAdminAccessManager = ({ users = [], onChanged }) => {
         <h4 className="flex items-center gap-2 text-sm font-semibold"><UserRoundCog className="h-4 w-4"/>Elevar usuario existente</h4>
         <select className="h-10 w-full rounded-md border bg-background px-2" value={accountId} onChange={(event) => setAccountId(event.target.value)}><option value="">Selecciona una cuenta</option>{eligibleUsers.map((user) => <option key={user.id} value={user.id}>{user.name || user.email || user.id} · {user.role || 'user'}</option>)}</select>
         <select className="h-10 w-full rounded-md border bg-background px-2" value={elevationRole} onChange={(event) => setElevationRole(event.target.value)}><option value="admin">Administrador web</option></select>
+        <Input value={telegram} onChange={(event) => setTelegram(event.target.value)} placeholder="@usuario o ID de Telegram"/>
         <Input value={reason} onChange={(event) => setReason(event.target.value)} maxLength={300} placeholder="Motivo obligatorio para la auditoría"/>
-        <Button onClick={elevate} disabled={busy || !accountId || !reason.trim()}>Elevar cuenta</Button>
+        <Button onClick={elevate} disabled={busy || !accountId || !reason.trim() || !telegram.trim()}>Solicitar elevación verificada</Button>
+        {verification?.verification_code && <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm"><b>Pendiente de Telegram</b><p>El usuario debe enviar por privado a @{verification.bot_username}:</p><code className="mt-2 block select-all rounded bg-muted p-2">/verificarweb {verification.verification_code}</code><small>Caduca {new Date(verification.expires_at).toLocaleTimeString('es-ES')}.</small></div>}
       </div>
     </div>
     <div className="space-y-2"><h4 className="text-sm font-semibold">Invitaciones recientes</h4>{invitations.slice(0, 12).map((item) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-background p-2 text-sm"><span><Badge variant={item.valid ? 'default' : 'secondary'}>{item.role}</Badge> <span className="ml-2">{item.uses}/{item.max_uses} usos · vence {new Date(item.expires_at).toLocaleString('es-ES')}</span></span>{item.valid && <Button size="sm" variant="outline" disabled={busy} onClick={() => revoke(item.id)}><XCircle className="mr-1 h-4 w-4"/>Revocar</Button>}</div>)}{!invitations.length && <p className="text-sm text-muted-foreground">Todavía no hay invitaciones.</p>}</div>

@@ -332,7 +332,7 @@ const AdminPage = () => {
                         users={users.slice(0, 5)} 
                         onUpdate={fetchData}
                         onDelete={handleDeleteUser}
-                        onRoleChange={pb.authStore.model?.role === 'creator' ? handleOpenRoleModal : undefined}
+                        onRoleChange={undefined}
                       />
                       {users.length > 5 && (
                         <div className="mt-4 text-center">
