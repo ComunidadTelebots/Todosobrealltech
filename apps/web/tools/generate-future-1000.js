@@ -233,7 +233,7 @@ for (let number = 31; number <= 334; number += 1) {
     'apps/web/src/components/MoonbotFeatureCenter.jsx',
   ]);
 }
-for (let number = 1001; number <= 1116; number += 1) {
+for (let number = 1001; number <= 1176; number += 1) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
     'moon-multibot:core/feature_runtime.py',
     'moon-multibot:tests/test_feature_runtime.py',
@@ -246,7 +246,7 @@ const verifiedWebappIds = [
   702, 703, 706, 707, 709, 710, 712,
   ...Array.from({ length: 280 }, (_, index) => 713 + index),
   ...Array.from({ length: 8 }, (_, index) => 993 + index),
-  ...Array.from({ length: 154 }, (_, index) => 1668 + index).filter((number) => ![1701, 1710].includes(number)),
+  ...Array.from({ length: 174 }, (_, index) => 1668 + index).filter((number) => ![1701, 1710].includes(number)),
 ];
 for (const number of verifiedWebappIds) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
@@ -255,7 +255,7 @@ for (const number of verifiedWebappIds) {
     'moon-multibot:tests/test_feature_runtime.py',
   ]);
 }
-for (let number = 3002; number <= 4799; number += 3) {
+for (let number = 3002; number <= 4919; number += 3) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
     'moon-multibot:core/feature_runtime.py',
     'moon-multibot:tests/test_feature_runtime.py',

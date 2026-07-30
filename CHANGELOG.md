@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Registro verificable ampliado a 1.620 funciones - 2026-07-30
+- Se integran 120 contratos adicionales de incidentes, correlación temporal, revisión colaborativa, paneles, analítica y operación offline de la WebApp.
+- Todos los contratos se registran mediante manifiestos permitidos, con API y funciones únicas, y quedan accesibles desde las interfaces master existentes.
+- La verificación del bloque ejecuta 139 pruebas específicas y confirma 1.620 funciones registradas sin IDs duplicados.
+
 ### Centro ejecutable de funciones verificadas - 2026-07-30
 - El panel master incorpora una pestaña para buscar, inspeccionar y ejecutar funciones registradas de Moonbot desde la web.
 - La API de TodoSobreAllTech actúa como pasarela autenticada hacia el registro interno y nunca expone la clave administrativa al navegador.
