@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Verificación visual del captcha global - 2026-07-31
+- El panel master muestra `Sí/No` para cada usuario y un indicador general de verificación completa.
+- El canal global predeterminado es `@TodoSobreAllTech` y la comprobación automática se realiza cada 12 horas.
+
 ### Backfill exclusivo Bot API 10.2 - 2026-07-31
 - El backfill edita con el mismo Rich Markdown 10.2 usado por las publicaciones nuevas.
 - Se elimina la degradación visual a HTML: si la edición enriquecida no está disponible, el mensaje permanece intacto y pendiente.
