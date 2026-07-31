@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Revisión administrativa del directorio de canales - 2026-07-31
+- El directorio público muestra exclusivamente canales aprobados por un administrador autorizado.
+- Los administradores de canal pueden solicitar la inclusión desde el Hub, pero no publicarse directamente.
+- El master puede aprobar desde el Hub y los administradores web desde la ficha del canal en TodoSobreAllTech.
+- Los canales pendientes, rechazados, retirados o antiguos sin revisar quedan ocultos de listados, fichas y rankings.
+
 ### Aprobación master obligatoria para publicidad - 2026-07-31
 - Toda campaña creada o editada queda pendiente aunque la prepare el propio creador.
 - Solo el master puede aprobarla desde el panel de anuncios de TodoSobreAllTech.
