@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### Publicador Telegram recuperable - 2026-07-31
+- Convierte la publicación de noticias en una cola persistente: el artículo se guarda primero y Telegram se reintenta después de timeouts o reinicios.
+- Recupera automáticamente publicaciones fallidas de las últimas 48 horas sin volver a importar ni duplicar la noticia.
+- Añade timeout, reintentos exponenciales y tratamiento específico de errores 429/5xx de Bot API.
+- Impide que dos ciclos de RSS se solapen y publiquen dos veces el mismo artículo.
+- Conserva el resumen breve, Instant View, Rich Markdown, anuncio comunitario medible y el texto y botón añadidos posteriormente por Inside Ads.
+
 - Añade en `/admin` un ajuste master independiente para el canal obligatorio global, captcha estricto y reverificación periódica de todos los grupos.
 - Mantiene en cada grupo un canal obligatorio local adicional; el captcha exige tanto el canal global como el local cuando ambos están configurados.
 - Sincroniza y persiste estos ajustes en Moonbot mediante la conexión interna autenticada, sin depender del navegador.

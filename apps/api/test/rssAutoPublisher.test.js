@@ -15,6 +15,8 @@ import {
   shouldDelayChannelEdit,
   sourceUrlFromTelegramPost,
   summarize,
+  telegramPendingFilter,
+  telegramPublishFailureStatus,
 } from '../src/utils/rssAutoPublisher.js';
 
 test('detecta el enlace de IFTTT sin confundirlo con el post de Telegram', () => {
@@ -23,6 +25,20 @@ test('detecta el enlace de IFTTT sin confundirlo con el post de Telegram', () =>
     sourceUrlFromTelegramPost(html, 'https://t.me/TodoSobreAllTech/123'),
     'https://ift.tt/abc123',
   );
+});
+
+test('mantiene una salida fallida en cola hasta agotar los reintentos', () => {
+  assert.equal(telegramPublishFailureStatus(1), 'pending');
+  assert.equal(telegramPublishFailureStatus(9), 'pending');
+  assert.equal(telegramPublishFailureStatus(10), 'failed');
+});
+
+test('recupera pendientes y noticias recientes de feeds publicables', () => {
+  const filter = telegramPendingFilter(Date.parse('2026-07-31T12:00:00Z'));
+  assert.match(filter, /telegram_publish_status="pending"/);
+  assert.match(filter, /created>="2026-07-29T12:00:00\.000Z"/);
+  assert.match(filter, /fuente_label="Hispasec"/);
+  assert.doesNotMatch(filter, /fuente_label="@TodoSobreAllTech"/);
 });
 
 test('prefiere una fuente externa y conserva Telegram solo como respaldo', () => {
