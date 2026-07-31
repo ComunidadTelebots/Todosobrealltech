@@ -801,6 +801,17 @@ function formatTelegramNewsRichMarkdown(article, slug, houseAd) {
   ].filter(Boolean).join('\n\n');
 }
 
+function formatTelegramBackfillRichMarkdown(originalText, slug, categoria, hashtags, houseAd) {
+  const base = cleanTelegramEditedBase(originalText);
+  const [title = 'NoticiasWeb3', ...bodyParts] = base.split(/\n{2,}/).map((part) => part.trim()).filter(Boolean);
+  return formatTelegramNewsRichMarkdown({
+    titulo: title,
+    excerpt: bodyParts.join(' '),
+    categoria,
+    hashtags: hashtags || buildHashtags(categoria),
+  }, slug, houseAd);
+}
+
 async function loadTelegramHouseAd(now = Date.now()) {
   try {
     const response = await fetch(HOUSE_ADS_INTERNAL_URL, { signal: AbortSignal.timeout(HOUSE_ADS_TIMEOUT_MS) });
@@ -834,8 +845,6 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   const messageId = Number(match[2]);
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
   const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
-  const houseAdBlock = formatTelegramHouseAd(houseAd);
-  const suffix = `\n\n${hashtags || buildHashtags(categoria)}\n\n📰 <a href="${ivUrl}">Leer en NW3</a>${houseAdBlock ? `\n\n${houseAdBlock}` : ''}`;
   const originalBase = (originalText || '').trim();
 
   // El botón de @InsideAds_bot vive fuera del texto como reply_markup y no se
@@ -852,13 +861,16 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
     return { ok: true, permanent: false, alreadyPresent: true };
   }
 
-  const base = cleanTelegramEditedBase(originalBase);
+  const richMarkdown = formatTelegramBackfillRichMarkdown(originalBase, slug, categoria, hashtags, houseAd);
 
-  // editMessageText reemplaza el texto completo → reenviamos original + sufijo (límite 4096).
-  // El texto base se escapa (parse_mode HTML); se recorta EN CRUDO antes de escapar
-  // para no partir una entidad (&amp;). El sufijo con <a> NO se escapa.
-  const text = `${escapeHtml(base.slice(0, 4096 - suffix.length))}${suffix}`;
-  let result = await telegramApi('editMessageText', { chat_id: chatId, message_id: messageId, text, parse_mode: 'HTML' });
+  // El backfill usa exclusivamente la edición enriquecida de Bot API 10.2 para
+  // que el diseño sea idéntico al de las publicaciones nuevas.
+  const result = await telegramApi('editRichMessage', {
+    chat_id: chatId,
+    message_id: messageId,
+    rich_message: { markdown: richMarkdown },
+    link_preview_options: { is_disabled: false, url: ivUrl, prefer_large_media: true, show_above_text: false },
+  });
 
   if (result.ok) return { ok: true, permanent: false };
 
@@ -867,17 +879,12 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   // "message is not modified": el enlace ya estaba puesto → lo damos por bueno.
   if (desc.includes('not modified')) return { ok: true, permanent: false };
 
-  // Mensaje multimedia sin texto → usar caption (límite 1024).
-  if (desc.includes('no text in the message') || desc.includes('caption')) {
-    const caption = `${escapeHtml(base.slice(0, 1024 - suffix.length))}${suffix}`;
-    result = await telegramApi('editMessageCaption', { chat_id: chatId, message_id: messageId, caption, parse_mode: 'HTML' });
-    if (result.ok) return { ok: true, permanent: false };
-    if ((result.description || '').toLowerCase().includes('not modified')) return { ok: true, permanent: false };
-  }
+  // La edición enriquecida de mensajes multimedia no se degrada a HTML.
+  if (desc.includes('no text in the message') || desc.includes('caption')) return { ok: false, permanent: true };
 
-  // 400/403 de Telegram = rechazo definitivo (mensaje borrado, no editable, sin
-  // permisos). Cualquier otra cosa (5xx, respuesta rara) se trata como transitoria.
-  const permanent = result.error_code === 400 || result.error_code === 403;
+  // Una instalación todavía sin editRichMessage se trata como transitoria.
+  const unsupportedRichEdit = desc.includes('method not found') || desc.includes('not supported');
+  const permanent = !unsupportedRichEdit && (result.error_code === 400 || result.error_code === 403);
   logger.warn(`[rssAutoPublisher] No se pudo editar ${telegramUrl} (${permanent ? 'definitivo' : 'transitorio'}): ${result.description || 'error desconocido'}`);
   return { ok: false, permanent };
 }
@@ -1485,6 +1492,7 @@ export {
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,
   formatTelegramNewsRichMarkdown,
+  formatTelegramBackfillRichMarkdown,
   telegramHouseAdTrackingUrl,
   parseTelegramViewCount,
   fetchOfficialTelegramViews,

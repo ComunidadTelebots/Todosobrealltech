@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Backfill exclusivo Bot API 10.2 - 2026-07-31
+- El backfill edita con el mismo Rich Markdown 10.2 usado por las publicaciones nuevas.
+- Se elimina la degradación visual a HTML: si la edición enriquecida no está disponible, el mensaje permanece intacto y pendiente.
+- Instant View y la tarjeta comunitaria conservan el mismo diseño en publicaciones nuevas y recuperadas.
+
 ### Backfill e Instant View coherentes - 2026-07-31
 - Las publicaciones enriquecidas fijan explícitamente la previsualización de Instant View sin perder el diseño compacto ni la campaña comunitaria.
 - El backfill elimina paréntesis huérfanos, enlaces IFTTT y fragmentos repetidos antes de editar publicaciones antiguas.

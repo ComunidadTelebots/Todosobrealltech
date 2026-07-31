@@ -7,6 +7,7 @@ import {
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,
   formatTelegramNewsRichMarkdown,
+  formatTelegramBackfillRichMarkdown,
   telegramHouseAdTrackingUrl,
   parseTelegramViewCount,
   cleanTelegramSummaryText,
@@ -94,6 +95,22 @@ test('genera el anuncio y la noticia como Rich Markdown 10.2 sin imágenes exter
   assert.match(message, /^## 📰 Titular/);
   assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
   assert.match(message, /\n\n---\n\n\| \*\*COMUNIDAD DESTACADA\*\*/);
+});
+
+test('el backfill genera el mismo diseño Rich Markdown 10.2', () => {
+  const ad = { id: 'official-test', title: 'Comunidad', description: 'Canales oficiales', cta: 'Unirme' };
+  const message = formatTelegramBackfillRichMarkdown(
+    'Titular de la noticia\n\nUna frase breve para el canal.\nhttps://ift.tt/demo',
+    'titular-de-la-noticia',
+    'Tecnología',
+    '#Tecnología #NW3',
+    ad,
+  );
+  assert.match(message, /^## /);
+  assert.match(message, /Titular de la noticia/);
+  assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
+  assert.match(message, /\| \*\*COMUNIDAD DESTACADA\*\*/);
+  assert.doesNotMatch(message, /<blockquote>|ift\.tt/);
 });
 
 test('el backfill reconoce posts propios y no los reescribe', () => {
