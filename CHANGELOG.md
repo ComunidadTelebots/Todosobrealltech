@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Recomendaciones de canales con revisión de contenido - 2026-08-01
+- Los banners del captcha muestran la foto pública, identidad y bot asociado de cada canal.
+- Moonbot retira de las recomendaciones los canales con contenido observado de alto riesgo.
+- El panel muestra la cobertura del análisis y su puntuación sin bloquear los canales ya elegidos manualmente por el master.
+- Incorpora buscador, acción rápida para añadir canales y enlace «Unir bot» cuando falta una instancia en el canal.
+
 ### Captcha obligatorio multicanal - 2026-08-01
 - El master puede exigir hasta diez canales globales simultáneos desde tarjetas seleccionables.
 - Cada grupo dispone de su propia lista de hasta diez canales locales, independiente de la lista global.
