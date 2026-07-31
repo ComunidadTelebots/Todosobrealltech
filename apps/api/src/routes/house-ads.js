@@ -13,6 +13,7 @@ const MOON_URLS = [...new Set([
 ].filter(Boolean).map((value) => value.replace(/\/$/, '')))];
 const headers = () => ({ Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': String(process.env.MOON_ADMIN_API_KEY || '').trim() });
 const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad.starts_at) <= now) && (!ad.ends_at || Date.parse(ad.ends_at) >= now);
+const isTelegramChannelAd = (ad) => /^https:\/\/(?:www\.)?t\.me\/[A-Za-z0-9_]{5,64}\/?$/i.test(String(ad?.url || ''));
 const mediaDir = '/data/house-ad-media';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 const safeAdDestination = (value) => {
@@ -57,16 +58,19 @@ async function moon(options = {}) {
 
 router.get('/', async (req, res) => {
   const placement = String(req.query.placement || '');
+  const channelOnly = req.query.channel_only === '1';
   const country = requestCountry(req);
+  const fallbackAds = () => rotatedOfficialAdsFor(placement).filter((ad) => !channelOnly || isTelegramChannelAd(ad)).slice(0, 1);
   try {
     const response = await moon();
     const rawBody = await response.text();
     let data;
     try { data = JSON.parse(rawBody); }
-    catch { return res.json({ ok: true, ads: rotatedOfficialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status }); }
-    if (!response.ok) return res.json({ ok: true, ads: rotatedOfficialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status });
+    catch { return res.json({ ok: true, ads: fallbackAds(), fallback: true, upstream_status: response.status }); }
+    if (!response.ok) return res.json({ ok: true, ads: fallbackAds(), fallback: true, upstream_status: response.status });
     let ads = (data.ads || []).filter((ad) => ad.enabled !== false && ad.approval_status === 'approved' && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
-    if (!ads.length) ads = officialAdsFor(placement);
+    if (channelOnly) ads = ads.filter(isTelegramChannelAd);
+    if (!ads.length) ads = officialAdsFor(placement).filter((ad) => !channelOnly || isTelegramChannelAd(ad));
     if (placement && ads.length) {
       const highestPriority = Math.max(...ads.map((ad) => Number(ad.priority || 0)));
       const candidates = ads.filter((ad) => Number(ad.priority || 0) === highestPriority)
@@ -80,7 +84,7 @@ router.get('/', async (req, res) => {
     }
     return res.json({ ok: true, ads });
   } catch {
-    const ads = rotatedOfficialAdsFor(placement).slice(0, 1);
+    const ads = fallbackAds();
     return res.json({ ok: true, ads, fallback: true });
   }
 });

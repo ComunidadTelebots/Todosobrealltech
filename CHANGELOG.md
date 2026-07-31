@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Barra vertical de canales en NoticiasWeb3 - 2026-07-31
+- NoticiasWeb3 incorpora una barra publicitaria vertical izquierda con canales de Telegram aprobados y rotación comunitaria.
+- La barra es independiente de AdSense, se oculta en pantallas estrechas y conserva los anuncios superior y lateral derecho existentes.
+- La API permite solicitar exclusivamente campañas con destino a canales públicos de Telegram.
+
 ### Revisión administrativa del directorio de canales - 2026-07-31
 - El directorio público muestra exclusivamente canales aprobados por un administrador autorizado.
 - Los administradores de canal pueden solicitar la inclusión desde el Hub, pero no publicarse directamente.

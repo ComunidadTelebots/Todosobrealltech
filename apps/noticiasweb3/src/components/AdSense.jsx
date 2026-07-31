@@ -43,7 +43,7 @@ function loadScript() {
   document.head.appendChild(s);
 }
 
-export default function AdSense({ slot, placement = 'inline', platform = '', style, className = '' }) {
+export default function AdSense({ slot, placement = 'inline', platform = '', style, className = '', houseOnly = false, channelOnly = false }) {
   const slotText = String(slot || '').trim();
   const hasRealSlot = Boolean(slotText && !slotText.startsWith('SLOT_'));
   const adRef = useRef(null);
@@ -81,12 +81,12 @@ export default function AdSense({ slot, placement = 'inline', platform = '', sty
 
   useEffect(() => {
     if (status === 'filled') return;
-    fetch(`/hcgi/api/community-cards?placement=${encodeURIComponent(placement)}`)
+    fetch(`/hcgi/api/community-cards?placement=${encodeURIComponent(placement)}${channelOnly ? '&channel_only=1' : ''}`)
       .then((response) => response.json()).then((data) => setHouseAd(data.ads?.[0] || null))
       .catch((error) => { setHouseError(error?.message || 'No se pudo consultar anuncios propios'); });
-  }, [hasRealSlot, placement, status]);
+  }, [channelOnly, hasRealSlot, placement, status]);
 
-  const showGoogle = adsAllowed && CLIENT && hasRealSlot && status !== 'unfilled';
+  const showGoogle = !houseOnly && adsAllowed && CLIENT && hasRealSlot && status !== 'unfilled';
   return (
     <div className={`ad-stack ad-stack-${placement} ${platform ? `ad-stack-platform-${platform}` : ''}`}>
       {houseAd ? (houseAd.community_items?.length ? <CommunityCampaign ad={houseAd} placement={placement} className={className} style={style}/> :

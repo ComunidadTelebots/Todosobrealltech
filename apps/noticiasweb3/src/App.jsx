@@ -162,6 +162,9 @@ function Layout({ children }) {
       <div id="banner-right">
         <AdSense slot={ADSENSE_SLOT_RIGHT} placement="right" platform={appPlatform} style={{ width: 160, height: 600 }} />
       </div>
+      <aside id="banner-left" aria-label="Canales recomendados de la comunidad">
+        <AdSense placement="left" platform={appPlatform} houseOnly channelOnly style={{ width: 160, minHeight: 420 }} />
+      </aside>
       <div id="stage" className={`version-${siteVersion} platform-${appPlatform} ${isNightMode ? 'night-mode' : 'day-mode'}`}>
       <SiteHeader
         siteVersion={siteVersion}
