@@ -4,6 +4,7 @@
 - Reintenta automáticamente las lecturas internas cuando Moonbot todavía está arrancando tras una reconstrucción.
 - Mantiene las acciones administrativas POST en un único intento para impedir operaciones duplicadas.
 - Evita que el dashboard y el mapa lingüístico conviertan un fallo temporal de conexión en paneles vacíos.
+- Hace que Nginx vuelva a resolver dinámicamente API y PocketBase cuando Docker recrea sus contenedores, sin reinicios manuales de `web`.
 
 ### Publicador Telegram recuperable - 2026-07-31
 - Convierte la publicación de noticias en una cola persistente: el artículo se guarda primero y Telegram se reintenta después de timeouts o reinicios.
