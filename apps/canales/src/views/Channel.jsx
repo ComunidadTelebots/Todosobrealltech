@@ -28,8 +28,9 @@ export function Channel() {
       </div>
     )
 
-  const first = c.series[0].subs
-  const last = c.series[c.series.length - 1].subs
+  const series = c.series?.length ? c.series : [{ date: new Date().toISOString(), subs: c.subscribers || 0 }]
+  const first = series[0].subs
+  const last = series[series.length - 1].subs
   const gained = last - first
 
   return (
@@ -63,6 +64,30 @@ export function Channel() {
         </a>
       </div>
 
+      {c.community?.active && (
+        <section className="mt-4 overflow-hidden rounded-2xl border border-teal/30 bg-gradient-to-br from-teal/10 via-card to-cyan/10 p-5 backdrop-blur-sm sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-teal">Comunidad de Telegram</div>
+              <h2 className="mt-1 font-display text-xl font-bold">{c.community.title}</h2>
+              <p className="mt-1 text-sm text-muted">Este canal forma parte de una comunidad verificada por Moonbot.</p>
+            </div>
+            <span className="w-fit rounded-full border border-teal/30 bg-teal/10 px-3 py-1 font-mono text-xs text-teal">
+              {(c.community.channels?.length || 0) + 1} chats vinculados
+            </span>
+          </div>
+          {!!c.community.channels?.length && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {c.community.channels.map((channel) => (
+                <Link key={channel.username} to={`/canal/${channel.username}`} className="rounded-xl border border-line bg-bg/40 px-3 py-2 text-sm transition hover:border-cyan/50 hover:text-cyan">
+                  {channel.name} <span className="font-mono text-xs text-muted">@{channel.username}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Métricas detalladas */}
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Metric label="Suscriptores" value={thousands(c.subscribers)} hint={<GrowthBadge value={c.growth30d} className="text-xs" />} />
@@ -84,7 +109,7 @@ export function Channel() {
             <GrowthBadge value={c.growth30d} className="justify-end text-xs" />
           </div>
         </div>
-        <SubscribersChart series={c.series} />
+        <SubscribersChart series={series} />
       </section>
 
       {/* Últimos posts */}

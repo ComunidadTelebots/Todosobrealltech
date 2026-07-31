@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Comunidades vinculadas al directorio de canales - 2026-07-31
+- Las fichas de `canales.todosobreall.tech` muestran la comunidad de Telegram detectada por Moonbot y sus canales relacionados.
+- El directorio identifica visualmente los canales que pertenecen a una comunidad.
+- Los anuncios incluidos en respuestas informativas del bot enlazan a la ficha pública del canal y conservan medición propia de clics.
+- Las respuestas privadas y las operaciones sensibles de moderación, captcha y seguridad quedan libres de publicidad.
+
 ### Conexión interna Moonbot tolerante al arranque - 2026-07-31
 - Reintenta automáticamente las lecturas internas cuando Moonbot todavía está arrancando tras una reconstrucción.
 - Mantiene las acciones administrativas POST en un único intento para impedir operaciones duplicadas.

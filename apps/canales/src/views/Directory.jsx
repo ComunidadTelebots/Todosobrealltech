@@ -197,6 +197,7 @@ function ChannelTable({ list, sort }) {
                       <span className="flex items-center gap-2">
                         <span className="truncate font-mono text-xs text-muted">@{c.username}</span>
                         <CategoryPill id={c.category} className="hidden sm:inline-flex" />
+                        {c.community?.active && <span className="rounded-full bg-teal/10 px-2 py-0.5 font-mono text-[10px] text-teal">comunidad</span>}
                       </span>
                     </span>
                   </Link>
