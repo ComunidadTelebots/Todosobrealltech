@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { pocketbaseClient } from '../utils/pocketbaseClient.js';
+import { recordContentEvent, requestCountry } from '../utils/contentAnalytics.js';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.post('/:slug', async (req, res) => {
     const updated = await pocketbaseClient
       .collection('nw3_noticias')
       .update(record.id, { visitas: (record.visitas || 0) + 1 });
+    recordContentEvent({ kind: 'news', targetId: record.id, eventType: 'view', country: requestCountry(req), placement: 'web' });
 
     res.json({ visitas: updated.visitas });
   } catch {

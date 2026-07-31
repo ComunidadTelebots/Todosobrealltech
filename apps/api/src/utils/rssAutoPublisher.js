@@ -1,6 +1,8 @@
 import { pocketbaseClient } from './pocketbaseClient.js';
 import logger from './logger.js';
 import { rewriteText } from './textRewriter.js';
+import { OFFICIAL_ADS } from './houseAdsCatalog.js';
+import { recordContentEvent } from './contentAnalytics.js';
 
 /**
  * rssAutoPublisher
@@ -27,6 +29,11 @@ const TELEGRAM_CALL_DELAY_MS = 1200;          // pausa entre llamadas a la Bot A
 const MAX_NEW_PER_RUN = Number(process.env.RSS_MAX_NEW_PER_RUN || 25); // tope de seguridad: nuevos artículos por ejecución
 const MAX_TELEGRAM_BODY_CHARS = Number(process.env.RSS_TELEGRAM_SUMMARY_CHARS || 180); // una frase breve
 const CHANNEL_EDIT_MIN_AGE_MS = Number(process.env.RSS_CHANNEL_EDIT_MIN_AGE_MS || 5 * 60 * 1000);
+const HOUSE_ADS_INTERNAL_URL = process.env.HOUSE_ADS_INTERNAL_URL || 'http://api:3001/community-cards?placement=telegram_channel';
+const HOUSE_ADS_TRACKING_BASE_URL = String(process.env.HOUSE_ADS_TRACKING_BASE_URL || 'https://todosobreall.tech/hcgi/api/community-cards').replace(/\/$/, '');
+const HOUSE_ADS_TIMEOUT_MS = Number(process.env.HOUSE_ADS_TIMEOUT_MS || 3000);
+const TELEGRAM_VIEWS_SYNC_INTERVAL_MS = Number(process.env.TELEGRAM_VIEWS_SYNC_INTERVAL_MS || 15 * 60 * 1000);
+const TELEGRAM_VIEWS_SYNC_LIMIT = Number(process.env.TELEGRAM_VIEWS_SYNC_LIMIT || 40);
 
 // Extracción del cuerpo completo del artículo original (fetchArticleContent):
 const MIN_ARTICLE_CHARS = 200;                // mínimo de texto extraído para darlo por válido
@@ -339,6 +346,42 @@ function stripLeadingTitle(text = '', title = '') {
     return body.slice(t.length).replace(/^[\s\-–—:.|·•]+/, '').trim();
   }
   return body;
+}
+
+// El mensaje del canal necesita solo una entradilla. Los proveedores suelen
+// repetir el titular y añadir su marca, la fuente o llamadas a abrir la noticia;
+// esos elementos ya están representados por el título y el enlace propio.
+function cleanTelegramSummaryText(text = '', title = '') {
+  const withoutTitle = stripLeadingTitle(stripFeedNoise(htmlToPlainText(text)), title);
+  return withoutTitle
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line
+      && !/^(?:noticias\s*web\s*3|noticiasweb3|nw3)(?:\b|\s*[-:|])/i.test(line)
+      && !/^(?:fuente|source|vía|via|publicado por|publicado en)\s*[:|-]/i.test(line)
+      && !/^(?:leer|lee|ver|abrir|contin[uú]a)(?:\s+(?:la noticia|el artículo|leyendo|en))?\b/i.test(line)
+      && !/^https?:\/\/(?:noticiasweb3\.)?todosobreall\.tech\b/i.test(line))
+    .join(' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function cleanTelegramEditedBase(text = '') {
+  const lines = stripFeedNoise(htmlToPlainText(text))
+    .split('\n')
+    .map((line) => line
+      .replace(/https?:\/\/(?:www\.)?ift\.tt\/\S+/gi, '')
+      .replace(/https?:\/\/(?:noticiasweb3\.)?todosobreall\.tech\/\S*/gi, '')
+      .trim())
+    .filter((line) => line
+      && !/^(?:noticias\s*web\s*3|noticiasweb3|nw3)(?:\b|\s*[-:|])/i.test(line)
+      && !/^(?:fuente|source|vía|via|publicado por|publicado en)\s*[:|-]/i.test(line)
+      && !/^(?:leer|lee|ver|abrir|contin[uú]a)(?:\s+(?:la noticia|el artículo|leyendo|en))?\b/i.test(line));
+  if (!lines.length) return '';
+
+  const title = lines[0];
+  const summary = summarize(cleanTelegramSummaryText(lines.slice(1).join('\n'), title), MAX_TELEGRAM_BODY_CHARS);
+  return summary ? `${title}\n\n${summary}` : title;
 }
 
 function htmlToPlainText(html = '') {
@@ -676,7 +719,82 @@ async function telegramApi(method, body, retries = TELEGRAM_MAX_RETRIES) {
 // Escapa los 3 caracteres que rompen parse_mode HTML en texto plano (no en el <a> del sufijo/footer).
 const escapeHtml = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags) {
+function telegramHouseAdTrackingUrl(ad = {}) {
+  const id = encodeURIComponent(String(ad.id || OFFICIAL_ADS[0].id));
+  return `${HOUSE_ADS_TRACKING_BASE_URL}/${id}/click?placement=telegram_channel`;
+}
+
+const escapeRichMarkdown = (value = '') => String(value).replace(/([\\`*_[\]<>])/g, '\\$1');
+
+// Telegram no incrusta una imagen dentro de sendMessage. Un blockquote HTML
+// actúa como tarjeta compacta y permanece en el propio texto cuando Inside Ads
+// añade después su bloque y su teclado. Todos los enlaces pasan por el contador
+// propio, que registra también el país del clic antes de redirigir.
+function formatTelegramHouseAd(ad = {}) {
+  if (!ad?.id || !ad?.title) return '';
+  const trackingUrl = escapeHtml(telegramHouseAdTrackingUrl(ad));
+  const title = escapeHtml(String(ad.title).slice(0, 100));
+  const description = escapeHtml(String(ad.description || '').slice(0, 180));
+  const cta = escapeHtml(String(ad.cta || 'Abrir').slice(0, 40));
+  return `<blockquote>&#128226; <b>Recomendado por TodoSobreAllTech</b>\n<a href="${trackingUrl}">${title}</a>${description ? `\n${description}` : ''}\n<a href="${trackingUrl}">${cta} &rarr;</a></blockquote>`;
+}
+
+function formatTelegramHouseAdMarkdown(ad = {}) {
+  if (!ad?.id || !ad?.title) return '';
+  const trackingUrl = telegramHouseAdTrackingUrl(ad);
+  const title = escapeRichMarkdown(String(ad.title).slice(0, 100));
+  const description = escapeRichMarkdown(String(ad.description || '').slice(0, 180));
+  const cta = escapeRichMarkdown(String(ad.cta || 'Unirme').slice(0, 40));
+  return [
+    '| **COMUNIDAD DESTACADA** | |',
+    '|:--|--:|',
+    `| **${title}**<br>${description} | **[${cta.toUpperCase()} →](${trackingUrl})** |`,
+  ].filter(Boolean).join('\n');
+}
+
+function formatTelegramNewsRichMarkdown(article, slug, houseAd) {
+  const articleUrl = `${SITE_URL}/noticias/${slug}`;
+  const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+  const title = escapeRichMarkdown(String(article.titulo || '').slice(0, 200));
+  const cleanBody = cleanTelegramSummaryText(article.excerpt || article.contenido, article.titulo);
+  const body = escapeRichMarkdown(summarize(cleanBody, MAX_TELEGRAM_BODY_CHARS));
+  const hashtags = String(article.hashtags || buildHashtags(article.categoria)).trim();
+  const campaign = formatTelegramHouseAdMarkdown(houseAd);
+  return [
+    `## 📰 ${title}`,
+    body,
+    hashtags,
+    `[Leer en NoticiasWeb3](${ivUrl})`,
+    campaign ? '---' : '',
+    campaign,
+  ].filter(Boolean).join('\n\n');
+}
+
+async function loadTelegramHouseAd(now = Date.now()) {
+  try {
+    const response = await fetch(HOUSE_ADS_INTERNAL_URL, { signal: AbortSignal.timeout(HOUSE_ADS_TIMEOUT_MS) });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    if (data?.ads?.[0]?.id && data.ads[0].title) return data.ads[0];
+    throw new Error('catálogo vacío');
+  } catch (error) {
+    const index = Math.floor(now / (10 * 60 * 1000)) % OFFICIAL_ADS.length;
+    logger.warn(`[rssAutoPublisher] Campañas internas no disponibles; se usa la rotación oficial: ${error.message}`);
+    return OFFICIAL_ADS[index];
+  }
+}
+
+// RSSHub permite recuperar el texto que Inside Ads añade al post, pero no el
+// InlineKeyboardMarkup del botón. Volver a editar ese mensaje podría alterar o
+// eliminar una creatividad que no podemos reconstruir. Cuando el texto vivo ya
+// contiene señales de Inside Ads, el post queda protegido y se conserva entero.
+function hasInsideAdsPromotion(text = '') {
+  const value = String(text);
+  return /(?:@?insideads_bot|inside\s*ads|https?:\/\/(?:www\.)?inside\.ad(?:\/|\b))/i.test(value)
+    || /(?:^|\n)\s*(?:publicidad|anuncio|patrocinado)\s*[:-]/im.test(value);
+}
+
+async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags, houseAd) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   // URL que no apunta a un post concreto: irrecuperable, no reintentar.
   if (!match) return { ok: false, permanent: true };
@@ -685,14 +803,25 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   const messageId = Number(match[2]);
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
   const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
-  const suffix = `\n\n${hashtags || buildHashtags(categoria)}\n\n📰 <a href="${ivUrl}">Leer en NW3</a>`;
-  const base = (originalText || '').trim();
+  const houseAdBlock = formatTelegramHouseAd(houseAd);
+  const suffix = `\n\n${hashtags || buildHashtags(categoria)}\n\n📰 <a href="${ivUrl}">Leer en NW3</a>${houseAdBlock ? `\n\n${houseAdBlock}` : ''}`;
+  const originalBase = (originalText || '').trim();
+
+  // El botón de @InsideAds_bot vive fuera del texto como reply_markup y no se
+  // publica en RSS. No tocamos el mensaje una vez insertada la campaña: de este
+  // modo se preservan tanto su texto como su botón original.
+  if (hasInsideAdsPromotion(originalBase)) {
+    logger.info(`[rssAutoPublisher] Post protegido por Inside Ads; se conserva texto y botón: ${telegramUrl}`);
+    return { ok: true, permanent: false, protectedByInsideAds: true };
+  }
 
   // No volvemos a editar un mensaje que ya contiene el enlace: el texto puede
   // haber sido ampliado después por @InsideAds_bot y debe conservarse intacto.
-  if (/leer en nw3/i.test(base) || base.includes(articleUrl)) {
+  if (/leer en (?:nw3|noticiasweb3)/i.test(originalBase) || originalBase.includes(articleUrl)) {
     return { ok: true, permanent: false, alreadyPresent: true };
   }
+
+  const base = cleanTelegramEditedBase(originalBase);
 
   // editMessageText reemplaza el texto completo → reenviamos original + sufijo (límite 4096).
   // El texto base se escapa (parse_mode HTML); se recorta EN CRUDO antes de escapar
@@ -768,15 +897,19 @@ function summarize(text = '', maxLen = MAX_TELEGRAM_BODY_CHARS) {
  * cual; si no, se derivan de la categoría. Devuelve el message_id del post
  * publicado, o null si falla.
  */
-async function publishToTelegram(article, slug) {
+async function publishToTelegram(article, slug, selectedHouseAd) {
   const header = `📰 ${escapeHtml(article.titulo)}`;
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
   const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
-  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 <a href="${ivUrl}">Leer más</a>`;
+  const houseAd = selectedHouseAd || await loadTelegramHouseAd();
+  const houseAdBlock = formatTelegramHouseAd(houseAd);
+  const richMarkdown = formatTelegramNewsRichMarkdown(article, slug, houseAd);
+  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 <a href="${ivUrl}">Leer en NoticiasWeb3</a>${houseAdBlock ? `\n\n${houseAdBlock}` : ''}`;
 
   // Cuerpo = resumen breve (2-3 frases, máx. 300 caracteres), no el contenido
   // completo. Preferimos el excerpt del feed y caemos al contenido reescrito.
-  let body = summarize(article.excerpt || article.contenido, MAX_TELEGRAM_BODY_CHARS);
+  const cleanBody = cleanTelegramSummaryText(article.excerpt || article.contenido, article.titulo);
+  let body = summarize(cleanBody, MAX_TELEGRAM_BODY_CHARS);
 
   // Salvaguarda del límite de 4096 de sendMessage (en la práctica el resumen ya
   // está muy por debajo), conservando cabecera, hashtags y enlace.
@@ -786,7 +919,22 @@ async function publishToTelegram(article, slug) {
   const text = `${header}\n\n${escapeHtml(body)}\n\n${footer}`;
 
   try {
-    const result = await telegramApi('sendMessage', { chat_id: PUBLISH_CHANNEL, text, parse_mode: 'HTML' });
+    let result = await telegramApi('sendRichMessage', {
+      chat_id: PUBLISH_CHANNEL,
+      rich_message: { markdown: richMarkdown },
+    });
+
+    // Instalaciones que todavía ejecuten una versión anterior de Bot API
+    // mantienen el formato compacto mediante el sendMessage HTML tradicional.
+    if (!result.ok) {
+      logger.warn(`[rssAutoPublisher] Rich Markdown no disponible; se usa HTML compatible: ${result.description || 'error desconocido'}`);
+      result = await telegramApi('sendMessage', {
+      chat_id: PUBLISH_CHANNEL,
+      text,
+      parse_mode: 'HTML',
+      link_preview_options: { is_disabled: true },
+      });
+    }
     if (result.ok && result.result?.message_id) {
       return result.result.message_id;
     }
@@ -798,6 +946,68 @@ async function publishToTelegram(article, slug) {
     // el artículo se guarde y obtenga su URL propia en NoticiasWeb3.
     logger.warn(`[rssAutoPublisher] Telegram no disponible; el artículo se guardará igualmente: ${err.message}`);
     return null;
+  }
+}
+
+function parseTelegramViewCount(value = '') {
+  const normalized = String(value).trim().replace(/\s/g, '').replace(',', '.').toUpperCase();
+  const match = normalized.match(/^(\d+(?:\.\d+)?)([KMB])?$/);
+  if (!match) return null;
+  const multiplier = { K: 1_000, M: 1_000_000, B: 1_000_000_000 }[match[2]] || 1;
+  return Math.round(Number(match[1]) * multiplier);
+}
+
+async function fetchOfficialTelegramViews(telegramUrl) {
+  const match = String(telegramUrl).match(/^https?:\/\/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
+  if (!match) return null;
+  const url = `https://t.me/s/${match[1]}/${match[2]}?embed=1&mode=tme`;
+  const response = await fetch(url, {
+    headers: { 'User-Agent': FETCH_USER_AGENT },
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!response.ok) return null;
+  const html = await response.text();
+  const views = html.match(/tgme_widget_message_views[^>]*>([^<]+)</i)?.[1];
+  return parseTelegramViewCount(views);
+}
+
+async function syncOfficialTelegramViews() {
+  try {
+    const records = (await pocketbaseClient.collection('nw3_noticias').getFullList({
+      filter: 'telegram_url != ""',
+      sort: '-created',
+      fields: 'id,telegram_url,telegram_views,telegram_views_synced,community_ad_id',
+    })).slice(0, TELEGRAM_VIEWS_SYNC_LIMIT);
+    let updated = 0;
+    let impressions = 0;
+    for (let offset = 0; offset < records.length; offset += 4) {
+      const batch = records.slice(offset, offset + 4);
+      const results = await Promise.allSettled(batch.map((record) => fetchOfficialTelegramViews(record.telegram_url)));
+      for (let index = 0; index < batch.length; index++) {
+        const record = batch[index];
+        const result = results[index];
+        const official = result.status === 'fulfilled' ? result.value : null;
+        if (!Number.isSafeInteger(official) || official < 0) continue;
+        const previous = Number(record.telegram_views || 0);
+        const firstSync = record.telegram_views_synced !== true;
+        const delta = firstSync ? 0 : Math.max(0, official - previous);
+        await pocketbaseClient.collection('nw3_noticias').update(record.id, {
+          telegram_views: Math.max(previous, official),
+          telegram_views_synced: true,
+        });
+        updated++;
+        if (delta > 0) {
+          await recordContentEvent({ kind: 'news', targetId: record.id, eventType: 'impression', country: 'UNK', placement: 'telegram_channel', count: delta });
+          if (record.community_ad_id) {
+            await recordContentEvent({ kind: 'community_ad', targetId: record.community_ad_id, eventType: 'impression', country: 'UNK', placement: 'telegram_channel', count: delta });
+          }
+          impressions += delta;
+        }
+      }
+    }
+    logger.info(`[rssAutoPublisher] Telegram oficial: ${updated} posts sincronizados, +${impressions} impresiones.`);
+  } catch (error) {
+    logger.warn(`[rssAutoPublisher] No se pudieron sincronizar las impresiones oficiales de Telegram: ${error.message}`);
   }
 }
 
@@ -839,6 +1049,7 @@ async function backfillTelegramLinks() {
       .flatMap((result) => (result.status === 'fulfilled' ? result.value : []))
       .filter((item) => item.telegramUrl && item.telegramOriginalText)
       .map((item) => [item.telegramUrl, item]));
+    const telegramHouseAd = await loadTelegramHouseAd();
 
     let edited = 0;
     let failedPermanent = 0;
@@ -857,16 +1068,22 @@ async function backfillTelegramLinks() {
           logger.warn(`[rssAutoPublisher] backfillTelegramLinks: texto vivo no disponible para ${record.telegram_url}; no se edita para proteger Inside Ads.`);
           continue;
         }
-        const { ok, permanent } = await appendNw3LinkToTelegramPost(
+        const { ok, permanent, protectedByInsideAds } = await appendNw3LinkToTelegramPost(
           record.telegram_url,
           record.slug,
           live.telegramOriginalText,
           record.categoria,
+          undefined,
+          telegramHouseAd,
         );
         if (ok) {
-          edited++;
           await pocketbaseClient.collection('nw3_noticias').update(record.id, { nw3_iv_added: true });
-          logger.info(`[rssAutoPublisher] backfillTelegramLinks: IV añadido a ${record.telegram_url}`);
+          if (protectedByInsideAds) {
+            logger.info(`[rssAutoPublisher] backfillTelegramLinks: campaña de Inside Ads conservada en ${record.telegram_url}`);
+          } else {
+            edited++;
+            logger.info(`[rssAutoPublisher] backfillTelegramLinks: IV añadido a ${record.telegram_url}`);
+          }
         } else if (permanent) {
           failedPermanent++;
           await pocketbaseClient.collection('nw3_noticias').update(record.id, { nw3_iv_failed: true });
@@ -968,6 +1185,7 @@ async function runAutoPublish() {
     let created = 0;
     let edited = 0;
     let published = 0;
+    const telegramHouseAd = BOT_TOKEN ? await loadTelegramHouseAd() : null;
 
     // 4. Crear cada artículo y, según su origen, publicar un post nuevo (feeds
     //    rss.app) o editar el post original del canal (canales de Telegram).
@@ -1015,6 +1233,7 @@ async function runAutoPublish() {
           const messageId = await publishToTelegram(
             { titulo, contenido: contenidoReescrito, categoria, hashtags, excerpt: item.excerpt },
             slug,
+            telegramHouseAd,
           );
           if (messageId) {
             telegramUrl = `https://t.me/${PUBLISH_CHANNEL.replace(/^@/, '')}/${messageId}`;
@@ -1037,6 +1256,9 @@ async function runAutoPublish() {
           year: yearOf(item.pubDate),
           destacado: false,
           nw3_iv_added: Boolean(item.publishNew && telegramUrl),
+          community_ad_id: item.publishNew && telegramUrl ? String(telegramHouseAd?.id || '') : '',
+          telegram_views: 0,
+          telegram_views_synced: false,
         });
         created++;
         knownUrls.add(item.sourceUrl);
@@ -1049,13 +1271,17 @@ async function runAutoPublish() {
             logger.info(`[rssAutoPublisher] Edición aplazada para que Inside Ads procese ${item.telegramUrl}.`);
             continue;
           }
-          const { ok } = await appendNw3LinkToTelegramPost(
-            item.telegramUrl, slug, item.telegramOriginalText || item.fullText, categoria, hashtags,
+          const { ok, protectedByInsideAds } = await appendNw3LinkToTelegramPost(
+            item.telegramUrl, slug, item.telegramOriginalText || item.fullText, categoria, hashtags, telegramHouseAd,
           );
           if (ok) {
-            edited++;
             await pocketbaseClient.collection('nw3_noticias').update(createdRecord.id, { nw3_iv_added: true });
-            logger.info(`[rssAutoPublisher] Enlace NW3 añadido al post: ${item.telegramUrl}`);
+            if (protectedByInsideAds) {
+              logger.info(`[rssAutoPublisher] Campaña de Inside Ads conservada en el post: ${item.telegramUrl}`);
+            } else {
+              edited++;
+              logger.info(`[rssAutoPublisher] Enlace NW3 añadido al post: ${item.telegramUrl}`);
+            }
           }
           await sleep(TELEGRAM_CALL_DELAY_MS);
         }
@@ -1084,6 +1310,13 @@ export function startTelegramLinkBackfill(intervalMs = IV_BACKFILL_INTERVAL_MS) 
   return setInterval(run, intervalMs);
 }
 
+export function startOfficialTelegramViewsSync(intervalMs = TELEGRAM_VIEWS_SYNC_INTERVAL_MS) {
+  const run = () => syncOfficialTelegramViews().catch((error) =>
+    logger.error(`[rssAutoPublisher] syncOfficialTelegramViews: ${error.message}`));
+  run();
+  return setInterval(run, intervalMs);
+}
+
 export {
   backfillTelegramLinks,
   fetchArticleContent,
@@ -1091,7 +1324,17 @@ export {
   buildHashtagsFromContent,
   sourceUrlFromTelegramPost,
   summarize,
+  cleanTelegramSummaryText,
+  cleanTelegramEditedBase,
   htmlToPlainText,
   isWorkerPublishedRecord,
   shouldDelayChannelEdit,
+  hasInsideAdsPromotion,
+  formatTelegramHouseAd,
+  formatTelegramHouseAdMarkdown,
+  formatTelegramNewsRichMarkdown,
+  telegramHouseAdTrackingUrl,
+  parseTelegramViewCount,
+  fetchOfficialTelegramViews,
+  syncOfficialTelegramViews,
 };

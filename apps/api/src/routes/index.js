@@ -17,6 +17,7 @@ import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
 import moonbotAdminRouter from './moonbot-admin.js';
 import houseAdsRouter from './house-ads.js';
+import contentAnalyticsRouter from './content-analytics.js';
 
 const router = Router();
 
@@ -42,6 +43,7 @@ export default () => {
     // Alias neutral: algunos bloqueadores interceptan cualquier URL que incluya
     // "ads", incluso cuando son recomendaciones propias sin seguimiento externo.
     router.use('/community-cards', houseAdsRouter);
+    router.use('/content-analytics', contentAnalyticsRouter);
 
     return router;
 };

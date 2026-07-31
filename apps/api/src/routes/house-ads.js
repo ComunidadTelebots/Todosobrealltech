@@ -2,8 +2,9 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import geoip from 'geoip-lite';
 import { authorizeAdminOrCreator } from './stats.js';
+import { OFFICIAL_ADS, officialAdsFor } from '../utils/houseAdsCatalog.js';
+import { recordContentEvent, requestCountry } from '../utils/contentAnalytics.js';
 
 const router = Router();
 const MOON_URLS = [...new Set([
@@ -33,14 +34,6 @@ const safeAdDestination = (value) => {
     return fallback;
   }
 };
-const OFFICIAL_ADS = [
-  { id: 'official-todosobrealltech', title: 'TodoSobreAllTech en Telegram', description: 'Noticias de tecnología, IA, Web3 y seguridad en nuestro canal oficial.', cta: 'Unirme al canal', url: 'https://t.me/TodoSobreAllTech', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#e9f8ff,#d8f0ff)', foreground: '#12324a', accent: '#168acd', builtin: true },
-  { id: 'official-comunidadtelebots', title: 'Comunidad TeleBots', description: 'Canales, grupos, bots y proyectos abiertos de nuestra comunidad Telegram.', cta: 'Abrir comunidad', url: 'https://t.me/comunidadtelebots', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f4ecff,#e7ddff)', foreground: '#2f2350', accent: '#7157c8', builtin: true },
-  { id: 'official-resistencia-censura', title: 'Resistencia a la Censura', description: 'Privacidad, acceso libre a la información y resistencia digital.', cta: 'Ver canal', url: 'https://t.me/resistencia_censura', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', foreground: '#7c2d12', accent: '#ea580c', builtin: true },
-  { id: 'official-todosobregameplays', title: 'Todo Sobre Gameplays', description: 'Vídeos, directos y novedades para la comunidad gaming.', cta: 'Ver gameplays', url: 'https://t.me/TodoSobreGameplaysCanal', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', foreground: '#4c1d95', accent: '#7c3aed', builtin: true },
-  { id: 'official-instagram', title: 'TodoSobreAllTech en Instagram', description: 'Noticias, tecnología e inteligencia artificial en formato visual.', cta: 'Seguir en Instagram', url: 'https://www.instagram.com/todosobrealltech/', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#fff1f2,#fae8ff)', foreground: '#831843', accent: '#db2777', builtin: true },
-];
-const officialAdsFor = (placement = '') => OFFICIAL_ADS.filter((ad) => !placement || ['all', placement].includes(ad.placement));
 const ROTATION_MS = 10 * 60 * 1000;
 const rotatedOfficialAdsFor = (placement = '', now = Date.now()) => {
   const ads = officialAdsFor(placement);
@@ -48,15 +41,6 @@ const rotatedOfficialAdsFor = (placement = '', now = Date.now()) => {
   const offset = [...placement].reduce((sum, character) => sum + character.charCodeAt(0), 0);
   const index = (Math.floor(now / ROTATION_MS) + offset) % ads.length;
   return [...ads.slice(index), ...ads.slice(0, index)];
-};
-const requestCountry = (req) => {
-  const headerCountry = ['cf-ipcountry', 'x-country-code', 'x-vercel-ip-country', 'x-geo-country']
-    .map((name) => String(req.headers[name] || '').trim().toUpperCase())
-    .find((value) => /^[A-Z]{2}$/.test(value) && value !== 'XX');
-  if (headerCountry) return headerCountry;
-  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',').map((value) => value.trim());
-  const address = forwarded.find(Boolean) || String(req.socket?.remoteAddress || '').replace(/^::ffff:/, '');
-  return String(geoip.lookup(address)?.country || 'UNK').toUpperCase();
 };
 
 async function moon(options = {}) {
@@ -89,7 +73,10 @@ router.get('/', async (req, res) => {
         .sort((left, right) => String(left.id).localeCompare(String(right.id)));
       const offset = [...placement].reduce((sum, character) => sum + character.charCodeAt(0), 0);
       ads = [candidates[(Math.floor(Date.now() / ROTATION_MS) + offset) % candidates.length]];
-      moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement, country }) }).catch(() => {});
+      if (placement !== 'telegram_channel') {
+        moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement, country }) }).catch(() => {});
+        recordContentEvent({ kind: 'community_ad', targetId: ads[0].id, eventType: 'impression', country, placement });
+      }
     }
     return res.json({ ok: true, ads });
   } catch {
@@ -142,6 +129,7 @@ router.get('/:id/click', async (req, res) => {
   const country = requestCountry(req);
   if (officialAd) {
     moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: officialAd.id, placement, country }) }).catch(() => {});
+    recordContentEvent({ kind: 'community_ad', targetId: officialAd.id, eventType: 'click', country, placement });
     return res.redirect(302, officialAd.url);
   }
   try {
@@ -157,6 +145,7 @@ router.get('/:id/click', async (req, res) => {
       : null;
     const destination = String(communityItem?.url || ad.url || 'https://todosobreall.tech');
     await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, country, item_id: communityItem?.id || '' }) });
+    recordContentEvent({ kind: 'community_ad', targetId: ad.id, eventType: 'click', country, placement });
     return res.redirect(302, safeAdDestination(destination));
   } catch { return res.redirect(302, 'https://todosobreall.tech'); }
 });

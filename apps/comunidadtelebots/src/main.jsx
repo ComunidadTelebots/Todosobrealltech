@@ -81,6 +81,33 @@ function Stat({ icon: Icon, label, value }) {
 }
 
 function AdPreview({ position }) {
+  const [ad, setAd] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    const placement = `comunidadtelebots_${position}`;
+    const load = () => fetch(`/hcgi/api/house-ads?placement=${encodeURIComponent(placement)}`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error('ads unavailable')))
+      .then((data) => { if (active) setAd(data.ads?.[0] || null); })
+      .catch(() => { if (active) setAd(null); });
+    load();
+    const timer = window.setInterval(load, 10 * 60 * 1000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [position]);
+
+  if (ad) {
+    const placement = `comunidadtelebots_${position}`;
+    const clickUrl = `/hcgi/api/house-ads/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}`;
+    return (
+      <aside className={`ad-preview ad-preview-${position} community-ad`} aria-label="Anuncio de la comunidad">
+        <a href={clickUrl} target="_blank" rel="noopener noreferrer sponsored" style={{ background: ad.background, color: ad.foreground, borderColor: ad.accent }}>
+          {ad.image ? <img src={ad.image} alt="" loading="lazy" /> : <span className="community-ad-icon">TA</span>}
+          <span className="community-ad-copy"><small>Recomendado por la comunidad</small><strong>{ad.title}</strong><span>{ad.description}</span></span>
+          <b style={{ background: ad.accent }}>{ad.cta || 'Abrir'} <ExternalLink size={14} /></b>
+        </a>
+      </aside>
+    );
+  }
   return (
     <aside className={`ad-preview ad-preview-${position}`} aria-label={`Muestra de publicidad ${position}`}>
       <span>Publicidad</span>

@@ -29,13 +29,13 @@ import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
   moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
 import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
   normalizeGroupDelegation, normalizeTelegramClaim, normalizeWebAdminProfile, publicAdminInvite, WEB_ADMIN_PROFILES, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
+import { MOONBOT_INTERNAL_URL } from '../utils/moonbotConnection.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
 const RELEASE_SESSION_TTL_SECONDS = 600;
 const releaseLevel = Object.freeze({ stable: 0, rc: 1, beta: 2, alpha: 3 });
 const RELEASE_CHANNELS = new Set(['stable', 'rc', 'beta', 'alpha']);
-const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
 const SECURITY_IMAGE_CATEGORIES = [
   'terrorism',
   'childSexual',

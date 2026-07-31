@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     depends_on:
       api: { condition: service_healthy }
-      pocketbase: { condition: service_started }
+      pocketbase: { condition: service_healthy }
     networks: [default, traefik]
     labels:
       # Los bundles superiores permanecen internos hasta activar el gateway
@@ -49,7 +49,7 @@ services:
     restart: unless-stopped
     depends_on:
       api: { condition: service_healthy }
-      pocketbase: { condition: service_started }
+      pocketbase: { condition: service_healthy }
     networks: [default, traefik]
     labels:
       - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"
@@ -81,7 +81,7 @@ services:
     restart: unless-stopped
     depends_on:
       api: { condition: service_healthy }
-      pocketbase: { condition: service_started }
+      pocketbase: { condition: service_healthy }
     networks: [default, traefik]
     labels:
       - "traefik.enable=${RELEASE_CHANNELS_PUBLIC:-false}"

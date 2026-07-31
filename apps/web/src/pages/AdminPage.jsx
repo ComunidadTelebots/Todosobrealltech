@@ -13,6 +13,15 @@ import { Users, Bot, Shield, Activity, Loader2, UserCheck, Network, Globe, Arrow
 import { toast } from 'sonner';
 import StatCard from '@/components/StatCard.jsx';
 import SystemStatusModal from '@/components/SystemStatusModal.jsx';
+
+const ADMIN_REQUEST_TIMEOUT_MS = 10_000;
+const withAdminTimeout = (promise, label) => Promise.race([
+  promise,
+  new Promise((_, reject) => setTimeout(
+    () => reject(new Error(`${label} tardó más de ${ADMIN_REQUEST_TIMEOUT_MS / 1000} segundos`)),
+    ADMIN_REQUEST_TIMEOUT_MS,
+  )),
+]);
 import RecentActivitySection from '@/components/RecentActivitySection.jsx';
 import UserManagementTable from '@/components/UserManagementTable.jsx';
 import BlockedUsersPanel from '@/components/BlockedUsersPanel.jsx';
@@ -57,18 +66,19 @@ const AdminPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const statsPromise = apiServerClient.fetch('/stats', {
+      const statsPromise = withAdminTimeout(apiServerClient.fetch('/stats', {
         headers: { Authorization: `Bearer ${pb.authStore.token}` },
+        signal: AbortSignal.timeout(ADMIN_REQUEST_TIMEOUT_MS),
       }).then(async (response) => {
         const payload = await apiServerClient.readJson(response);
         if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
         return payload;
-      });
+      }), 'Estadísticas');
       const [usersResult, botsResult, onionWebsResult, onionLogsResult, statsResult] = await Promise.allSettled([
-        pb.collection('users').getFullList({ sort: '-created', $autoCancel: false }),
-        pb.collection('bots').getFullList({ sort: '-created', expand: 'user_id', $autoCancel: false }),
-        pb.collection('onion_webs').getFullList({ sort: '-created_at', $autoCancel: false }),
-        pb.collection('onion_access_logs').getFullList({ sort: '-access_timestamp', $autoCancel: false }),
+        withAdminTimeout(pb.collection('users').getFullList({ sort: '-created', $autoCancel: false }), 'Usuarios'),
+        withAdminTimeout(pb.collection('bots').getFullList({ sort: '-created', expand: 'user_id', $autoCancel: false }), 'Bots'),
+        withAdminTimeout(pb.collection('onion_webs').getFullList({ sort: '-created_at', $autoCancel: false }), 'Webs Onion'),
+        withAdminTimeout(pb.collection('onion_access_logs').getFullList({ sort: '-access_timestamp', $autoCancel: false }), 'Registros Onion'),
         statsPromise,
       ]);
       const usersList = usersResult.status === 'fulfilled' ? usersResult.value : [];

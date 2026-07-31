@@ -21,6 +21,9 @@ const BlockedUsersPanel = () => {
   const [registrySource, setRegistrySource] = useState('all');
   const [registryStats, setRegistryStats] = useState({ cas: 0, moonbot: 0, global: 0, local: 0, web: 0 });
   const [globalCaptcha, setGlobalCaptcha] = useState({ status: 'idle', percentage: 0 });
+  const [globalCaptchaSettings, setGlobalCaptchaSettings] = useState({
+    enabled: false, channel: '', strict_enforcement: false, reverify_interval_days: 0,
+  });
   const [globalCaptchaBusy, setGlobalCaptchaBusy] = useState(false);
   
   // Status State
@@ -101,11 +104,14 @@ const BlockedUsersPanel = () => {
     try {
       const response = await apiServerClient.fetch('/blocked-users/captcha-global');
       const data = await apiServerClient.readJson(response);
-      if (response.ok) setGlobalCaptcha(data.campaign || {});
+      if (response.ok) {
+        setGlobalCaptcha(data.campaign || {});
+        if (data.settings) setGlobalCaptchaSettings(data.settings);
+      }
     } catch { /* El panel conserva el último estado conocido. */ }
   };
   useEffect(() => {
-    if (currentUser?.role !== 'creator') return undefined;
+    if (!['admin', 'creator'].includes(currentUser?.role)) return undefined;
     fetchGlobalCaptcha();
     const timer = setInterval(fetchGlobalCaptcha, 5000);
     return () => clearInterval(timer);
@@ -120,6 +126,23 @@ const BlockedUsersPanel = () => {
       if (!response.ok) throw new Error(data.error || 'No se pudo controlar la campaña');
       setGlobalCaptcha(data.campaign || {});
       toast.success(action === 'start' ? 'Reverificación global iniciada' : 'Cancelación solicitada');
+    } catch (error) { toast.error(error.message); } finally { setGlobalCaptchaBusy(false); }
+  };
+  const saveGlobalCaptchaSettings = async () => {
+    const channel = String(globalCaptchaSettings.channel || '').trim().replace(/^@/, '');
+    if (globalCaptchaSettings.enabled && !channel) return toast.error('Configura primero el canal obligatorio');
+    setGlobalCaptchaBusy(true);
+    try {
+      const response = await apiServerClient.fetch('/blocked-users/captcha-global', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+          action: 'settings', ...globalCaptchaSettings, channel,
+          reverify_interval_days: Math.max(0, Math.min(90, Number(globalCaptchaSettings.reverify_interval_days) || 0)),
+        }) });
+      const data = await apiServerClient.readJson(response);
+      if (!response.ok) throw new Error(data.error || 'No se pudo guardar la configuración global');
+      setGlobalCaptcha(data.campaign || globalCaptcha);
+      setGlobalCaptchaSettings(data.settings || globalCaptchaSettings);
+      toast.success('Acceso global actualizado');
     } catch (error) { toast.error(error.message); } finally { setGlobalCaptchaBusy(false); }
   };
 
@@ -342,9 +365,15 @@ const BlockedUsersPanel = () => {
 
   return (
     <div className="space-y-6">
-      {currentUser?.role === 'creator' && <Card className="border-amber-500/30 bg-amber-500/5">
+      {['admin', 'creator'].includes(currentUser?.role) && <Card className="border-amber-500/30 bg-amber-500/5">
         <CardHeader><CardTitle className="flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-amber-600"/>Captcha global de usuarios pendientes</CardTitle><CardDescription>Control master independiente de cada grupo. Solo procesa usuarios conocidos que aún no lo superaron y aplica mute de Telegram, captcha, CAS, canales obligatorios y apelación.</CardDescription></CardHeader>
-        <CardContent className="space-y-3"><div className="flex flex-wrap gap-4 text-sm"><span><b>{globalCaptcha.processed || 0}</b>/{globalCaptcha.total || 0} solicitudes</span><span>{globalCaptcha.groups || 0} grupos</span><span>{globalCaptcha.private_sent || 0} privados entregados</span><span>{globalCaptcha.private_blocked || 0} privados bloqueados</span></div><div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full bg-amber-500 transition-all" style={{ width: `${Math.max(0, Math.min(100, Number(globalCaptcha.percentage || 0)))}%` }}/></div><div className="flex flex-wrap items-center justify-between gap-2"><b>{Number(globalCaptcha.percentage || 0).toLocaleString('es-ES')}% procesado</b><div className="flex gap-2"><Button variant="destructive" disabled={globalCaptchaBusy || globalCaptcha.status === 'running'} onClick={() => controlGlobalCaptcha('start')}>Iniciar captcha para pendientes</Button>{globalCaptcha.status === 'running' && <Button variant="outline" disabled={globalCaptchaBusy} onClick={() => controlGlobalCaptcha('cancel')}>Cancelar</Button>}</div></div></CardContent>
+        {currentUser?.role === 'creator' ? <CardContent className="grid gap-4 border-b pb-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="space-y-2"><Label htmlFor="global-required-channel">Canal obligatorio global</Label><Input id="global-required-channel" placeholder="@canal_general" value={globalCaptchaSettings.channel ? `@${String(globalCaptchaSettings.channel).replace(/^@/, '')}` : ''} onChange={(event) => setGlobalCaptchaSettings((value) => ({ ...value, channel: event.target.value.replace(/^@/, '') }))}/><p className="text-xs text-muted-foreground">Se suma al canal local configurado por cada grupo.</p></div>
+          <div className="space-y-2"><Label htmlFor="global-reverify-days">Reverificar cada (días)</Label><Input id="global-reverify-days" type="number" min="0" max="90" value={globalCaptchaSettings.reverify_interval_days || 0} onChange={(event) => setGlobalCaptchaSettings((value) => ({ ...value, reverify_interval_days: event.target.value }))}/><p className="text-xs text-muted-foreground">0 desactiva la programación global.</p></div>
+          <div className="flex items-center gap-3"><Switch id="global-channel-enabled" checked={Boolean(globalCaptchaSettings.enabled)} onCheckedChange={(checked) => setGlobalCaptchaSettings((value) => ({ ...value, enabled: checked }))}/><Label htmlFor="global-channel-enabled">Exigir suscripción global</Label></div>
+          <div className="flex flex-col justify-center gap-3"><div className="flex items-center gap-3"><Switch id="global-strict-enabled" checked={Boolean(globalCaptchaSettings.strict_enforcement)} onCheckedChange={(checked) => setGlobalCaptchaSettings((value) => ({ ...value, strict_enforcement: checked }))}/><Label htmlFor="global-strict-enabled">Captcha estricto global</Label></div><Button onClick={saveGlobalCaptchaSettings} disabled={globalCaptchaBusy}>Guardar ajuste global</Button></div>
+        </CardContent> : <CardContent className="border-b pb-5"><Alert><ShieldAlert className="h-4 w-4"/><AlertTitle>Información de solo lectura</AlertTitle><AlertDescription>Tu rol puede consultar el estado del captcha. El canal, la periodicidad y las campañas globales solo puede modificarlos el master.</AlertDescription></Alert><div className="mt-3 flex flex-wrap gap-3 text-sm"><Badge variant={globalCaptchaSettings.enabled ? 'default' : 'outline'}>{globalCaptchaSettings.enabled ? 'Canal global activo' : 'Canal global desactivado'}</Badge><span>{globalCaptchaSettings.channel ? `@${globalCaptchaSettings.channel}` : 'Sin canal global'}</span><span>Periodicidad: {globalCaptchaSettings.reverify_interval_days ? `${globalCaptchaSettings.reverify_interval_days} días` : 'desactivada'}</span></div></CardContent>}
+        <CardContent className="space-y-3"><div className="flex flex-wrap gap-4 text-sm"><span><b>{globalCaptcha.processed || 0}</b>/{globalCaptcha.total || 0} solicitudes</span><span>{globalCaptcha.groups || 0} grupos</span><span>{globalCaptcha.private_sent || 0} privados entregados</span><span>{globalCaptcha.private_blocked || 0} privados bloqueados</span></div><div className="h-3 overflow-hidden rounded-full bg-muted"><div className="h-full bg-amber-500 transition-all" style={{ width: `${Math.max(0, Math.min(100, Number(globalCaptcha.percentage || 0)))}%` }}/></div><div className="flex flex-wrap items-center justify-between gap-2"><b>{Number(globalCaptcha.percentage || 0).toLocaleString('es-ES')}% procesado</b>{currentUser?.role === 'creator' && <div className="flex gap-2"><Button variant="destructive" disabled={globalCaptchaBusy || globalCaptcha.status === 'running'} onClick={() => controlGlobalCaptcha('start')}>Iniciar captcha para pendientes</Button>{globalCaptcha.status === 'running' && <Button variant="outline" disabled={globalCaptchaBusy} onClick={() => controlGlobalCaptcha('cancel')}>Cancelar</Button>}</div>}</div></CardContent>
         <CardContent className="grid gap-4 border-t pt-4 xl:grid-cols-2"><section className="max-h-72 overflow-auto rounded-lg border bg-background/70 p-3"><h4 className="font-semibold">Estado guardado por grupo</h4><p className="mb-2 text-xs text-muted-foreground">{globalCaptcha.total_remaining || 0} usuarios pendientes. El estado permanece en Moonbot aunque cierres el navegador.</p><div className="space-y-2">{(globalCaptcha.group_details || []).map((group) => <div key={group.group_id} className="flex items-center justify-between gap-2 rounded border p-2 text-xs"><span className="truncate">{group.name}</span><span>{group.processed}/{group.total} · {group.remaining} pendientes · {group.status}</span></div>)}{!(globalCaptcha.group_details || []).length && <p className="text-sm text-muted-foreground">Todavía no hay una campaña guardada.</p>}</div></section><aside className="max-h-72 overflow-auto rounded-lg border bg-background/80 p-3"><h4 className="font-semibold">Usuarios restantes y protocolos</h4><div className="mt-2 space-y-2">{(globalCaptcha.remaining_users || []).map((user) => <div key={`${user.group_id}:${user.user_id}`} className="rounded-lg border p-2 text-xs"><div className="flex justify-between gap-2"><b>{user.name}</b><code>{user.user_id}</code></div><p className="truncate text-muted-foreground">{user.group_name}</p><div className="mt-2 flex flex-wrap gap-1">{Object.entries(user.protocols || {}).map(([name, status]) => <Badge key={name} variant={status === 'passed' || status === 'applied' || status === 'not_required' ? 'default' : status === 'flagged' || status === 'failed' ? 'destructive' : 'outline'} className="text-[10px]">{name}: {status}</Badge>)}</div></div>)}{!(globalCaptcha.remaining_users || []).length && <p className="text-sm text-muted-foreground">No quedan usuarios pendientes.</p>}{globalCaptcha.remaining_truncated && <p className="text-xs text-amber-700">Se muestran los primeros 250; el contador incluye todos.</p>}</div></aside></CardContent>
       </Card>}
       {/* Import Section */}

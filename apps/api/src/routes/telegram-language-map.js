@@ -1,9 +1,8 @@
 import express from 'express';
+import { MOONBOT_INTERNAL_URL, MOONBOT_PUBLIC_URL } from '../utils/moonbotConnection.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
-const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || '').replace(/\/$/, '');
-const MOONBOT_PUBLIC_URL = (process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
 const CACHE_TTL_MS = 5 * 60 * 1000;
 let cache = null;
 let cacheAt = 0;

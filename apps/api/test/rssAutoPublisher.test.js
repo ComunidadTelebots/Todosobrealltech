@@ -3,6 +3,14 @@ import assert from 'node:assert/strict';
 
 import {
   htmlToPlainText,
+  hasInsideAdsPromotion,
+  formatTelegramHouseAd,
+  formatTelegramHouseAdMarkdown,
+  formatTelegramNewsRichMarkdown,
+  telegramHouseAdTrackingUrl,
+  parseTelegramViewCount,
+  cleanTelegramSummaryText,
+  cleanTelegramEditedBase,
   isWorkerPublishedRecord,
   shouldDelayChannelEdit,
   sourceUrlFromTelegramPost,
@@ -38,6 +46,40 @@ test('conserva el destino de los enlaces insertados por Inside Ads', () => {
   assert.match(text, /Publicidad \(https:\/\/t\.me\/anunciante\)/);
 });
 
+test('protege el texto y el botón cuando Inside Ads ya procesó el post', () => {
+  assert.equal(hasInsideAdsPromotion('Publicidad: oferta\nhttps://inside.ad/es'), true);
+  assert.equal(hasInsideAdsPromotion('Anuncio - canal recomendado'), true);
+  assert.equal(hasInsideAdsPromotion('Titular normal sin campaña'), false);
+});
+
+test('crea una tarjeta Telegram compacta con seguimiento propio', () => {
+  const ad = { id: 'official-test', title: 'Canal <oficial>', description: 'Noticias & comunidad', cta: 'Abrir' };
+  const card = formatTelegramHouseAd(ad);
+  assert.match(card, /^<blockquote>/);
+  assert.match(card, /Recomendado por TodoSobreAllTech/);
+  assert.match(card, /Canal &lt;oficial&gt;/);
+  assert.match(card, /Noticias &amp; comunidad/);
+  assert.match(card, /community-cards\/official-test\/click\?placement=telegram_channel/);
+  assert.equal(
+    telegramHouseAdTrackingUrl(ad),
+    'https://todosobreall.tech/hcgi/api/community-cards/official-test/click?placement=telegram_channel',
+  );
+});
+
+test('genera el anuncio y la noticia como Rich Markdown 10.2 sin imágenes externas', () => {
+  const ad = { id: 'official-test', title: 'Canal oficial', description: 'Noticias y comunidad', cta: 'Abrir' };
+  const campaign = formatTelegramHouseAdMarkdown(ad);
+  assert.match(campaign, /^\| \*\*COMUNIDAD DESTACADA\*\* \| \|/);
+  assert.match(campaign, /\*\*Canal oficial\*\*<br>Noticias y comunidad/);
+  assert.match(campaign, /\*\*\[ABRIR →\]\(https:\/\/todosobreall\.tech\/hcgi\/api\/community-cards\/official-test\/click\?placement=telegram_channel\)\*\*/);
+  assert.doesNotMatch(campaign, /!\[|<img|https?:\/\/[^\s)]*\.(?:png|jpe?g|gif|webp)/i);
+
+  const message = formatTelegramNewsRichMarkdown({ titulo: 'Titular', excerpt: 'Una frase breve.', categoria: 'IA', hashtags: '#IA #NW3' }, 'titular', ad);
+  assert.match(message, /^## 📰 Titular/);
+  assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
+  assert.match(message, /\n\n---\n\n\| \*\*COMUNIDAD DESTACADA\*\*/);
+});
+
 test('el backfill reconoce posts propios y no los reescribe', () => {
   assert.equal(isWorkerPublishedRecord({
     telegram_url: 'https://t.me/TodoSobreAllTech/100',
@@ -53,4 +95,38 @@ test('aplaza cinco minutos la edición de posts recientes', () => {
   const now = Date.parse('2026-07-31T12:00:00Z');
   assert.equal(shouldDelayChannelEdit('2026-07-31T11:58:00Z', now), true);
   assert.equal(shouldDelayChannelEdit('2026-07-31T11:50:00Z', now), false);
+});
+
+test('interpreta el contador oficial compacto de Telegram', () => {
+  assert.equal(parseTelegramViewCount('987'), 987);
+  assert.equal(parseTelegramViewCount('1.2K'), 1200);
+  assert.equal(parseTelegramViewCount('3,4M'), 3400000);
+  assert.equal(parseTelegramViewCount('sin datos'), null);
+});
+
+test('el resumen del canal elimina titular repetido y marcas del feed', () => {
+  const clean = cleanTelegramSummaryText([
+    'Una nueva versión de Telegram mejora las llamadas',
+    'NoticiasWeb3',
+    'Una nueva versión de Telegram mejora las llamadas con mejor calidad.',
+    'Fuente: ejemplo.com',
+    'Leer la noticia en NoticiasWeb3',
+  ].join('\n'), 'Una nueva versión de Telegram mejora las llamadas');
+  assert.equal(clean, 'Una nueva versión de Telegram mejora las llamadas con mejor calidad.');
+});
+
+test('la edición del post original elimina residuos antes de añadir NoticiasWeb3', () => {
+  const clean = cleanTelegramEditedBase([
+    'Telegram estrena llamadas más seguras',
+    'Una actualización mejora el cifrado para todos los usuarios.',
+    'https://ift.tt/abc123',
+    'Fuente: medio.example',
+    'NoticiasWeb3',
+    'Leer la noticia en NoticiasWeb3',
+  ].join('\n'));
+  assert.equal(clean, [
+    'Telegram estrena llamadas más seguras',
+    '',
+    'Una actualización mejora el cifrado para todos los usuarios.',
+  ].join('\n'));
 });

@@ -2,10 +2,10 @@ import express from 'express';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 import adminOrCreatorMiddleware from '../middleware/admin-or-creator.js';
+import { MOONBOT_INTERNAL_URL, moonbotAdminHeaders } from '../utils/moonbotConnection.js';
 
 const router = express.Router();
-const MOONBOT_INTERNAL_URL = String(process.env.MOONBOT_INTERNAL_URL || '').replace(/\/$/, '');
-const moonHeaders = () => ({ Accept: 'application/json', 'X-Moon-Admin-Key': String(process.env.MOON_ADMIN_API_KEY || '').trim() });
+const moonHeaders = moonbotAdminHeaders;
 
 // Every endpoint either contacts CAS or reads/writes privileged blocklist data.
 router.use(adminOrCreatorMiddleware);
@@ -46,8 +46,12 @@ router.get('/', async (req, res) => {
 });
 
 router.all('/captcha-global', async (req, res) => {
-  if (req.state?.user?.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el master puede iniciar el captcha global' });
   if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  // Los administradores web pueden consultar el estado. Solo el creator/master
+  // puede modificar ajustes o ejecutar y cancelar campañas globales.
+  if (req.method === 'POST' && req.state?.user?.role !== 'creator') {
+    return res.status(403).json({ ok: false, error: 'Solo el master puede modificar el captcha global' });
+  }
   if (!MOONBOT_INTERNAL_URL || !process.env.MOON_ADMIN_API_KEY) {
     return res.status(503).json({ ok: false, error: 'Conexión interna con Moonbot no configurada' });
   }
@@ -55,10 +59,25 @@ router.all('/captcha-global', async (req, res) => {
     const response = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/captcha-global`, {
       method: req.method, headers: { ...moonHeaders(), 'Content-Type': 'application/json' },
       body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
-      signal: AbortSignal.timeout(10_000),
+      // El inicio recorre todos los grupos y puede preparar cientos de usuarios.
+      // Un límite corto devolvía 502 aunque Moonbot guardase la campaña.
+      signal: AbortSignal.timeout(req.method === 'POST' ? 60_000 : 10_000),
     });
     return res.status(response.status).json(await response.json());
   } catch (error) {
+    if (req.method === 'POST') {
+      try {
+        // Recupera una campaña que llegó a iniciarse aunque se perdiera la
+        // respuesta del POST, evitando mostrar un fallo falso al master.
+        const statusResponse = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/captcha-global`, {
+          headers: moonHeaders(), signal: AbortSignal.timeout(10_000),
+        });
+        const statusPayload = await statusResponse.json();
+        if (statusResponse.ok && statusPayload?.campaign?.status === 'running') {
+          return res.status(202).json({ ...statusPayload, ok: true, started: true, recovered: true });
+        }
+      } catch { /* conserva el error original */ }
+    }
     logger.warn(`[Global captcha] ${error.message}`);
     return res.status(502).json({ ok: false, error: 'Moonbot no respondió al control global de captcha' });
   }

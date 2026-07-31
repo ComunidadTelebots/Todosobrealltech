@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import ContentAnalyticsDialog from '@/components/ContentAnalyticsDialog.jsx';
 
 const EMPTY_FORM = {
   titulo: '',
@@ -30,6 +31,7 @@ const CreatorNewsManager = () => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
+  const [analyticsPost, setAnalyticsPost] = useState(null);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -211,6 +213,10 @@ const CreatorNewsManager = () => {
                     {post.contenido}
                   </p>
                   <div className="flex flex-wrap gap-2">
+                    <Button size="sm" variant="outline" onClick={() => setAnalyticsPost(post)}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      Estadísticas
+                    </Button>
                     <Button size="sm" onClick={() => openEditor(post)}>
                       <FilePenLine className="mr-2 h-4 w-4" />
                       Editar
@@ -328,6 +334,13 @@ const CreatorNewsManager = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ContentAnalyticsDialog
+        open={!!analyticsPost}
+        onOpenChange={(open) => !open && setAnalyticsPost(null)}
+        kind="news"
+        targetId={analyticsPost?.id || ''}
+        title={analyticsPost?.titulo || ''}
+      />
     </section>
   );
 };

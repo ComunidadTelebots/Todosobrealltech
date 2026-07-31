@@ -1,10 +1,28 @@
 # Changelog - TodoSobreAllTech
 
+- Añade en `/admin` un ajuste master independiente para el canal obligatorio global, captcha estricto y reverificación periódica de todos los grupos.
+- Mantiene en cada grupo un canal obligatorio local adicional; el captcha exige tanto el canal global como el local cuando ambos están configurados.
+- Sincroniza y persiste estos ajustes en Moonbot mediante la conexión interna autenticada, sin depender del navegador.
+
+- El inicio del captcha global admite campañas grandes sin devolver un falso error de API: amplía el tiempo del POST y recupera automáticamente el estado persistido si se pierde la respuesta inicial.
+- El panel administrador deja de bloquear toda la pantalla indefinidamente: aplica un límite de diez segundos por fuente y muestra los datos parciales disponibles.
+- Los canales RC, beta y alfa esperan también a que PocketBase esté saludable antes de servir sus interfaces.
+- Unifica todas las consultas de administración, bloqueos y mapa lingüístico sobre `MOONBOT_INTERNAL_URL`, con destino interno seguro `http://moonbot:5000` aunque la variable falte; elimina caídas silenciosas a la URL pública.
+- Añade un `.dockerignore` común para impedir que dependencias locales antiguas sobrescriban las instaladas por `npm ci`; corrige la resolución de `@remix-run/router` en NoticiasWeb3 y reduce el contexto y el tiempo de compilación.
+- El despliegue espera a que PocketBase termine las migraciones y responda correctamente antes de iniciar API, worker y web, evitando campos o registros ausentes tras una actualización.
+
 ### Compatibilidad con Inside Ads e IFTTT - 2026-07-31
 - Los posts nuevos de `@TodoSobreAllTech` contienen únicamente el titular, una frase breve y el enlace a NoticiasWeb3.
 - El backfill deja de sustituir esos mensajes por el artículo completo y conserva el bloque y los enlaces añadidos por `@InsideAds_bot`.
 - Las ediciones de posts externos esperan cinco minutos y utilizan el texto vivo del canal; si no puede leerse, se omite la edición para no borrar publicidad.
 - Los enlaces cortos de IFTTT se reconocen como fuente, se importan en NoticiasWeb3 y dejan de ser descartados por confundir Inside Ads con contenido patrocinado.
+- Cuando Inside Ads ya ha insertado una campaña, el worker no vuelve a editar el mensaje y conserva tanto el texto publicitario como su botón original.
+- Añade tras «Leer en NoticiasWeb3» una tarjeta compacta de campañas TodoSobreAllTech; rota desde el mismo panel web y mide clics, ubicación Telegram y país mediante el enlace propio antes de que Inside Ads incorpore su anuncio.
+- Las publicaciones nuevas usan `sendRichMessage` y Rich Markdown de Bot API 10.2 con encabezado, divisor y cita publicitaria nativos, sin imágenes externas; conservan un fallback HTML para servidores Telegram anteriores.
+- La campaña comunitaria adopta una tarjeta horizontal nativa: información a la izquierda y CTA medible a la derecha, inspirada en el formato de anuncios de la web.
+- Cada noticia y campaña comunitaria incorpora un panel privado con filtros por 24 horas, 7/30/90 días, país, hora y día.
+- Las visitas web y los clics se registran por país sin guardar IP ni identificadores personales.
+- Las impresiones de publicaciones del canal proceden del contador oficial de Telegram, sincronizado cada quince minutos; el worker deja de contabilizar como impresión la mera consulta del catálogo.
 
 ### Dependencias y compilaciones reproducibles - 2026-07-31
 - Actualiza Canales y NoticiasWeb3 a Vite 7.3.6, `@vitejs/plugin-react` 5.2.0 y React Router 7.18.2, eliminando las versiones afectadas por lectura de archivos, redirección abierta y XSS.

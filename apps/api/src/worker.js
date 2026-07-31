@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import logger from './utils/logger.js';
 import { startTelegramSync } from './utils/telegramSync.js';
-import { startRssAutoPublisher, startTelegramLinkBackfill } from './utils/rssAutoPublisher.js';
+import { startOfficialTelegramViewsSync, startRssAutoPublisher, startTelegramLinkBackfill } from './utils/rssAutoPublisher.js';
 import { refreshPayload } from './routes/mtproto-proxies.js';
 
 const PROXY_CRAWL_MS = Number(process.env.MTPROTO_PAYLOAD_TTL_MS || 300_000); // 5 min
@@ -34,6 +34,7 @@ process.on('SIGTERM', async () => {
 	logger.info('🛠️  Worker de jobs iniciado (telegramSync, backfill, rssAutoPublisher, crawl proxies)');
 	startTelegramSync();
 	startTelegramLinkBackfill(); // en segundo plano: no bloquea el arranque
+	startOfficialTelegramViewsSync();
 	startRssAutoPublisher();
 
 	// Crawl de proxies MTProto (@ProxyMTProto): antes ahogaba el pool del api con
