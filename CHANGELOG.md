@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Aprobación master obligatoria para publicidad - 2026-07-31
+- Toda campaña creada o editada queda pendiente aunque la prepare el propio creador.
+- Solo el master puede aprobarla desde el panel de anuncios de TodoSobreAllTech.
+- Web, NoticiasWeb3, canal de Telegram y mensajes de bots aceptan únicamente campañas con aprobación explícita.
+- Pausar conserva la aprobación, pero una campaña pendiente o rechazada no puede reactivarse.
+
 ### Comunidades vinculadas al directorio de canales - 2026-07-31
 - Las fichas de `canales.todosobreall.tech` muestran la comunidad de Telegram detectada por Moonbot y sus canales relacionados.
 - El directorio identifica visualmente los canales que pertenecen a una comunidad.

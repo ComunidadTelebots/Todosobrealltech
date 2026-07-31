@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
     try { data = JSON.parse(rawBody); }
     catch { return res.json({ ok: true, ads: rotatedOfficialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status }); }
     if (!response.ok) return res.json({ ok: true, ads: rotatedOfficialAdsFor(placement).slice(0, 1), fallback: true, upstream_status: response.status });
-    let ads = (data.ads || []).filter((ad) => ad.enabled !== false && !['pending', 'rejected'].includes(ad.approval_status) && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
+    let ads = (data.ads || []).filter((ad) => ad.enabled !== false && ad.approval_status === 'approved' && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
     if (!ads.length) ads = officialAdsFor(placement);
     if (placement && ads.length) {
       const highestPriority = Math.max(...ads.map((ad) => Number(ad.priority || 0)));
@@ -90,7 +90,7 @@ router.post('/', async (req, res) => {
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   const payload = { ...(req.body || {}) };
   if (['approve', 'reject'].includes(payload.action) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede revisar campañas' });
-  if ((!payload.action || payload.action === 'upsert') && payload.ad) payload.ad = { ...payload.ad, approval_status: auth.user.role === 'creator' ? 'approved' : 'pending', submitted_by: auth.user.id };
+  if ((!payload.action || payload.action === 'upsert') && payload.ad) payload.ad = { ...payload.ad, approval_status: 'pending', submitted_by: auth.user.id };
   try {
     const response = await moon({ method: 'POST', body: JSON.stringify(payload) });
     const rawBody = await response.text();
@@ -138,7 +138,7 @@ router.get('/:id/click', async (req, res) => {
     let data;
     try { data = JSON.parse(rawBody); } catch { return res.redirect(302, 'https://todosobreall.tech'); }
     const ad = (data.ads || []).find((item) => String(item.id) === String(req.params.id));
-    if (!ad || !ad.enabled || ['pending', 'rejected'].includes(ad.approval_status) || !isScheduledNow(ad)) return res.redirect(302, 'https://todosobreall.tech');
+    if (!ad || !ad.enabled || ad.approval_status !== 'approved' || !isScheduledNow(ad)) return res.redirect(302, 'https://todosobreall.tech');
     const requestedItem = String(req.query.chat || '').slice(0, 64);
     const communityItem = Array.isArray(ad.community_items)
       ? ad.community_items.find((item) => String(item.id) === requestedItem)
