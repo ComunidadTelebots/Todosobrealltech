@@ -146,3 +146,16 @@ test('la edición del post original elimina residuos antes de añadir NoticiasWe
     'Una actualización mejora el cifrado para todos los usuarios.',
   ].join('\n'));
 });
+
+test('el backfill elimina paréntesis huérfanos y fragmentos repetidos de IFTTT', () => {
+  const clean = cleanTelegramEditedBase([
+    'BMW va a despedir a 8.000 empleados en Alemania. La clave está en su productividad (https://ift.tt/demo',
+    'BMW va a despedir a 8.000 empleados en Alemania. La clave está en su productividad',
+    'Una reestructuración busca reducir costes durante este año.',
+  ].join('\n'));
+  assert.equal(clean, [
+    'BMW va a despedir a 8.000 empleados en Alemania. La clave está en su productividad',
+    '',
+    'Una reestructuración busca reducir costes durante este año.',
+  ].join('\n'));
+});

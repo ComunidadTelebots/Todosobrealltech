@@ -1,5 +1,9 @@
 # Changelog - TodoSobreAllTech
 
+### Backfill e Instant View coherentes - 2026-07-31
+- Las publicaciones enriquecidas fijan explícitamente la previsualización de Instant View sin perder el diseño compacto ni la campaña comunitaria.
+- El backfill elimina paréntesis huérfanos, enlaces IFTTT y fragmentos repetidos antes de editar publicaciones antiguas.
+
 ### Barra vertical de canales en NoticiasWeb3 - 2026-07-31
 - NoticiasWeb3 incorpora una barra publicitaria vertical izquierda con canales de Telegram aprobados y rotación comunitaria.
 - La barra es independiente de AdSense, se oculta en pantallas estrechas y conserva los anuncios superior y lateral derecho existentes.

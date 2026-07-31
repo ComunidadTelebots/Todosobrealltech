@@ -375,6 +375,8 @@ function cleanTelegramEditedBase(text = '') {
     .map((line) => line
       .replace(/https?:\/\/(?:www\.)?ift\.tt\/\S+/gi, '')
       .replace(/https?:\/\/(?:noticiasweb3\.)?todosobreall\.tech\/\S*/gi, '')
+      .replace(/\(\s*\)/g, '')
+      .replace(/\s+\($/, '')
       .trim())
     .filter((line) => line
       && !/^(?:noticias\s*web\s*3|noticiasweb3|nw3)(?:\b|\s*[-:|])/i.test(line)
@@ -383,7 +385,14 @@ function cleanTelegramEditedBase(text = '') {
   if (!lines.length) return '';
 
   const title = lines[0];
-  const summary = summarize(cleanTelegramSummaryText(lines.slice(1).join('\n'), title), MAX_TELEGRAM_BODY_CHARS);
+  const uniqueBodyLines = lines.slice(1).filter((line, index, values) => {
+    const normalized = line.toLocaleLowerCase('es').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    if (!normalized) return false;
+    const normalizedTitle = title.toLocaleLowerCase('es').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    if (normalizedTitle.includes(normalized) || normalized.includes(normalizedTitle)) return false;
+    return values.findIndex((candidate) => candidate.toLocaleLowerCase('es').replace(/[^\p{L}\p{N}]+/gu, ' ').trim() === normalized) === index;
+  });
+  const summary = summarize(cleanTelegramSummaryText(uniqueBodyLines.join('\n'), title), MAX_TELEGRAM_BODY_CHARS);
   return summary ? `${title}\n\n${summary}` : title;
 }
 
@@ -944,6 +953,12 @@ async function publishToTelegram(article, slug, selectedHouseAd) {
     let result = await telegramApi('sendRichMessage', {
       chat_id: PUBLISH_CHANNEL,
       rich_message: { markdown: richMarkdown },
+      link_preview_options: {
+        is_disabled: false,
+        url: ivUrl,
+        prefer_large_media: true,
+        show_above_text: false,
+      },
     });
 
     // Instalaciones que todavía ejecuten una versión anterior de Bot API
@@ -954,7 +969,7 @@ async function publishToTelegram(article, slug, selectedHouseAd) {
       chat_id: PUBLISH_CHANNEL,
       text,
       parse_mode: 'HTML',
-      link_preview_options: { is_disabled: true },
+      link_preview_options: { is_disabled: false, url: ivUrl, prefer_large_media: true, show_above_text: false },
       });
     }
     if (result.ok && result.result?.message_id) {
@@ -1179,6 +1194,11 @@ async function backfillTelegramLinks() {
         if (!live?.telegramOriginalText) {
           failedTransient++;
           logger.warn(`[rssAutoPublisher] backfillTelegramLinks: texto vivo no disponible para ${record.telegram_url}; no se edita para proteger Inside Ads.`);
+          continue;
+        }
+        if (shouldDelayChannelEdit(live.pubDate || record.created)) {
+          failedTransient++;
+          logger.info(`[rssAutoPublisher] backfillTelegramLinks: ${record.telegram_url} se aplaza para permitir Inside Ads.`);
           continue;
         }
         const { ok, permanent, protectedByInsideAds } = await appendNw3LinkToTelegramPost(
