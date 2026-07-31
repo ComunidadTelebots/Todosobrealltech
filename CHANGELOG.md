@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Captcha obligatorio multicanal - 2026-08-01
+- El master puede exigir hasta diez canales globales simultáneos desde tarjetas seleccionables.
+- Cada grupo dispone de su propia lista de hasta diez canales locales, independiente de la lista global.
+- Web y Hub recomiendan solo canales donde está unido el bot correspondiente y conservan la edición manual.
+- Los administradores de grupo gestionan únicamente su lista local; la configuración global continúa reservada al master.
+
 ### Verificación visual del captcha global - 2026-07-31
 - El panel master muestra `Sí/No` para cada usuario y un indicador general de verificación completa.
 - El canal global predeterminado es `@TodoSobreAllTech` y la comprobación automática se realiza cada 12 horas.
