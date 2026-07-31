@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Conexión interna Moonbot tolerante al arranque - 2026-07-31
+- Reintenta automáticamente las lecturas internas cuando Moonbot todavía está arrancando tras una reconstrucción.
+- Mantiene las acciones administrativas POST en un único intento para impedir operaciones duplicadas.
+- Evita que el dashboard y el mapa lingüístico conviertan un fallo temporal de conexión en paneles vacíos.
+
 ### Publicador Telegram recuperable - 2026-07-31
 - Convierte la publicación de noticias en una cola persistente: el artículo se guarda primero y Telegram se reintenta después de timeouts o reinicios.
 - Recupera automáticamente publicaciones fallidas de las últimas 48 horas sin volver a importar ni duplicar la noticia.

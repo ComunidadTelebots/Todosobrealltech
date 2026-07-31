@@ -29,7 +29,7 @@ import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
   moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel } from '../utils/moonbotFeatureAccess.js';
 import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
   normalizeGroupDelegation, normalizeTelegramClaim, normalizeWebAdminProfile, publicAdminInvite, WEB_ADMIN_PROFILES, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
-import { MOONBOT_INTERNAL_URL } from '../utils/moonbotConnection.js';
+import { requestMoonbot } from '../utils/moonbotConnection.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
@@ -940,12 +940,7 @@ function serviceConfig(res) {
 }
 
 async function moonRequest(path, { timeoutMs = 6000, ...options } = {}) {
-  const serviceKey = (process.env.MOON_ADMIN_API_KEY || '').trim();
-  return fetch(`${MOONBOT_INTERNAL_URL}${path}`, {
-    ...options,
-    signal: AbortSignal.timeout(timeoutMs),
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': serviceKey, ...(options.headers || {}) },
-  });
+  return requestMoonbot(path, { timeoutMs, ...options });
 }
 
 router.get('/dashboard', async (req, res) => {
