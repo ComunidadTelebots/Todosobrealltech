@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, CircleDashed, CirclePlus, FileSliders, Send, RefreshCw, Play, Megaphone } from 'lucide-react';
+import { ArrowRight, CheckCircle2, CircleDashed, CirclePlus, FileSliders, Send, RefreshCw, Play, Megaphone, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +34,7 @@ const RoadmapProgressPanel = () => {
   const [quickActionLoading, setQuickActionLoading] = useState(false);
   const [quickActionMessage, setQuickActionMessage] = useState('');
   const [sendingAction, setSendingAction] = useState('');
+  const [telegramReact, setTelegramReact] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -67,6 +68,11 @@ const RoadmapProgressPanel = () => {
 
     load();
     loadActions();
+
+    fetch('/telegram-react-roadmap.json')
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then(setTelegramReact)
+      .catch(() => setTelegramReact(null));
   }, []);
 
   const triggerQuickAction = async (action) => {
@@ -171,6 +177,47 @@ const RoadmapProgressPanel = () => {
         </div>
 
         <div className="flex flex-wrap gap-2">
+          {telegramReact?.summary && (() => {
+            const implemented = Number(telegramReact.summary.implemented || 0);
+            const partial = Number(telegramReact.summary.partial || 0);
+            const pending = Number(telegramReact.summary.pending || 0);
+            const total = implemented + partial + pending;
+            const readiness = total ? Number(((implemented / total) * 100).toFixed(1)) : 0;
+            return (
+              <section className="mb-2 w-full rounded-xl border border-sky-500/30 bg-sky-500/5 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="flex items-center gap-2 font-semibold">
+                    <MessageCircle className="h-4 w-4 text-sky-600" />
+                    Telegram React · ComunidadTelebots
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline">{telegramReact.version || 'Roadmap independiente'}</Badge>
+                    <Badge variant="secondary">{readiness}% implementado</Badge>
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Paridad con Telegram Web y Android, auditada por evidencia del repositorio y separada del Roadmap 3000.
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-muted-foreground sm:grid-cols-4">
+                  <span><CheckCircle2 className="mr-1 inline h-4 w-4" />{implemented} completadas</span>
+                  <span><CircleDashed className="mr-1 inline h-4 w-4" />{partial} parciales</span>
+                  <span><CirclePlus className="mr-1 inline h-4 w-4" />{pending} pendientes</span>
+                  <span>{total} funciones auditadas</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-sky-500" style={{ width: `${readiness}%` }} />
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {telegramReact.design_profiles?.length || 0} familias de diseño · {telegramReact.releases?.length || 0} versiones documentadas
+                  </span>
+                  <Link to="/roadmap#telegram-react-roadmap">
+                    <Button size="sm" variant="outline"><ArrowRight className="mr-2 h-4 w-4" />Ver roadmap Telegram React</Button>
+                  </Link>
+                </div>
+              </section>
+            );
+          })()}
           <Link to="/roadmap?status=implemented">
             <Button size="sm" variant="outline"><CheckCircle2 className="mr-2 h-4 w-4" />Ver implementadas</Button>
           </Link>
