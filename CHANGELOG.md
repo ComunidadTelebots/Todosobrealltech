@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.18 - 2026-08-03
+- Amplía el gestor de publicidad comunitaria con selección múltiple de posiciones y destinos concretos por sitio.
+- Añade programación, duración visible, frecuencia máxima por sesión y objetivos independientes de clics e impresiones.
+- Filtra la entrega en la API por sitio, posición y objetivos alcanzados sin romper las campañas anteriores.
+- Permite reportar anuncios desde TodoSobreAllTech y resolver o descartar las denuncias desde el panel del creador.
+- Conserva métricas de impresiones, clics, CTR, país y posición, añadiendo el destino a la telemetría.
+- Añade validación y pruebas automatizadas de las políticas de entrega publicitaria.
+
 ### Roadmap Telegram React 0.0.640 - 2026-08-03
 - Confirma la integración obligatoria de anuncios oficiales de Telegram en canales y bots.
 - Registra impresiones, clics, recomendados, información del patrocinador y denuncias mediante la API oficial.

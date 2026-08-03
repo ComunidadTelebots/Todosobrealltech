@@ -5,6 +5,7 @@ import path from 'node:path';
 import { authorizeAdminOrCreator } from './stats.js';
 import { OFFICIAL_ADS, officialAdsFor } from '../utils/houseAdsCatalog.js';
 import { recordContentEvent, requestCountry } from '../utils/contentAnalytics.js';
+import { houseAdMatches, normalizeHouseAd, siteFromRequest } from '../utils/houseAdsPolicy.js';
 
 const router = Router();
 const MOON_URLS = [...new Set([
@@ -15,6 +16,7 @@ const headers = () => ({ Accept: 'application/json', 'Content-Type': 'applicatio
 const isScheduledNow = (ad, now = Date.now()) => (!ad.starts_at || Date.parse(ad.starts_at) <= now) && (!ad.ends_at || Date.parse(ad.ends_at) >= now);
 const isTelegramChannelAd = (ad) => /^https:\/\/(?:www\.)?t\.me\/[A-Za-z0-9_]{5,64}\/?$/i.test(String(ad?.url || ''));
 const mediaDir = '/data/house-ad-media';
+const reportsFile = '/data/house-ad-reports.json';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 const safeAdDestination = (value) => {
   const fallback = 'https://todosobreall.tech';
@@ -58,6 +60,7 @@ async function moon(options = {}) {
 
 router.get('/', async (req, res) => {
   const placement = String(req.query.placement || '');
+  const site = siteFromRequest(req, placement);
   const channelOnly = req.query.channel_only === '1';
   const country = requestCountry(req);
   const fallbackAds = () => rotatedOfficialAdsFor(placement).filter((ad) => !channelOnly || isTelegramChannelAd(ad)).slice(0, 1);
@@ -68,7 +71,7 @@ router.get('/', async (req, res) => {
     try { data = JSON.parse(rawBody); }
     catch { return res.json({ ok: true, ads: fallbackAds(), fallback: true, upstream_status: response.status }); }
     if (!response.ok) return res.json({ ok: true, ads: fallbackAds(), fallback: true, upstream_status: response.status });
-    let ads = (data.ads || []).filter((ad) => ad.enabled !== false && ad.approval_status === 'approved' && isScheduledNow(ad) && (!placement || ['all', placement].includes(ad.placement || 'all')));
+    let ads = (data.ads || []).filter((ad) => ad.enabled !== false && ad.approval_status === 'approved' && isScheduledNow(ad) && houseAdMatches(ad, { placement, site }));
     if (channelOnly) ads = ads.filter(isTelegramChannelAd);
     if (!ads.length) ads = officialAdsFor(placement).filter((ad) => !channelOnly || isTelegramChannelAd(ad));
     if (placement && ads.length) {
@@ -78,11 +81,11 @@ router.get('/', async (req, res) => {
       const offset = [...placement].reduce((sum, character) => sum + character.charCodeAt(0), 0);
       ads = [candidates[(Math.floor(Date.now() / ROTATION_MS) + offset) % candidates.length]];
       if (placement !== 'telegram_channel') {
-        moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement, country }) }).catch(() => {});
+        moon({ method: 'POST', body: JSON.stringify({ action: 'impression', id: ads[0].id, placement, site, country }) }).catch(() => {});
         recordContentEvent({ kind: 'community_ad', targetId: ads[0].id, eventType: 'impression', country, placement });
       }
     }
-    return res.json({ ok: true, ads });
+    return res.json({ ok: true, ads: ads.map(normalizeHouseAd), delivery: { placement, site } });
   } catch {
     const ads = fallbackAds();
     return res.json({ ok: true, ads, fallback: true });
@@ -94,7 +97,7 @@ router.post('/', async (req, res) => {
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   const payload = { ...(req.body || {}) };
   if (['approve', 'reject'].includes(payload.action) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede revisar campañas' });
-  if ((!payload.action || payload.action === 'upsert') && payload.ad) payload.ad = { ...payload.ad, approval_status: 'pending', submitted_by: auth.user.id };
+  if ((!payload.action || payload.action === 'upsert') && payload.ad) payload.ad = { ...normalizeHouseAd(payload.ad), approval_status: 'pending', submitted_by: auth.user.id };
   try {
     const response = await moon({ method: 'POST', body: JSON.stringify(payload) });
     const rawBody = await response.text();
@@ -102,6 +105,43 @@ router.post('/', async (req, res) => {
     catch { return res.status(502).json({ ok: false, error: 'Moonbot devolvió una respuesta no válida', upstream_status: response.status }); }
   }
   catch { return res.status(502).json({ ok: false, error: 'Moonbot no responde' }); }
+});
+
+async function readReports() {
+  try { return JSON.parse(await fs.readFile(reportsFile, 'utf8')); } catch { return []; }
+}
+
+router.get('/reports', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  return res.json({ ok: true, reports: await readReports() });
+});
+
+router.post('/:id/report', async (req, res) => {
+  if (!/^[A-Za-z0-9_-]{1,80}$/.test(String(req.params.id))) return res.status(400).json({ ok: false, error: 'Anuncio no válido' });
+  const reason = String(req.body?.reason || '').trim().slice(0, 240);
+  if (!['irrelevant', 'misleading', 'offensive', 'unsafe', 'other'].includes(reason)) return res.status(400).json({ ok: false, error: 'Motivo no válido' });
+  const reports = await readReports();
+  const fingerprint = crypto.createHash('sha256').update(`${req.ip}|${req.get('user-agent') || ''}`).digest('hex').slice(0, 20);
+  const duplicate = reports.some((item) => item.ad_id === req.params.id && item.fingerprint === fingerprint && Date.now() - Date.parse(item.created_at) < 86_400_000);
+  if (!duplicate) {
+    reports.unshift({ id: crypto.randomUUID(), ad_id: String(req.params.id), reason, placement: String(req.body?.placement || '').slice(0, 40), site: String(req.body?.site || '').slice(0, 40), fingerprint, status: 'open', created_at: new Date().toISOString() });
+    await fs.writeFile(reportsFile, JSON.stringify(reports.slice(0, 5000)), { mode: 0o600 });
+  }
+  return res.json({ ok: true, accepted: !duplicate });
+});
+
+router.post('/reports/:reportId/resolve', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  const reports = await readReports();
+  const report = reports.find((item) => item.id === req.params.reportId);
+  if (!report) return res.status(404).json({ ok: false, error: 'Reporte no encontrado' });
+  report.status = req.body?.status === 'dismissed' ? 'dismissed' : 'resolved';
+  report.resolved_at = new Date().toISOString();
+  report.resolved_by = auth.user.id;
+  await fs.writeFile(reportsFile, JSON.stringify(reports), { mode: 0o600 });
+  return res.json({ ok: true, report });
 });
 
 router.post('/media', async (req, res) => {
@@ -130,9 +170,10 @@ router.get('/media/:filename', async (req, res) => {
 router.get('/:id/click', async (req, res) => {
   const officialAd = OFFICIAL_ADS.find((item) => item.id === String(req.params.id));
   const placement = String(req.query.placement || 'unknown').slice(0, 20);
+  const site = siteFromRequest(req, placement);
   const country = requestCountry(req);
   if (officialAd) {
-    moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: officialAd.id, placement, country }) }).catch(() => {});
+    moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: officialAd.id, placement, site, country }) }).catch(() => {});
     recordContentEvent({ kind: 'community_ad', targetId: officialAd.id, eventType: 'click', country, placement });
     return res.redirect(302, officialAd.url);
   }
@@ -148,7 +189,7 @@ router.get('/:id/click', async (req, res) => {
       ? ad.community_items.find((item) => String(item.id) === requestedItem)
       : null;
     const destination = String(communityItem?.url || ad.url || 'https://todosobreall.tech');
-    await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, country, item_id: communityItem?.id || '' }) });
+    await moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement, site, country, item_id: communityItem?.id || '' }) });
     recordContentEvent({ kind: 'community_ad', targetId: ad.id, eventType: 'click', country, placement });
     return res.redirect(302, safeAdDestination(destination));
   } catch { return res.redirect(302, 'https://todosobreall.tech'); }
