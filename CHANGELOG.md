@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap Telegram React 0.0.633–0.0.636 - 2026-08-03
+- Actualiza `/roadmap` con Telegram Business, efectos de mensajes, Mensajes guardados, canales similares y perfiles de descarga automática ya verificados.
+- Registra la conexión de audio WebRTC a chats de voz, micrófono, mute, participantes, grabación e invitaciones.
+- Muestra el estado parcial real de llamadas grupales: faltan publicación de vídeo y presentación de pantalla.
+- Incorpora al catálogo web la evidencia técnica de cada función y la versión actual `0.0.636`.
+
 ### Robustez e interfaz completa del captcha multicanal - 2026-08-03
 - Corrige respuestas HTML inesperadas de la API sin provocar el error `Unexpected token '<'`.
 - Normaliza respuestas antiguas de canal único y evita que desaparezca la selección tras guardar.

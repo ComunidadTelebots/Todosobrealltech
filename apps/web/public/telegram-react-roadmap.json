@@ -1,7 +1,13 @@
 {
-  "version": "2026-08-03",
+  "version": "0.0.636 · 2026-08-03",
   "repository": "ComunidadTelebots/telegram-react",
-  "summary": { "implemented": 21, "partial": 6, "pending": 8 },
+  "summary": { "implemented": 26, "partial": 6, "pending": 7 },
+  "releases": [
+    { "version": "0.0.636", "title": "Audio WebRTC para chats de voz", "features": ["Unión y salida reales", "Audio SFU multipista", "Micrófono y mute", "Actualización y reconexión de fuentes"] },
+    { "version": "0.0.635", "title": "Ajustes y administración avanzada", "features": ["Ajustes sin marcadores pendientes", "Transferencia real de regalos", "Grabación e invitaciones en chats de voz"] },
+    { "version": "0.0.634", "title": "Seguridad WebApp y chats de voz", "features": ["Origen estricto de Mini Apps", "Markdown y enlaces seguros", "Perfiles de descarga automática"] },
+    { "version": "0.0.633", "title": "Paridad funcional avanzada", "features": ["Telegram Business", "Efectos de mensajes", "Mensajes guardados", "Canales similares", "Stars y regalos"] }
+  ],
   "items": [
     { "id": "tr-login", "title": "Acceso por telefono, QR y 2FA", "status": "implemented", "area": "Cuenta", "evidence": ["src/Components/Auth/Phone.js", "src/Components/Auth/QrCode.js", "src/Components/Auth/Password.js"] },
     { "id": "tr-sessions", "title": "Sesiones y dispositivos activos", "status": "implemented", "area": "Cuenta", "evidence": ["src/Components/Additional/ActiveSessions.js"] },
@@ -26,16 +32,20 @@
     { "id": "tr-communities", "title": "Comunidades enlazadas", "status": "pending", "area": "Grupos y canales", "evidence": [] },
     { "id": "tr-bots", "title": "Bots, teclados y resultados inline", "status": "implemented", "area": "Bots", "evidence": ["src/Components/Message/InlineKeyboard.js", "src/Components/ColumnMiddle/InlineBotResults.js"] },
     { "id": "tr-miniapps", "title": "Mini Apps", "status": "implemented", "area": "Bots", "evidence": ["src/Components/Additional/BotWebApp.js"] },
-    { "id": "tr-business", "title": "Telegram Business", "status": "partial", "area": "Bots", "evidence": ["src/Components/ColumnRight/BusinessInfo.js", "src/Components/ColumnRight/BusinessEditor.js"], "note": "Interfaz presente; automatizaciones completas no verificadas." },
+    { "id": "tr-business", "title": "Telegram Business", "status": "implemented", "area": "Bots", "evidence": ["src/Components/ColumnRight/BusinessInfo.js", "src/Components/ColumnRight/BusinessEditor.js", "src/Controllers/GramJsController.js"], "note": "Respuestas rápidas, horarios, ubicación, bienvenida, ausencia y bots conectados usan operaciones reales." },
     { "id": "tr-instant", "title": "Instant View con cache", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/InstantView/InstantViewer.js", "src/Stores/InstantViewCache.js"] },
     { "id": "tr-browser", "title": "Navegador interno multipestana", "status": "pending", "area": "Contenido", "evidence": [] },
     { "id": "tr-stories", "title": "Visualizacion de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Stores/StoryStore.js"], "note": "Store presente; flujo visual completo no verificado." },
     { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "pending", "area": "Stories", "evidence": [] },
     { "id": "tr-calls", "title": "Llamadas de voz individuales", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js"], "note": "WebRTC presente; TURN y carrera DH siguen pendientes." },
     { "id": "tr-video-calls", "title": "Videollamadas", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js"], "note": "Codigo base sin verificacion integral." },
-    { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "pending", "area": "Llamadas", "evidence": [] },
+    { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Components/Calls/GroupCallDialog.js"], "note": "Audio WebRTC, micrófono, administración, grabación y participantes funcionan; faltan vídeo y pantalla." },
     { "id": "tr-gifts", "title": "Galeria de regalos y contenido de pago", "status": "implemented", "area": "Stars y regalos", "evidence": ["src/Components/ColumnRight/StarGiftsGallery.js", "src/Components/Message/Media/PaidMedia.js"] },
     { "id": "tr-market", "title": "Mercado y ofertas de regalos", "status": "pending", "area": "Stars y regalos", "evidence": [] },
+    { "id": "tr-message-effects", "title": "Efectos al enviar mensajes", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/InputBoxControl.js", "src/Controllers/GramJsController.js"] },
+    { "id": "tr-saved-topics", "title": "Carpetas de Mensajes guardados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/SavedFolders.js", "src/Controllers/GramJsController.js"] },
+    { "id": "tr-similar-channels", "title": "Canales similares y unión directa", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/SimilarChannels.js", "src/Controllers/GramJsController.js"] },
+    { "id": "tr-download-settings", "title": "Perfiles de descarga automática", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/AndroidDataSettings.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-themes", "title": "Temas, fondos y skins", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/ThemePicker.js", "src/Components/ColumnLeft/ChatBackground.js", "src/Components/DesignSwitcher.js"] },
     { "id": "tr-folders", "title": "Carpetas y archivo", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/FolderDialogsList.js", "src/Components/ColumnLeft/ArchiveList.js"] }
   ]
