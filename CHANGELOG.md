@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap Telegram React 0.0.637 - 2026-08-03
+- Marca como implementadas la grabación real de mensajes de voz y el navegador interno multipestaña seguro.
+- Registra compartir pantalla y cámara mediante el transporte de presentación de chats de voz.
+- Actualiza llamadas grupales: audio, administración y presentación funcionan; solo queda parcial el vídeo nativo SIM/FID.
+- El catálogo Telegram React alcanza 28 funciones implementadas, 6 parciales y 5 pendientes.
+
 ### Roadmap Telegram React 0.0.633–0.0.636 - 2026-08-03
 - Actualiza `/roadmap` con Telegram Business, efectos de mensajes, Mensajes guardados, canales similares y perfiles de descarga automática ya verificados.
 - Registra la conexión de audio WebRTC a chats de voz, micrófono, mute, participantes, grabación e invitaciones.
