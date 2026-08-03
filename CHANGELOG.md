@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Robustez e interfaz completa del captcha multicanal - 2026-08-03
+- Corrige respuestas HTML inesperadas de la API sin provocar el error `Unexpected token '<'`.
+- Normaliza respuestas antiguas de canal único y evita que desaparezca la selección tras guardar.
+- Evita solicitudes automáticas de apelación duplicadas durante una actualización del grupo.
+- Completa por grupo la búsqueda y los banners con foto, riesgo, estado del bot y acciones de unión o selección.
+
 ### Recomendaciones de canales con revisión de contenido - 2026-08-01
 - Los banners del captcha muestran la foto pública, identidad y bot asociado de cada canal.
 - Moonbot retira de las recomendaciones los canales con contenido observado de alto riesgo.

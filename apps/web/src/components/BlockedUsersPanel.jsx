@@ -146,7 +146,11 @@ const BlockedUsersPanel = () => {
       const data = await apiServerClient.readJson(response);
       if (!response.ok) throw new Error(data.error || 'No se pudo guardar la configuración global');
       setGlobalCaptcha(data.campaign || globalCaptcha);
-      setGlobalCaptchaSettings(data.settings || globalCaptchaSettings);
+      const settings = data.settings || globalCaptchaSettings;
+      setGlobalCaptchaSettings({
+        ...settings,
+        channels: settings.channels || (settings.channel ? [settings.channel] : []),
+      });
       globalCaptchaSettingsDirty.current = false;
       toast.success('Acceso global actualizado');
     } catch (error) { toast.error(error.message); } finally { setGlobalCaptchaBusy(false); }
