@@ -1,5 +1,13 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap Telegram React 0.0.638 - 2026-08-03
+- Añade una matriz visible con las 11 familias y 43 versiones de diseño registradas en Telegram React.
+- Documenta que los componentes funcionales son compartidos por todas las apariencias y versiones.
+- Explica los dos modos disponibles: todas las funciones actuales o solo las funciones propias de la época, manteniendo la API moderna.
+- Publica evidencia directa del registro de diseños, selector de versiones y controles de compatibilidad.
+- Marca la consulta de Comunidades enlazadas como implementada tras verificar el descubrimiento MTProto y la apertura desde los detalles del chat.
+- El catálogo público queda en 29 implementadas, 6 parciales y 4 pendientes.
+
 ### Roadmap Telegram React 0.0.637 - 2026-08-03
 - Marca como implementadas la grabación real de mensajes de voz y el navegador interno multipestaña seguro.
 - Registra compartir pantalla y cámara mediante el transporte de presentación de chats de voz.

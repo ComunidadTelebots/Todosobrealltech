@@ -1,8 +1,28 @@
 {
-  "version": "0.0.637 · 2026-08-03",
+  "version": "0.0.638 · 2026-08-03",
   "repository": "ComunidadTelebots/telegram-react",
-  "summary": { "implemented": 28, "partial": 6, "pending": 5 },
+  "design_profiles": [
+    { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
+    { "id": "webk", "label": "Telegram Web K", "versions": ["2020", "2022", "Actual", "2025"] },
+    { "id": "weba", "label": "Telegram Web A", "versions": ["Standard", "Color"] },
+    { "id": "android", "label": "Android", "versions": ["1.x", "2.x", "3.x", "3.5", "4.x Holo", "6.x", "7.x", "8.x", "11.x Material You", "12.x", "12.5", "12.6", "12.6.4 Glass"] },
+    { "id": "ios", "label": "iOS", "versions": ["iOS 7", "iOS 10", "iOS 14", "iOS actual", "iPad"] },
+    { "id": "macos", "label": "macOS", "versions": ["Yosemite", "Big Sur", "Monterey", "Sonoma"] },
+    { "id": "tdesktop", "label": "Telegram Desktop", "versions": ["Classic 2015", "2019", "Actual"] },
+    { "id": "unigram", "label": "Unigram", "versions": ["Windows Phone 2016", "Fluent 2018", "WinUI 3"] },
+    { "id": "webogram", "label": "Webogram", "versions": ["2013", "2016"] },
+    { "id": "aurora", "label": "Aurora", "versions": ["Default", "Midnight"] },
+    { "id": "telegramx", "label": "Telegram X", "versions": ["2018", "v8 actual", "Red"] }
+  ],
+  "design_evidence": [
+    "src/Design.js",
+    "src/Components/ColumnLeft/DesignVersionSelector.js",
+    "src/Components/ColumnLeft/MainMenuButton.js",
+    "src/Components/ColumnLeft/AndroidSettings.js"
+  ],
+  "summary": { "implemented": 29, "partial": 6, "pending": 4 },
   "releases": [
+    { "version": "0.0.638", "title": "Compatibilidad funcional por diseño", "features": ["Funciones actuales en todas las familias", "Modo de época", "Botón mantener diseño original", "Matriz pública de versiones"] },
     { "version": "0.0.637", "title": "Voz, navegador y presentación grupal", "features": ["Notas de voz reales", "Navegador seguro multipestaña", "Compartir pantalla", "Cámara como presentación"] },
     { "version": "0.0.636", "title": "Audio WebRTC para chats de voz", "features": ["Unión y salida reales", "Audio SFU multipista", "Micrófono y mute", "Actualización y reconexión de fuentes"] },
     { "version": "0.0.635", "title": "Ajustes y administración avanzada", "features": ["Ajustes sin marcadores pendientes", "Transferencia real de regalos", "Grabación e invitaciones en chats de voz"] },
@@ -30,7 +50,7 @@
     { "id": "tr-admin", "title": "Administracion y registro", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/AdminManagement.js", "src/Components/ColumnRight/AdminLog.js"] },
     { "id": "tr-join", "title": "Solicitudes de acceso", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/JoinRequests.js"] },
     { "id": "tr-stats", "title": "Estadisticas y boosts", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/ChannelStats.js", "src/Components/ColumnMiddle/ChannelBoostDialog.js"] },
-    { "id": "tr-communities", "title": "Comunidades enlazadas", "status": "pending", "area": "Grupos y canales", "evidence": [] },
+    { "id": "tr-communities", "title": "Comunidades enlazadas", "status": "implemented", "area": "Grupos y canales", "note": "Detecta mediante MTProto el canal o grupo de debate relacionado y permite abrirlo desde el panel de detalles.", "evidence": ["src/Utils/LinkedCommunity.js", "src/Components/ColumnRight/ChatDetails.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-bots", "title": "Bots, teclados y resultados inline", "status": "implemented", "area": "Bots", "evidence": ["src/Components/Message/InlineKeyboard.js", "src/Components/ColumnMiddle/InlineBotResults.js"] },
     { "id": "tr-miniapps", "title": "Mini Apps", "status": "implemented", "area": "Bots", "evidence": ["src/Components/Additional/BotWebApp.js"] },
     { "id": "tr-business", "title": "Telegram Business", "status": "implemented", "area": "Bots", "evidence": ["src/Components/ColumnRight/BusinessInfo.js", "src/Components/ColumnRight/BusinessEditor.js", "src/Controllers/GramJsController.js"], "note": "Respuestas rápidas, horarios, ubicación, bienvenida, ausencia y bots conectados usan operaciones reales." },
