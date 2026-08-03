@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.19 - 2026-08-03
+- Actualiza `ip-address` a 10.4.0 en los lockfiles raíz y de la API, corrigiendo los avisos SSRF y de clasificación de direcciones.
+- Mantiene React Router 7.18.2, última versión publicada compatible, y verifica automáticamente que las aplicaciones Vite no importen las API RSC inestables afectadas por GHSA-qwww-vcr4-c8h2.
+- Audita individualmente todos los lockfiles del monorepo; las aplicaciones auxiliares quedan sin vulnerabilidades conocidas alcanzables.
+
 ### 18.23.18 - 2026-08-03
 - Amplía el gestor de publicidad comunitaria con selección múltiple de posiciones y destinos concretos por sitio.
 - Añade programación, duración visible, frecuencia máxima por sesión y objetivos independientes de clics e impresiones.

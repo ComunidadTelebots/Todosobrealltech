@@ -13,10 +13,17 @@
     "lint": "npm run lint --prefix apps/web && npm run lint --prefix apps/api",
     "test": "npm run test --prefix apps/api && npm run roadmap:validate",
     "roadmap:validate": "node apps/web/tools/validate-future-roadmap.js",
-    "check": "npm run lint && npm run test && npm run build:webs"
+    "check": "npm run lint && npm run test && npm run build:webs",
+    "security:router": "node scripts/verify-client-router-security.mjs"
+  },
+  "dependencies": {
+    "ip-address": "10.4.0"
   },
   "devDependencies": {
     "concurrently": "^9.2.4"
+  },
+  "overrides": {
+    "ip-address": "10.4.0"
   },
   "workspaces": [
     "apps/*"
