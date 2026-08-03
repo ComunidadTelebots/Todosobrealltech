@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Columns3, Download, Link2, RotateCcw, Search, Sparkles, Star } from 'lucide-react';
+import { Columns3, Download, Link2, MessageCircle, RotateCcw, Search, Sparkles, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,11 +10,14 @@ const labels = { web: 'TodoSobreAllTech', moonbot: 'Moonbot', webapp: 'Telegram 
 const statusLabels = { implemented: 'Implementada y verificada', specified: 'Solo especificada', scaffolded: 'Estructura parcial', proposed: 'Pendiente' };
 const completionLabels = { implemented: 'Implementada', partial: 'Parcialmente implementada', not_implemented: 'No implementada' };
 const trackedTone = { implemented: 'border-emerald-500/30 bg-emerald-500/5', partial: 'border-amber-500/30 bg-amber-500/5', not_implemented: 'border-slate-500/30' };
+const telegramTone = { implemented: 'border-emerald-500/30 bg-emerald-500/5', partial: 'border-amber-500/30 bg-amber-500/5', pending: 'border-slate-500/30' };
+const telegramStatusLabel = { implemented: 'Completada', partial: 'Parcial', pending: 'Pendiente' };
 const readParam = (name, fallback = 'all') => new URLSearchParams(window.location.search).get(name) || fallback;
 const csvCell = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
 const RoadmapPage = () => {
   const [catalog, setCatalog] = useState({ items: [], totals: {} });
+  const [telegramReact, setTelegramReact] = useState({ items: [], summary: {} });
   const [query, setQuery] = useState(() => readParam('q', ''));
   const [product, setProduct] = useState(() => readParam('product'));
   const [category, setCategory] = useState(() => readParam('category'));
@@ -33,6 +36,13 @@ const RoadmapPage = () => {
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then(setCatalog)
       .catch(() => setError('No se pudo cargar el roadmap.'));
+  }, []);
+
+  useEffect(() => {
+    fetch('/telegram-react-roadmap.json')
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then(setTelegramReact)
+      .catch(() => setTelegramReact({ items: [], summary: {} }));
   }, []);
 
   useEffect(() => {
@@ -96,6 +106,7 @@ const RoadmapPage = () => {
       {!!catalog.tracked_tasks?.length && <Card className="mt-5 border-primary/25"><CardContent className="p-5"><h2 className="text-lg font-semibold">Tareas añadidas recientemente</h2><p className="mt-1 text-sm text-muted-foreground">Estado real de las últimas peticiones, separado del catálogo histórico de 3.000 funciones.</p><div className="mt-4 grid gap-3 md:grid-cols-2">{catalog.tracked_tasks.map((task) => <div key={task.id} className={`rounded-lg border p-4 ${trackedTone[task.status] || ''}`}><div className="flex flex-wrap items-start justify-between gap-2"><b className="text-sm">{task.title}</b><Badge variant={task.status === 'implemented' ? 'default' : 'outline'}>{completionLabels[task.status]}</Badge></div><p className="mt-2 text-sm text-muted-foreground">{task.detail}</p><p className="mt-2 text-xs text-muted-foreground">{task.products.map((id) => labels[id] || id).join(' · ')}</p>{!!task.evidence?.length && <p className="mt-2 break-all text-[11px] text-muted-foreground">Evidencia: {task.evidence.join(' · ')}</p>}</div>)}</div></CardContent></Card>}
       <Card className="mt-5 border-emerald-500/20"><CardContent className="p-5"><h2 className="text-lg font-semibold">Features incluidas</h2><p className="mt-1 text-sm text-muted-foreground">Funciones que ya forman parte de sus módulos reales.</p><div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">{included.map((item) => <div key={item.id} className="rounded-lg border bg-emerald-500/5 p-3"><div className="flex items-start justify-between gap-2"><b className="text-sm">{item.title}</b><Badge variant="outline">Incluida</Badge></div><p className="mt-1 text-xs text-muted-foreground">{labels[item.product]} · {item.category}</p><p className="mt-2 break-all text-[11px] text-muted-foreground">Evidencia: {item.evidence?.join(' · ')}</p></div>)}</div>{!included.length && <p className="mt-4 text-sm text-muted-foreground">Todavía no hay funciones verificadas como integradas.</p>}</CardContent></Card>
       {error && <div className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive">{error}</div>}<p className="mt-6 text-sm text-muted-foreground">Mostrando {items.length} de {visible.length} funciones.</p><div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <Card key={item.id}><CardContent className="p-5"><div className="mb-3 flex items-start justify-between gap-2"><div className="flex flex-wrap gap-2"><Badge>{labels[item.product]}</Badge><Badge variant="outline">{item.category}</Badge><Badge variant={item.status === 'implemented' ? 'default' : 'secondary'}>{statusLabels[item.status] || item.status}</Badge></div><button type="button" onClick={() => toggleFavorite(item.id)} aria-label={favorites.has(item.id) ? 'Quitar de favoritas' : 'Añadir a favoritas'}><Star className={`h-5 w-5 ${favorites.has(item.id) ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground'}`}/></button></div><h2 className="font-semibold leading-snug"><Sparkles className="mr-2 inline h-4 w-4 text-primary"/>{item.title}</h2><p className="mt-2 text-sm text-muted-foreground">{item.description}</p><div className="mt-4 flex items-center justify-between gap-3 text-xs text-muted-foreground"><span>Dificultad: {item.difficulty}</span><Button size="sm" variant={comparison.has(item.id) ? 'default' : 'outline'} disabled={!comparison.has(item.id) && comparison.size >= 3} onClick={() => toggleComparison(item.id)}><Columns3 className="mr-1 h-3 w-3"/>{comparison.has(item.id) ? 'Seleccionada' : 'Comparar'}</Button></div></CardContent></Card>)}</div><div className="mt-8 flex items-center justify-center gap-3"><Button variant="outline" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>Anterior</Button><span className="text-sm">Página {page} de {pages}</span><Button variant="outline" disabled={page >= pages} onClick={() => setPage((value) => value + 1)}>Siguiente</Button></div>
+      {!!telegramReact.items.length && <Card className="mt-5 border-sky-500/25"><CardContent className="p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="flex items-center gap-2 text-lg font-semibold"><MessageCircle className="h-5 w-5 text-sky-500"/>Telegram React</h2><p className="mt-1 text-sm text-muted-foreground">Paridad auditada con Telegram Web. Se conserva el diseño actual y solo figura como completado aquello respaldado por código funcional del repositorio.</p></div><Badge variant="outline">Auditoría {telegramReact.version}</Badge></div><div className="mt-4 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-emerald-500/30 p-3"><b className="text-2xl text-emerald-600">{telegramReact.summary?.implemented || 0}</b><p className="text-xs text-muted-foreground">Completadas con evidencia</p></div><div className="rounded-lg border border-amber-500/30 p-3"><b className="text-2xl text-amber-600">{telegramReact.summary?.partial || 0}</b><p className="text-xs text-muted-foreground">Parciales por completar</p></div><div className="rounded-lg border p-3"><b className="text-2xl">{telegramReact.summary?.pending || 0}</b><p className="text-xs text-muted-foreground">Pendientes para paridad</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{telegramReact.items.map((item) => <div key={item.id} className={`rounded-lg border p-4 ${telegramTone[item.status] || ''}`}><div className="flex items-start justify-between gap-2"><b className="text-sm leading-snug">{item.title}</b><Badge variant={item.status === 'implemented' ? 'default' : 'outline'}>{telegramStatusLabel[item.status]}</Badge></div><p className="mt-2 text-xs font-medium text-muted-foreground">{item.area}</p>{item.note && <p className="mt-2 text-xs text-muted-foreground">{item.note}</p>}{!!item.evidence?.length && <p className="mt-2 break-all text-[11px] text-muted-foreground">Evidencia: {item.evidence.join(' · ')}</p>}</div>)}</div></CardContent></Card>}
     </div>
   </section></>;
 };
