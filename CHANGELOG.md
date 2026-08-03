@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap Telegram React 0.0.639 - 2026-08-03
+- Registra las campañas aprobadas de TodoSobreAllTech insertadas entre publicaciones de canales.
+- Documenta la rotación pública, el clic medido y la exclusión de grupos y conversaciones privadas.
+- El catálogo público queda en 30 implementadas, 6 parciales y 4 pendientes.
+
 ### Roadmap Telegram React 0.0.638 - 2026-08-03
 - Añade una matriz visible con las 11 familias y 43 versiones de diseño registradas en Telegram React.
 - Documenta que los componentes funcionales son compartidos por todas las apariencias y versiones.
