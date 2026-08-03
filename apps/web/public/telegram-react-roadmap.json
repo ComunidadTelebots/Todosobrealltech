@@ -1,5 +1,5 @@
 {
-  "version": "0.0.639 · 2026-08-03",
+  "version": "0.0.640 · 2026-08-03",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 30, "partial": 6, "pending": 4 },
+  "summary": { "implemented": 31, "partial": 6, "pending": 4 },
   "releases": [
+    { "version": "0.0.640", "title": "Anuncios oficiales de Telegram", "features": ["Canales y bots", "Impresiones y clics oficiales", "Recomendados", "Información y denuncias"] },
     { "version": "0.0.639", "title": "Campañas comunitarias en canales", "features": ["Anuncios aprobados entre publicaciones", "Clics medidos", "Solo canales", "Compatibilidad con diseños"] },
     { "version": "0.0.638", "title": "Compatibilidad funcional por diseño", "features": ["Funciones actuales en todas las familias", "Modo de época", "Botón mantener diseño original", "Matriz pública de versiones"] },
     { "version": "0.0.637", "title": "Voz, navegador y presentación grupal", "features": ["Notas de voz reales", "Navegador seguro multipestaña", "Compartir pantalla", "Cámara como presentación"] },
@@ -53,6 +54,7 @@
     { "id": "tr-stats", "title": "Estadisticas y boosts", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/ChannelStats.js", "src/Components/ColumnMiddle/ChannelBoostDialog.js"] },
     { "id": "tr-communities", "title": "Comunidades enlazadas", "status": "implemented", "area": "Grupos y canales", "note": "Detecta mediante MTProto el canal o grupo de debate relacionado y permite abrirlo desde el panel de detalles.", "evidence": ["src/Utils/LinkedCommunity.js", "src/Components/ColumnRight/ChatDetails.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-community-ads", "title": "Campañas TodoSobreAllTech entre publicaciones", "status": "implemented", "area": "Canales", "note": "Carga únicamente campañas aprobadas, las intercala en canales y mide el clic mediante la ruta propia.", "evidence": ["src/Components/ColumnMiddle/CommunityChannelAd.js", "src/Components/ColumnMiddle/MessagesList.js", "src/Utils/CommunityAds.js"] },
+    { "id": "tr-official-ads", "title": "Anuncios oficiales obligatorios de Telegram", "status": "implemented", "area": "Canales y bots", "note": "Solicita, muestra y registra anuncios oficiales con vistas, clics, información del patrocinador y denuncias.", "evidence": ["src/Components/ColumnMiddle/OfficialSponsoredMessage.js", "src/Components/ColumnMiddle/MessagesList.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-bots", "title": "Bots, teclados y resultados inline", "status": "implemented", "area": "Bots", "evidence": ["src/Components/Message/InlineKeyboard.js", "src/Components/ColumnMiddle/InlineBotResults.js"] },
     { "id": "tr-miniapps", "title": "Mini Apps", "status": "implemented", "area": "Bots", "evidence": ["src/Components/Additional/BotWebApp.js"] },
     { "id": "tr-business", "title": "Telegram Business", "status": "implemented", "area": "Bots", "evidence": ["src/Components/ColumnRight/BusinessInfo.js", "src/Components/ColumnRight/BusinessEditor.js", "src/Controllers/GramJsController.js"], "note": "Respuestas rápidas, horarios, ubicación, bienvenida, ausencia y bots conectados usan operaciones reales." },

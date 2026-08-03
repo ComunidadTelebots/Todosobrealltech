@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Roadmap Telegram React 0.0.640 - 2026-08-03
+- Confirma la integración obligatoria de anuncios oficiales de Telegram en canales y bots.
+- Registra impresiones, clics, recomendados, información del patrocinador y denuncias mediante la API oficial.
+- El catálogo público queda en 31 implementadas, 6 parciales y 4 pendientes.
+
 ### Roadmap Telegram React 0.0.639 - 2026-08-03
 - Registra las campañas aprobadas de TodoSobreAllTech insertadas entre publicaciones de canales.
 - Documenta la rotación pública, el clic medido y la exclusión de grupos y conversaciones privadas.
