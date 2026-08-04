@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import ContentAnalyticsDialog from '@/components/ContentAnalyticsDialog.jsx';
+import NewsLayoutBlocksEditor, { parseNewsBlocks } from '@/components/NewsLayoutBlocksEditor.jsx';
+import RichNewsTextEditor from '@/components/RichNewsTextEditor.jsx';
 
 const EMPTY_FORM = {
   titulo: '',
@@ -21,6 +22,7 @@ const EMPTY_FORM = {
   imagen: '',
   destacado: false,
   oculto: false,
+  layout_blocks: [],
 };
 
 const CreatorNewsManager = () => {
@@ -104,6 +106,7 @@ const CreatorNewsManager = () => {
       imagen: post.imagen || '',
       destacado: !!post.destacado,
       oculto: !!post.oculto,
+      layout_blocks: parseNewsBlocks(post.layout_blocks),
     });
   };
 
@@ -122,6 +125,7 @@ const CreatorNewsManager = () => {
       fuente_label: form.fuente_label.trim(),
       fuente_url: form.fuente_url.trim(),
       imagen: form.imagen.trim(),
+      layout_blocks: JSON.stringify(form.layout_blocks || []),
     }, 'Noticia actualizada');
 
     if (updated) setEditingPost(null);
@@ -293,13 +297,9 @@ const CreatorNewsManager = () => {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="nw3-content">Contenido</Label>
-              <Textarea
-                id="nw3-content"
-                value={form.contenido}
-                onChange={(event) => setField('contenido', event.target.value)}
-                className="min-h-56"
-              />
+              <RichNewsTextEditor value={form.contenido} onChange={(value) => setField('contenido', value)} draftKey={editingPost?.id || 'news'} />
             </div>
+            <NewsLayoutBlocksEditor value={form.layout_blocks} onChange={(value) => setField('layout_blocks', value)} content={form.contenido}/>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="grid gap-2">
                 <Label htmlFor="nw3-source-label">Nombre de la fuente</Label>

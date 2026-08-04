@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import pb from '../pb.js';
+import NewsLegoEditor, { parseLayoutBlocks } from '../components/NewsLegoEditor.jsx';
+import RichNewsEditor from '../components/RichNewsEditor.jsx';
 
 const CATEGORIAS = ['Tecnología', 'IA', 'Ciberseguridad', 'Gaming', 'General'];
 
@@ -13,10 +15,12 @@ export default function EditarNoticiaPage() {
   const [cargando, setCargando] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const [errores, setErrores] = useState({});
+  const [contenido, setContenido] = useState('');
+  const [layoutBlocks, setLayoutBlocks] = useState([]);
 
   useEffect(() => {
     pb.collection('nw3_noticias').getOne(id)
-      .then(setRecord)
+      .then((item) => { setRecord(item); setContenido(item.contenido || ''); setLayoutBlocks(parseLayoutBlocks(item.layout_blocks)); })
       .catch(() => setRecord(null))
       .finally(() => setCargando(false));
   }, [id]);
@@ -47,14 +51,14 @@ export default function EditarNoticiaPage() {
     const titulo = datos.get('titulo')?.trim();
     const categoria = datos.get('categoria');
     const fecha = datos.get('fecha')?.trim();
-    const contenido = datos.get('contenido')?.trim();
+    const contenidoFinal = contenido.trim();
     const fuente_label = datos.get('fuente_label')?.trim();
     const fuente_url = datos.get('fuente_url')?.trim();
     const destacado = datos.get('destacado') === 'on';
 
     const errs = {};
     if (!titulo) errs.titulo = 'El título es obligatorio.';
-    if (!contenido) errs.contenido = 'El contenido es obligatorio.';
+    if (!contenidoFinal) errs.contenido = 'El contenido es obligatorio.';
     if (Object.keys(errs).length) { setErrores(errs); return; }
 
     setEnviando(true);
@@ -63,10 +67,11 @@ export default function EditarNoticiaPage() {
         titulo,
         categoria,
         fecha,
-        contenido,
+        contenido: contenidoFinal,
         fuente_label: fuente_label || '',
         fuente_url: fuente_url || '',
         destacado,
+        layout_blocks: JSON.stringify(layoutBlocks),
       });
       navigate(`/noticias/${record.slug}`);
     } catch {
@@ -99,9 +104,10 @@ export default function EditarNoticiaPage() {
         </label>
         <label>
           Contenido
-          <textarea name="contenido" rows={12} maxLength={20000} required defaultValue={record.contenido} />
+          <RichNewsEditor value={contenido} onChange={setContenido} draftKey={id} />
           {errores.contenido && <span className="foro-campo-error">{errores.contenido}</span>}
         </label>
+        <NewsLegoEditor value={layoutBlocks} onChange={setLayoutBlocks} content={contenido}/>
         <label>
           Fuente — nombre (opcional)
           <input type="text" name="fuente_label" maxLength={100} defaultValue={record.fuente_label} />

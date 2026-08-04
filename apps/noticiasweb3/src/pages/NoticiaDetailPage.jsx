@@ -7,6 +7,7 @@ import { ShareBar, readingTime } from '../components/ShareBar.jsx';
 import { TelegramEmbed, getTelegramPost } from '../components/TelegramEmbed.jsx';
 import { trackArticleView } from '../utils/analytics.js';
 import { getSiteInfo } from '../utils/site.js';
+import { ArticleLayoutPreview, parseLayoutBlocks } from '../components/NewsLegoEditor.jsx';
 
 const DEFAULT_OG_IMAGE = 'https://noticiasweb3.todosobreall.tech/og-default.png';
 
@@ -74,7 +75,7 @@ export default function NoticiaDetailPage({ siteVersion }) {
     category: pbRecord.categoria || '',
     year: pbRecord.year || 2026,
     destacado: pbRecord.destacado || false,
-    body: <p style={{ whiteSpace: 'pre-wrap' }}>{pbRecord.contenido}</p>,
+    body: <ArticleLayoutPreview content={pbRecord.contenido} blocks={parseLayoutBlocks(pbRecord.layout_blocks)}/>,
     source: pbRecord.fuente_url ? { url: pbRecord.fuente_url, label: pbRecord.fuente_label || pbRecord.fuente_url } : null,
     telegramUrl: pbRecord.telegram_url || null,
   } : null);

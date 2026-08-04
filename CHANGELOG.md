@@ -1,5 +1,34 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.22 - 2026-08-04
+
+- Editor de noticias tipo Word, con formato seguro, enlaces HTTPS, listas, citas, vista previa adaptable, recuento de palabras, tiempo de lectura y borrador local automático.
+- Bloques RSS de Moonbot disponibles como piezas visuales dentro del editor de NoticiasWeb3 y del panel creador de TodoSobreAllTech.
+- Añade un editor visual de “legos” por noticia, independiente de las campañas comunitarias generales.
+- Permite insertar, arrastrar, ordenar y posicionar contenido recomendado, campañas comunitarias aprobadas, futuros afiliados, recuadros y separadores entre párrafos.
+- Incorpora previsualización del artículo tanto en NoticiasWeb3 tras iniciar sesión como en el gestor de noticias del dashboard TodoSobreAllTech.
+- Guarda el diseño por noticia en `layout_blocks`, limita cada artículo a 50 bloques y mantiene un renderizado seguro y compatible con noticias anteriores.
+- Añade endpoints propios de recomendados y catálogo de slots de NoticiasWeb3, con caché pública y respaldo local.
+
+### 18.23.21 - 2026-08-04
+- Acelera las campañas comunitarias con caché del catálogo de Moonbot, deduplicación de consultas simultáneas, precalentamiento y actualización en segundo plano.
+- Reduce de seis a dos segundos el límite de espera de la lectura inicial y conserva el catálogo reciente mientras se refresca.
+- Añade caché y reintento controlado en ComunidadTelebots, Resistencia a la Censura y TodoSobreGameplays sin modificar sus diseños.
+- Optimiza NoticiasWeb3 separando la carga comunitaria del estado de AdSense, evitando consultas duplicadas y manteniendo la campaña propia visible con prioridad.
+- Sustituye las imágenes externas de “Bienvenidos a noticiasweb3” y “Nuestro contenido” por HTML y CSS responsive con estética retro, texto accesible y carga inmediata.
+- Recrea también con código “Nuestro pasado en capturas” y el mensaje del centro de soporte, conservando el contorno azul y eliminando otras dos dependencias de Wayback.
+- Añade bloques modulares de recomendados reutilizables como piezas por `slot`, con formatos de cuadrícula, barra lateral y tarjeta compacta para portada, noticias y otras posiciones.
+- Corrige la segmentación usando posiciones estándar (`top`, `right`, `inline`) y el sitio como dimensión independiente.
+- Hace resiliente el proxy interno de cuatro webs con DNS dinámico de Docker, cabeceras HTTPS preservadas y respuesta JSON rápida si la API se recrea.
+- Incorpora al dashboard una tarjeta independiente del roadmap auditado de Telegram React de ComunidadTelebots.
+
+### 18.23.20 - 2026-08-03
+- Migra GamerGitBug, Proxies MTProto, ComunidadTelebots, Resistencia a la Censura y TodoSobreGameplays a Astro estático.
+- Conserva sin cambios sus componentes, diseños, anuncios, analítica, netbar y consultas dinámicas como islas React hidratadas.
+- Entrega títulos, contenido inicial, canonical, Open Graph y Twitter desde HTML para acelerar la primera carga y mejorar la indexación.
+- Mantiene las rutas y dominios actuales; la migración no introduce redirecciones ni cambios de URL que perjudiquen el SEO.
+- Verifica individualmente la compilación de producción de las cinco webs.
+
 ### 18.23.19 - 2026-08-03
 - Actualiza `ip-address` a 10.4.0 en los lockfiles raíz y de la API, corrigiendo los avisos SSRF y de clasificación de direcciones.
 - Mantiene React Router 7.18.2, última versión publicada compatible, y verifica automáticamente que las aplicaciones Vite no importen las API RSC inestables afectadas por GHSA-qwww-vcr4-c8h2.

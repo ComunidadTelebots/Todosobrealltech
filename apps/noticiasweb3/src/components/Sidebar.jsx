@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import RecommendedBlock from './RecommendedBlock.jsx';
 
 export default function Sidebar({ siteVersion }) {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function Sidebar({ siteVersion }) {
 
       {siteVersion === '2026' && (
         <>
+          <RecommendedBlock slot="sidebar" variant="stack" limit={2} />
           <div className="widget">
             <h2 className="widget-title">Telegram</h2>
             <a

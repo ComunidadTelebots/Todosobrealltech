@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import RecommendedBlock from '../components/RecommendedBlock.jsx';
 
 export default function HomePage({ appPlatform = 'android', onPlatformChange = () => {}, siteVersion = '2014' }) {
   const isAndroid = appPlatform === 'android';
@@ -10,20 +11,13 @@ export default function HomePage({ appPlatform = 'android', onPlatformChange = (
       <h1>Bienvenido</h1>
 
       <div className="article-body">
-        <p>
-          <img
-            src="https://web.archive.org/web/20140625191205im_/http://content.pimp-my-profile.com/i68/2/2/24/f_1d2ec86ea67c.png"
-            alt=""
-            style={{ maxWidth: '100%' }}
-          />
-        </p>
-        <p>
-          <img
-            src="https://web.archive.org/web/20140625191205im_/http://content.pimp-my-profile.com/i68/2/2/26/f_5d1d94ac8403.png"
-            alt=""
-            style={{ maxWidth: '100%' }}
-          />
-        </p>
+        <header className="legacy-welcome-art" aria-labelledby="legacy-welcome-title legacy-content-title">
+          <div id="legacy-welcome-title" className="legacy-welcome-title">
+            <span>Bienvenidos a</span>
+            <strong>noticiasweb3</strong>
+          </div>
+          <h2 id="legacy-content-title" className="legacy-content-title">Nuestro contenido:</h2>
+        </header>
 
         <p>&nbsp;- <Link to="/extensiones">Extensiones de buscadores.</Link></p>
         <p>&nbsp;- <Link to="/pulseras-rojas">Pulseras Rojas</Link></p>
@@ -31,6 +25,8 @@ export default function HomePage({ appPlatform = 'android', onPlatformChange = (
         <p>&nbsp;- <Link to="/juegos-pc">Juegos PC</Link></p>
         <p>&nbsp;- <Link to="/juegos-online">Juegos Online</Link></p>
         <p>&nbsp;- <Link to="/sube-imagenes">Sube tu imagen</Link></p>
+
+        <RecommendedBlock slot="home-after-content" />
 
         {siteVersion === '2026' && <section className={`app-showcase ${isAndroid ? 'android-active' : isWindows ? 'windows-active' : 'ios-active'}`} aria-labelledby="nw3-app-title">
           <div className="app-copy">
@@ -108,21 +104,13 @@ export default function HomePage({ appPlatform = 'android', onPlatformChange = (
           </div>
         </section>}
 
-        <p>
-          <img
-            src="https://web.archive.org/web/20140625191205im_/http://content.pimp-my-profile.com/i68/2/2/25/f_0d34ebb6a3d8.png"
-            alt=""
-            style={{ maxWidth: '100%' }}
-          />
-        </p>
-
-        <p>
-          <img
-            src="https://web.archive.org/web/20140625191205im_/http://content.pimp-my-profile.com/i68/2/3/1/f_40c1d34eeca4.png"
-            alt=""
-            style={{ maxWidth: '100%' }}
-          />
-        </p>
+        <section className="legacy-support-art" aria-labelledby="legacy-captures-title">
+          <h2 id="legacy-captures-title">Nuestro pasado en capturas</h2>
+          <p>
+            Si tienes alguna sugerencia, duda o queja.<br />
+            Contacta con nosotros a través del centro<br className="legacy-support-wide-break" /> de soporte.
+          </p>
+        </section>
 
         <p style={{ fontSize: 'x-large' }}>Estamos en:</p>
 

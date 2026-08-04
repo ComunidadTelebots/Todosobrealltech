@@ -12,6 +12,7 @@ import botsRouter from './bots.js';
 import telegramChannelRouter from './telegram-channel.js';
 import noticiasRssRouter from './noticias-rss.js';
 import noticiasViewRouter from './noticias-view.js';
+import noticiasRecommendedRouter from './noticias-recommended.js';
 import previewRouter from './preview.js';
 import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
@@ -35,6 +36,7 @@ export default () => {
     router.use('/telegram-channel', telegramChannelRouter);
     router.use('/noticias/rss', noticiasRssRouter);
     router.use('/noticias/view', noticiasViewRouter);
+    router.use('/noticias/recommended', noticiasRecommendedRouter);
     router.use('/preview', previewRouter);
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);
