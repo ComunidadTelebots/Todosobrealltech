@@ -18,6 +18,9 @@ const isTelegramChannelAd = (ad) => /^https:\/\/(?:www\.)?t\.me\/[A-Za-z0-9_]{5,
 const mediaDir = '/data/house-ad-media';
 const reportsFile = '/data/house-ad-reports.json';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+const CATALOG_FRESH_MS = 60_000;
+const CATALOG_STALE_MS = 10 * 60_000;
+const catalogCache = { data: null, fetchedAt: 0, refresh: null };
 const safeAdDestination = (value) => {
   const fallback = 'https://todosobreall.tech';
   try {
@@ -47,16 +50,50 @@ const rotatedOfficialAdsFor = (placement = '', now = Date.now()) => {
 };
 
 async function moon(options = {}) {
+  const { timeoutMs = 6000, ...fetchOptions } = options;
   let lastError;
   for (const baseUrl of MOON_URLS) {
     try {
-      return await fetch(`${baseUrl}/api/internal/house-ads`, { ...options, headers: { ...headers(), ...(options.headers || {}) }, signal: AbortSignal.timeout(6000) });
+      return await fetch(`${baseUrl}/api/internal/house-ads`, { ...fetchOptions, headers: { ...headers(), ...(fetchOptions.headers || {}) }, signal: AbortSignal.timeout(timeoutMs) });
     } catch (error) {
       lastError = error;
     }
   }
   throw lastError || new Error('Moonbot no disponible');
 }
+
+async function refreshCatalog() {
+  if (catalogCache.refresh) return catalogCache.refresh;
+  catalogCache.refresh = (async () => {
+    const response = await moon({ timeoutMs: 2000 });
+    const rawBody = await response.text();
+    let data;
+    try { data = JSON.parse(rawBody); }
+    catch { throw new Error(`Moonbot devolvió contenido no JSON (${response.status})`); }
+    if (!response.ok || !Array.isArray(data.ads)) throw new Error(data.error || `Moonbot HTTP ${response.status}`);
+    catalogCache.data = data;
+    catalogCache.fetchedAt = Date.now();
+    return data;
+  })().finally(() => { catalogCache.refresh = null; });
+  return catalogCache.refresh;
+}
+
+async function cachedCatalog() {
+  const age = Date.now() - catalogCache.fetchedAt;
+  if (catalogCache.data && age <= CATALOG_FRESH_MS) return catalogCache.data;
+  if (catalogCache.data && age <= CATALOG_STALE_MS) {
+    refreshCatalog().catch(() => {});
+    return catalogCache.data;
+  }
+  return refreshCatalog();
+}
+
+const invalidateCatalog = () => {
+  catalogCache.fetchedAt = 0;
+};
+
+// Calienta el catálogo sin retrasar el arranque de la API.
+setTimeout(() => refreshCatalog().catch(() => {}), 0).unref?.();
 
 router.get('/', async (req, res) => {
   const placement = String(req.query.placement || '');
@@ -65,12 +102,7 @@ router.get('/', async (req, res) => {
   const country = requestCountry(req);
   const fallbackAds = () => rotatedOfficialAdsFor(placement).filter((ad) => !channelOnly || isTelegramChannelAd(ad)).slice(0, 1);
   try {
-    const response = await moon();
-    const rawBody = await response.text();
-    let data;
-    try { data = JSON.parse(rawBody); }
-    catch { return res.json({ ok: true, ads: fallbackAds(), fallback: true, upstream_status: response.status }); }
-    if (!response.ok) return res.json({ ok: true, ads: fallbackAds(), fallback: true, upstream_status: response.status });
+    const data = await cachedCatalog();
     let ads = (data.ads || []).filter((ad) => ad.enabled !== false && ad.approval_status === 'approved' && isScheduledNow(ad) && houseAdMatches(ad, { placement, site }));
     if (channelOnly) ads = ads.filter(isTelegramChannelAd);
     if (!ads.length) ads = officialAdsFor(placement).filter((ad) => !channelOnly || isTelegramChannelAd(ad));
@@ -96,12 +128,19 @@ router.post('/', async (req, res) => {
   const auth = await authorizeAdminOrCreator(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   const payload = { ...(req.body || {}) };
-  if (['approve', 'reject'].includes(payload.action) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede revisar campañas' });
-  if ((!payload.action || payload.action === 'upsert') && payload.ad) payload.ad = { ...normalizeHouseAd(payload.ad), approval_status: 'pending', submitted_by: auth.user.id };
+  if (['approve', 'reject', 'verify_telegram'].includes(payload.action) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede revisar o verificar campañas' });
+  if ((!payload.action || payload.action === 'upsert') && payload.ad) {
+    const submitted = auth.user.role === 'creator' ? payload.ad : { ...payload.ad, relationship_type: 'affiliate', telegram_verified: false, community_verified: false };
+    payload.ad = { ...normalizeHouseAd(submitted), approval_status: 'pending', submitted_by: auth.user.id };
+  }
   try {
     const response = await moon({ method: 'POST', body: JSON.stringify(payload) });
     const rawBody = await response.text();
-    try { return res.status(response.status).json(JSON.parse(rawBody)); }
+    try {
+      const data = JSON.parse(rawBody);
+      if (response.ok) invalidateCatalog();
+      return res.status(response.status).json(data);
+    }
     catch { return res.status(502).json({ ok: false, error: 'Moonbot devolvió una respuesta no válida', upstream_status: response.status }); }
   }
   catch { return res.status(502).json({ ok: false, error: 'Moonbot no responde' }); }

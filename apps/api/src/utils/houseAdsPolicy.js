@@ -7,6 +7,12 @@ const integer = (value, min, max, fallback = 0) => {
   return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 };
 
+const relationshipType = (ad = {}) => {
+  if (ad.builtin === true || ad.relationship_type === 'official') return 'official';
+  if (ad.relationship_type === 'verified') return 'verified';
+  return 'affiliate';
+};
+
 export function normalizeHouseAd(ad = {}) {
   const placements = strings(ad.placements?.length ? ad.placements : ad.placement || 'all', HOUSE_AD_PLACEMENTS);
   const allowedSites = strings(ad.allowed_sites?.length ? ad.allowed_sites : 'all', HOUSE_AD_SITES);
@@ -21,6 +27,9 @@ export function normalizeHouseAd(ad = {}) {
     max_impressions: integer(ad.max_impressions, 0, 100_000_000, 0),
     priority: integer(ad.priority, 0, 100, 50),
     destination_mode: ad.destination_mode === 'community' ? 'community' : 'single',
+    relationship_type: relationshipType(ad),
+    telegram_verified: ad.telegram_verified === true,
+    community_verified: ad.community_verified === true,
   };
 }
 
@@ -47,4 +56,3 @@ export function siteFromRequest(req, placement = '') {
   if (host.startsWith('proxy.')) return 'proxy';
   return 'main';
 }
-
