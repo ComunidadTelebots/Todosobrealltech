@@ -1,15 +1,19 @@
+---
+import App from '../main.jsx';
+---
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Visor web del canal de Telegram Comunidad Telebots." />
+    <link rel="canonical" href="https://comunidadtelebots.todosobreall.tech/" />
     <title>Comunidad Telebots</title>
-      <script src="https://assets.todosobreall.tech/netbar.js" defer></script>
+    <script src="https://assets.todosobreall.tech/netbar.js" defer is:inline></script>
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="ComunidadTelebots" />
     <meta property="og:title" content="ComunidadTelebots — Bots de Telegram open source" />
-    <meta property="og:description" content="Comunidad y código de los bots de Telegram: moderación, multibot, moonbot y herramientas para administradores." />
+    <meta property="og:description" content="Comunidad y código de los bots de Telegram: moderación, multibot, Moonbot y herramientas para administradores." />
     <meta property="og:url" content="https://comunidadtelebots.todosobreall.tech/" />
     <meta property="og:image" content="https://comunidadtelebots.todosobreall.tech/og-image.png" />
     <meta property="og:image:width" content="1200" />
@@ -17,12 +21,11 @@
     <meta property="og:locale" content="es_ES" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="ComunidadTelebots — Bots de Telegram open source" />
-    <meta name="twitter:description" content="Comunidad y código de los bots de Telegram: moderación, multibot, moonbot y herramientas para administradores." />
+    <meta name="twitter:description" content="Comunidad y código de los bots de Telegram: moderación, multibot, Moonbot y herramientas para administradores." />
     <meta name="twitter:image" content="https://comunidadtelebots.todosobreall.tech/og-image.png" />
   </head>
   <body>
     <tsa-netbar current="comunidad"></tsa-netbar>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <App client:load />
   </body>
 </html>

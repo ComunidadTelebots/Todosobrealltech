@@ -1,0 +1,33 @@
+---
+import App from '../main.jsx';
+
+const canonical = 'https://gamergitbug.todosobreall.tech/';
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Portafolio GamerGitBug: diseño y desarrollo web, proyectos y servicios dentro del ecosistema Todo Sobre AllTech." />
+    <link rel="canonical" href={canonical} />
+    <title>GamerGitBug - Portafolio</title>
+    <script src="https://assets.todosobreall.tech/netbar.js" defer></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GamerGitBug" />
+    <meta property="og:title" content="GamerGitBug — Diseño y desarrollo web" />
+    <meta property="og:description" content="Portafolio, proyectos y servicios de diseño y desarrollo web." />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${canonical}og-image.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_ES" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GamerGitBug — Diseño y desarrollo web" />
+    <meta name="twitter:description" content="Portafolio, proyectos y servicios de diseño y desarrollo web." />
+    <meta name="twitter:image" content={`${canonical}og-image.png`} />
+  </head>
+  <body>
+    <tsa-netbar current="gamergitbug"></tsa-netbar>
+    <App client:load />
+  </body>
+</html>

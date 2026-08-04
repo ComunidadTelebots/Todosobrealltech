@@ -1,0 +1,35 @@
+---
+import App from '../main.jsx';
+
+const siteUrl = import.meta.env.VITE_SITE_URL || 'https://proxy.todosobreall.tech';
+const assetsUrl = import.meta.env.VITE_ASSETS_URL || 'https://assets.todosobreall.tech';
+const canonical = `${siteUrl.replace(/\/$/, '')}/`;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Directorio de proxies MTProto para Telegram con disponibilidad, latencia y estadísticas en tiempo real." />
+    <link rel="canonical" href={canonical} />
+    <title>Proxies MTProto — Todo Sobre AllTech</title>
+    <script src={`${assetsUrl.replace(/\/$/, '')}/netbar.js`} defer></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Proxies MTProto" />
+    <meta property="og:title" content="Proxies MTProto — estado en vivo y ping" />
+    <meta property="og:description" content="Conéctate a Telegram: proxies MTProto con disponibilidad y latencia comprobadas en tiempo real." />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${canonical}og-image.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_ES" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Proxies MTProto — estado en vivo y ping" />
+    <meta name="twitter:description" content="Proxies MTProto con disponibilidad y latencia comprobadas en tiempo real." />
+    <meta name="twitter:image" content={`${canonical}og-image.png`} />
+  </head>
+  <body>
+    <tsa-netbar current="proxy"></tsa-netbar>
+    <App client:load />
+  </body>
+</html>

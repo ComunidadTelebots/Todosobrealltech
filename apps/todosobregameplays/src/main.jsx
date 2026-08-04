@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import { AlertCircle, BarChart3, CalendarClock, ExternalLink, Image, Instagram, RefreshCw, Radio, Search, Send } from 'lucide-react';
 import './styles.css';
 
@@ -7,7 +6,33 @@ const CHANNEL = 'TodoSobreGameplaysCanal';
 const CHANNEL_URL = `https://t.me/${CHANNEL}`;
 const INSTAGRAM_URL = 'https://www.instagram.com/todosobrealltech/';
 const API_URL = `/hcgi/api/telegram-channel/${CHANNEL}`;
+const CAMPAIGN_SITE = 'todosobregameplays';
+const CAMPAIGN_CACHE_MS = 10 * 60 * 1000;
+const CAMPAIGN_TIMEOUT_MS = 7000;
+const campaignRequests = new Map();
+const CAMPAIGN_PLACEMENTS = { top: 'top', side: 'right', inline: 'inline' };
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+
+function fetchCampaign(url) {
+  const cached = campaignRequests.get(url);
+  if (cached && cached.expiresAt > Date.now()) return cached.promise;
+
+  const attempt = async () => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), CAMPAIGN_TIMEOUT_MS);
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) throw new Error('ads unavailable');
+      return await response.json();
+    } finally {
+      window.clearTimeout(timer);
+    }
+  };
+  const promise = attempt().catch(() => new Promise((resolve) => window.setTimeout(resolve, 300)).then(attempt));
+  campaignRequests.set(url, { promise, expiresAt: Date.now() + CAMPAIGN_CACHE_MS });
+  promise.catch(() => campaignRequests.delete(url));
+  return promise;
+}
 
 const CONSENT_REQUIRED_REGIONS = new Set([
   'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
@@ -85,9 +110,9 @@ function AdPreview({ position }) {
 
   useEffect(() => {
     let active = true;
-    const placement = `todosobregameplays_${position}`;
-    const load = () => fetch(`/hcgi/api/house-ads?placement=${encodeURIComponent(placement)}`)
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error('ads unavailable')))
+    const placement = CAMPAIGN_PLACEMENTS[position] || 'all';
+    const url = `/hcgi/api/house-ads?placement=${encodeURIComponent(placement)}&site=${encodeURIComponent(CAMPAIGN_SITE)}`;
+    const load = () => fetchCampaign(url)
       .then((data) => { if (active) setAd(data.ads?.[0] || null); })
       .catch(() => { if (active) setAd(null); });
     load();
@@ -96,8 +121,8 @@ function AdPreview({ position }) {
   }, [position]);
 
   if (ad) {
-    const placement = `todosobregameplays_${position}`;
-    const clickUrl = `/hcgi/api/house-ads/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}`;
+    const placement = CAMPAIGN_PLACEMENTS[position] || 'all';
+    const clickUrl = `/hcgi/api/house-ads/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}&site=${encodeURIComponent(CAMPAIGN_SITE)}`;
     return (
       <aside className={`ad-preview ad-preview-${position} community-ad`} aria-label="Anuncio de la comunidad">
         <a href={clickUrl} target="_blank" rel="noopener noreferrer sponsored" style={{ background: ad.background, color: ad.foreground, borderColor: ad.accent }}>
@@ -154,7 +179,7 @@ function PostCard({ post }) {
   );
 }
 
-function App() {
+export default function App() {
   const [payload, setPayload] = useState(null);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('loading');
@@ -262,5 +287,3 @@ function App() {
     </main>
   );
 }
-
-createRoot(document.getElementById('root')).render(<App />);

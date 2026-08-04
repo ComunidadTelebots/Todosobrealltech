@@ -23,7 +23,8 @@
     "concurrently": "^9.2.4"
   },
   "overrides": {
-    "ip-address": "10.4.0"
+    "ip-address": "10.4.0",
+    "sharp": "0.35.3"
   },
   "workspaces": [
     "apps/*"

@@ -4,16 +4,18 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite --host :: --port 3004",
-    "build": "vite build",
-    "preview": "vite preview --host :: --port 3004"
+    "dev": "astro dev --host :: --port 3004",
+    "build": "astro build",
+    "preview": "astro preview --host :: --port 3004"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.4",
-    "vite": "^7.3.1",
+    "@astrojs/react": "6.0.2",
+    "astro": "7.1.6",
+    "lucide-react": "^0.469.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "lucide-react": "^0.469.0"
+    "react-dom": "^18.3.1"
   },
-  "devDependencies": {}
+  "overrides": {
+    "sharp": "0.35.3"
+  }
 }

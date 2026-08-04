@@ -5,6 +5,7 @@
 node_modules/
 dist/
 build/
+.astro/
 
 apps/pocketbase/pb_data/
 apps/pocketbase/pocketbase

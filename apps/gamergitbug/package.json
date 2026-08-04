@@ -4,15 +4,17 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite --host :: --port 3005",
-    "build": "vite build",
-    "preview": "vite preview --host :: --port 3005"
+    "dev": "astro dev --host :: --port 3005",
+    "build": "astro build",
+    "preview": "astro preview --host :: --port 3005"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.4",
-    "vite": "^7.3.1",
+    "@astrojs/react": "6.0.2",
+    "astro": "7.1.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
-  "devDependencies": {}
+  "overrides": {
+    "sharp": "0.35.3"
+  }
 }

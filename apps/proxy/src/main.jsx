@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import {
   Activity, AlertCircle, BarChart3, Check, ChevronDown, ChevronLeft, ChevronRight, Copy,
   ExternalLink, Globe, Instagram, Radio, RefreshCw, Search, Send, Server, ShieldCheck,
@@ -459,7 +458,7 @@ function ProxyCard({ proxy }) {
 
 /* ------------------------------- App ------------------------------ */
 
-function App() {
+export default function App() {
   const [payload, setPayload] = useState(null);
   const [status, setStatus] = useState('loading');
   const [query, setQuery] = useState('');
@@ -607,5 +606,3 @@ function App() {
     </main>
   );
 }
-
-createRoot(document.getElementById('root')).render(<App />);
