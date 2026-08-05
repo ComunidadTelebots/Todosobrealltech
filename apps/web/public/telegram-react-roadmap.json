@@ -1,5 +1,5 @@
 {
-  "version": "0.0.649 · 2026-08-06",
+  "version": "0.0.650 · 2026-08-06",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 43, "partial": 1, "pending": 3 },
+  "summary": { "implemented": 44, "partial": 1, "pending": 3 },
   "releases": [
+    { "version": "0.0.650", "title": "Reacciones extendidas multidiseño", "features": ["Buscador de reacciones", "Compactacion +N", "Nombres al pasar el cursor", "Doble clic con reaccion grande"] },
     { "version": "0.0.649", "title": "Contexto de respuestas y menciones sincronizadas", "features": ["Ver respuesta en el chat", "Autores reales en hilos", "Menciones leídas entre dispositivos", "Riesgos oficiales registrados"] },
     { "version": "0.0.648", "title": "Mensajes de grupo corregidos", "features": ["Remitentes reales", "Bloques consecutivos", "Avatares estables", "Mensajes propios a la derecha"] },
     { "version": "0.0.647", "title": "Selector cronologico corregido", "features": ["Version moderna arriba", "Version antigua abajo", "Seleccion persistente", "Prueba de regresion"] },
@@ -81,6 +82,7 @@
     { "id": "tr-gifts", "title": "Galeria de regalos y contenido de pago", "status": "implemented", "area": "Stars y regalos", "evidence": ["src/Components/ColumnRight/StarGiftsGallery.js", "src/Components/Message/Media/PaidMedia.js"] },
     { "id": "tr-market", "title": "Mercado y ofertas de regalos", "status": "partial", "area": "Stars y regalos", "evidence": ["src/Components/ColumnRight/StarGiftCatalog.js", "src/Utils/StarGiftPurchase.js", "src/Utils/StarGiftPurchase.test.js", "src/Controllers/GramJsController.js"], "note": "Catalogo, saldo y compra oficial con Stars implementados; la version MTProto instalada no expone publicacion de precios ni listado de ofertas de reventa." },
     { "id": "tr-message-effects", "title": "Efectos al enviar mensajes", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/InputBoxControl.js", "src/Controllers/GramJsController.js"] },
+    { "id": "tr-extended-reactions", "title": "Reacciones extendidas adaptadas a cada diseño", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Message/Reactions.js", "src/Components/Message/Reactions.css", "src/Controllers/GramJsController.js", "src/designs/shell.css"], "note": "Buscador, compactacion +N, nombres de usuarios, reaccion grande, Stars y estilos heredados por cada perfil visual." },
     { "id": "tr-saved-topics", "title": "Carpetas de Mensajes guardados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/SavedFolders.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-similar-channels", "title": "Canales similares y unión directa", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/SimilarChannels.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-download-settings", "title": "Perfiles de descarga automática", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/AndroidDataSettings.js", "src/Controllers/GramJsController.js"] },

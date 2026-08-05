@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.33 - 2026-08-06
+
+- Actualiza Telegram React a `0.0.650` e incorpora reacciones extendidas en todos los perfiles visuales.
+- Registra buscador, compactación `+N`, nombres de usuarios al pasar el cursor y reacción grande mediante doble clic.
+- Conserva las reacciones pagadas, el modal de participantes, las partículas y la sincronización ya existentes.
+
 ### 18.23.32 - 2026-08-06
 
 - Actualiza Telegram React a `0.0.649` con autores reales en hilos, salto «Ver en el chat» y sincronización de menciones leídas.
