@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.34 - 2026-08-06
+
+- Actualiza el roadmap de Telegram React a `0.0.651` con sonidos separados y sincronización resistente durante llamadas grupales.
+- Incorpora vistas inteligentes inspiradas en Plus Messenger, ordenación opcional y acciones masivas de chats.
+- Documenta detección segura de capacidades MTProto para Passkeys y mercado de regalos sin habilitar operaciones no soportadas.
+- Añade navegación rápida, doble clic configurable, calidad de fotografías, lista en 2/3 líneas, avisos privados, acción de avatar y copia segura de preferencias.
+- Agrupa la configuración en un panel «Opciones Plus Messenger» accesible desde Ajustes y enlaza al repositorio oficial al final.
+- Estado verificado: 56 funciones implementadas, 1 parcial y 1 pendiente en la comparativa principal.
+
 ### 18.23.33 - 2026-08-06
 
 - Actualiza Telegram React a `0.0.650` e incorpora reacciones extendidas en todos los perfiles visuales.

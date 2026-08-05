@@ -1,5 +1,5 @@
 {
-  "version": "0.0.650 · 2026-08-06",
+  "version": "0.0.651 · 2026-08-06",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 44, "partial": 1, "pending": 3 },
+  "summary": { "implemented": 56, "partial": 1, "pending": 1 },
   "releases": [
+    { "version": "0.0.651", "title": "Mensajeria resistente y herramientas Plus", "features": ["Sonidos separados", "Sincronizacion durante llamadas", "Vistas inteligentes", "Ordenacion de chats", "Acciones masivas", "Deteccion segura de capacidades MTProto"] },
     { "version": "0.0.650", "title": "Reacciones extendidas multidiseño", "features": ["Buscador de reacciones", "Compactacion +N", "Nombres al pasar el cursor", "Doble clic con reaccion grande"] },
     { "version": "0.0.649", "title": "Contexto de respuestas y menciones sincronizadas", "features": ["Ver respuesta en el chat", "Autores reales en hilos", "Menciones leídas entre dispositivos", "Riesgos oficiales registrados"] },
     { "version": "0.0.648", "title": "Mensajes de grupo corregidos", "features": ["Remitentes reales", "Bloques consecutivos", "Avatares estables", "Mensajes propios a la derecha"] },
@@ -51,8 +52,18 @@
     { "id": "tr-messages", "title": "Mensajes, respuestas, reenvio y edicion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Message/Message.js", "src/Components/Message/MessageAuthor.js", "src/Components/Popup/ForwardDialog.js", "src/Controllers/GramJsController.js"], "note": "Los grupos resuelven el remitente real, agrupan mensajes consecutivos y conservan alineacion y avatar coherentes con los clientes oficiales." },
     { "id": "tr-mention-read-sync", "title": "Sincronizacion de menciones leidas", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/MessagesList.js", "src/Controllers/GramJsController.js"], "note": "Confirma mediante MTProto las menciones visibles para evitar contadores atascados en otros dispositivos." },
     { "id": "tr-reply-context", "title": "Ver respuestas y comentarios en su chat original", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Additional/MessageThread.js", "src/Controllers/GramJsController.js"], "note": "Los hilos muestran autores reales y permiten saltar al mensaje dentro de la conversacion." },
-    { "id": "tr-group-call-message-sync", "title": "Sincronizacion resistente de mensajes y reacciones en llamadas grupales", "status": "pending", "area": "Llamadas", "evidence": [], "note": "Peticion priorizada a partir de incidencias oficiales: reintentos, deduplicacion y confirmacion de entrega durante llamadas y directos." },
-    { "id": "tr-separate-message-sounds", "title": "Controles separados para sonidos entrantes y enviados", "status": "pending", "area": "Notificaciones", "evidence": [], "note": "Preferencia solicitada por usuarios de Telegram Web para distinguir el sonido de notificacion del sonido de mensaje enviado." },
+    { "id": "tr-group-call-message-sync", "title": "Sincronizacion resistente de mensajes y reacciones en llamadas grupales", "status": "implemented", "area": "Llamadas", "evidence": ["src/Utils/GroupCallMessageSync.js", "src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Stores/MessageStore.js"], "note": "Reintentos acotados, randomId estable, deduplicacion concurrente y filtrado temporal de updates mientras la llamada esta activa." },
+    { "id": "tr-separate-message-sounds", "title": "Controles separados para sonidos entrantes y enviados", "status": "implemented", "area": "Notificaciones", "evidence": ["src/Utils/MessageSound.js", "src/Stores/NotificationStore.js", "src/Components/ColumnLeft/DisplaySettings.js"], "note": "Preferencias independientes y persistentes; salida opt-in." },
+    { "id": "tr-plus-smart-tabs", "title": "Pestañas inteligentes inspiradas en Plus Messenger", "status": "implemented", "area": "Organizacion", "evidence": ["src/Components/ColumnLeft/Dialogs.js", "src/Components/ColumnLeft/DialogsList.js", "src/Utils/SmartChatList.js"] },
+    { "id": "tr-plus-chat-sort", "title": "Ordenacion configurable de conversaciones", "status": "implemented", "area": "Organizacion", "evidence": ["src/Components/ColumnLeft/Dialogs.js", "src/Utils/SmartChatList.js"], "note": "Conserva el orden Telegram predeterminado." },
+    { "id": "tr-plus-bulk-chats", "title": "Seleccion y acciones masivas de chats", "status": "implemented", "area": "Organizacion", "evidence": ["src/Components/ColumnLeft/Dialogs.js", "src/Components/Tile/Dialog.js"], "note": "Leer, silenciar y archivar con guardas de capacidad y controles accesibles." },
+    { "id": "tr-plus-quick-chat-bar", "title": "Barra rapida de chats recientes", "status": "implemented", "area": "Navegacion", "evidence": ["src/Components/Additional/QuickChatBar.js", "src/Utils/PlusInteractions.js"] },
+    { "id": "tr-plus-double-click", "title": "Accion configurable al hacer doble clic", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Message/Message.js", "src/Components/ColumnLeft/PlusInteractionSettings.js", "src/Utils/PlusInteractions.js"] },
+    { "id": "tr-plus-photo-quality", "title": "Calidad configurable al enviar fotografias", "status": "implemented", "area": "Multimedia", "evidence": ["src/Utils/PhotoQuality.js", "src/Components/Additional/ImageEditor.js", "src/Components/ColumnMiddle/InputBoxControl.js"] },
+    { "id": "tr-plus-dialog-lines", "title": "Lista de chats en dos o tres lineas", "status": "implemented", "area": "Organizacion", "evidence": ["src/Components/ColumnLeft/Dialogs.js", "src/Components/Tile/DialogContent.css"] },
+    { "id": "tr-plus-presence-notices", "title": "Avisos privados de presencia y escritura", "status": "implemented", "area": "Privacidad", "evidence": ["src/Stores/PlusPresenceStore.js", "src/Components/Additional/PlusNoticeHost.js", "src/Components/ColumnLeft/PlusSettings.js"], "note": "Opt-in, contactos seleccionados, sin sondeo, sin inferencias y con cooldown." },
+    { "id": "tr-plus-avatar-action", "title": "Accion configurable al pulsar el avatar", "status": "implemented", "area": "Navegacion", "evidence": ["src/Components/ColumnRight/ChatDetails.js", "src/Components/ColumnLeft/PlusSettings.js"] },
+    { "id": "tr-plus-preferences-backup", "title": "Exportacion e importacion segura de preferencias", "status": "implemented", "area": "Cuenta", "evidence": ["src/Utils/PlusPreferences.js", "src/Components/ColumnLeft/PlusSettings.js"], "note": "Allowlist versionada; excluye sesiones, tokens, claves, chats y contactos." },
     { "id": "tr-search", "title": "Busqueda global y dentro del chat", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnLeft/Search/Search.js", "src/Components/ColumnMiddle/ChatSearch.js"] },
     { "id": "tr-scheduled", "title": "Mensajes programados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Additional/ScheduledMessages.js"] },
     { "id": "tr-autodelete", "title": "Autoeliminacion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/AutoDeleteTimer.js"] },
