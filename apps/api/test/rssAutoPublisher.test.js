@@ -74,7 +74,7 @@ test('protege el texto y el botón cuando Inside Ads ya procesó el post', () =>
 });
 
 test('separa Inside Ads para conservarlo tras NoticiasWeb3 y la campaña comunitaria', () => {
-  const source = 'Titular\n\nResumen original\n\n@InsideAds_bot\nPublicidad de ejemplo\nhttps://inside.ad/click';
+  const source = 'Titular\n\nResumen original\n\nPUBLICIDAD · INSIDE ADS\n@InsideAds_bot\nPublicidad de ejemplo\nhttps://inside.ad/click';
   const parts = extractInsideAdsPromotion(source);
   assert.match(parts.editorialText, /Titular/);
   assert.doesNotMatch(parts.editorialText, /InsideAds/);
@@ -86,6 +86,28 @@ test('separa Inside Ads para conservarlo tras NoticiasWeb3 y la campaña comunit
   assert.match(output, /COMUNIDAD DESTACADA/);
   assert.match(output, /PUBLICIDAD · INSIDE ADS/);
   assert.match(output, /inside\.ad\/click/);
+  assert.match(output, /PUBLICIDAD · INSIDE ADS\n@InsideAds_bot\nPublicidad de ejemplo\nhttps:\/\/inside\.ad\/click$/);
+});
+
+test('Inside Ads termina en su firma y no absorbe publicaciones vecinas', () => {
+  const parsed = extractInsideAdsPromotion(`Titular\n\nPUBLICIDAD · INSIDE ADS 🔗 Suscríbase al canal: Oferta\n(https://inside.ad/+ktzMiY) InsideAds Xataka Otro titular (https://t.me/canal/2)`);
+  assert.equal(parsed.editorialText, 'Titular');
+  assert.match(parsed.promotionText, /\(https:\/\/inside\.ad\/\+ktzMiY\) InsideAds$/);
+  assert.doesNotMatch(parsed.promotionText, /Xataka|Otro titular|t\.me\/canal/);
+});
+
+test('conserva la firma completa de Inside Ads con seguimiento y deep link', () => {
+  const deepLink = 'https://t.me/InsideAds_bot/open?startapp=m_-1001424055599_utm_source-insideadsInternal-utm_medium-signTeaser-utm_campaign-default';
+  const parsed = extractInsideAdsPromotion(`Titular\n\nPUBLICIDAD · INSIDE ADS 🔗 Suscríbase al canal: Oferta (https://inside.ad/+ktzMiY) | InsideAds (${deepLink}) Xataka Mensaje vecino`);
+  assert.match(parsed.promotionText, new RegExp(`InsideAds \\(https://t\\.me/InsideAds_bot/open\\?startapp=.*default\\)$`));
+  assert.doesNotMatch(parsed.promotionText, /Xataka|Mensaje vecino/);
+  assert.equal(extractInsideAdsButton(parsed.promotionText)?.url, deepLink);
+});
+
+test('protege literalmente el bloque entre los marcadores canónicos de Inside Ads', () => {
+  const protectedAd = 'PUBLICIDAD · INSIDE ADS\nTexto exacto [sin tocar] 💳\n[InsideAds](https://t.me/InsideAds_bot/open?startapp=campaign_42)';
+  const parsed = extractInsideAdsPromotion(`Titular\n\n${protectedAd}\nOTRA PUBLICACIÓN`);
+  assert.equal(parsed.promotionText, protectedAd);
 });
 
 test('recupera de forma segura el botón HTTPS aportado por Inside Ads', () => {
@@ -94,6 +116,12 @@ test('recupera de forma segura el botón HTTPS aportado por Inside Ads', () => {
     { text: 'Abrir oferta', url: 'https://inside.ad/click/123' },
   );
   assert.equal(extractInsideAdsButton('@InsideAds_bot\nAbrir (javascript:alert(1))'), null);
+});
+
+test('usa el deep link del bot para el inline y conserva el afiliado en el texto', () => {
+  const url = 'https://t.me/InsideAds_bot/open?startapp=m_-1001424055599_utm_source-insideadsInternal-utm_medium-signTeaser-utm_campaign-default';
+  const button = extractInsideAdsButton(`PUBLICIDAD · INSIDE ADS\n🔗 Suscríbase al canal: (${url})\n(https://inside.ad/+ktzMiY) InsideAds`);
+  assert.deepEqual(button, { text: 'InsideAds', url });
 });
 
 test('ordena los botones inline como noticia, Inside Ads y comunidad', () => {

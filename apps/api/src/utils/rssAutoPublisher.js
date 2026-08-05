@@ -894,19 +894,41 @@ function extractInsideAdsPromotion(text = '') {
   if (index < 0) index = lines.findIndex((line, position) => position >= Math.max(1, lines.length - 6)
     && /^\s*(?:publicidad|anuncio|patrocinado)\s*[:-]/i.test(line));
   if (index < 0) return { editorialText: plain, promotionText: '' };
-  return { editorialText: lines.slice(0, index).join('\n').trim(), promotionText: lines.slice(index).join('\n').trim() };
+  const editorialText = lines.slice(0, index).join('\n').trim();
+  let promotionText = lines.slice(index).join('\n').trim();
+  // El HTML público de Telegram puede concatenar publicaciones vecinas. Los
+  // anuncios de Inside Ads cierran con su URL de seguimiento y la firma
+  // `InsideAds`; todo lo posterior pertenece a otro mensaje y debe descartarse.
+  // Cierre canónico: `[InsideAds](https://t.me/InsideAds_bot/open?startapp=...)`.
+  // La variante sin corchetes aparece al convertir el HTML público a texto.
+  // Tiene prioridad y protege literalmente todo el bloque aunque no aparezca
+  // una URL inside.ad intermedia.
+  const botSignatureEnd = promotionText.match(/(?:\[InsideAds\]|InsideAds)\s*\(https:\/\/t\.me\/InsideAds_bot\/open\?startapp=[^\s)]+\)/i);
+  const signedEnd = botSignatureEnd || promotionText.match(/\(?https:\/\/(?:www\.)?inside\.ad\/[^\s)]+\)?\s*(?:\|\s*)?InsideAds\b/i);
+  if (signedEnd?.index != null) promotionText = promotionText.slice(0, signedEnd.index + signedEnd[0].length).trim();
+  return { editorialText, promotionText };
 }
 
 function formatPreservedInsideAds(text = '') {
-  const lines = String(text).split('\n').map((line) => escapeRichMarkdown(line.trim())).filter(Boolean);
-  if (!lines.length) return '';
-  return ['> **PUBLICIDAD · INSIDE ADS**', ...lines.map((line) => `> ${line}`)].join('\n');
+  // Este bloque es contenido publicitario de un tercero. Se conserva literal
+  // entre sus marcadores; el worker no lo resume, reescribe ni vuelve a decorar.
+  return String(text).trim();
 }
 
 function extractInsideAdsButton(text = '') {
   const promotion = extractInsideAdsPromotion(text).promotionText;
   if (!promotion) return null;
   const linked = [...promotion.matchAll(/([^()\n]{1,48})\s*\((https:\/\/[^)\s]+)\)/g)].pop();
+  // Todos los enlaces del anunciante permanecen en el texto protegido, pero el
+  // botón inline abre siempre el deep link oficial de InsideAds_bot.
+  const botDeepLink = promotion.match(/https:\/\/t\.me\/InsideAds_bot\/open\?startapp=[^\s)]+/i)?.[0];
+  if (botDeepLink) return { text: 'InsideAds', url: botDeepLink };
+  const affiliateUrl = promotion.match(/https:\/\/(?:www\.)?inside\.ad\/[^\s)]+/i)?.[0];
+  if (affiliateUrl) {
+    const linkedAffiliate = [...promotion.matchAll(/([^()\n]{1,48})\s*\((https:\/\/(?:www\.)?inside\.ad\/[^)\s]+)\)/gi)].pop();
+    const label = String(linkedAffiliate?.[1] || '').trim().replace(/^[-–—:·|\s]+/, '').slice(-40);
+    return { text: label || 'Suscríbase al canal', url: affiliateUrl };
+  }
   const rawUrl = linked?.[2] || [...promotion.matchAll(/https:\/\/[^\s)]+/g)].pop()?.[0] || '';
   try {
     const url = new URL(rawUrl);
@@ -981,7 +1003,7 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   const originalBase = (originalText || '').trim();
 
   const richMarkdown = formatTelegramBackfillRichMarkdown(originalBase, slug, categoria, hashtags, houseAd);
-  const insideAdsButton = knownInsideAdsButton || extractInsideAdsButton(originalBase);
+  const insideAdsButton = extractInsideAdsButton(originalBase) || knownInsideAdsButton;
   const mergedKeyboard = buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton);
 
   // El backfill usa exclusivamente la edición enriquecida de Bot API 10.2 para
