@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.27 - 2026-08-05
+
+- Actualiza el apartado de Telegram React a la versión `0.0.643` tras completar la ubicación en directo.
+- Marca la ubicación en directo como implementada con evidencias de interfaz, GramJS, seguimiento continuo y pruebas.
+- El roadmap queda en 37 funciones implementadas, 4 parciales y 2 pendientes.
+
 ### 18.23.26 - 2026-08-05
 
 - Añade al panel de control del worker la edición individual de una publicación mediante su URL de Telegram.

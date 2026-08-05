@@ -1,5 +1,5 @@
 {
-  "version": "0.0.642 · 2026-08-03",
+  "version": "0.0.643 · 2026-08-05",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 36, "partial": 5, "pending": 2 },
+  "summary": { "implemented": 37, "partial": 4, "pending": 2 },
   "releases": [
+    { "version": "0.0.643", "title": "Ubicación en directo completa", "features": ["Duración configurable", "Seguimiento de alta precisión", "Errores visibles", "Detención y limpieza verificadas"] },
     { "version": "0.0.642", "title": "Migración completa a Vite y Workbox", "features": ["Vite 7 y Vitest", "Service worker Workbox", "Workers nativos", "Sin vulnerabilidades moderadas, altas o críticas"] },
     { "version": "0.0.641", "title": "Refuerzo de dependencias", "features": ["Retirada de tdweb y recompose", "Polyfills explícitos de GramJS", "Herramientas mantenidas", "Compilación verificada"] },
     { "version": "0.0.640", "title": "Anuncios oficiales de Telegram", "features": ["Canales y bots", "Impresiones y clics oficiales", "Recomendados", "Información y denuncias"] },
@@ -45,7 +46,7 @@
     { "id": "tr-scheduled", "title": "Mensajes programados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Additional/ScheduledMessages.js"] },
     { "id": "tr-autodelete", "title": "Autoeliminacion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/AutoDeleteTimer.js"] },
     { "id": "tr-voice", "title": "Grabar mensajes de voz", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/InputBoxControl.js", "src/Controllers/GramJsController.js"], "note": "WebM/Opus, OGG/Opus y MP4/M4A con contador, cancelación, permisos y estados Telegram." },
-    { "id": "tr-location", "title": "Ubicacion en directo", "status": "partial", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/LiveLocationPanel.js"], "note": "Panel presente; emision completa no verificada." },
+    { "id": "tr-location", "title": "Ubicacion en directo", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/InputBoxControl.js", "src/Components/ColumnMiddle/LiveLocationPanel.js", "src/Controllers/GramJsController.js", "src/Utils/LiveLocation.js", "src/Utils/LiveLocation.test.js"], "note": "Envío y edición reales, duración configurable, seguimiento de alta precisión, errores visibles, detención y pruebas unitarias." },
     { "id": "tr-media", "title": "Multimedia y galeria compartida", "status": "implemented", "area": "Multimedia", "evidence": ["src/Components/ColumnRight/SharedMedia.js", "src/Components/Viewer/MediaViewer.js"] },
     { "id": "tr-stickers", "title": "Stickers, GIF y emoji", "status": "implemented", "area": "Multimedia", "evidence": ["src/Components/ColumnMiddle/StickersPicker.js", "src/Components/ColumnMiddle/GifPicker.js"] },
     { "id": "tr-media-editor", "title": "Editor multimedia completo", "status": "partial", "area": "Multimedia", "evidence": ["src/Components/Popup/EditMediaDialog.js"], "note": "Edicion basica presente; faltan herramientas del cliente oficial." },
