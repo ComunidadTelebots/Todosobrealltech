@@ -826,8 +826,9 @@ function formatTelegramHouseAdMarkdown(ad = {}) {
   const title = escapeRichMarkdown(String(ad.title).slice(0, 55));
   const description = escapeRichMarkdown(String(ad.description || '').slice(0, 72));
   return [
-    '> **📣 COMUNIDAD DESTACADA**',
-    `> **${title}**${description ? ` · ${description}` : ''}`,
+    '| **COMUNIDAD DESTACADA** |',
+    '|:--|',
+    `| **${title}**${description ? `<br>${description}` : ''} |`,
   ].filter(Boolean).join('\n');
 }
 
@@ -915,6 +916,37 @@ function extractInsideAdsButton(text = '') {
   } catch { return null; }
 }
 
+function parseTelegramPublicPost(html = '') {
+  const source = String(html);
+  const textHtml = source.match(/<div\b[^>]*class=["'][^"']*tgme_widget_message_text[^"']*["'][^>]*>([\s\S]*?)<\/div>\s*<div\b[^>]*class=["'][^"']*tgme_widget_message_footer/i)?.[1]
+    || source.match(/<div\b[^>]*class=["'][^"']*tgme_widget_message_text[^"']*["'][^>]*>([\s\S]*?)<\/div>/i)?.[1]
+    || '';
+  const buttons = [...source.matchAll(/<a\b([^>]*class=["'][^"']*tgme_widget_message_inline_button[^"']*["'][^>]*)>([\s\S]*?)<\/a>/gi)]
+    .map((match) => {
+      const href = match[1].match(/\bhref=["']([^"']+)["']/i)?.[1] || '';
+      const label = htmlToPlainText(match[2]).replace(/\s+/g, ' ').trim();
+      try {
+        const url = new URL(href.replace(/&amp;/g, '&'));
+        return url.protocol === 'https:' && label ? { text: label.slice(0, 40), url: url.toString() } : null;
+      } catch { return null; }
+    })
+    .filter(Boolean);
+  const insideAdsButton = buttons.find((button) => !/noticiasweb3|todosobreall\.tech\/hcgi\/api\/community-cards/i.test(button.url)) || null;
+  return { telegramOriginalText: htmlToPlainText(textHtml), insideAdsButton };
+}
+
+async function fetchTelegramPublicPost(telegramUrl) {
+  const match = String(telegramUrl).match(/^https?:\/\/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
+  if (!match) return null;
+  const response = await fetch(`https://t.me/s/${match[1]}/${match[2]}?embed=1&mode=tme`, {
+    headers: { 'User-Agent': FETCH_USER_AGENT },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!response.ok) return null;
+  const parsed = parseTelegramPublicPost(await response.text());
+  return parsed.telegramOriginalText ? parsed : null;
+}
+
 function buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton = null) {
   const actions = [];
   if (insideAdsButton?.url) actions.push(insideAdsButton);
@@ -926,7 +958,7 @@ function buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton = null) {
   ] };
 }
 
-async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags, houseAd) {
+async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags, houseAd, knownInsideAdsButton = null) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   // URL que no apunta a un post concreto: irrecuperable, no reintentar.
   if (!match) return { ok: false, permanent: true };
@@ -937,15 +969,8 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
   const originalBase = (originalText || '').trim();
 
-  const hasNw3Link = /leer en (?:nw3|noticiasweb3)/i.test(originalBase) || originalBase.includes(articleUrl);
-  const hasCommunityCampaign = /recomendado por todosobrealltech|comunidad destacada/i.test(originalBase);
-  // Un enlace NW3 por sí solo no significa que la campaña se haya aplicado.
-  if (hasNw3Link && hasCommunityCampaign && !hasInsideAdsPromotion(originalBase)) {
-    return { ok: true, permanent: false, alreadyPresent: true, communityAdAdded: true };
-  }
-
   const richMarkdown = formatTelegramBackfillRichMarkdown(originalBase, slug, categoria, hashtags, houseAd);
-  const insideAdsButton = extractInsideAdsButton(originalBase);
+  const insideAdsButton = knownInsideAdsButton || extractInsideAdsButton(originalBase);
   const mergedKeyboard = buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton);
 
   // El backfill usa exclusivamente la edición enriquecida de Bot API 10.2 para
@@ -1293,10 +1318,16 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
 
     for (const record of records) {
       try {
-        const live = livePosts.get(record.telegram_url);
+        let live = livePosts.get(record.telegram_url);
+        if (!live?.telegramOriginalText) {
+          live = await fetchTelegramPublicPost(record.telegram_url);
+          if (live?.telegramOriginalText) {
+            logger.info(`[rssAutoPublisher] backfillTelegramLinks: texto recuperado desde Telegram para ${record.telegram_url}.`);
+          }
+        }
         if (!live?.telegramOriginalText) {
           failedTransient++;
-          logger.warn(`[rssAutoPublisher] backfillTelegramLinks: texto vivo no disponible para ${record.telegram_url}; no se edita para proteger Inside Ads.`);
+          logger.warn(`[rssAutoPublisher] backfillTelegramLinks: texto vivo no disponible por feed ni Telegram para ${record.telegram_url}; no se edita para proteger Inside Ads.`);
           continue;
         }
         if (shouldDelayChannelEdit(live.pubDate || record.created)) {
@@ -1311,6 +1342,7 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
           record.categoria,
           undefined,
           telegramHouseAd,
+          live.insideAdsButton || null,
         );
         if (ok) {
           await pocketbaseClient.collection('nw3_noticias').update(record.id, {
@@ -1642,6 +1674,7 @@ export {
   hasInsideAdsPromotion,
   extractInsideAdsPromotion,
   extractInsideAdsButton,
+  parseTelegramPublicPost,
   buildTelegramPostKeyboard,
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,

@@ -9,6 +9,8 @@
 - Acorta la tarjeta comunitaria para evitar recortes en Telegram y mueve las acciones a botones inline ordenados como `Leer noticia`, `Inside Ads` y comunidad.
 - Sustituye los feeds separados y el flujo de IFTTT por el agregado oficial `RSS Telegram Alltech` (`_V6S1IOxd3DMA4V76`), que incluye Xataka, Instagram y el resto de fuentes de TodoSobreAllTech.
 - El worker deduplica las entradas del agregado por su URL original, crea el artículo y publica el mensaje completo con formato NW3, anuncios comunitarios y reintentos persistentes.
+- El backfill recupera primero el mensaje vivo desde los feeds y, si no aparece, desde la vista pública individual de Telegram; así puede reconstruir publicaciones antiguas sin eliminar el contenido de Inside Ads.
+- Reconstruye el teclado de cada publicación editable con `Leer noticia`, el botón original de Inside Ads cuando es detectable y la campaña comunitaria, incluso si el enlace NW3 ya existía como texto.
 
 ### 18.23.24 - 2026-08-05
 

@@ -6,6 +6,7 @@ import {
   hasInsideAdsPromotion,
   extractInsideAdsPromotion,
   extractInsideAdsButton,
+  parseTelegramPublicPost,
   buildTelegramPostKeyboard,
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,
@@ -103,6 +104,16 @@ test('ordena los botones inline como noticia, Inside Ads y comunidad', () => {
     [['Leer noticia'], ['Ver anuncio', 'Seguir comunidad']]);
 });
 
+test('recupera texto y botón de Inside Ads desde el mensaje público de Telegram', () => {
+  const parsed = parseTelegramPublicPost(`
+    <div class="tgme_widget_message_text js-message_text">Titular<br>Resumen<br>@InsideAds_bot</div>
+    <div class="tgme_widget_message_footer compact js-message_footer"></div>
+    <a class="tgme_widget_message_inline_button" href="https://inside.ad/click/42"><span>Ver oferta</span></a>
+    <a class="tgme_widget_message_inline_button" href="https://todosobreall.tech/hcgi/api/community-cards/c1/click"><span>Ver canal</span></a>`);
+  assert.match(parsed.telegramOriginalText, /Titular\nResumen/);
+  assert.deepEqual(parsed.insideAdsButton, { text: 'Ver oferta', url: 'https://inside.ad/click/42' });
+});
+
 test('crea una tarjeta Telegram compacta con seguimiento propio', () => {
   const ad = { id: 'official-test', title: 'Canal <oficial>', description: 'Noticias & comunidad', cta: 'Abrir' };
   const card = formatTelegramHouseAd(ad);
@@ -120,14 +131,14 @@ test('crea una tarjeta Telegram compacta con seguimiento propio', () => {
 test('genera el anuncio y la noticia como Rich Markdown 10.2 sin imágenes externas', () => {
   const ad = { id: 'official-test', title: 'Canal oficial', description: 'Noticias y comunidad', cta: 'Abrir' };
   const campaign = formatTelegramHouseAdMarkdown(ad);
-  assert.match(campaign, /^> \*\*📣 COMUNIDAD DESTACADA\*\*/);
-  assert.match(campaign, /> \*\*Canal oficial\*\* · Noticias y comunidad/);
+  assert.match(campaign, /^\| \*\*COMUNIDAD DESTACADA\*\* \|/);
+  assert.match(campaign, /\| \*\*Canal oficial\*\*<br>Noticias y comunidad \|/);
   assert.doesNotMatch(campaign, /!\[|<img|https?:\/\/[^\s)]*\.(?:png|jpe?g|gif|webp)/i);
 
   const message = formatTelegramNewsRichMarkdown({ titulo: 'Titular', excerpt: 'Una frase breve.', categoria: 'IA', hashtags: '#IA #NW3' }, 'titular', ad);
   assert.match(message, /^## 📰 Titular/);
   assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
-  assert.match(message, /\n\n---\n\n> \*\*📣 COMUNIDAD DESTACADA\*\*/);
+  assert.match(message, /\n\n---\n\n\| \*\*COMUNIDAD DESTACADA\*\* \|/);
 });
 
 test('el backfill genera el mismo diseño Rich Markdown 10.2', () => {
@@ -142,7 +153,7 @@ test('el backfill genera el mismo diseño Rich Markdown 10.2', () => {
   assert.match(message, /^## /);
   assert.match(message, /Titular de la noticia/);
   assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
-  assert.match(message, /> \*\*📣 COMUNIDAD DESTACADA\*\*/);
+  assert.match(message, /\| \*\*COMUNIDAD DESTACADA\*\* \|/);
   assert.doesNotMatch(message, /<blockquote>|ift\.tt/);
 });
 
