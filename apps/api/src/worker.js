@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import logger from './utils/logger.js';
 import { startTelegramSync } from './utils/telegramSync.js';
-import { startOfficialTelegramViewsSync, startRssAutoPublisher, startTelegramLinkBackfill } from './utils/rssAutoPublisher.js';
+import { startOfficialTelegramViewsSync, startRssAutoPublisher, startRssWorkerControl, startTelegramLinkBackfill } from './utils/rssAutoPublisher.js';
 import { refreshPayload } from './routes/mtproto-proxies.js';
 
 const PROXY_CRAWL_MS = Number(process.env.MTPROTO_PAYLOAD_TTL_MS || 300_000); // 5 min
@@ -36,6 +36,7 @@ process.on('SIGTERM', async () => {
 	startTelegramLinkBackfill(); // en segundo plano: no bloquea el arranque
 	startOfficialTelegramViewsSync();
 	startRssAutoPublisher();
+	startRssWorkerControl();
 
 	// Crawl de proxies MTProto (@ProxyMTProto): antes ahogaba el pool del api con
 	// ~2244 TCP-checks. Ahora corre aquí y persiste a /data; el api solo sirve caché.

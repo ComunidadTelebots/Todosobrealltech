@@ -6,6 +6,7 @@ import {
   hasInsideAdsPromotion,
   extractInsideAdsPromotion,
   extractInsideAdsButton,
+  buildTelegramPostKeyboard,
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,
   formatTelegramNewsRichMarkdown,
@@ -40,7 +41,7 @@ test('recupera pendientes y noticias recientes de feeds publicables', () => {
   const filter = telegramPendingFilter(Date.parse('2026-07-31T12:00:00Z'));
   assert.match(filter, /telegram_publish_status="pending"/);
   assert.match(filter, /created>="2026-07-29T12:00:00\.000Z"/);
-  assert.match(filter, /fuente_label="Hispasec"/);
+  assert.match(filter, /fuente_label="RSS Telegram Alltech"/);
   assert.doesNotMatch(filter, /fuente_label="@TodoSobreAllTech"/);
 });
 
@@ -94,6 +95,14 @@ test('recupera de forma segura el botón HTTPS aportado por Inside Ads', () => {
   assert.equal(extractInsideAdsButton('@InsideAds_bot\nAbrir (javascript:alert(1))'), null);
 });
 
+test('ordena los botones inline como noticia, Inside Ads y comunidad', () => {
+  const keyboard = buildTelegramPostKeyboard('https://t.me/iv?url=noticia',
+    { id: 'official-test', cta: 'Seguir comunidad' },
+    { text: 'Ver anuncio', url: 'https://inside.ad/click/1' });
+  assert.deepEqual(keyboard.inline_keyboard.map((row) => row.map((button) => button.text)),
+    [['Leer noticia'], ['Ver anuncio', 'Seguir comunidad']]);
+});
+
 test('crea una tarjeta Telegram compacta con seguimiento propio', () => {
   const ad = { id: 'official-test', title: 'Canal <oficial>', description: 'Noticias & comunidad', cta: 'Abrir' };
   const card = formatTelegramHouseAd(ad);
@@ -111,15 +120,14 @@ test('crea una tarjeta Telegram compacta con seguimiento propio', () => {
 test('genera el anuncio y la noticia como Rich Markdown 10.2 sin imágenes externas', () => {
   const ad = { id: 'official-test', title: 'Canal oficial', description: 'Noticias y comunidad', cta: 'Abrir' };
   const campaign = formatTelegramHouseAdMarkdown(ad);
-  assert.match(campaign, /^\| \*\*COMUNIDAD DESTACADA\*\* \| \|/);
-  assert.match(campaign, /\*\*Canal oficial\*\*<br>Noticias y comunidad/);
-  assert.match(campaign, /\*\*\[ABRIR →\]\(https:\/\/todosobreall\.tech\/hcgi\/api\/community-cards\/official-test\/click\?placement=telegram_channel\)\*\*/);
+  assert.match(campaign, /^> \*\*📣 COMUNIDAD DESTACADA\*\*/);
+  assert.match(campaign, /> \*\*Canal oficial\*\* · Noticias y comunidad/);
   assert.doesNotMatch(campaign, /!\[|<img|https?:\/\/[^\s)]*\.(?:png|jpe?g|gif|webp)/i);
 
   const message = formatTelegramNewsRichMarkdown({ titulo: 'Titular', excerpt: 'Una frase breve.', categoria: 'IA', hashtags: '#IA #NW3' }, 'titular', ad);
   assert.match(message, /^## 📰 Titular/);
   assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
-  assert.match(message, /\n\n---\n\n\| \*\*COMUNIDAD DESTACADA\*\*/);
+  assert.match(message, /\n\n---\n\n> \*\*📣 COMUNIDAD DESTACADA\*\*/);
 });
 
 test('el backfill genera el mismo diseño Rich Markdown 10.2', () => {
@@ -134,7 +142,7 @@ test('el backfill genera el mismo diseño Rich Markdown 10.2', () => {
   assert.match(message, /^## /);
   assert.match(message, /Titular de la noticia/);
   assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
-  assert.match(message, /\| \*\*COMUNIDAD DESTACADA\*\*/);
+  assert.match(message, /> \*\*📣 COMUNIDAD DESTACADA\*\*/);
   assert.doesNotMatch(message, /<blockquote>|ift\.tt/);
 });
 

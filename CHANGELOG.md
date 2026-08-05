@@ -1,5 +1,15 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.25 - 2026-08-05
+
+- Añade al panel de NoticiasWeb3 un control persistente del worker con estado, progreso, errores por feed, cola de Telegram, resultados y recuento gaming.
+- Permite al master ejecutar inmediatamente el ciclo RSS o lanzar un backfill histórico limitado; los administradores pueden consultar el estado sin ejecutar tareas.
+- El worker recibe las órdenes mediante PocketBase, por lo que el navegador puede cerrarse sin perder el trabajo ni su resultado.
+- Actualiza publicaciones anteriores accesibles con el diseño vigente sin duplicarlas y conservando el texto y botón detectados de Inside Ads.
+- Acorta la tarjeta comunitaria para evitar recortes en Telegram y mueve las acciones a botones inline ordenados como `Leer noticia`, `Inside Ads` y comunidad.
+- Sustituye los feeds separados y el flujo de IFTTT por el agregado oficial `RSS Telegram Alltech` (`_V6S1IOxd3DMA4V76`), que incluye Xataka, Instagram y el resto de fuentes de TodoSobreAllTech.
+- El worker deduplica las entradas del agregado por su URL original, crea el artículo y publica el mensaje completo con formato NW3, anuncios comunitarios y reintentos persistentes.
+
 ### 18.23.24 - 2026-08-05
 
 - Integra campañas comunitarias aprobadas en Proxy MTProto usando el catálogo común, seguimiento de clics, enlaces boost y segmentación `site=proxy`.

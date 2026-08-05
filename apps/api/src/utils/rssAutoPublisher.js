@@ -39,6 +39,37 @@ const TELEGRAM_VIEWS_SYNC_LIMIT = Number(process.env.TELEGRAM_VIEWS_SYNC_LIMIT |
 const TELEGRAM_HTTP_TIMEOUT_MS = Number(process.env.TELEGRAM_HTTP_TIMEOUT_MS || 15_000);
 const TELEGRAM_PENDING_RETRY_LIMIT = Math.max(1, Number(process.env.TELEGRAM_PENDING_RETRY_LIMIT || 10));
 let autoPublishRunning = false;
+let backfillRunning = false;
+const WORKER_STATUS_KEY = 'rss_worker_status';
+const WORKER_COMMAND_KEY = 'rss_worker_command';
+const WORKER_CONTROL_INTERVAL_MS = Number(process.env.RSS_WORKER_CONTROL_INTERVAL_MS || 5000);
+
+async function readWorkerSetting(key) {
+  try {
+    return await pocketbaseClient.collection('nw3_settings').getFirstListItem(`key="${key}"`);
+  } catch (error) {
+    if (error?.status === 404) return null;
+    throw error;
+  }
+}
+
+async function writeWorkerSetting(key, value) {
+  const current = await readWorkerSetting(key);
+  if (current) return pocketbaseClient.collection('nw3_settings').update(current.id, { value });
+  return pocketbaseClient.collection('nw3_settings').create({ key, value });
+}
+
+async function patchWorkerStatus(patch) {
+  try {
+    const current = await readWorkerSetting(WORKER_STATUS_KEY);
+    const value = { ...(current?.value || {}), ...patch, updated_at: new Date().toISOString() };
+    await writeWorkerSetting(WORKER_STATUS_KEY, value);
+    return value;
+  } catch (error) {
+    logger.warn(`[rssAutoPublisher] No se pudo guardar el estado del worker: ${error.message}`);
+    return null;
+  }
+}
 
 // Extracción del cuerpo completo del artículo original (fetchArticleContent):
 const MIN_ARTICLE_CHARS = 200;                // mínimo de texto extraído para darlo por válido
@@ -66,10 +97,10 @@ const CHANNELS = [
 
 // Feeds fijos de rss.app (espejo de RSS_APP_FEEDS en useTelegramFeed.jsx).
 const RSS_APP_FEEDS = [
-  { url: 'https://rss.app/feeds/O0p1q9sUZa2wfaMo.xml',       defaultCategory: 'Ciberseguridad', label: 'NetBlocks' },
-  { url: 'https://rss.app/feeds/v1.1/2IXDCnAS3PkRh3bD.json', defaultCategory: 'Ciberseguridad', label: 'Hispasec' },
-  { url: 'https://rss.app/feeds/v1.1/6dDuQLH543ORu2d9.json', defaultCategory: 'Ciberseguridad', label: 'NIST' },
-  { url: 'https://rss.app/feeds/v1.1/ivImG3xZTTMBDaY8.json', defaultCategory: 'Tecnología',     label: 'Portaltic' },
+  // Fuente agregada oficial de TodoSobreAllTech. Sustituye los feeds separados
+  // y el antiguo flujo de IFTTT para que el worker cree, publique y formatee cada
+  // entrada una sola vez. La deduplicación se hace por URL original.
+  { url: 'https://rss.app/feeds/v1.1/_V6S1IOxd3DMA4V76.json', defaultCategory: 'Tecnología', label: 'RSS Telegram Alltech' },
   { url: 'https://rss.app/feeds/v1.1/_CDNEKnSOiQkbSr1i.json', defaultCategory: 'Gaming', label: '@TodoSobreGameplaysCanal', publishChannel: '@TodoSobreGameplaysCanal' },
   // El feed del propio canal NO usa publishNew (publicaría posts nuevos a partir
   // de sus propios posts → bucle): mantiene la edición del post original.
@@ -792,18 +823,11 @@ function formatTelegramHouseAd(ad = {}) {
 
 function formatTelegramHouseAdMarkdown(ad = {}) {
   if (!ad?.id || !ad?.title) return '';
-  const trackingUrl = telegramHouseAdTrackingUrl(ad);
-  const title = escapeRichMarkdown(String(ad.title).slice(0, 100));
-  const description = escapeRichMarkdown(String(ad.description || '').slice(0, 180));
-  const cta = escapeRichMarkdown(String(ad.cta || 'Unirme').slice(0, 40));
-  const boostUrl = telegramHouseAdBoostTrackingUrl(ad);
-  const actions = boostUrl
-    ? `**[${cta.toUpperCase()} →](${trackingUrl})** · **[🚀 IMPULSAR](${boostUrl})**`
-    : `**[${cta.toUpperCase()} →](${trackingUrl})**`;
+  const title = escapeRichMarkdown(String(ad.title).slice(0, 55));
+  const description = escapeRichMarkdown(String(ad.description || '').slice(0, 72));
   return [
-    '| **COMUNIDAD DESTACADA** | |',
-    '|:--|--:|',
-    `| **${title}**<br>${description} | ${actions} |`,
+    '> **📣 COMUNIDAD DESTACADA**',
+    `> **${title}**${description ? ` · ${description}` : ''}`,
   ].filter(Boolean).join('\n');
 }
 
@@ -891,6 +915,17 @@ function extractInsideAdsButton(text = '') {
   } catch { return null; }
 }
 
+function buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton = null) {
+  const actions = [];
+  if (insideAdsButton?.url) actions.push(insideAdsButton);
+  if (houseAd?.id) actions.push({ text: String(houseAd.cta || 'Abrir comunidad').slice(0, 24),
+    url: telegramHouseAdTrackingUrl(houseAd) });
+  return { inline_keyboard: [
+    [{ text: 'Leer noticia', url: ivUrl }],
+    ...(actions.length ? [actions] : []),
+  ] };
+}
+
 async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, categoria, hashtags, houseAd) {
   const match = telegramUrl.match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   // URL que no apunta a un post concreto: irrecuperable, no reintentar.
@@ -911,13 +946,7 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
 
   const richMarkdown = formatTelegramBackfillRichMarkdown(originalBase, slug, categoria, hashtags, houseAd);
   const insideAdsButton = extractInsideAdsButton(originalBase);
-  const campaignButton = houseAd?.id ? {
-    text: String(houseAd.cta || 'Ver comunidad').slice(0, 40),
-    url: telegramHouseAdTrackingUrl(houseAd),
-  } : null;
-  const mergedKeyboard = insideAdsButton && campaignButton
-    ? { inline_keyboard: [[insideAdsButton, campaignButton]] }
-    : null;
+  const mergedKeyboard = buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton);
 
   // El backfill usa exclusivamente la edición enriquecida de Bot API 10.2 para
   // que el diseño sea idéntico al de las publicaciones nuevas.
@@ -926,7 +955,7 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
     message_id: messageId,
     rich_message: { markdown: richMarkdown },
     link_preview_options: { is_disabled: false, url: ivUrl, prefer_large_media: true, show_above_text: false },
-    ...(mergedKeyboard ? { reply_markup: mergedKeyboard } : {}),
+    reply_markup: mergedKeyboard,
   });
 
   if (result.ok) return { ok: true, permanent: false, communityAdAdded: Boolean(houseAd?.id), insideAdsPreserved: hasInsideAdsPromotion(originalBase) };
@@ -1014,10 +1043,7 @@ async function publishToTelegram(article, slug, selectedHouseAd, publishChannel 
   const text = `${header}\n\n${escapeHtml(body)}\n\n${footer}`;
   const publishToken = tokenForPublishChannel(publishChannel);
   if (!publishToken) return null;
-  const campaignKeyboard = houseAd?.id ? { inline_keyboard: [[{
-    text: String(houseAd.cta || 'Ver comunidad').slice(0, 40),
-    url: telegramHouseAdTrackingUrl(houseAd),
-  }]] } : undefined;
+  const campaignKeyboard = buildTelegramPostKeyboard(ivUrl, houseAd);
 
   try {
     let result = await telegramApi('sendRichMessage', {
@@ -1029,7 +1055,7 @@ async function publishToTelegram(article, slug, selectedHouseAd, publishChannel 
         prefer_large_media: true,
         show_above_text: false,
       },
-      ...(campaignKeyboard ? { reply_markup: campaignKeyboard } : {}),
+      reply_markup: campaignKeyboard,
     }, TELEGRAM_MAX_RETRIES, publishToken);
 
     // Instalaciones que todavía ejecuten una versión anterior de Bot API
@@ -1041,7 +1067,7 @@ async function publishToTelegram(article, slug, selectedHouseAd, publishChannel 
       text,
       parse_mode: 'HTML',
       link_preview_options: { is_disabled: false, url: ivUrl, prefer_large_media: true, show_above_text: false },
-      ...(campaignKeyboard ? { reply_markup: campaignKeyboard } : {}),
+      reply_markup: campaignKeyboard,
       }, TELEGRAM_MAX_RETRIES, publishToken);
     }
     if (result.ok && result.result?.message_id) {
@@ -1221,12 +1247,17 @@ async function syncOfficialTelegramViews() {
  * canal para añadirle el enlace. Corre periódicamente (IV_BACKFILL_INTERVAL_MS)
  * en lotes de IV_BACKFILL_MAX_PER_RUN, de más reciente a más antiguo.
  */
-async function backfillTelegramLinks() {
+async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PER_RUN, commandId = '' } = {}) {
+  if (backfillRunning) return { ok: false, skipped: true, reason: 'backfill_running' };
+  backfillRunning = true;
   try {
     if (!BOT_TOKEN) {
       logger.warn('[rssAutoPublisher] backfillTelegramLinks: BOT_TOKEN_NW3 no definido — se omite el backfill.');
-      return;
+      return { ok: false, skipped: true, reason: 'missing_token' };
     }
+
+    await patchWorkerStatus({ mode: 'backfill', state: 'running', command_id: commandId || null,
+      started_at: new Date().toISOString(), progress: { processed: 0, total: 0, edited: 0, failed: 0 } });
 
     // Posts del canal aún no reescritos al formato Instant View. El flag nw3_iv_added
     // evita reprocesar los ya editados en cada arranque.
@@ -1234,13 +1265,17 @@ async function backfillTelegramLinks() {
     // forma definitiva (nw3_iv_failed), para no reintentarlos en cada ciclo.
     // Orden descendente: los posts recientes del canal son los que la gente ve.
     const records = (await pocketbaseClient.collection('nw3_noticias').getFullList({
-      filter: 'telegram_url != "" && nw3_iv_added != true && nw3_iv_failed != true',
+      filter: force
+        ? 'telegram_url != "" && nw3_iv_failed != true'
+        : 'telegram_url != "" && nw3_iv_added != true && nw3_iv_failed != true',
       sort: '-created',
-    })).slice(0, IV_BACKFILL_MAX_PER_RUN);
+    })).slice(0, Math.min(Math.max(1, Number(limit) || IV_BACKFILL_MAX_PER_RUN), 500));
 
     if (records.length === 0) {
       logger.info('[rssAutoPublisher] backfillTelegramLinks: no hay artículos que actualizar.');
-      return;
+      const result = { ok: true, processed: 0, edited: 0, failed_permanent: 0, failed_transient: 0 };
+      await patchWorkerStatus({ mode: 'backfill', state: 'completed', completed_at: new Date().toISOString(), progress: result });
+      return result;
     }
 
     logger.info(`[rssAutoPublisher] backfillTelegramLinks: ${records.length} artículos por procesar.`);
@@ -1301,8 +1336,16 @@ async function backfillTelegramLinks() {
     }
 
     logger.info(`[rssAutoPublisher] backfillTelegramLinks: completado sobre ${records.length} — ${edited} editados, ${failedPermanent} fallos definitivos, ${failedTransient} transitorios.`);
+    const result = { ok: true, processed: records.length, edited,
+      failed_permanent: failedPermanent, failed_transient: failedTransient };
+    await patchWorkerStatus({ mode: 'backfill', state: 'completed', completed_at: new Date().toISOString(), progress: result });
+    return result;
   } catch (err) {
     logger.error('[rssAutoPublisher] backfillTelegramLinks error:', err.message);
+    await patchWorkerStatus({ mode: 'backfill', state: 'failed', completed_at: new Date().toISOString(), error: err.message });
+    return { ok: false, error: err.message };
+  } finally {
+    backfillRunning = false;
   }
 }
 
@@ -1314,6 +1357,8 @@ async function runAutoPublish() {
   }
   autoPublishRunning = true;
   try {
+    await patchWorkerStatus({ mode: 'rss', state: 'running', started_at: new Date().toISOString(),
+      error: '', progress: { processed: 0, total: 0, created: 0, published: 0, edited: 0 }, feed_errors: [] });
     if (!BOT_TOKEN) {
       logger.warn('[rssAutoPublisher] BOT_TOKEN_NW3 no está definido en .env — se crearán artículos pero se omitirá la edición en Telegram.');
     }
@@ -1358,6 +1403,9 @@ async function runAutoPublish() {
       logger.error(`[rssAutoPublisher] TODOS los feeds (${settled.length}) han fallado en este ciclo: no hay datos, no es que no haya novedades.`);
     }
 
+    await patchWorkerStatus({ feed_errors: failedFeeds.map((item) => ({
+      label: item.label, error: item.reason?.cause?.code || item.reason?.message || String(item.reason),
+    })) });
     const allItems = settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []));
 
     // 2. Conjunto de URLs ya conocidas en nw3_noticias (fuente_url + telegram_url).
@@ -1385,7 +1433,9 @@ async function runAutoPublish() {
 
     if (fresh.length === 0) {
       logger.info('[rssAutoPublisher] Sin artículos nuevos.');
-      return;
+      const result = { ok: true, processed: 0, total: 0, created: 0, published: 0, edited: 0 };
+      await patchWorkerStatus({ mode: 'rss', state: 'completed', completed_at: new Date().toISOString(), progress: result });
+      return result;
     }
 
     const batch = fresh.slice(0, MAX_NEW_PER_RUN);
@@ -1396,6 +1446,7 @@ async function runAutoPublish() {
     let created = 0;
     let edited = 0;
     let published = 0;
+    const recentResults = [];
 
     // 4. Crear cada artículo y, según su origen, publicar un post nuevo (feeds
     //    rss.app) o editar el post original del canal (canales de Telegram).
@@ -1503,14 +1554,22 @@ async function runAutoPublish() {
           }
           await sleep(TELEGRAM_CALL_DELAY_MS);
         }
+        recentResults.push({ title: titulo, source: item.label, telegram_url: telegramUrl || '', ok: true });
       } catch (err) {
         logger.error(`[rssAutoPublisher] Error procesando "${item.title}": ${err.message}`);
+        recentResults.push({ title: item.title, source: item.label, ok: false, error: err.message });
       }
     }
 
     logger.info(`[rssAutoPublisher] Ejecución completada: ${created} artículos creados, ${published} posts publicados, ${edited} posts editados en Telegram.`);
+    const result = { ok: true, processed: batch.length, total: fresh.length, created, published, edited };
+    await patchWorkerStatus({ mode: 'rss', state: 'completed', completed_at: new Date().toISOString(), progress: result,
+      last_result: recentResults.at(-1) || null, recent_results: recentResults.slice(-10) });
+    return result;
   } catch (err) {
     logger.error('[rssAutoPublisher] Error:', err.message);
+    await patchWorkerStatus({ mode: 'rss', state: 'failed', completed_at: new Date().toISOString(), error: err.message });
+    return { ok: false, error: err.message };
   } finally {
     autoPublishRunning = false;
   }
@@ -1537,8 +1596,39 @@ export function startOfficialTelegramViewsSync(intervalMs = TELEGRAM_VIEWS_SYNC_
   return setInterval(run, intervalMs);
 }
 
+async function processRssWorkerCommand() {
+  const commandRecord = await readWorkerSetting(WORKER_COMMAND_KEY);
+  const command = commandRecord?.value || {};
+  if (!command.id || command.state !== 'pending') return;
+
+  await pocketbaseClient.collection('nw3_settings').update(commandRecord.id, {
+    value: { ...command, state: 'accepted', accepted_at: new Date().toISOString() },
+  });
+  await patchWorkerStatus({ command_id: command.id, command_action: command.action });
+
+  let result;
+  if (command.action === 'run_now') result = await runAutoPublish();
+  else if (command.action === 'backfill') result = await backfillTelegramLinks({
+    force: command.force !== false, limit: command.limit, commandId: command.id,
+  });
+  else result = { ok: false, error: 'unknown_command' };
+
+  await pocketbaseClient.collection('nw3_settings').update(commandRecord.id, {
+    value: { ...command, state: result?.ok === false ? 'failed' : 'completed',
+      completed_at: new Date().toISOString(), result },
+  });
+}
+
+export function startRssWorkerControl(intervalMs = WORKER_CONTROL_INTERVAL_MS) {
+  const poll = () => processRssWorkerCommand().catch((error) =>
+    logger.warn(`[rssAutoPublisher] Control del worker no disponible: ${error.message}`));
+  poll();
+  return setInterval(poll, intervalMs);
+}
+
 export {
   backfillTelegramLinks,
+  runAutoPublish,
   fetchArticleContent,
   detectCategory,
   buildHashtagsFromContent,
@@ -1552,6 +1642,7 @@ export {
   hasInsideAdsPromotion,
   extractInsideAdsPromotion,
   extractInsideAdsButton,
+  buildTelegramPostKeyboard,
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,
   formatTelegramNewsRichMarkdown,
