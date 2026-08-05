@@ -15,6 +15,7 @@
 - Marca la multicuenta y la visualización completa de Stories como implementadas; registra el compositor de Stories como parcial hasta incorporar edición avanzada y álbumes.
 - Añade al roadmap las migraciones verificadas a Vite/Vitest y Workbox, incluyendo la retirada de la cadena abandonada de Create React App.
 - El apartado Telegram React queda en 35 funciones implementadas, 6 parciales y 2 pendientes, con todas las rutas de evidencia comprobadas en el repositorio.
+- Una segunda auditoría confirma como completas las llamadas privadas de voz: intercambio DH, RTC/TURN, señalización, audio WebRTC y controles de llamada; el estado queda en 36 implementadas, 5 parciales y 2 pendientes.
 
 ### 18.23.25 - 2026-08-05
 

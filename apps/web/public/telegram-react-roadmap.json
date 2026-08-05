@@ -20,7 +20,7 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 35, "partial": 6, "pending": 2 },
+  "summary": { "implemented": 36, "partial": 5, "pending": 2 },
   "releases": [
     { "version": "0.0.642", "title": "Migración completa a Vite y Workbox", "features": ["Vite 7 y Vitest", "Service worker Workbox", "Workers nativos", "Sin vulnerabilidades moderadas, altas o críticas"] },
     { "version": "0.0.641", "title": "Refuerzo de dependencias", "features": ["Retirada de tdweb y recompose", "Polyfills explícitos de GramJS", "Herramientas mantenidas", "Compilación verificada"] },
@@ -64,7 +64,7 @@
     { "id": "tr-browser", "title": "Navegador interno multipestana", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/Additional/InternalBrowser.js", "src/Stores/InternalBrowserStore.js", "src/Components/Additional/SafeLink.js"], "note": "Hasta diez pestañas con navegación, recarga, historial y aislamiento estricto HTTP/HTTPS." },
     { "id": "tr-stories", "title": "Visualizacion de Stories", "status": "implemented", "area": "Stories", "evidence": ["src/Stores/StoryStore.js", "src/Components/Stories/StoriesTray.js", "src/Components/Stories/StoryViewer.js", "src/Components/ColumnLeft/Dialogs.js", "src/Controllers/GramJsController.js"], "note": "Bandeja de historias, foto y vídeo, navegación, pausa, progreso, lectura, respuestas y lista de espectadores conectadas a Telegram." },
     { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Components/Stories/StoryComposer.js", "src/Controllers/GramJsController.js"], "note": "Publicación real de foto o vídeo con texto, privacidad y duración; faltan edición avanzada y álbumes." },
-    { "id": "tr-calls", "title": "Llamadas de voz individuales", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js"], "note": "WebRTC presente; TURN y carrera DH siguen pendientes." },
+    { "id": "tr-calls", "title": "Llamadas de voz individuales", "status": "implemented", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js", "src/Components/Calls/IncomingCall.js", "src/Components/Calls/CallRatingDialog.js"], "note": "Flujo P2P completo con intercambio DH, servidores RTC/TURN, señalización, aceptación, rechazo, audio WebRTC, mute y finalización." },
     { "id": "tr-video-calls", "title": "Videollamadas", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js"], "note": "Codigo base sin verificacion integral." },
     { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Components/Calls/GroupCallDialog.js"], "note": "Audio, micrófono, administración, cámara como presentación y pantalla funcionan; falta vídeo nativo de participante SIM/FID." },
     { "id": "tr-gifts", "title": "Galeria de regalos y contenido de pago", "status": "implemented", "area": "Stars y regalos", "evidence": ["src/Components/ColumnRight/StarGiftsGallery.js", "src/Components/Message/Media/PaidMedia.js"] },
