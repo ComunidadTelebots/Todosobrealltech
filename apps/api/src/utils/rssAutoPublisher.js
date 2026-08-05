@@ -986,7 +986,9 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
 
   // El backfill usa exclusivamente la edición enriquecida de Bot API 10.2 para
   // que el diseño sea idéntico al de las publicaciones nuevas.
-  const result = await telegramApi('editRichMessage', {
+  // Bot API 10.1/10.2 no define `editRichMessage`: los mensajes enriquecidos
+  // se actualizan mediante editMessageText pasando el campo rich_message.
+  const result = await telegramApi('editMessageText', {
     chat_id: chatId,
     message_id: messageId,
     rich_message: { markdown: richMarkdown },
@@ -1004,7 +1006,8 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   // La edición enriquecida de mensajes multimedia no se degrada a HTML.
   if (desc.includes('no text in the message') || desc.includes('caption')) return { ok: false, permanent: true };
 
-  // Una instalación todavía sin editRichMessage se trata como transitoria.
+  // Una instalación todavía sin rich_message en editMessageText se trata
+  // como transitoria para poder reintentarla tras actualizar Bot API.
   const unsupportedRichEdit = desc.includes('method not found') || desc.includes('not supported');
   const permanent = !unsupportedRichEdit && (result.error_code === 400 || result.error_code === 403);
   logger.warn(`[rssAutoPublisher] No se pudo editar ${telegramUrl} (${permanent ? 'definitivo' : 'transitorio'}): ${result.description || 'error desconocido'}`);
