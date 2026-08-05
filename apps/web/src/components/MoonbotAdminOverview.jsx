@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { Activity, AlertTriangle, ArrowLeft, BellRing, Bot, Clock3, Cpu, Database, HardDrive, MemoryStick, RefreshCw, Server, UsersRound } from 'lucide-react';
+import { Activity, AlertTriangle, ArrowLeft, BellRing, Bot, Clock3, Cpu, Database, GitCompareArrows, HardDrive, MemoryStick, RefreshCw, Server, UsersRound } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -95,6 +95,7 @@ const MoonbotAdminOverview = () => {
   }, [activeSection]);
   const summary = data?.summary || {};
   const resources = data?.resources || {};
+  const isMaster = String(pb.authStore.model?.role || '').toLowerCase() === 'creator';
   const telegramGroups = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() !== 'channel');
   const telegramChannels = (data?.groups || []).filter((group) => String(group.ctype || group.type || '').toLowerCase() === 'channel');
   const openSection = (id) => {
@@ -125,7 +126,16 @@ const MoonbotAdminOverview = () => {
     <Card className="mt-8 overflow-hidden border-cyan-500/20">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div><CardTitle className="flex items-center gap-2"><Server className="h-5 w-5 text-cyan-600" />Centro de control Moonbot</CardTitle><CardDescription>Estado operativo real de bots, comunidades, recursos y tareas pendientes.</CardDescription></div>
-        <Button size="sm" variant="outline" onClick={load} disabled={loading}><RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Actualizar</Button>
+        <div className="flex flex-wrap justify-end gap-2">
+          {isMaster && (
+            <Button size="sm" variant="outline" asChild>
+              <a href="/comparativa.html" target="_blank" rel="noreferrer">
+                <GitCompareArrows className="mr-2 h-4 w-4" />Comparativa
+              </a>
+            </Button>
+          )}
+          <Button size="sm" variant="outline" onClick={load} disabled={loading}><RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Actualizar</Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {error && <div className="flex gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
