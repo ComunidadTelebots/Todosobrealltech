@@ -938,13 +938,24 @@ function parseTelegramPublicPost(html = '') {
 async function fetchTelegramPublicPost(telegramUrl) {
   const match = String(telegramUrl).match(/^https?:\/\/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/);
   if (!match) return null;
-  const response = await fetch(`https://t.me/s/${match[1]}/${match[2]}?embed=1&mode=tme`, {
-    headers: { 'User-Agent': FETCH_USER_AGENT },
-    signal: AbortSignal.timeout(8000),
-  });
-  if (!response.ok) return null;
-  const parsed = parseTelegramPublicPost(await response.text());
-  return parsed.telegramOriginalText ? parsed : null;
+  // Telegram sirve mensajes recientes y antiguos desde dos variantes distintas
+  // según la caché/CDN. Probar ambas evita que el backfill dependa de `/s/`.
+  const urls = [
+    `https://t.me/${match[1]}/${match[2]}?embed=1&mode=tme`,
+    `https://t.me/s/${match[1]}/${match[2]}?embed=1&mode=tme`,
+  ];
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        headers: { 'User-Agent': FETCH_USER_AGENT },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok) continue;
+      const parsed = parseTelegramPublicPost(await response.text());
+      if (parsed.telegramOriginalText) return parsed;
+    } catch { /* prueba la siguiente variante */ }
+  }
+  return null;
 }
 
 function buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton = null) {
@@ -1330,7 +1341,10 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
           logger.warn(`[rssAutoPublisher] backfillTelegramLinks: texto vivo no disponible por feed ni Telegram para ${record.telegram_url}; no se edita para proteger Inside Ads.`);
           continue;
         }
-        if (shouldDelayChannelEdit(live.pubDate || record.created)) {
+        // El backfill manual con `force` es una orden explícita del creador y
+        // puede procesar registros importados hoy aunque el post sea antiguo.
+        // El ciclo automático conserva la espera para dar tiempo a Inside Ads.
+        if (!force && shouldDelayChannelEdit(live.pubDate || record.created)) {
           failedTransient++;
           logger.info(`[rssAutoPublisher] backfillTelegramLinks: ${record.telegram_url} se aplaza para permitir Inside Ads.`);
           continue;
