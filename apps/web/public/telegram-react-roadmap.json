@@ -1,5 +1,5 @@
 {
-  "version": "0.0.647 · 2026-08-06",
+  "version": "0.0.649 · 2026-08-06",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,10 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 41, "partial": 1, "pending": 1 },
+  "summary": { "implemented": 43, "partial": 1, "pending": 3 },
   "releases": [
+    { "version": "0.0.649", "title": "Contexto de respuestas y menciones sincronizadas", "features": ["Ver respuesta en el chat", "Autores reales en hilos", "Menciones leídas entre dispositivos", "Riesgos oficiales registrados"] },
+    { "version": "0.0.648", "title": "Mensajes de grupo corregidos", "features": ["Remitentes reales", "Bloques consecutivos", "Avatares estables", "Mensajes propios a la derecha"] },
     { "version": "0.0.647", "title": "Selector cronologico corregido", "features": ["Version moderna arriba", "Version antigua abajo", "Seleccion persistente", "Prueba de regresion"] },
     { "version": "0.0.646", "title": "Compilacion Docker reproducible", "features": ["Contexto Docker reducido", "Dependencias limpias", "Compatibilidad PostCSS 8", "Despliegues mas rapidos"] },
     { "version": "0.0.645", "title": "Stories, video grupal y regalos con Stars", "features": ["Albumes ordenados de Stories", "Video remoto SIM/FID", "Grid de participantes", "Catalogo y pago real con Stars"] },
@@ -45,7 +47,11 @@
     { "id": "tr-privacy", "title": "Privacidad y seguridad", "status": "implemented", "area": "Cuenta", "evidence": ["src/Components/ColumnLeft/PrivacySettings.js", "src/Components/ColumnLeft/GlobalPrivacySettings.js"] },
     { "id": "tr-passkeys", "title": "Passkeys", "status": "pending", "area": "Cuenta", "evidence": [] },
     { "id": "tr-multi-account", "title": "Varias cuentas simultaneas", "status": "implemented", "area": "Cuenta", "evidence": ["src/Controllers/GramJsController.js", "src/Components/ColumnLeft/MainMenuButton.js", "src/Components/Auth/Phone.js"], "note": "Añade, cambia y elimina cuentas con sesiones independientes y selector visible en el menú principal." },
-    { "id": "tr-messages", "title": "Mensajes, respuestas, reenvio y edicion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Message/Message.js", "src/Components/Popup/ForwardDialog.js"] },
+    { "id": "tr-messages", "title": "Mensajes, respuestas, reenvio y edicion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Message/Message.js", "src/Components/Message/MessageAuthor.js", "src/Components/Popup/ForwardDialog.js", "src/Controllers/GramJsController.js"], "note": "Los grupos resuelven el remitente real, agrupan mensajes consecutivos y conservan alineacion y avatar coherentes con los clientes oficiales." },
+    { "id": "tr-mention-read-sync", "title": "Sincronizacion de menciones leidas", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/MessagesList.js", "src/Controllers/GramJsController.js"], "note": "Confirma mediante MTProto las menciones visibles para evitar contadores atascados en otros dispositivos." },
+    { "id": "tr-reply-context", "title": "Ver respuestas y comentarios en su chat original", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Additional/MessageThread.js", "src/Controllers/GramJsController.js"], "note": "Los hilos muestran autores reales y permiten saltar al mensaje dentro de la conversacion." },
+    { "id": "tr-group-call-message-sync", "title": "Sincronizacion resistente de mensajes y reacciones en llamadas grupales", "status": "pending", "area": "Llamadas", "evidence": [], "note": "Peticion priorizada a partir de incidencias oficiales: reintentos, deduplicacion y confirmacion de entrega durante llamadas y directos." },
+    { "id": "tr-separate-message-sounds", "title": "Controles separados para sonidos entrantes y enviados", "status": "pending", "area": "Notificaciones", "evidence": [], "note": "Preferencia solicitada por usuarios de Telegram Web para distinguir el sonido de notificacion del sonido de mensaje enviado." },
     { "id": "tr-search", "title": "Busqueda global y dentro del chat", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnLeft/Search/Search.js", "src/Components/ColumnMiddle/ChatSearch.js"] },
     { "id": "tr-scheduled", "title": "Mensajes programados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Additional/ScheduledMessages.js"] },
     { "id": "tr-autodelete", "title": "Autoeliminacion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/AutoDeleteTimer.js"] },

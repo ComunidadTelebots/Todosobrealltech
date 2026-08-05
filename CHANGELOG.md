@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.32 - 2026-08-06
+
+- Actualiza Telegram React a `0.0.649` con autores reales en hilos, salto «Ver en el chat» y sincronización de menciones leídas.
+- Añade al roadmap dos mejoras solicitadas por usuarios: entrega resistente durante llamadas grupales y sonidos entrantes/salientes independientes.
+- Las prioridades proceden de incidencias publicadas en el rastreador oficial de Telegram y no duplican funciones ya presentes.
+
 ### 18.23.31 - 2026-08-06
 
 - Actualiza Telegram React a `0.0.647` y ordena cada selector visual desde la versión más moderna hasta la más antigua.
