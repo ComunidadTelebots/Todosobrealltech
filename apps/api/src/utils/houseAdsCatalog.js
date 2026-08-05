@@ -4,7 +4,10 @@ export const OFFICIAL_ADS = [
   { id: 'official-resistencia-censura', title: 'Resistencia a la Censura', description: 'Privacidad, acceso libre a la información y resistencia digital.', cta: 'Ver canal', url: 'https://t.me/resistencia_censura', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', foreground: '#7c2d12', accent: '#ea580c', builtin: true },
   { id: 'official-todosobregameplays', title: 'Todo Sobre Gameplays', description: 'Vídeos, directos y novedades para la comunidad gaming.', cta: 'Ver gameplays', url: 'https://t.me/TodoSobreGameplaysCanal', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', foreground: '#4c1d95', accent: '#7c3aed', builtin: true },
   { id: 'official-instagram', title: 'TodoSobreAllTech en Instagram', description: 'Noticias, tecnología e inteligencia artificial en formato visual.', cta: 'Seguir en Instagram', url: 'https://www.instagram.com/todosobrealltech/', placement: 'all', priority: 60, enabled: true, approval_status: 'approved', background: 'linear-gradient(135deg,#fff1f2,#fae8ff)', foreground: '#831843', accent: '#db2777', builtin: true },
-].map((ad) => ({ ...ad, relationship_type: 'official', telegram_verified: false, community_verified: true }));
+].map((ad) => {
+  const username = String(ad.url || '').match(/^https:\/\/t\.me\/([A-Za-z0-9_]{5,32})\/?$/i)?.[1];
+  return { ...ad, boost_url: username ? `https://t.me/boost/${username}` : '', relationship_type: 'official', telegram_verified: false, community_verified: true };
+});
 
 export const officialAdsFor = (placement = '') => OFFICIAL_ADS
   .filter((ad) => !placement || ['all', placement].includes(ad.placement));

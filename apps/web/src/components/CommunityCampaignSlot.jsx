@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink, Flag, Megaphone } from 'lucide-react';
+import { ExternalLink, Flag, Megaphone, Rocket } from 'lucide-react';
 import apiServerClient from '@/lib/apiServerClient';
 
 const relationshipLabel = (ad = {}) => {
@@ -39,11 +39,12 @@ const CommunityCampaignSlot = ({ placement = 'home', className = '' }) => {
     apiServerClient.fetch(`/house-ads/${encodeURIComponent(ad.id)}/report`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason, placement, site: 'main' }) }).then(() => setAd(null));
   };
   return <aside className={`container py-6 ${className}`} aria-label="Recomendación de la comunidad"><div className="relative mx-auto max-w-4xl">
-    <a href={clickUrl} target="_blank" rel="noopener noreferrer sponsored" className="flex items-center gap-4 overflow-hidden rounded-2xl border p-4 pr-12 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" style={{ background: ad.background || 'linear-gradient(135deg,#e9f8ff,#f5fbff)', color: ad.foreground || '#12324a', borderColor: ad.accent || '#168acd' }}>
+    <a href={clickUrl} target="_blank" rel="noopener noreferrer sponsored" className={`flex items-center gap-4 overflow-hidden rounded-2xl border p-4 pr-12 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${ad.boost_url ? 'pb-14 sm:pb-4 sm:pr-40' : ''}`} style={{ background: ad.background || 'linear-gradient(135deg,#e9f8ff,#f5fbff)', color: ad.foreground || '#12324a', borderColor: ad.accent || '#168acd' }}>
       {ad.image ? <img src={ad.image} alt="" className="h-14 w-14 rounded-xl object-cover" loading="lazy" /> : <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-background/70"><Megaphone className="h-6 w-6" /></span>}
       <span className="min-w-0 flex-1"><small className={`mb-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${relationship.style}`}>{relationship.text}</small><strong className="block truncate text-base">{ad.title}</strong><span className="line-clamp-2 block text-sm opacity-80">{ad.description}</span></span>
       <span className="hidden shrink-0 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold sm:flex" style={{ background: ad.accent || '#168acd', color: '#fff' }}>{ad.cta || 'Abrir'}<ExternalLink className="h-4 w-4" /></span>
     </a>
+    {ad.boost_url && <a href={`/hcgi/api/house-ads/${encodeURIComponent(ad.id)}/boost?placement=${encodeURIComponent(placement)}`} target="_blank" rel="noopener noreferrer sponsored" className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full border bg-background/90 px-3 py-2 text-xs font-bold shadow-sm hover:bg-background"><Rocket className="h-3.5 w-3.5"/>Impulsar</a>}
     <button type="button" title="Reportar este anuncio" aria-label="Reportar este anuncio" onClick={report} className="absolute right-3 top-3 rounded-full bg-background/80 p-2 opacity-70 hover:opacity-100"><Flag className="h-3.5 w-3.5"/></button>
   </div></aside>;
 };

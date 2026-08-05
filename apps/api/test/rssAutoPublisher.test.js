@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import {
   htmlToPlainText,
   hasInsideAdsPromotion,
+  extractInsideAdsPromotion,
+  extractInsideAdsButton,
   formatTelegramHouseAd,
   formatTelegramHouseAdMarkdown,
   formatTelegramNewsRichMarkdown,
@@ -69,6 +71,29 @@ test('protege el texto y el botón cuando Inside Ads ya procesó el post', () =>
   assert.equal(hasInsideAdsPromotion('Titular normal sin campaña'), false);
 });
 
+test('separa Inside Ads para conservarlo tras NoticiasWeb3 y la campaña comunitaria', () => {
+  const source = 'Titular\n\nResumen original\n\n@InsideAds_bot\nPublicidad de ejemplo\nhttps://inside.ad/click';
+  const parts = extractInsideAdsPromotion(source);
+  assert.match(parts.editorialText, /Titular/);
+  assert.doesNotMatch(parts.editorialText, /InsideAds/);
+  assert.match(parts.promotionText, /@InsideAds_bot/);
+  const output = formatTelegramBackfillRichMarkdown(source, 'noticia-prueba', 'Tecnología', '#Tecnología #NW3', {
+    id: 'official-test', title: 'Comunidad', description: 'Canal recomendado', cta: 'Unirme',
+  });
+  assert.match(output, /Leer en NoticiasWeb3/);
+  assert.match(output, /COMUNIDAD DESTACADA/);
+  assert.match(output, /PUBLICIDAD · INSIDE ADS/);
+  assert.match(output, /inside\.ad\/click/);
+});
+
+test('recupera de forma segura el botón HTTPS aportado por Inside Ads', () => {
+  assert.deepEqual(
+    extractInsideAdsButton('Titular\n\n@InsideAds_bot\nAbrir oferta (https://inside.ad/click/123)'),
+    { text: 'Abrir oferta', url: 'https://inside.ad/click/123' },
+  );
+  assert.equal(extractInsideAdsButton('@InsideAds_bot\nAbrir (javascript:alert(1))'), null);
+});
+
 test('crea una tarjeta Telegram compacta con seguimiento propio', () => {
   const ad = { id: 'official-test', title: 'Canal <oficial>', description: 'Noticias & comunidad', cta: 'Abrir' };
   const card = formatTelegramHouseAd(ad);
@@ -124,9 +149,9 @@ test('el backfill reconoce posts propios y no los reescribe', () => {
   }), false);
 });
 
-test('aplaza cinco minutos la edición de posts recientes', () => {
+test('procesa inmediatamente posts recientes antes de que Inside Ads los amplíe', () => {
   const now = Date.parse('2026-07-31T12:00:00Z');
-  assert.equal(shouldDelayChannelEdit('2026-07-31T11:58:00Z', now), true);
+  assert.equal(shouldDelayChannelEdit('2026-07-31T11:58:00Z', now), false);
   assert.equal(shouldDelayChannelEdit('2026-07-31T11:50:00Z', now), false);
 });
 

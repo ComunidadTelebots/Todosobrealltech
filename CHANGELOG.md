@@ -1,5 +1,25 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.24 - 2026-08-05
+
+- Integra campañas comunitarias aprobadas en Proxy MTProto usando el catálogo común, seguimiento de clics, enlaces boost y segmentación `site=proxy`.
+- Carga primero la última campaña guardada y actualiza el anuncio en segundo plano para no retrasar el directorio de proxies.
+- Corrige el worker para comprobar por separado el enlace de NoticiasWeb3 y la campaña comunitaria, evitando falsos mensajes completados.
+- Procesa inmediatamente los posts sin Inside Ads y, cuando Inside Ads ya está presente, conserva su texto y teclado dentro del mensaje enriquecido.
+- Unifica titular, resumen, hashtags, enlace a NoticiasWeb3, campaña comunitaria y bloque aportado por Inside Ads sin confundir sus estados.
+- Fusiona en una misma fila inline el botón HTTPS detectado de Inside Ads y el botón medido de la campaña; si no puede reconstruirlo con seguridad, conserva el teclado existente.
+- Incorpora el feed RSS.app gaming `_CDNEKnSOiQkbSr1i` al worker y dirige sus publicaciones a `@TodoSobreGameplaysCanal` con artículo propio, formato enriquecido, campaña comunitaria e integración posterior de Inside Ads.
+- Conserva el canal de destino en PocketBase para que los reintentos nunca publiquen una noticia gaming por error en `@TodoSobreAllTech`; el mismo `BOT_TOKEN_NW3` publica en ambos canales propios.
+
+### 18.23.23 - 2026-08-05
+
+- Añade enlaces boost oficiales de Telegram a las campañas de canales, grupos y comunidades completas.
+- Completa automáticamente `https://t.me/boost/usuario` al elegir un chat público y admite enlaces privados `https://t.me/boost?c=ID`.
+- Valida los destinos boost en el API para impedir redirecciones externas o esquemas inseguros.
+- Muestra un botón secundario «Impulsar» en TodoSobreAllTech, NoticiasWeb3 y en cada chat compatible de una campaña comunitaria.
+- Incorpora el enlace de impulso a las tarjetas Rich Markdown publicadas por el worker en Telegram.
+- Mide los clics boost por campaña, país y ubicación mediante métricas `boost_*`, separadas visualmente de los accesos principales.
+
 ### 18.23.22 - 2026-08-04
 
 - Editor de noticias tipo Word, con formato seguro, enlaces HTTPS, listas, citas, vista previa adaptable, recuento de palabras, tiempo de lectura y borrador local automático.

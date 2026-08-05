@@ -5,7 +5,7 @@ import path from 'node:path';
 import { authorizeAdminOrCreator } from './stats.js';
 import { OFFICIAL_ADS, officialAdsFor } from '../utils/houseAdsCatalog.js';
 import { recordContentEvent, requestCountry } from '../utils/contentAnalytics.js';
-import { houseAdMatches, normalizeHouseAd, siteFromRequest } from '../utils/houseAdsPolicy.js';
+import { houseAdMatches, normalizeHouseAd, normalizeTelegramBoostUrl, siteFromRequest } from '../utils/houseAdsPolicy.js';
 
 const router = Router();
 const MOON_URLS = [...new Set([
@@ -131,6 +131,8 @@ router.post('/', async (req, res) => {
   if (['approve', 'reject', 'verify_telegram'].includes(payload.action) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creador puede revisar o verificar campañas' });
   if ((!payload.action || payload.action === 'upsert') && payload.ad) {
     const submitted = auth.user.role === 'creator' ? payload.ad : { ...payload.ad, relationship_type: 'affiliate', telegram_verified: false, community_verified: false };
+    if (String(submitted.boost_url || '').trim() && !normalizeTelegramBoostUrl(submitted.boost_url)) return res.status(400).json({ ok: false, error: 'El enlace boost debe ser oficial de Telegram: https://t.me/boost/usuario o https://t.me/boost?c=ID' });
+    if ((submitted.community_items || []).some((item) => String(item?.boost_url || '').trim() && !normalizeTelegramBoostUrl(item.boost_url))) return res.status(400).json({ ok: false, error: 'Uno de los chats contiene un enlace boost de Telegram no válido' });
     payload.ad = { ...normalizeHouseAd(submitted), approval_status: 'pending', submitted_by: auth.user.id };
   }
   try {
@@ -204,6 +206,34 @@ router.get('/media/:filename', async (req, res) => {
   const filename = String(req.params.filename || '');
   if (!/^[a-f0-9-]+\.(?:jpg|png|webp|gif)$/.test(filename)) return res.status(404).end();
   return res.sendFile(path.join(mediaDir, filename), { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'Cross-Origin-Resource-Policy': 'cross-origin' } }, (error) => { if (error && !res.headersSent) res.status(404).end(); });
+});
+
+router.get('/:id/boost', async (req, res) => {
+  const placement = String(req.query.placement || 'unknown').slice(0, 20);
+  const site = siteFromRequest(req, placement);
+  const country = requestCountry(req);
+  const officialAd = OFFICIAL_ADS.find((item) => item.id === String(req.params.id));
+  try {
+    let ad = officialAd;
+    if (!ad) {
+      const current = await moon();
+      const data = JSON.parse(await current.text());
+      ad = (data.ads || []).find((item) => String(item.id) === String(req.params.id));
+    }
+    if (!ad || !ad.enabled || ad.approval_status !== 'approved' || !isScheduledNow(ad)) return res.redirect(302, 'https://t.me/');
+    const requestedItem = String(req.query.chat || '').slice(0, 64);
+    const communityItem = Array.isArray(ad.community_items)
+      ? ad.community_items.find((item) => String(item.id) === requestedItem)
+      : null;
+    const destination = normalizeTelegramBoostUrl(communityItem?.boost_url || ad.boost_url);
+    if (!destination) return res.redirect(302, safeAdDestination(communityItem?.url || ad.url));
+    const metricPlacement = `boost_${placement}`.slice(0, 32);
+    moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: ad.id, placement: metricPlacement, site, country, item_id: communityItem?.id || '' }) }).catch(() => {});
+    recordContentEvent({ kind: 'community_ad', targetId: ad.id, eventType: 'click', country, placement: metricPlacement });
+    return res.redirect(302, destination);
+  } catch {
+    return res.redirect(302, 'https://t.me/');
+  }
 });
 
 router.get('/:id/click', async (req, res) => {

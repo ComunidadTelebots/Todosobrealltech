@@ -49,10 +49,10 @@ function CommunityCampaign({ ad, placement, className, style }) {
   const relationship = relationshipLabel(ad);
   return <section className={`house-ad house-ad-community house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': ad.background, '--house-fg': ad.foreground, '--house-accent': ad.accent }} aria-label={`Comunidad recomendada: ${ad.title}`}>
     <header><small className={`house-ad-relationship house-ad-relationship-${relationship.className}`}>{relationship.text}</small><strong>{ad.title}</strong></header>
-    <div className="house-ad-community-grid">{items.map((item) => <a key={item.id} href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored">
+    <div className="house-ad-community-grid">{items.map((item) => <div key={item.id} className="house-ad-community-item"><a href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored">
       {item.image ? <img src={item.image} alt=""/> : <span className="house-ad-community-avatar">{String(item.title || 'T').slice(0, 1).toUpperCase()}</span>}
       <span><b>{item.title}</b><small>{item.type === 'channel' ? 'Canal' : 'Grupo'}</small></span>
-    </a>)}</div>
+    </a>{item.boost_url && <a className="house-ad-boost house-ad-boost-icon" href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/boost?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored" title={`Impulsar ${item.title}`} aria-label={`Impulsar ${item.title}`}>🚀</a>}</div>)}</div>
   </section>;
 }
 
@@ -124,11 +124,11 @@ export default function AdSense({ slot, placement = 'inline', platform = '', sty
   return (
     <div className={`ad-stack ad-stack-${placement} ${platform ? `ad-stack-platform-${platform}` : ''}`}>
       {houseAd ? (houseAd.community_items?.length ? <CommunityCampaign ad={houseAd} placement={placement} className={className} style={style}/> :
-        <a className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }} href={`/hcgi/api/community-cards/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}`} target="_blank" rel="noopener noreferrer sponsored">
+        <section className={`house-ad house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': houseAd.background, '--house-fg': houseAd.foreground, '--house-accent': houseAd.accent }}><a className="house-ad-main-link" href={`/hcgi/api/community-cards/${encodeURIComponent(houseAd.id)}/click?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}`} target="_blank" rel="noopener noreferrer sponsored">
           {houseAd.image && <img src={houseAd.image} alt="" />}
           <span className="house-ad-copy"><small className={`house-ad-relationship house-ad-relationship-${relationship.className}`}>{relationship.text}</small><strong>{houseAd.title}</strong><span><SafeMarkdown>{houseAd.description}</SafeMarkdown></span></span>
           <b>{houseAd.cta || 'Abrir'}</b>
-        </a>
+        </a>{houseAd.boost_url && <a className="house-ad-boost" href={`/hcgi/api/community-cards/${encodeURIComponent(houseAd.id)}/boost?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}`} target="_blank" rel="noopener noreferrer sponsored">🚀 Impulsar</a>}</section>
       ) : (
         <div className={`ad-slot community-ad-loading ${className}`} style={style} role="status">
           <div className="ad-preview ad-preview-inline">{houseError ? 'Campaña comunitaria temporalmente no disponible' : 'Cargando recomendación de la comunidad…'}</div>

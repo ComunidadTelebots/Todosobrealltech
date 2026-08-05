@@ -342,6 +342,45 @@ function SocialButtons() {
 }
 
 // Devuelve la ventana de páginas a mostrar (con huecos como -1).
+const CAMPAIGN_CACHE_KEY = 'tsa:community-campaign:proxy';
+
+function ProxyCommunityCampaign() {
+  const [campaign, setCampaign] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(CAMPAIGN_CACHE_KEY) || 'null'); } catch { return null; }
+  });
+
+  useEffect(() => {
+    let active = true;
+    fetch('/hcgi/api/community-cards?placement=inline&site=proxy')
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+      .then((payload) => {
+        if (!active) return;
+        const next = payload.ads?.[0] || null;
+        setCampaign(next);
+        if (next) localStorage.setItem(CAMPAIGN_CACHE_KEY, JSON.stringify(next));
+        else localStorage.removeItem(CAMPAIGN_CACHE_KEY);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  if (!campaign?.id || !campaign?.title) return null;
+  const clickUrl = `/hcgi/api/community-cards/${encodeURIComponent(campaign.id)}/click?placement=inline&site=proxy`;
+  const relation = campaign.builtin || campaign.relationship_type === 'official'
+    ? 'Comunidad oficial TodoSobreAllTech'
+    : campaign.telegram_verified && campaign.community_verified
+      ? '✓ Verificada por Telegram y TodoSobreAllTech'
+      : 'Comunidad afiliada · intercambio de visitas';
+  return <aside className="community-campaign" aria-label="Comunidad recomendada">
+    <a href={clickUrl} target="_blank" rel="noopener noreferrer sponsored">
+      {campaign.image ? <img src={campaign.image} alt="" loading="lazy" /> : <span className="campaign-mark"><Send size={21} /></span>}
+      <span className="campaign-copy"><small>{relation}</small><strong>{campaign.title}</strong><span>{campaign.description}</span></span>
+      <span className="campaign-cta">{campaign.cta || 'Abrir'} <ExternalLink size={14} /></span>
+    </a>
+    {campaign.boost_url ? <a className="campaign-boost" href={`/hcgi/api/community-cards/${encodeURIComponent(campaign.id)}/boost?placement=inline&site=proxy`} target="_blank" rel="noopener noreferrer sponsored">🚀 Impulsar</a> : null}
+  </aside>;
+}
+
 function pageWindow(current, total) {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   const pages = new Set([1, total, current, current - 1, current + 1]);
@@ -551,6 +590,8 @@ export default function App() {
           <Stat icon={RefreshCw} label="Actualizado" value={payload?.fetchedAt ? formatDate(payload.fetchedAt) : '-'} />
         </div>
       </section>
+
+      <ProxyCommunityCampaign />
 
       <section className="toolbar" aria-label="Herramientas">
         <label className="search-box">

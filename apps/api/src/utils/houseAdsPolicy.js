@@ -7,6 +7,23 @@ const integer = (value, min, max, fallback = 0) => {
   return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 };
 
+export function normalizeTelegramBoostUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== 'https:' || !['t.me', 'www.t.me', 'telegram.me', 'www.telegram.me'].includes(url.hostname.toLowerCase())) return '';
+    if (url.username || url.password || url.port || url.hash) return '';
+    const publicMatch = url.pathname.match(/^\/boost\/([A-Za-z0-9_]{5,32})\/?$/i);
+    if (publicMatch && !url.search) return `https://t.me/boost/${publicMatch[1]}`;
+    if (url.pathname.replace(/\/+$/, '') === '/boost' && [...url.searchParams.keys()].every((key) => key === 'c')) {
+      const chatId = url.searchParams.get('c');
+      if (/^[0-9]{5,20}$/.test(String(chatId || ''))) return `https://t.me/boost?c=${chatId}`;
+    }
+  } catch {}
+  return '';
+}
+
 const relationshipType = (ad = {}) => {
   if (ad.builtin === true || ad.relationship_type === 'official') return 'official';
   if (ad.relationship_type === 'verified') return 'verified';
@@ -16,6 +33,10 @@ const relationshipType = (ad = {}) => {
 export function normalizeHouseAd(ad = {}) {
   const placements = strings(ad.placements?.length ? ad.placements : ad.placement || 'all', HOUSE_AD_PLACEMENTS);
   const allowedSites = strings(ad.allowed_sites?.length ? ad.allowed_sites : 'all', HOUSE_AD_SITES);
+  const communityItems = Array.isArray(ad.community_items) ? ad.community_items.slice(0, 16).map((item) => ({
+    ...item,
+    boost_url: normalizeTelegramBoostUrl(item?.boost_url),
+  })) : [];
   return {
     ...ad,
     placement: placements[0] || 'all',
@@ -30,6 +51,8 @@ export function normalizeHouseAd(ad = {}) {
     relationship_type: relationshipType(ad),
     telegram_verified: ad.telegram_verified === true,
     community_verified: ad.community_verified === true,
+    boost_url: normalizeTelegramBoostUrl(ad.boost_url),
+    community_items: communityItems,
   };
 }
 
