@@ -1,5 +1,16 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.28 - 2026-08-05
+
+- Actualiza el apartado de Telegram React a la versión `0.0.644` con evidencias verificadas en el código y en sus pruebas.
+- Marca como completo el editor multimedia: recorte, giro, volteo, brillo, contraste, restauración, previsualización Canvas y exportación PNG/JPEG.
+- Integra el mismo editor visual en la sustitución de imágenes de mensajes y en el compositor de Stories, conservando el flujo anterior para documentos y vídeos.
+- Sincroniza el selector de perfiles visuales cuando el diseño o su versión cambian desde otra interfaz.
+- Refuerza los destinos de notificaciones y del visor AMP, retira registros sensibles y desactiva los mapas de código de producción por defecto.
+- Añade cabeceras web defensivas compatibles con llamadas, geolocalización, Mini Apps y multimedia.
+- Verificación final: 19 pruebas, compilación Vite y auditoría sin vulnerabilidades moderadas, altas ni críticas.
+- El roadmap queda en 38 funciones implementadas, 3 parciales y 2 pendientes.
+
 ### 18.23.27 - 2026-08-05
 
 - Actualiza el apartado de Telegram React a la versión `0.0.643` tras completar la ubicación en directo.

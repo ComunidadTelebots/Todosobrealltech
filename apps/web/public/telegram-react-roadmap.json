@@ -1,5 +1,5 @@
 {
-  "version": "0.0.643 · 2026-08-05",
+  "version": "0.0.644 · 2026-08-05",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 37, "partial": 4, "pending": 2 },
+  "summary": { "implemented": 38, "partial": 3, "pending": 2 },
   "releases": [
+    { "version": "0.0.644", "title": "Editor multimedia y refuerzo web", "features": ["Recorte y transformaciones reales", "Editor compartido por mensajes y Stories", "Selector visual sincronizado", "Navegación externa y notificaciones reforzadas"] },
     { "version": "0.0.643", "title": "Ubicación en directo completa", "features": ["Duración configurable", "Seguimiento de alta precisión", "Errores visibles", "Detención y limpieza verificadas"] },
     { "version": "0.0.642", "title": "Migración completa a Vite y Workbox", "features": ["Vite 7 y Vitest", "Service worker Workbox", "Workers nativos", "Sin vulnerabilidades moderadas, altas o críticas"] },
     { "version": "0.0.641", "title": "Refuerzo de dependencias", "features": ["Retirada de tdweb y recompose", "Polyfills explícitos de GramJS", "Herramientas mantenidas", "Compilación verificada"] },
@@ -49,7 +50,7 @@
     { "id": "tr-location", "title": "Ubicacion en directo", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/InputBoxControl.js", "src/Components/ColumnMiddle/LiveLocationPanel.js", "src/Controllers/GramJsController.js", "src/Utils/LiveLocation.js", "src/Utils/LiveLocation.test.js"], "note": "Envío y edición reales, duración configurable, seguimiento de alta precisión, errores visibles, detención y pruebas unitarias." },
     { "id": "tr-media", "title": "Multimedia y galeria compartida", "status": "implemented", "area": "Multimedia", "evidence": ["src/Components/ColumnRight/SharedMedia.js", "src/Components/Viewer/MediaViewer.js"] },
     { "id": "tr-stickers", "title": "Stickers, GIF y emoji", "status": "implemented", "area": "Multimedia", "evidence": ["src/Components/ColumnMiddle/StickersPicker.js", "src/Components/ColumnMiddle/GifPicker.js"] },
-    { "id": "tr-media-editor", "title": "Editor multimedia completo", "status": "partial", "area": "Multimedia", "evidence": ["src/Components/Popup/EditMediaDialog.js"], "note": "Edicion basica presente; faltan herramientas del cliente oficial." },
+    { "id": "tr-media-editor", "title": "Editor multimedia completo", "status": "implemented", "area": "Multimedia", "evidence": ["src/Components/Additional/ImageEditor.js", "src/Utils/ImageTransforms.js", "src/Components/Popup/EditMediaDialog.js", "src/Utils/ImageTransforms.test.js"], "note": "Recorte, giro, volteo, brillo, contraste, restauracion, previsualizacion Canvas y exportacion PNG/JPEG reales." },
     { "id": "tr-polls", "title": "Encuestas, voto y cierre", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/Message/Media/Poll.js", "src/Components/Message/Media/PollOption.js"] },
     { "id": "tr-topics", "title": "Temas de foros", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnLeft/TopicsList.js", "src/Components/Additional/MessageThread.js"] },
     { "id": "tr-admin", "title": "Administracion y registro", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/AdminManagement.js", "src/Components/ColumnRight/AdminLog.js"] },
@@ -64,7 +65,7 @@
     { "id": "tr-instant", "title": "Instant View con cache", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/InstantView/InstantViewer.js", "src/Stores/InstantViewCache.js"] },
     { "id": "tr-browser", "title": "Navegador interno multipestana", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/Additional/InternalBrowser.js", "src/Stores/InternalBrowserStore.js", "src/Components/Additional/SafeLink.js"], "note": "Hasta diez pestañas con navegación, recarga, historial y aislamiento estricto HTTP/HTTPS." },
     { "id": "tr-stories", "title": "Visualizacion de Stories", "status": "implemented", "area": "Stories", "evidence": ["src/Stores/StoryStore.js", "src/Components/Stories/StoriesTray.js", "src/Components/Stories/StoryViewer.js", "src/Components/ColumnLeft/Dialogs.js", "src/Controllers/GramJsController.js"], "note": "Bandeja de historias, foto y vídeo, navegación, pausa, progreso, lectura, respuestas y lista de espectadores conectadas a Telegram." },
-    { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Components/Stories/StoryComposer.js", "src/Controllers/GramJsController.js"], "note": "Publicación real de foto o vídeo con texto, privacidad y duración; faltan edición avanzada y álbumes." },
+    { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Components/Stories/StoryComposer.js", "src/Components/Additional/ImageEditor.js", "src/Utils/ImageTransforms.js", "src/Controllers/GramJsController.js"], "note": "Publicacion real de foto o video con texto, privacidad, duracion y edicion visual; faltan albumes y composicion avanzada multicapa." },
     { "id": "tr-calls", "title": "Llamadas de voz individuales", "status": "implemented", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js", "src/Components/Calls/IncomingCall.js", "src/Components/Calls/CallRatingDialog.js"], "note": "Flujo P2P completo con intercambio DH, servidores RTC/TURN, señalización, aceptación, rechazo, audio WebRTC, mute y finalización." },
     { "id": "tr-video-calls", "title": "Videollamadas", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js"], "note": "Codigo base sin verificacion integral." },
     { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Components/Calls/GroupCallDialog.js"], "note": "Audio, micrófono, administración, cámara como presentación y pantalla funcionan; falta vídeo nativo de participante SIM/FID." },
