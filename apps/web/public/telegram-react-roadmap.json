@@ -1,5 +1,5 @@
 {
-  "version": "0.0.644 · 2026-08-05",
+  "version": "0.0.645 · 2026-08-05",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 38, "partial": 3, "pending": 2 },
+  "summary": { "implemented": 41, "partial": 1, "pending": 1 },
   "releases": [
+    { "version": "0.0.645", "title": "Stories, video grupal y regalos con Stars", "features": ["Albumes ordenados de Stories", "Video remoto SIM/FID", "Grid de participantes", "Catalogo y pago real con Stars"] },
     { "version": "0.0.644", "title": "Editor multimedia y refuerzo web", "features": ["Recorte y transformaciones reales", "Editor compartido por mensajes y Stories", "Selector visual sincronizado", "Navegación externa y notificaciones reforzadas"] },
     { "version": "0.0.643", "title": "Ubicación en directo completa", "features": ["Duración configurable", "Seguimiento de alta precisión", "Errores visibles", "Detención y limpieza verificadas"] },
     { "version": "0.0.642", "title": "Migración completa a Vite y Workbox", "features": ["Vite 7 y Vitest", "Service worker Workbox", "Workers nativos", "Sin vulnerabilidades moderadas, altas o críticas"] },
@@ -65,12 +66,12 @@
     { "id": "tr-instant", "title": "Instant View con cache", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/InstantView/InstantViewer.js", "src/Stores/InstantViewCache.js"] },
     { "id": "tr-browser", "title": "Navegador interno multipestana", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/Additional/InternalBrowser.js", "src/Stores/InternalBrowserStore.js", "src/Components/Additional/SafeLink.js"], "note": "Hasta diez pestañas con navegación, recarga, historial y aislamiento estricto HTTP/HTTPS." },
     { "id": "tr-stories", "title": "Visualizacion de Stories", "status": "implemented", "area": "Stories", "evidence": ["src/Stores/StoryStore.js", "src/Components/Stories/StoriesTray.js", "src/Components/Stories/StoryViewer.js", "src/Components/ColumnLeft/Dialogs.js", "src/Controllers/GramJsController.js"], "note": "Bandeja de historias, foto y vídeo, navegación, pausa, progreso, lectura, respuestas y lista de espectadores conectadas a Telegram." },
-    { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Components/Stories/StoryComposer.js", "src/Components/Additional/ImageEditor.js", "src/Utils/ImageTransforms.js", "src/Controllers/GramJsController.js"], "note": "Publicacion real de foto o video con texto, privacidad, duracion y edicion visual; faltan albumes y composicion avanzada multicapa." },
+    { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "implemented", "area": "Stories", "evidence": ["src/Components/Stories/StoryComposer.js", "src/Components/Additional/ImageEditor.js", "src/Utils/StoryAlbum.js", "src/Utils/StoryAlbum.test.js", "src/Controllers/GramJsController.js"], "note": "Lotes ordenados de hasta 20 Stories reales con edicion individual, privacidad, duracion, progreso y reintento sin duplicados; GramJS no expone agrupacion nativa de album en servidor." },
     { "id": "tr-calls", "title": "Llamadas de voz individuales", "status": "implemented", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js", "src/Components/Calls/IncomingCall.js", "src/Components/Calls/CallRatingDialog.js"], "note": "Flujo P2P completo con intercambio DH, servidores RTC/TURN, señalización, aceptación, rechazo, audio WebRTC, mute y finalización." },
-    { "id": "tr-video-calls", "title": "Videollamadas", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js"], "note": "Codigo base sin verificacion integral." },
-    { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Components/Calls/GroupCallDialog.js"], "note": "Audio, micrófono, administración, cámara como presentación y pantalla funcionan; falta vídeo nativo de participante SIM/FID." },
+    { "id": "tr-video-calls", "title": "Videollamadas", "status": "implemented", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js"], "note": "Negociacion WebRTC y tgcalls real con audio, video, camara, mute y finalizacion." },
+    { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "implemented", "area": "Llamadas", "evidence": ["src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Components/Calls/GroupCallDialog.js", "src/Utils/GroupCallMedia.js", "src/Utils/GroupCallMedia.test.js"], "note": "Audio, microfono, administracion, camara, pantalla y video remoto por participante con endpoints SIM/FID y grid responsive." },
     { "id": "tr-gifts", "title": "Galeria de regalos y contenido de pago", "status": "implemented", "area": "Stars y regalos", "evidence": ["src/Components/ColumnRight/StarGiftsGallery.js", "src/Components/Message/Media/PaidMedia.js"] },
-    { "id": "tr-market", "title": "Mercado y ofertas de regalos", "status": "pending", "area": "Stars y regalos", "evidence": [] },
+    { "id": "tr-market", "title": "Mercado y ofertas de regalos", "status": "partial", "area": "Stars y regalos", "evidence": ["src/Components/ColumnRight/StarGiftCatalog.js", "src/Utils/StarGiftPurchase.js", "src/Utils/StarGiftPurchase.test.js", "src/Controllers/GramJsController.js"], "note": "Catalogo, saldo y compra oficial con Stars implementados; la version MTProto instalada no expone publicacion de precios ni listado de ofertas de reventa." },
     { "id": "tr-message-effects", "title": "Efectos al enviar mensajes", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/InputBoxControl.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-saved-topics", "title": "Carpetas de Mensajes guardados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/SavedFolders.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-similar-channels", "title": "Canales similares y unión directa", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/SimilarChannels.js", "src/Controllers/GramJsController.js"] },

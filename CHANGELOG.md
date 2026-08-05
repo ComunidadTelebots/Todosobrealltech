@@ -1,5 +1,15 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.29 - 2026-08-05
+
+- Actualiza Telegram React a `0.0.645` y registra 41 funciones implementadas, 1 parcial y 1 pendiente.
+- Completa el compositor de álbumes de hasta 20 Stories con orden, edición individual, progreso y recuperación sin duplicados.
+- Completa las videollamadas privadas ya existentes y el vídeo remoto de participantes en llamadas grupales mediante SIM/FID.
+- Añade una cuadrícula responsive de vídeo y pantalla compartida compatible con todos los perfiles visuales.
+- Incorpora catálogo oficial de regalos, saldo y compra real con Stars, sustituyendo una llamada MTProto inexistente.
+- Mantiene el mercado de reventa como parcial y Passkeys como pendiente porque la capa MTProto instalada no ofrece esas operaciones.
+- Verificación final: 34 pruebas, compilación Vite/PWA y auditoría sin vulnerabilidades moderadas, altas ni críticas.
+
 ### 18.23.28 - 2026-08-05
 
 - Actualiza el apartado de Telegram React a la versión `0.0.644` con evidencias verificadas en el código y en sus pruebas.
