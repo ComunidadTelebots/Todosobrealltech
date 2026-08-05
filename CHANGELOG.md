@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.30 - 2026-08-05
+
+- Actualiza Telegram React a `0.0.646` con una compilación Docker reproducible.
+- Evita que dependencias antiguas del servidor sobrescriban las instaladas dentro de la imagen y mezclen PostCSS 7 con PostCSS 8.
+- Reduce el contexto de construcción excluyendo `node_modules`, artefactos, historial Git, cobertura y registros.
+
 ### 18.23.29 - 2026-08-05
 
 - Actualiza Telegram React a `0.0.645` y registra 41 funciones implementadas, 1 parcial y 1 pendiente.
