@@ -1,5 +1,5 @@
 {
-  "version": "0.0.651 · 2026-08-06",
+  "version": "0.0.652 · 2026-08-06",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -22,6 +22,7 @@
   ],
   "summary": { "implemented": 56, "partial": 1, "pending": 31 },
   "releases": [
+    { "version": "0.0.652", "title": "Centro visual de apariencia", "features": ["Galeria multidiseño", "Versiones historicas", "Vista previa antes de aplicar", "Editor por categorias", "Comparador visual", "Importar y compartir"] },
     { "version": "0.0.651", "title": "Mensajeria resistente y herramientas Plus", "features": ["Sonidos separados", "Sincronizacion durante llamadas", "Vistas inteligentes", "Ordenacion de chats", "Acciones masivas", "Deteccion segura de capacidades MTProto"] },
     { "version": "0.0.650", "title": "Reacciones extendidas multidiseño", "features": ["Buscador de reacciones", "Compactacion +N", "Nombres al pasar el cursor", "Doble clic con reaccion grande"] },
     { "version": "0.0.649", "title": "Contexto de respuestas y menciones sincronizadas", "features": ["Ver respuesta en el chat", "Autores reales en hilos", "Menciones leídas entre dispositivos", "Riesgos oficiales registrados"] },
@@ -127,7 +128,7 @@
     { "id": "tr-saved-topics", "title": "Carpetas de Mensajes guardados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnMiddle/SavedFolders.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-similar-channels", "title": "Canales similares y unión directa", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/SimilarChannels.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-download-settings", "title": "Perfiles de descarga automática", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/AndroidDataSettings.js", "src/Controllers/GramJsController.js"] },
-    { "id": "tr-themes", "title": "Temas, fondos y skins", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/ThemePicker.js", "src/Components/ColumnLeft/ChatBackground.js", "src/Components/DesignSwitcher.js"] },
+    { "id": "tr-themes", "title": "Temas, fondos y skins", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/AppearanceCenter.js", "src/Components/ColumnLeft/AppearanceCenter.css", "src/Components/ColumnLeft/AppearanceCatalog.js", "src/Components/ColumnLeft/ThemePicker.js", "src/Components/ColumnLeft/DesignVersionSelector.js", "src/Components/ColumnLeft/ChatBackground.js", "src/Components/DesignSwitcher.js"], "note": "Centro navegable con galeria para once diseños, versiones historicas, vista previa con aplicar/cancelar, editor por categorias, comparador e importacion/exportacion; conserva todos los ajustes avanzados existentes." },
     { "id": "tr-folders", "title": "Carpetas y archivo", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/FolderDialogsList.js", "src/Components/ColumnLeft/ArchiveList.js"] },
     { "id": "tr-vite", "title": "Compilación moderna con Vite y Vitest", "status": "implemented", "area": "Arquitectura", "evidence": ["vite.config.js", "package.json", "src/Utils/compose.js"], "note": "Sustituye Create React App y react-app-rewired conservando React, GramJS y todos los perfiles visuales." },
     { "id": "tr-workbox", "title": "Aplicación instalable y caché segura con Workbox", "status": "implemented", "area": "Arquitectura", "evidence": ["src/service-worker.js", "src/registerServiceWorker.js", "public/manifest.json"], "note": "Navegación segura, limpieza de cachés antiguas, precaché y apertura validada de notificaciones." }

@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.35 - 2026-08-06
+
+- Actualiza el roadmap de Telegram React a `0.0.652` con un centro de apariencia navegable.
+- Conserva Android, Android Nuevo, Android Glass, Web, Webogram, iOS, macOS, Desktop, Windows/Unigram, Telegram X y Aurora.
+- Documenta versiones históricas, vista previa antes de aplicar, editor por categorías, comparador e importación/exportación.
+
 ### 18.23.34 - 2026-08-06
 
 - Actualiza el roadmap de Telegram React a `0.0.651` con sonidos separados y sincronización resistente durante llamadas grupales.
