@@ -47,13 +47,18 @@ router.get('/', async (_req, res) => {
 router.post('/', async (req, res) => {
   if (req.state?.user?.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el master puede controlar el worker' });
   const action = String(req.body?.action || '');
+  const telegramUrl = String(req.body?.telegram_url || '').trim();
+  if (telegramUrl && !/^https:\/\/t\.me\/(?:s\/)?[A-Za-z0-9_]+\/\d+$/.test(telegramUrl)) {
+    return res.status(400).json({ ok: false, error: 'La URL de Telegram no es valida' });
+  }
   if (!['run_now', 'backfill'].includes(action)) return res.status(400).json({ ok: false, error: 'Acción no válida' });
   const active = await setting(COMMAND_KEY);
   if (['pending', 'accepted'].includes(active?.value?.state)) {
     return res.status(409).json({ ok: false, error: 'El worker ya tiene una tarea en curso', command: active.value });
   }
   const command = { id: randomUUID(), action, state: 'pending', created_at: new Date().toISOString(),
-    force: action === 'backfill', limit: Math.min(Math.max(Number(req.body?.limit || 100), 1), 500),
+    force: action === 'backfill', limit: telegramUrl ? 1 : Math.min(Math.max(Number(req.body?.limit || 100), 1), 500),
+    telegram_url: telegramUrl || '',
     requested_by: req.state.user.id };
   await saveSetting(COMMAND_KEY, command);
   return res.status(202).json({ ok: true, command });

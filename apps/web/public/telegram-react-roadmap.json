@@ -1,5 +1,5 @@
 {
-  "version": "0.0.640 · 2026-08-03",
+  "version": "0.0.642 · 2026-08-03",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,10 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 31, "partial": 6, "pending": 4 },
+  "summary": { "implemented": 35, "partial": 6, "pending": 2 },
   "releases": [
+    { "version": "0.0.642", "title": "Migración completa a Vite y Workbox", "features": ["Vite 7 y Vitest", "Service worker Workbox", "Workers nativos", "Sin vulnerabilidades moderadas, altas o críticas"] },
+    { "version": "0.0.641", "title": "Refuerzo de dependencias", "features": ["Retirada de tdweb y recompose", "Polyfills explícitos de GramJS", "Herramientas mantenidas", "Compilación verificada"] },
     { "version": "0.0.640", "title": "Anuncios oficiales de Telegram", "features": ["Canales y bots", "Impresiones y clics oficiales", "Recomendados", "Información y denuncias"] },
     { "version": "0.0.639", "title": "Campañas comunitarias en canales", "features": ["Anuncios aprobados entre publicaciones", "Clics medidos", "Solo canales", "Compatibilidad con diseños"] },
     { "version": "0.0.638", "title": "Compatibilidad funcional por diseño", "features": ["Funciones actuales en todas las familias", "Modo de época", "Botón mantener diseño original", "Matriz pública de versiones"] },
@@ -37,7 +39,7 @@
     { "id": "tr-profile", "title": "Edicion de perfil", "status": "implemented", "area": "Cuenta", "evidence": ["src/Components/Additional/EditProfile.js"] },
     { "id": "tr-privacy", "title": "Privacidad y seguridad", "status": "implemented", "area": "Cuenta", "evidence": ["src/Components/ColumnLeft/PrivacySettings.js", "src/Components/ColumnLeft/GlobalPrivacySettings.js"] },
     { "id": "tr-passkeys", "title": "Passkeys", "status": "pending", "area": "Cuenta", "evidence": [] },
-    { "id": "tr-multi-account", "title": "Varias cuentas simultaneas", "status": "pending", "area": "Cuenta", "evidence": [] },
+    { "id": "tr-multi-account", "title": "Varias cuentas simultaneas", "status": "implemented", "area": "Cuenta", "evidence": ["src/Controllers/GramJsController.js", "src/Components/ColumnLeft/MainMenuButton.js", "src/Components/Auth/Phone.js"], "note": "Añade, cambia y elimina cuentas con sesiones independientes y selector visible en el menú principal." },
     { "id": "tr-messages", "title": "Mensajes, respuestas, reenvio y edicion", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Message/Message.js", "src/Components/Popup/ForwardDialog.js"] },
     { "id": "tr-search", "title": "Busqueda global y dentro del chat", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/ColumnLeft/Search/Search.js", "src/Components/ColumnMiddle/ChatSearch.js"] },
     { "id": "tr-scheduled", "title": "Mensajes programados", "status": "implemented", "area": "Mensajeria", "evidence": ["src/Components/Additional/ScheduledMessages.js"] },
@@ -60,8 +62,8 @@
     { "id": "tr-business", "title": "Telegram Business", "status": "implemented", "area": "Bots", "evidence": ["src/Components/ColumnRight/BusinessInfo.js", "src/Components/ColumnRight/BusinessEditor.js", "src/Controllers/GramJsController.js"], "note": "Respuestas rápidas, horarios, ubicación, bienvenida, ausencia y bots conectados usan operaciones reales." },
     { "id": "tr-instant", "title": "Instant View con cache", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/InstantView/InstantViewer.js", "src/Stores/InstantViewCache.js"] },
     { "id": "tr-browser", "title": "Navegador interno multipestana", "status": "implemented", "area": "Contenido", "evidence": ["src/Components/Additional/InternalBrowser.js", "src/Stores/InternalBrowserStore.js", "src/Components/Additional/SafeLink.js"], "note": "Hasta diez pestañas con navegación, recarga, historial y aislamiento estricto HTTP/HTTPS." },
-    { "id": "tr-stories", "title": "Visualizacion de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Stores/StoryStore.js"], "note": "Store presente; flujo visual completo no verificado." },
-    { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "pending", "area": "Stories", "evidence": [] },
+    { "id": "tr-stories", "title": "Visualizacion de Stories", "status": "implemented", "area": "Stories", "evidence": ["src/Stores/StoryStore.js", "src/Components/Stories/StoriesTray.js", "src/Components/Stories/StoryViewer.js", "src/Components/ColumnLeft/Dialogs.js", "src/Controllers/GramJsController.js"], "note": "Bandeja de historias, foto y vídeo, navegación, pausa, progreso, lectura, respuestas y lista de espectadores conectadas a Telegram." },
+    { "id": "tr-story-editor", "title": "Editor y albumes de Stories", "status": "partial", "area": "Stories", "evidence": ["src/Components/Stories/StoryComposer.js", "src/Controllers/GramJsController.js"], "note": "Publicación real de foto o vídeo con texto, privacidad y duración; faltan edición avanzada y álbumes." },
     { "id": "tr-calls", "title": "Llamadas de voz individuales", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js", "src/Components/Calls/ActiveCall.js"], "note": "WebRTC presente; TURN y carrera DH siguen pendientes." },
     { "id": "tr-video-calls", "title": "Videollamadas", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/CallController.js"], "note": "Codigo base sin verificacion integral." },
     { "id": "tr-group-calls", "title": "Llamadas grupales y directos", "status": "partial", "area": "Llamadas", "evidence": ["src/Controllers/GroupCallController.js", "src/Controllers/GramJsController.js", "src/Components/Calls/GroupCallDialog.js"], "note": "Audio, micrófono, administración, cámara como presentación y pantalla funcionan; falta vídeo nativo de participante SIM/FID." },
@@ -72,6 +74,8 @@
     { "id": "tr-similar-channels", "title": "Canales similares y unión directa", "status": "implemented", "area": "Grupos y canales", "evidence": ["src/Components/ColumnRight/SimilarChannels.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-download-settings", "title": "Perfiles de descarga automática", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/AndroidDataSettings.js", "src/Controllers/GramJsController.js"] },
     { "id": "tr-themes", "title": "Temas, fondos y skins", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/ThemePicker.js", "src/Components/ColumnLeft/ChatBackground.js", "src/Components/DesignSwitcher.js"] },
-    { "id": "tr-folders", "title": "Carpetas y archivo", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/FolderDialogsList.js", "src/Components/ColumnLeft/ArchiveList.js"] }
+    { "id": "tr-folders", "title": "Carpetas y archivo", "status": "implemented", "area": "Experiencia", "evidence": ["src/Components/ColumnLeft/FolderDialogsList.js", "src/Components/ColumnLeft/ArchiveList.js"] },
+    { "id": "tr-vite", "title": "Compilación moderna con Vite y Vitest", "status": "implemented", "area": "Arquitectura", "evidence": ["vite.config.js", "package.json", "src/Utils/compose.js"], "note": "Sustituye Create React App y react-app-rewired conservando React, GramJS y todos los perfiles visuales." },
+    { "id": "tr-workbox", "title": "Aplicación instalable y caché segura con Workbox", "status": "implemented", "area": "Arquitectura", "evidence": ["src/service-worker.js", "src/registerServiceWorker.js", "public/manifest.json"], "note": "Navegación segura, limpieza de cachés antiguas, precaché y apertura validada de notificaciones." }
   ]
 }

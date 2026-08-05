@@ -12,6 +12,7 @@ export default function RssWorkerControlPanel() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState('');
+  const [telegramUrl, setTelegramUrl] = useState('');
   const isMaster = pb.authStore.record?.role === 'creator';
 
   const load = useCallback(async (quiet = false) => {
@@ -32,15 +33,15 @@ export default function RssWorkerControlPanel() {
     return () => clearInterval(interval);
   }, [data?.status?.state, load]);
 
-  const run = async (action) => {
-    if (action === 'backfill' && !window.confirm('Se revisarán publicaciones anteriores accesibles y se aplicará el diseño actual conservando Inside Ads. ¿Continuar?')) return;
-    setSending(action);
+  const run = async (action, targetUrl = '') => {
+    if (action === 'backfill' && !targetUrl && !window.confirm('Se revisarán publicaciones anteriores accesibles y se aplicará el diseño actual conservando Inside Ads. ¿Continuar?')) return;
+    setSending(targetUrl ? 'backfill_one' : action);
     try {
       const response = await apiServerClient.fetch('/noticias/worker', { method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, limit: 100 }) });
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, limit: targetUrl ? 1 : 100, telegram_url: targetUrl }) });
       const payload = await apiServerClient.readJson(response);
       if (!response.ok) throw new Error(payload.error || 'No se pudo enviar la tarea');
-      toast.success(action === 'backfill' ? 'Backfill histórico enviado al worker' : 'Ejecución RSS enviada al worker');
+      toast.success(targetUrl ? 'Publicación enviada directamente al worker' : action === 'backfill' ? 'Backfill histórico enviado al worker' : 'Ejecución RSS enviada al worker');
       await load(true);
     } catch (error) { toast.error(error.message); }
     finally { setSending(''); }
@@ -72,6 +73,9 @@ export default function RssWorkerControlPanel() {
     </div>
     {!!status.recent_results?.length && <div className="mt-4 rounded-lg border p-3 text-sm"><b>Resultados recientes</b><div className="mt-2 space-y-1">{status.recent_results.slice().reverse().map((item, index) => <div key={`${item.telegram_url || item.title}-${index}`} className="flex items-center justify-between gap-3 border-t py-2 first:border-0"><span className="min-w-0 truncate">{item.title}</span>{item.telegram_url ? <a className="shrink-0 text-sky-600 hover:underline" href={item.telegram_url} target="_blank" rel="noreferrer">Ver post</a> : <Badge variant={item.ok ? 'secondary' : 'destructive'}>{item.ok ? 'Creada' : 'Error'}</Badge>}</div>)}</div></div>}
     {!!status.feed_errors?.length && <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"><b>Feeds con error en el último ciclo</b><ul className="mt-1 list-inside list-disc">{status.feed_errors.map((item) => <li key={item.label}>{item.label}: {item.error}</li>)}</ul></div>}
-    {isMaster && <div className="mt-4 flex flex-wrap gap-2"><Button onClick={() => run('run_now')} disabled={commandBusy || !!sending}><Play className="mr-2 h-4 w-4"/>Ejecutar RSS ahora</Button><Button variant="outline" onClick={() => run('backfill')} disabled={commandBusy || !!sending}><History className="mr-2 h-4 w-4"/>Actualizar publicaciones anteriores</Button></div>}
+    {isMaster && <div className="mt-4 space-y-3">
+      <div className="flex flex-wrap gap-2"><Button onClick={() => run('run_now')} disabled={commandBusy || !!sending}><Play className="mr-2 h-4 w-4"/>Ejecutar RSS ahora</Button><Button variant="outline" onClick={() => run('backfill')} disabled={commandBusy || !!sending}><History className="mr-2 h-4 w-4"/>Actualizar publicaciones anteriores</Button></div>
+      <div className="flex flex-col gap-2 rounded-lg border p-3 sm:flex-row"><input className="min-w-0 flex-1 rounded-md border bg-background px-3 py-2 text-sm" type="url" placeholder="https://t.me/TodoSobreAllTech/228347" value={telegramUrl} onChange={(event) => setTelegramUrl(event.target.value)} /><Button variant="outline" onClick={() => run('backfill', telegramUrl.trim())} disabled={commandBusy || !!sending || !/^https:\/\/t\.me\/(?:s\/)?[A-Za-z0-9_]+\/\d+$/.test(telegramUrl.trim())}>{sending === 'backfill_one' && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>Actualizar solo este mensaje</Button></div>
+    </div>}
   </section>;
 }

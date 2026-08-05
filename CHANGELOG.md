@@ -1,5 +1,21 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.26 - 2026-08-05
+
+- Añade al panel de control del worker la edición individual de una publicación mediante su URL de Telegram.
+- Permite actualizar directamente mensajes como `https://t.me/TodoSobreAllTech/228347`, conservando íntegramente Inside Ads, su enlace afiliado, el botón del bot y la campaña comunitaria.
+- Evita descargar y recorrer todos los canales cuando el master solicita una publicación concreta, reduciendo el trabajo a un único registro.
+- Reduce de ocho a cuatro segundos el tiempo máximo de cada intento de recuperación pública de Telegram.
+- Valida en la API que el destino pertenezca a una publicación válida de `t.me` y limita la orden individual a un solo mensaje.
+- Las órdenes manuales forzadas omiten la espera reservada al ciclo automático, por lo que una publicación concreta puede corregirse inmediatamente.
+- Corrige la edición enriquecida para utilizar `editMessageText` con el contenido Rich Markdown compatible, evitando el error `Not Found` provocado por un método inexistente.
+- Delimita y conserva literalmente todo el bloque comprendido entre `PUBLICIDAD · INSIDE ADS` y la firma enlazada `[InsideAds](https://t.me/InsideAds_bot/open?startapp=...)`, incluidos sus enlaces publicitarios.
+- Prioriza el enlace profundo de `@InsideAds_bot` como botón inline de la campaña y mantiene dentro del texto cualquier enlace afiliado adicional aportado por Inside Ads.
+- Reaudita Telegram React frente a su código actual y actualiza el roadmap público de `0.0.640` a `0.0.642` con evidencias verificables.
+- Marca la multicuenta y la visualización completa de Stories como implementadas; registra el compositor de Stories como parcial hasta incorporar edición avanzada y álbumes.
+- Añade al roadmap las migraciones verificadas a Vite/Vitest y Workbox, incluyendo la retirada de la cadena abandonada de Create React App.
+- El apartado Telegram React queda en 35 funciones implementadas, 6 parciales y 2 pendientes, con todas las rutas de evidencia comprobadas en el repositorio.
+
 ### 18.23.25 - 2026-08-05
 
 - Añade al panel de NoticiasWeb3 un control persistente del worker con estado, progreso, errores por feed, cola de Telegram, resultados y recuento gaming.

@@ -970,7 +970,7 @@ async function fetchTelegramPublicPost(telegramUrl) {
     try {
       const response = await fetch(url, {
         headers: { 'User-Agent': FETCH_USER_AGENT },
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(4000),
       });
       if (!response.ok) continue;
       const parsed = parseTelegramPublicPost(await response.text());
@@ -1308,7 +1308,7 @@ async function syncOfficialTelegramViews() {
  * canal para añadirle el enlace. Corre periódicamente (IV_BACKFILL_INTERVAL_MS)
  * en lotes de IV_BACKFILL_MAX_PER_RUN, de más reciente a más antiguo.
  */
-async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PER_RUN, commandId = '' } = {}) {
+async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PER_RUN, commandId = '', telegramUrl = '' } = {}) {
   if (backfillRunning) return { ok: false, skipped: true, reason: 'backfill_running' };
   backfillRunning = true;
   try {
@@ -1325,12 +1325,15 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
     // Se excluyen los ya editados (nw3_iv_added) y los que Telegram rechazó de
     // forma definitiva (nw3_iv_failed), para no reintentarlos en cada ciclo.
     // Orden descendente: los posts recientes del canal son los que la gente ve.
+    const targetUrl = String(telegramUrl || '').trim();
     const records = (await pocketbaseClient.collection('nw3_noticias').getFullList({
-      filter: force
+      filter: targetUrl
+        ? `telegram_url="${targetUrl}" && nw3_iv_failed != true`
+        : force
         ? 'telegram_url != "" && nw3_iv_failed != true'
         : 'telegram_url != "" && nw3_iv_added != true && nw3_iv_failed != true',
       sort: '-created',
-    })).slice(0, Math.min(Math.max(1, Number(limit) || IV_BACKFILL_MAX_PER_RUN), 500));
+    })).slice(0, targetUrl ? 1 : Math.min(Math.max(1, Number(limit) || IV_BACKFILL_MAX_PER_RUN), 500));
 
     if (records.length === 0) {
       logger.info('[rssAutoPublisher] backfillTelegramLinks: no hay artículos que actualizar.');
@@ -1341,7 +1344,9 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
 
     logger.info(`[rssAutoPublisher] backfillTelegramLinks: ${records.length} artículos por procesar.`);
 
-    const liveResults = await Promise.allSettled(CHANNELS.map(fetchTelegramChannel));
+    // Para una URL concreta no descargamos todos los canales: se consulta
+    // directamente el mensaje solicitado y el trabajo comienza de inmediato.
+    const liveResults = targetUrl ? [] : await Promise.allSettled(CHANNELS.map(fetchTelegramChannel));
     const livePosts = new Map(liveResults
       .flatMap((result) => (result.status === 'fulfilled' ? result.value : []))
       .filter((item) => item.telegramUrl && item.telegramOriginalText)
@@ -1681,6 +1686,7 @@ async function processRssWorkerCommand() {
   if (command.action === 'run_now') result = await runAutoPublish();
   else if (command.action === 'backfill') result = await backfillTelegramLinks({
     force: command.force !== false, limit: command.limit, commandId: command.id,
+    telegramUrl: command.telegram_url || '',
   });
   else result = { ok: false, error: 'unknown_command' };
 
