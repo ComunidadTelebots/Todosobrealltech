@@ -1,5 +1,5 @@
 {
-  "version": "0.0.646 · 2026-08-05",
+  "version": "0.0.647 · 2026-08-06",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -22,6 +22,7 @@
   ],
   "summary": { "implemented": 41, "partial": 1, "pending": 1 },
   "releases": [
+    { "version": "0.0.647", "title": "Selector cronologico corregido", "features": ["Version moderna arriba", "Version antigua abajo", "Seleccion persistente", "Prueba de regresion"] },
     { "version": "0.0.646", "title": "Compilacion Docker reproducible", "features": ["Contexto Docker reducido", "Dependencias limpias", "Compatibilidad PostCSS 8", "Despliegues mas rapidos"] },
     { "version": "0.0.645", "title": "Stories, video grupal y regalos con Stars", "features": ["Albumes ordenados de Stories", "Video remoto SIM/FID", "Grid de participantes", "Catalogo y pago real con Stars"] },
     { "version": "0.0.644", "title": "Editor multimedia y refuerzo web", "features": ["Recorte y transformaciones reales", "Editor compartido por mensajes y Stories", "Selector visual sincronizado", "Navegación externa y notificaciones reforzadas"] },

@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.31 - 2026-08-06
+
+- Actualiza Telegram React a `0.0.647` y ordena cada selector visual desde la versión más moderna hasta la más antigua.
+- Conserva intactos el registro de diseños y la versión persistida del usuario.
+- Verificación: 35 pruebas y compilación Vite/PWA completa.
+
 ### 18.23.30 - 2026-08-05
 
 - Actualiza Telegram React a `0.0.646` con una compilación Docker reproducible.
