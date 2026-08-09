@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-08-09T17:47:20.098Z",
+  "generated_at": "2026-08-09T21:07:26.930Z",
   "status": "in_progress",
-  "implemented": 1857,
+  "implemented": 1856,
   "scaffolded": 328,
   "specified": 546,
-  "proposed": 3269,
-  "remaining_real": 4143,
-  "verified_percent": 30.95,
+  "proposed": 3270,
+  "remaining_real": 4144,
+  "verified_percent": 30.93,
   "totals": {
     "web": 2004,
     "moonbot": 1998,
@@ -43,6 +43,156 @@
         "apps/web/src/components/CommunityCampaignSlot.jsx",
         "apps/web/src/pages/HomePage.jsx",
         "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-campaign-review-notes",
+      "title": "Notas internas de revisión de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-assignees",
+      "title": "Responsables de revisión por campaña",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-due-dates",
+      "title": "Vencimientos operativos de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-governance-tags",
+      "title": "Etiquetas de gobernanza publicitaria",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-approval-checklist",
+      "title": "Lista compartida de aprobación",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-personal-watch",
+      "title": "Seguimiento personal de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-saved-views",
+      "title": "Vistas de campañas guardadas por el creator",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-review-snapshots",
+      "title": "Instantáneas del estado de revisión",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-overdue-summary",
+      "title": "Resumen de campañas vencidas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-open-review-metrics",
+      "title": "Métricas de tareas de revisión abiertas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
       ]
     },
     {
@@ -41895,11 +42045,9 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "reconocimiento de voz",
-      "status": "implemented",
-      "evidence": [
-        "apps/web/src/components/VoiceNavigation.jsx"
-      ],
-      "completion_state": "implemented"
+      "status": "proposed",
+      "evidence": [],
+      "completion_state": "not_implemented"
     },
     {
       "id": "future-2148",
@@ -116303,15 +116451,15 @@
     }
   ],
   "completion": {
-    "implemented": 1857,
+    "implemented": 1856,
     "partial": 328,
-    "not_implemented": 3815
+    "not_implemented": 3816
   },
   "data_quality": {
     "unique_ids": 6000,
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-08-09T17:47:20.098Z"
+    "verified_at": "2026-08-09T21:07:26.930Z"
   }
 }

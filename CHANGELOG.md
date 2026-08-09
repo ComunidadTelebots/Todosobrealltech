@@ -1,5 +1,15 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.45 - 2026-08-09
+
+- Añade un espacio de gobernanza dentro del panel de campañas sin alterar su diseño ni el flujo de entrega existente.
+- Permite a administradores y creator compartir notas internas, asignar responsables, fijar vencimientos, aplicar etiquetas y mantener listas de aprobación.
+- Incorpora seguimiento personal y un resumen de campañas coordinadas, vencidas, tareas abiertas y vistas guardadas.
+- Permite al creator guardar vistas de trabajo y crear instantáneas resumidas del estado de revisión.
+- Persiste el estado mediante escritura atómica con permisos restrictivos y valida IDs, acciones, fechas, filtros y longitudes en servidor.
+- Mantiene separados los roles web de los roles de grupos: los administradores colaboran y las vistas e instantáneas quedan reservadas al creator.
+- Añade pruebas unitarias de validación, coordinación, métricas e higiene de entradas.
+
 ### 18.23.44 - 2026-08-09
 
 - Corrige el indicador rojo permanente de CAS: antes validaba la API remota como si devolviera la lista completa e ignoraba el export local activo de Moonbot.

@@ -206,7 +206,6 @@ const implementedEvidence = new Map([
   ['future-0435', ['core/routes_public.py']], ['future-0438', ['core/routes_public.py']],
   ['future-0708', ['web/hub.html']], ['future-0711', ['web/hub.html']],
   // Control por voz real: navegación web, análisis multimedia Moonbot y acciones rápidas WebApp.
-  ['future-2147', ['apps/web/src/components/VoiceNavigation.jsx']],
   ['future-2571', ['core/media_analyzer.py']], ['future-2814', ['web/hub.html']],
   // Bóveda personal cifrada y consentida en privacidad web y perfil WebApp.
   ['future-2197', ['apps/web/src/lib/personalVault.js']],
@@ -267,6 +266,18 @@ for (let number = 3002; number <= 5159; number += 3) {
 const trackedTasks = [
   { id: 'task-master-interface-parity', title: 'Equiparar las funciones del master entre TodoSobreAllTech y el Hub', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.', evidence: ['apps/web/src/components/CreatorAccountProxyManager.jsx', 'apps/web/src/components/AccountInteroperableConnector.jsx', 'moon-multibot:web/hub.html'] },
   { id: 'task-community-ads-main', title: 'Mostrar campañas comunitarias de Telegram en todosobreall.tech', products: ['web'], status: 'implemented', detail: 'La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.', evidence: ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js'] },
+  ...[
+    ['task-campaign-review-notes', 'Notas internas de revisión de campañas'],
+    ['task-campaign-assignees', 'Responsables de revisión por campaña'],
+    ['task-campaign-due-dates', 'Vencimientos operativos de campañas'],
+    ['task-campaign-governance-tags', 'Etiquetas de gobernanza publicitaria'],
+    ['task-campaign-approval-checklist', 'Lista compartida de aprobación'],
+    ['task-campaign-personal-watch', 'Seguimiento personal de campañas'],
+    ['task-campaign-saved-views', 'Vistas de campañas guardadas por el creator'],
+    ['task-campaign-review-snapshots', 'Instantáneas del estado de revisión'],
+    ['task-campaign-overdue-summary', 'Resumen de campañas vencidas'],
+    ['task-campaign-open-review-metrics', 'Métricas de tareas de revisión abiertas'],
+  ].map(([id, title]) => ({ id, title, products: ['web'], status: 'implemented', detail: 'Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.', evidence: ['apps/api/src/utils/campaignGovernance.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/CampaignGovernancePanel.jsx', 'apps/api/test/campaignGovernance.test.js'] })),
   ...[
     ['task-ads-real-destination-context', 'Propagar chat, tipo y bot a la entrega publicitaria', 'El worker y la API entregan el contexto real del canal, grupo y bot para que la segmentación no dependa de valores genéricos.', ['apps/api/src/utils/rssAutoPublisher.js', 'apps/api/src/routes/house-ads.js']],
     ['task-ads-country-language', 'Segmentar campañas por país e idioma', 'La política normaliza inclusiones y exclusiones geográficas y lingüísticas, incluidas variantes regionales.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/api/test/houseAdsPolicy.test.js']],

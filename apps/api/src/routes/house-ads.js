@@ -9,6 +9,7 @@ import { disclosureFor, houseAdMatches, normalizeHouseAd, normalizeHouseAdDestin
 import { insideAdsDestinationFor, insideAdsPresetByUrl, insideAdsPresetsFor, mayManageInsideAdsCampaign, mayReadInsideAdsPresets } from '../utils/insideAdsPresets.js';
 import { acceptAdClick, adRequestFingerprint } from '../utils/houseAdsAntiFraud.js';
 import { appendHouseAdsAudit, readHouseAdsAudit } from '../utils/houseAdsAudit.js';
+import { applyGovernanceAction, governanceSummary, readCampaignGovernance, writeCampaignGovernance } from '../utils/campaignGovernance.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
 
 const router = Router();
@@ -367,6 +368,24 @@ router.get('/audit', async (req, res) => {
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   if (auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo el creator puede consultar la auditoría publicitaria' });
   return res.json({ ok: true, events: await readHouseAdsAudit(req.query.limit) });
+});
+
+router.get('/governance', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  const state = await readCampaignGovernance();
+  return res.json({ ok: true, state, summary: governanceSummary(state), permissions: { manage: auth.user.role === 'creator', collaborate: true } });
+});
+
+router.post('/governance', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
+  if (['saved_view', 'snapshot'].includes(String(req.body?.action)) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Esta operación requiere el rol creator' });
+  try {
+    const state = applyGovernanceAction(await readCampaignGovernance(), req.body, auth.user);
+    await writeCampaignGovernance(state);
+    return res.json({ ok: true, state, summary: governanceSummary(state) });
+  } catch (error) { return res.status(400).json({ ok: false, error: error.message }); }
 });
 
 router.post('/:id/report', async (req, res) => {
