@@ -1,5 +1,16 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.37 - 2026-08-09
+
+- Corrige el diseño de las campañas verticales izquierda y derecha de NoticiasWeb3: imagen, relación publicitaria, texto, llamada a la acción y enlace boost permanecen dentro del ancho lateral sin recortes.
+- Conserva intacto el formato horizontal superior de NoticiasWeb3 y oculta los laterales cuando la pantalla no ofrece espacio suficiente.
+- Añade a Proxy campañas comunitarias laterales independientes a izquierda y derecha para escritorios anchos.
+- Intercala una campaña horizontal cada seis tarjetas del directorio de proxies, manteniendo la cuadrícula adaptable en tabletas y móviles.
+- Separa caché y medición de campañas en Proxy por ubicación `top`, `left`, `right` e `inline`.
+- Concilia el Roadmap 6000 con las implementaciones reales: registra las tres mejoras visuales anteriores y mantiene las quince funciones publicitarias de `18.23.36` asociadas al producto correcto.
+- Verifica las evidencias de código e interfaz de las funciones incorporadas hoy, sin IDs ni títulos duplicados ni referencias a archivos inexistentes.
+- Verificación: compilaciones de NoticiasWeb3, Proxy y TodoSobreAllTech completadas; catálogo válido con 6000 funciones y 1857 implementaciones respaldadas por evidencias.
+
 ### 18.23.36 - 2026-08-09
 
 - Propaga `chat_id`, `chat_type` y `bot_id` desde el worker y los consumidores internos para aplicar la segmentación sobre el destino real, no sobre una campaña genérica.
