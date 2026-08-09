@@ -7,7 +7,6 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { useTelegramFeed } from '../hooks/useTelegramFeed.jsx';
 import { ShareBar, readingTime } from '../components/ShareBar.jsx';
 import AdSense from '../components/AdSense.jsx';
-import RecommendedBlock from '../components/RecommendedBlock.jsx';
 import { trackCategoryFilter, trackSearch } from '../utils/analytics.js';
 
 const ADSENSE_SLOT_INLINE = import.meta.env.VITE_ADSENSE_SLOT_INLINE || 'SLOT_INLINE';
@@ -739,7 +738,7 @@ export default function NoticiasPage({ siteVersion, appPlatform }) {
                     />
                   )}
                   {siteVersion !== '2014' && index === 1 && (
-                    <RecommendedBlock slot="news-inline" variant="compact" limit={2} />
+                    <AdSense placement="inline" houseOnly />
                   )}
                 </div>
               );

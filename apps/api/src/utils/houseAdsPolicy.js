@@ -82,6 +82,7 @@ export function normalizeHouseAd(ad = {}) {
     display_seconds: integer(ad.display_seconds, 3, 300, 15),
     frequency_cap: integer(ad.frequency_cap, 0, 100, 3),
     frequency_window_hours: integer(ad.frequency_window_hours, 1, 720, 24),
+    display_format: ['auto', 'compact', 'cards', 'mosaic', 'spotlight', 'ticker'].includes(ad.display_format) ? ad.display_format : 'auto',
     max_clicks: integer(ad.max_clicks, 0, 10_000_000, 0),
     max_impressions: integer(ad.max_impressions, 0, 100_000_000, 0),
     daily_click_cap: integer(ad.daily_click_cap, 0, 1_000_000, 0),

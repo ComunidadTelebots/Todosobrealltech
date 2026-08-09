@@ -47,9 +47,13 @@ function CommunityCampaign({ ad, placement, className, style }) {
   const items = Array.isArray(ad.community_items) ? ad.community_items.filter((item) => item?.url) : [];
   if (!items.length) return null;
   const relationship = relationshipLabel(ad);
-  return <section className={`house-ad house-ad-community house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': ad.background, '--house-fg': ad.foreground, '--house-accent': ad.accent }} aria-label={`Comunidad recomendada: ${ad.title}`}>
+  const requestedFormat = ['compact', 'spotlight', 'cards', 'mosaic'].includes(ad.display_format) ? ad.display_format : 'auto';
+  const visibleItems = (requestedFormat === 'compact' || requestedFormat === 'spotlight' ? items.slice(0, 1) : items.slice(0, 4));
+  const layout = requestedFormat === 'compact' ? 'compact' : visibleItems.length === 1 ? 'single' : 'split';
+  const orientation = ['left', 'right'].includes(placement) ? 'vertical' : 'horizontal';
+  return <section className={`house-ad house-ad-community house-ad-community--${layout} house-ad-community--${orientation} house-ad-${placement} ${className}`} style={{ ...style, '--house-bg': ad.background, '--house-fg': ad.foreground, '--house-accent': ad.accent, '--community-columns': visibleItems.length }} aria-label={`Comunidad recomendada: ${ad.title}`}>
     <header><small className={`house-ad-relationship house-ad-relationship-${relationship.className}`}>{relationship.text}</small><strong>{ad.title}</strong></header>
-    <div className="house-ad-community-grid">{items.map((item) => <div key={item.id} className="house-ad-community-item"><a href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored">
+    <div className="house-ad-community-grid">{visibleItems.map((item) => <div key={item.id} className="house-ad-community-item"><a href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/click?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored">
       {item.image ? <img src={item.image} alt=""/> : <span className="house-ad-community-avatar">{String(item.title || 'T').slice(0, 1).toUpperCase()}</span>}
       <span><b>{item.title}</b><small>{item.type === 'channel' ? 'Canal' : 'Grupo'}</small></span>
     </a>{item.boost_url && <a className="house-ad-boost house-ad-boost-icon" href={`/hcgi/api/community-cards/${encodeURIComponent(ad.id)}/boost?placement=${encodeURIComponent(placement)}&site=${CAMPAIGN_SITE}&chat=${encodeURIComponent(item.id)}`} target="_blank" rel="noopener noreferrer sponsored" title={`Impulsar ${item.title}`} aria-label={`Impulsar ${item.title}`}>🚀</a>}</div>)}</div>

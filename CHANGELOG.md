@@ -1,5 +1,14 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.38 - 2026-08-09
+
+- Unifica las inserciones automáticas de portada, barra lateral y listado de NoticiasWeb3 con el catálogo general de campañas comunitarias; los bloques editoriales «Recomendado» quedan reservados al editor Lego.
+- Mantiene los anuncios laterales izquierdo y derecho visibles durante el desplazamiento, sin ocupar el contenido central y con adaptación para pantallas de poca altura.
+- Conserva los formatos no intrusivos existentes `auto`, `compact`, `mosaic`, `cards`, `spotlight` y `ticker` y valida el valor recibido en la API.
+- Permite mostrar un chat en cuadro compacto, un chat ocupando todo el slot o hasta cuatro chats repartidos en porciones iguales: cuadrícula 2×2 en vertical y división uniforme en horizontal.
+- Actualiza la vista previa del panel de campañas para representar la distribución real seleccionada antes de publicar.
+- Verificación: compilaciones de NoticiasWeb3 y TodoSobreAllTech completadas correctamente.
+
 ### 18.23.37 - 2026-08-09
 
 - Corrige el diseño de las campañas verticales izquierda y derecha de NoticiasWeb3: imagen, relación publicitaria, texto, llamada a la acción y enlace boost permanecen dentro del ancho lateral sin recortes.

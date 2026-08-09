@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import RecommendedBlock from '../components/RecommendedBlock.jsx';
+import AdSense from '../components/AdSense.jsx';
 
 export default function HomePage({ appPlatform = 'android', onPlatformChange = () => {}, siteVersion = '2014' }) {
   const isAndroid = appPlatform === 'android';
@@ -26,7 +26,7 @@ export default function HomePage({ appPlatform = 'android', onPlatformChange = (
         <p>&nbsp;- <Link to="/juegos-online">Juegos Online</Link></p>
         <p>&nbsp;- <Link to="/sube-imagenes">Sube tu imagen</Link></p>
 
-        <RecommendedBlock slot="home-after-content" />
+        <AdSense placement="inline" platform={appPlatform} houseOnly />
 
         {siteVersion === '2026' && <section className={`app-showcase ${isAndroid ? 'android-active' : isWindows ? 'windows-active' : 'ios-active'}`} aria-labelledby="nw3-app-title">
           <div className="app-copy">
