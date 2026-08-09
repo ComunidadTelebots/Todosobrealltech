@@ -1,6 +1,6 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-08-09T17:08:24.790Z",
+  "generated_at": "2026-08-09T17:47:20.098Z",
   "status": "in_progress",
   "implemented": 1857,
   "scaffolded": 328,
@@ -49,9 +49,7 @@
       "id": "task-ads-real-destination-context",
       "title": "Propagar chat, tipo y bot a la entrega publicitaria",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "El worker y la API entregan el contexto real del canal, grupo y bot para que la segmentación no dependa de valores genéricos.",
@@ -64,9 +62,7 @@
       "id": "task-ads-country-language",
       "title": "Segmentar campañas por país e idioma",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "La política normaliza inclusiones y exclusiones geográficas y lingüísticas, incluidas variantes regionales.",
@@ -80,9 +76,7 @@
       "id": "task-ads-timezone-schedule",
       "title": "Programar campañas por días, horario y zona IANA",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "El motor admite días concretos, franjas normales o nocturnas y zonas horarias IANA verificadas.",
@@ -96,9 +90,7 @@
       "id": "task-ads-destination-exclusions",
       "title": "Excluir canales, grupos, países e idiomas",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Las exclusiones tienen prioridad sobre las inclusiones y se configuran desde el panel master.",
@@ -111,9 +103,7 @@
       "id": "task-ads-frequency-window",
       "title": "Limitar frecuencia global por usuario y ventana",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "La API aplica el límite con cookie HttpOnly o identificador interno convertido en huella, sin guardar la identidad original.",
@@ -127,9 +117,7 @@
       "id": "task-ads-content-rules",
       "title": "Segmentar anuncios según contexto del contenido",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Categorías, palabras requeridas y términos excluidos deciden la entrega con normalización y límites.",
@@ -143,9 +131,7 @@
       "id": "task-ads-budgets-goals",
       "title": "Detener campañas por límites diarios y objetivos",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Los límites de clics e impresiones diarios y totales frenan automáticamente campañas que alcanzan su objetivo.",
@@ -158,9 +144,7 @@
       "id": "task-ads-surface-preview",
       "title": "Previsualizar campañas por superficie",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "El editor representa cada campaña en web, canal, Telegram React y Hub antes de guardarla.",
@@ -172,9 +156,7 @@
       "id": "task-ads-chat-metrics",
       "title": "Desglosar métricas por ubicación, país, chat y bot",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "La entrega y los clics transmiten chat y bot al backend y el panel mantiene el análisis temporal, geográfico y por ubicación.",
@@ -188,9 +170,7 @@
       "id": "task-ads-master-audit",
       "title": "Auditar las operaciones publicitarias del master",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Un registro persistente y reducido conserva actor, acción y resumen antes/después sin copiar destinos sensibles.",
@@ -205,9 +185,7 @@
       "id": "task-ads-destination-health",
       "title": "Comprobar acceso del bot a destinos publicitarios",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "El panel consulta Moonbot para identificar chats válidos y destinos donde el bot ya no está presente.",
@@ -220,9 +198,7 @@
       "id": "task-ads-disclosure",
       "title": "Mostrar transparencia publicitaria por relación",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Cada entrega declara si es oficial, comunitaria, afiliada o Inside Ads mediante una etiqueta normalizada.",
@@ -236,9 +212,7 @@
       "id": "task-ads-inside-isolation",
       "title": "Aislar permisos y destinos de Inside Ads",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Los presets se resuelven en servidor por superficie, solo el creator los administra y la respuesta pública omite campos internos.",
@@ -253,9 +227,7 @@
       "id": "task-ads-ab-testing",
       "title": "Ejecutar pruebas A/B estables de campañas",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "Hasta cuatro variantes ponderadas se asignan de forma estable al visitante tras normalizar sus campos.",
@@ -269,9 +241,7 @@
       "id": "task-ads-antifraud",
       "title": "Detectar y limitar clics publicitarios abusivos",
       "products": [
-        "web",
-        "moonbot",
-        "webapp"
+        "web"
       ],
       "status": "implemented",
       "detail": "La API utiliza huellas HMAC, ventana antiabuso, Retry-After y deduplicación de reportes sin almacenar direcciones IP.",
@@ -279,6 +249,47 @@
         "apps/api/src/utils/houseAdsAntiFraud.js",
         "apps/api/src/routes/house-ads.js",
         "apps/api/test/houseAdsAntiFraud.test.js"
+      ]
+    },
+    {
+      "id": "task-nw3-vertical-campaign-layout",
+      "title": "Adaptar campañas verticales de NoticiasWeb3",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Los anuncios laterales izquierdo y derecho reorganizan imagen, etiqueta, texto, llamada a la acción y boost dentro de 160 píxeles, evitando recortes sin alterar el banner horizontal.",
+      "evidence": [
+        "apps/noticiasweb3/src/components/AdSense.jsx",
+        "apps/noticiasweb3/src/index.css"
+      ]
+    },
+    {
+      "id": "task-proxy-community-side-rails",
+      "title": "Mostrar campañas comunitarias laterales en Proxy",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Proxy incorpora ubicaciones independientes a izquierda y derecha en pantallas anchas, con diseño vertical, caché por placement y medición diferenciada.",
+      "evidence": [
+        "apps/proxy/src/main.jsx",
+        "apps/proxy/src/styles.css",
+        "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-proxy-community-feed-inserts",
+      "title": "Intercalar campañas comunitarias entre proxies",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "El directorio introduce una campaña horizontal cada seis proxies, conserva la cuadrícula responsive y registra clics e impresiones bajo la ubicación inline.",
+      "evidence": [
+        "apps/proxy/src/main.jsx",
+        "apps/proxy/src/styles.css",
+        "apps/api/src/routes/house-ads.js"
       ]
     },
     {
@@ -116301,6 +116312,6 @@
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-08-09T17:08:24.790Z"
+    "verified_at": "2026-08-09T17:47:20.098Z"
   }
 }
