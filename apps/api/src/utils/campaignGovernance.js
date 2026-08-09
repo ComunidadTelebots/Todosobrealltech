@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 
 const STORE = process.env.CAMPAIGN_GOVERNANCE_FILE || '/data/campaign-governance.json';
-const ACTIONS = new Set(['note', 'assign', 'due_date', 'tags', 'checklist', 'saved_view', 'snapshot', 'watch']);
+const ACTIONS = new Set(['note', 'note_edit', 'note_remove', 'assign', 'due_date', 'tags', 'checklist', 'checklist_remove', 'saved_view', 'snapshot', 'watch']);
 const clean = (value, limit = 200) => String(value || '').replace(/[\r\n\t]+/g, ' ').replace(/[<>]/g, '').trim().slice(0, limit);
 const RESERVED_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
 const id = (value) => {
@@ -18,6 +18,9 @@ export function normalizeGovernanceAction(input = {}) {
   if (!campaignId && !['saved_view'].includes(action)) throw new TypeError('Campaña no válida');
   const payload = { action, campaign_id: campaignId };
   if (action === 'note') payload.text = clean(input.text, 800);
+  if (action === 'note_edit') { payload.item_id = id(input.item_id); payload.text = clean(input.text, 800); }
+  if (['note_remove', 'checklist_remove'].includes(action)) payload.item_id = id(input.item_id);
+  if (['note_edit', 'note_remove', 'checklist_remove'].includes(action) && !payload.item_id) throw new TypeError('Elemento de gobernanza no válido');
   if (action === 'assign') payload.assignee = clean(input.assignee, 80);
   if (action === 'due_date') payload.due_at = input.due_at && Number.isFinite(Date.parse(input.due_at)) ? new Date(input.due_at).toISOString() : '';
   if (action === 'tags') payload.tags = [...new Set((Array.isArray(input.tags) ? input.tags : []).map((item) => clean(item, 32).toLowerCase()).filter(Boolean))].slice(0, 20);
@@ -44,6 +47,12 @@ export function applyGovernanceAction(state = {}, input, actor = {}) {
   current.snapshots = Array.isArray(current.snapshots) ? current.snapshots : [];
   current.watchers = Array.isArray(current.watchers) ? current.watchers : [];
   if (action.action === 'note' && action.text) { current.notes.unshift({ id: crypto.randomUUID(), text: action.text, actor_id: clean(actor.id, 80), created_at: new Date().toISOString() }); current.notes = current.notes.slice(0, 100); }
+  if (action.action === 'note_edit' && action.item_id && action.text) {
+    const note = current.notes.find((item) => item?.id === action.item_id);
+    if (!note) throw new RangeError('Nota no encontrada');
+    note.text = action.text; note.edited_by = clean(actor.id, 80); note.edited_at = new Date().toISOString();
+  }
+  if (action.action === 'note_remove') current.notes = current.notes.filter((item) => item?.id !== action.item_id);
   if (action.action === 'assign') current.assignee = action.assignee;
   if (action.action === 'due_date') current.due_at = action.due_at;
   if (action.action === 'tags') current.tags = action.tags;
@@ -52,6 +61,7 @@ export function applyGovernanceAction(state = {}, input, actor = {}) {
     if (found) found.completed = action.completed; else current.checklist.push({ id: crypto.randomUUID(), text: action.item, completed: action.completed });
     current.checklist = current.checklist.slice(0, 50);
   }
+  if (action.action === 'checklist_remove') current.checklist = current.checklist.filter((item) => item?.id !== action.item_id);
   if (action.action === 'snapshot') { current.snapshots.unshift({ id: crypto.randomUUID(), summary: action.summary, actor_id: clean(actor.id, 80), created_at: new Date().toISOString() }); current.snapshots = current.snapshots.slice(0, 30); }
   if (action.action === 'watch') { const actorId = clean(actor.id, 80); current.watchers = action.enabled ? [...new Set([...current.watchers, actorId])].slice(0, 100) : current.watchers.filter((item) => item !== actorId); }
   current.updated_at = new Date().toISOString();

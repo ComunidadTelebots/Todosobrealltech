@@ -223,6 +223,7 @@ const implementedEvidence = new Map([
   ['future-1216', ['apps/api/src/utils/newsSeoAudit.js', 'apps/api/src/routes/noticias-seo-audit.js', 'apps/web/src/components/NewsSeoAuditPanel.jsx']],
   ['future-1230', ['apps/api/src/utils/newsSeoAudit.js', 'apps/api/src/routes/noticias-seo-audit.js', 'apps/web/src/components/NewsSeoAuditPanel.jsx']],
 ]);
+const partialEvidence = new Map();
 
 // Contratos operativos publicados en Moonbot y accesibles desde el centro master.
 // Se enumeran por los rangos realmente probados; no se infiere implementación por título.
@@ -256,16 +257,32 @@ for (const number of verifiedWebappIds) {
     'moon-multibot:tests/test_feature_runtime.py',
   ]);
 }
-for (let number = 3002; number <= 5159; number += 3) {
+for (let number = 3002; number <= 5039; number += 3) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
     'moon-multibot:core/feature_runtime.py',
     'moon-multibot:tests/test_feature_runtime.py',
     'moon-multibot:core/routes_public.py',
   ]);
 }
+// El lote 5042..5159 tiene contratos y pruebas por ID, pero sus propios
+// manifiestos declaran que falta la integración y devuelven executed=false.
+// Se conserva la evidencia del trabajo parcial sin contarlo como terminado.
+for (let number = 5042; number <= 5159; number += 3) {
+  partialEvidence.set(`future-${String(number).padStart(4, '0')}`, [
+    'moon-multibot:resource_localization_easy_voice_grouped_manifest.py',
+    'moon-multibot:resource_localization_easy_reading_engines.py',
+    'moon-multibot:resource_voice_grouped_notification_engines.py',
+    'moon-multibot:tests/test_resource_localization_easy_voice_grouped.py',
+  ]);
+}
 const trackedTasks = [
   { id: 'task-master-interface-parity', title: 'Equiparar las funciones del master entre TodoSobreAllTech y el Hub', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.', evidence: ['apps/web/src/components/CreatorAccountProxyManager.jsx', 'apps/web/src/components/AccountInteroperableConnector.jsx', 'moon-multibot:web/hub.html'] },
   { id: 'task-community-ads-main', title: 'Mostrar campañas comunitarias de Telegram en todosobreall.tech', products: ['web'], status: 'implemented', detail: 'La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.', evidence: ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js'] },
+  ...[
+    ['task-campaign-note-editing', 'Edición trazable de notas internas de campañas', 'Los administradores pueden corregir una nota y el motor conserva quién y cuándo la editó.'],
+    ['task-campaign-note-removal', 'Eliminación restringida de notas de campañas', 'Solo el creator puede retirar notas mediante identificadores validados en servidor.'],
+    ['task-campaign-checklist-removal', 'Retirada de tareas obsoletas de aprobación', 'Solo el creator puede eliminar tareas del checklist sin afectar las demás revisiones.'],
+  ].map(([id, title, detail]) => ({ id, title, products: ['web'], status: 'implemented', detail, evidence: ['apps/api/src/utils/campaignGovernance.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/CampaignGovernancePanel.jsx', 'apps/api/test/campaignGovernance.test.js'] })),
   ...[
     ['task-campaign-review-notes', 'Notas internas de revisión de campañas'],
     ['task-campaign-assignees', 'Responsables de revisión por campaña'],
@@ -301,14 +318,16 @@ const trackedTasks = [
   { id: 'task-global-quiet-hours', title: 'Políticas globales de horario silencioso por grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Motor, persistencia canónica, migración heredada, aplazamiento de acciones, rutas y controles del Hub integrados y probados.', evidence: ['moon-multibot:quiet_hours_policy.py', 'moon-multibot:group_suite.py', 'moon-multibot:group_rss.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_integrated_quiet_reminders.py'] },
   { id: 'task-persistent-reminders', title: 'Recordatorios persistentes con recurrencia y zona horaria', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Almacén persistente, recurrencia, zona horaria, entrega idempotente, posponer/cancelar, API y controles del Hub integrados.', evidence: ['moon-multibot:plugins/reminder_store.py', 'moon-multibot:community_members.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_integrated_quiet_reminders.py'] },
   { id: 'task-secure-voice-transcription', title: 'Transcripción segura y consentida de notas de voz', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Flujo real Telegram/OpenAI con consentimiento por grupo, límites, descarga segura, borrado temporal y controles del Hub.', evidence: ['moon-multibot:voice_transcription_pipeline.py', 'moon-multibot:voice_transcription_service.py', 'moon-multibot:moon_multibot.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_voice_transcription_service.py'] },
-  ...[
-    ['task-personal-tasks', 'Tareas personales por usuario y grupo'], ['task-shared-notes', 'Notas compartidas por grupo'],
-    ['task-local-group-digest', 'Resumen local y privado del grupo'], ['task-wayback-history', 'Consulta segura de historial Wayback'],
-    ['task-managed-task-queue', 'Cola de tareas priorizable y cancelable'], ['task-url-domain-inspector', 'Inspector de URLs y dominios'],
-    ['task-named-blocklists', 'Listas de bloqueo independientes con nombre'],
-  ].map(([id, title]) => ({ id, title, products: ['moonbot', 'webapp'], status: 'not_implemented', detail: 'Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.', evidence: [] })),
+  { id: 'task-personal-tasks', title: 'Tareas personales por usuario y grupo', products: ['moonbot', 'webapp'], status: 'not_implemented', detail: 'Existe la lista privada por usuario, pero falta vincular cada tarea a un grupo autorizado para cumplir el contrato completo.', evidence: ['moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-shared-notes', title: 'Notas compartidas por grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'El espacio de trabajo exige autorización contextual del grupo, limita y persiste notas compartidas y ofrece su administración en el Hub.', evidence: ['moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-local-group-digest', title: 'Resumen local y privado del grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'El resumen procesa localmente el historial conservado del grupo y devuelve actividad, medios y participantes principales sin enviarlo a terceros.', evidence: ['moon-multibot:plugins/group_digest.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-wayback-history', title: 'Consulta segura de historial Wayback', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Moonbot integra el cliente Wayback y los comandos /wayback, /archivo y /archive con URL y fecha opcional.', evidence: ['moon-multibot:core/wayback.py', 'moon-multibot:moon_multibot.py'] },
+  { id: 'task-managed-task-queue', title: 'Cola de tareas priorizable y cancelable', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'La cola persistente de Moonbot expone estado, priorización y cancelación mediante rutas autenticadas y controles del Hub.', evidence: ['moon-multibot:core/task_queue.py', 'moon-multibot:core/routes_queue.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-named-blocklists', title: 'Listas de bloqueo independientes con nombre', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'El gestor mantiene listas independientes con nombre, alcance global o por grupo y estado activo, separadas de CAS y de los bloqueos locales.', evidence: ['moon-multibot:ban_manager.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-url-domain-inspector', title: 'Inspector de URLs y dominios', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'Moonbot inspecciona localmente la estructura sin conectar con el destino y TodoSobreAllTech ofrece un proxy autenticado y una interfaz de resultados en Seguridad.', evidence: ['moon-multibot:plugins/url_tools.py', 'moon-multibot:core/routes_public.py', 'apps/api/src/utils/moonbotSecurityProxy.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/MoonbotSecurityCenter.jsx', 'apps/api/test/moonbotSecurityProxy.test.js'] },
 ];
 const implemented = new Set(implementedEvidence.keys());
+const partial = new Set(partialEvidence.keys());
 const items = [];
 for (const product of products) {
   let index = 0;
@@ -409,7 +428,9 @@ for (const operation of expansionOperations) {
       priority: ['security', 'privacy', 'resilience'].includes(category) ? 'critical' : 'high',
       difficulty: difficultyCycle[expansionIndex % difficultyCycle.length],
       dependency: `${category} contract v1`,
-      status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'proposed',
+      status: implemented.has(`future-${String(number).padStart(4, '0')}`)
+        ? 'implemented'
+        : partial.has(`future-${String(number).padStart(4, '0')}`) ? 'scaffolded' : 'proposed',
     });
     expansionIndex += 1;
   }
@@ -435,7 +456,7 @@ for (const item of catalog.items) {
   for (const key of ['product_name', 'capability', 'context', 'title', 'description', 'dependency']) {
     item[key] = cleanText(item[key]);
   }
-  item.evidence = implementedEvidence.get(item.id) || [];
+  item.evidence = implementedEvidence.get(item.id) || partialEvidence.get(item.id) || [];
   item.completion_state = item.status === 'implemented'
     ? 'implemented'
     : item.status === 'scaffolded' ? 'partial' : 'not_implemented';

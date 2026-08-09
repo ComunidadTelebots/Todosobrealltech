@@ -1,5 +1,21 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.47 - 2026-08-09
+
+- Integra el inspector estructural de URL y dominio de Moonbot en el Centro de seguridad web sin duplicar su motor.
+- Añade un proxy autenticado para administradores y `creator` que usa exclusivamente la URL interna de Moonbot y su clave administrativa; el navegador no recibe esa clave ni puede elegir el servidor de destino.
+- Muestra host, esquema, puerto, parámetros, URL normalizada y señales estructurales sin visitar el enlace ni realizar peticiones al dominio analizado.
+- Limita las entradas a 2.048 caracteres, elimina campos ajenos al contrato y rechaza caracteres de control antes de enviarlas a Moonbot.
+- Verificación: pruebas del proxy seguro, comprobación de sintaxis, evidencia del roadmap y compilación de producción de la interfaz.
+
+### 18.23.46 - 2026-08-09
+
+- Completa el mantenimiento de notas internas de campañas: los administradores pueden corregir su contenido desde el mismo panel y queda registrada la identidad y fecha de edición.
+- Permite al `creator` eliminar notas internas y retirar tareas obsoletas de la lista de aprobación, sin conceder esas acciones destructivas a administradores web.
+- Añade controles compactos de edición y retirada reutilizando los componentes y estilos existentes del gestor de campañas.
+- Valida en servidor los identificadores opacos de cada elemento y rechaza rutas, claves reservadas o referencias malformadas.
+- Verificación: pruebas unitarias del ciclo de vida, comprobación de sintaxis y compilación de la interfaz.
+
 ### 18.23.45 - 2026-08-09
 
 - Añade un espacio de gobernanza dentro del panel de campañas sin alterar su diseño ni el flujo de entrega existente.

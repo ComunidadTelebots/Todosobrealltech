@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-08-09T21:07:26.930Z",
+  "generated_at": "2026-08-09T21:49:06.911Z",
   "status": "in_progress",
-  "implemented": 1856,
-  "scaffolded": 328,
+  "implemented": 1816,
+  "scaffolded": 368,
   "specified": 546,
   "proposed": 3270,
-  "remaining_real": 4144,
-  "verified_percent": 30.93,
+  "remaining_real": 4184,
+  "verified_percent": 30.27,
   "totals": {
     "web": 2004,
     "moonbot": 1998,
@@ -43,6 +43,51 @@
         "apps/web/src/components/CommunityCampaignSlot.jsx",
         "apps/web/src/pages/HomePage.jsx",
         "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-campaign-note-editing",
+      "title": "Edición trazable de notas internas de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Los administradores pueden corregir una nota y el motor conserva quién y cuándo la editó.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-note-removal",
+      "title": "Eliminación restringida de notas de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Solo el creator puede retirar notas mediante identificadores validados en servidor.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-checklist-removal",
+      "title": "Retirada de tareas obsoletas de aprobación",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Solo el creator puede eliminar tareas del checklist sin afectar las demás revisiones.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
       ]
     },
     {
@@ -501,8 +546,11 @@
         "webapp"
       ],
       "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "detail": "Existe la lista privada por usuario, pero falta vincular cada tarea a un grupo autorizado para cumplir el contrato completo.",
+      "evidence": [
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-shared-notes",
@@ -511,9 +559,12 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "El espacio de trabajo exige autorización contextual del grupo, limita y persiste notas compartidas y ofrece su administración en el Hub.",
+      "evidence": [
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-local-group-digest",
@@ -522,9 +573,13 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "El resumen procesa localmente el historial conservado del grupo y devuelve actividad, medios y participantes principales sin enviarlo a terceros.",
+      "evidence": [
+        "moon-multibot:plugins/group_digest.py",
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-wayback-history",
@@ -533,9 +588,12 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "Moonbot integra el cliente Wayback y los comandos /wayback, /archivo y /archive con URL y fecha opcional.",
+      "evidence": [
+        "moon-multibot:core/wayback.py",
+        "moon-multibot:moon_multibot.py"
+      ]
     },
     {
       "id": "task-managed-task-queue",
@@ -544,20 +602,13 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
-    },
-    {
-      "id": "task-url-domain-inspector",
-      "title": "Inspector de URLs y dominios",
-      "products": [
-        "moonbot",
-        "webapp"
-      ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "La cola persistente de Moonbot expone estado, priorización y cancelación mediante rutas autenticadas y controles del Hub.",
+      "evidence": [
+        "moon-multibot:core/task_queue.py",
+        "moon-multibot:core/routes_queue.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-named-blocklists",
@@ -566,9 +617,32 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "El gestor mantiene listas independientes con nombre, alcance global o por grupo y estado activo, separadas de CAS y de los bloqueos locales.",
+      "evidence": [
+        "moon-multibot:ban_manager.py",
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
+    },
+    {
+      "id": "task-url-domain-inspector",
+      "title": "Inspector de URLs y dominios",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Moonbot inspecciona localmente la estructura sin conectar con el destino y TodoSobreAllTech ofrece un proxy autenticado y una interfaz de resultados en Seguridad.",
+      "evidence": [
+        "moon-multibot:plugins/url_tools.py",
+        "moon-multibot:core/routes_public.py",
+        "apps/api/src/utils/moonbotSecurityProxy.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotSecurityCenter.jsx",
+        "apps/api/test/moonbotSecurityProxy.test.js"
+      ]
     }
   ],
   "items": [
@@ -98083,13 +98157,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ux contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5043",
@@ -98144,13 +98219,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5046",
@@ -98205,13 +98281,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5049",
@@ -98266,13 +98343,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5052",
@@ -98327,13 +98405,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5055",
@@ -98388,13 +98467,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5058",
@@ -98449,13 +98529,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "planning contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5061",
@@ -98510,13 +98591,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "accessibility contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5064",
@@ -98571,13 +98653,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5067",
@@ -98632,13 +98715,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5070",
@@ -98693,13 +98777,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5073",
@@ -98754,13 +98839,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5076",
@@ -98815,13 +98901,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5079",
@@ -98876,13 +98963,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5082",
@@ -98937,13 +99025,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5085",
@@ -98998,13 +99087,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5088",
@@ -99059,13 +99149,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5091",
@@ -99120,13 +99211,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5094",
@@ -99181,13 +99273,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5097",
@@ -99242,13 +99335,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5100",
@@ -99303,13 +99397,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5103",
@@ -99364,13 +99459,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "moderation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5106",
@@ -99425,13 +99521,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5109",
@@ -99486,13 +99583,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5112",
@@ -99547,13 +99645,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5115",
@@ -99608,13 +99707,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5118",
@@ -99669,13 +99769,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5121",
@@ -99730,13 +99831,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "integrations contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5124",
@@ -99791,13 +99893,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5127",
@@ -99852,13 +99955,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5130",
@@ -99913,13 +100017,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "accessibility contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5133",
@@ -99974,13 +100079,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5136",
@@ -100035,13 +100141,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5139",
@@ -100096,13 +100203,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ux contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5142",
@@ -100157,13 +100265,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5145",
@@ -100218,13 +100327,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5148",
@@ -100279,13 +100389,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "operations contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5151",
@@ -100340,13 +100451,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "identity contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5154",
@@ -100401,13 +100513,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5157",
@@ -100462,13 +100575,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "planning contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5160",
@@ -116451,8 +116565,8 @@
     }
   ],
   "completion": {
-    "implemented": 1856,
-    "partial": 328,
+    "implemented": 1816,
+    "partial": 368,
     "not_implemented": 3816
   },
   "data_quality": {
@@ -116460,6 +116574,6 @@
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-08-09T21:07:26.930Z"
+    "verified_at": "2026-08-09T21:49:06.911Z"
   }
 }

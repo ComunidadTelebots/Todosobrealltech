@@ -380,7 +380,8 @@ router.get('/governance', async (req, res) => {
 router.post('/governance', async (req, res) => {
   const auth = await authorizeAdminOrCreator(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
-  if (['saved_view', 'snapshot'].includes(String(req.body?.action)) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Esta operación requiere el rol creator' });
+  const creatorActions = new Set(['saved_view', 'snapshot', 'note_remove', 'checklist_remove']);
+  if (creatorActions.has(String(req.body?.action)) && auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Esta operación requiere el rol creator' });
   try {
     const state = applyGovernanceAction(await readCampaignGovernance(), req.body, auth.user);
     await writeCampaignGovernance(state);

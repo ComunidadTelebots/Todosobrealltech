@@ -50,3 +50,18 @@ test('acota crecimiento y repara arrays persistidos malformados', () => {
   const campaigns = Object.fromEntries(Array.from({ length: 1000 }, (_, index) => [`ad-${index}`, {}]));
   assert.throws(() => applyGovernanceAction({ campaigns }, { action: 'note', campaign_id: 'overflow', text: 'x' }, { id: 'admin' }), /mite/);
 });
+
+test('mantiene el ciclo de vida de notas y tareas con identificadores opacos', () => {
+  let state = applyGovernanceAction({}, { action: 'note', campaign_id: 'ad-1', text: 'Texto inicial' }, { id: 'admin' });
+  const noteId = state.campaigns['ad-1'].notes[0].id;
+  state = applyGovernanceAction(state, { action: 'note_edit', campaign_id: 'ad-1', item_id: noteId, text: 'Texto revisado' }, { id: 'admin-2' });
+  assert.equal(state.campaigns['ad-1'].notes[0].text, 'Texto revisado');
+  assert.equal(state.campaigns['ad-1'].notes[0].edited_by, 'admin-2');
+  state = applyGovernanceAction(state, { action: 'checklist', campaign_id: 'ad-1', item: 'Revisar URL' }, { id: 'admin' });
+  const taskId = state.campaigns['ad-1'].checklist[0].id;
+  state = applyGovernanceAction(state, { action: 'checklist_remove', campaign_id: 'ad-1', item_id: taskId }, { id: 'creator' });
+  state = applyGovernanceAction(state, { action: 'note_remove', campaign_id: 'ad-1', item_id: noteId }, { id: 'creator' });
+  assert.equal(state.campaigns['ad-1'].notes.length, 0);
+  assert.equal(state.campaigns['ad-1'].checklist.length, 0);
+  assert.throws(() => normalizeGovernanceAction({ action: 'note_remove', campaign_id: 'ad-1', item_id: '../x' }), /Elemento/);
+});

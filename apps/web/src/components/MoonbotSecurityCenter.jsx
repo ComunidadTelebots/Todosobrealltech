@@ -82,6 +82,8 @@ const MoonbotSecurityCenter = () => {
   const [incidentGroups, setIncidentGroups] = useState('');
   const [incidentWindow, setIncidentWindow] = useState(30);
   const [result, setResult] = useState(null);
+  const [inspectionValue, setInspectionValue] = useState('');
+  const [inspectionResult, setInspectionResult] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [policy, setPolicy] = useState({
@@ -206,6 +208,14 @@ const MoonbotSecurityCenter = () => {
     });
   };
 
+  const inspectUrl = async () => {
+    setBusy(true); setError(''); setInspectionResult(null);
+    try {
+      const payload = await call('/moonbot-admin/security/url-inspect', { method: 'POST', body: JSON.stringify({ value: inspectionValue }) });
+      setInspectionResult(payload.inspection || null);
+    } catch (cause) { setError(cause.message); } finally { setBusy(false); }
+  };
+
   return (
     <Card className="mt-8 border-amber-500/20">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
@@ -253,6 +263,13 @@ const MoonbotSecurityCenter = () => {
             </div>
           </>
         )}
+
+        <section className="rounded-xl border p-4">
+          <h3 className="mb-2 flex items-center gap-2 font-semibold"><Radar className="h-4 w-4" />Inspector local de URL y dominio</h3>
+          <p className="mb-3 text-sm text-muted-foreground">Revisa formato, credenciales, cifrado, acortadores, puertos y parámetros sensibles sin abrir la dirección ni realizar conexiones de red.</p>
+          <div className="flex gap-2"><Input type="url" value={inspectionValue} onChange={(event) => setInspectionValue(event.target.value)} placeholder="https://example.com/ruta"/><Button disabled={busy || !inspectionValue.trim()} onClick={inspectUrl}>Inspeccionar</Button></div>
+          {inspectionResult && <div className={`mt-3 rounded-lg border p-3 text-sm ${inspectionResult.signals?.length ? 'border-amber-500/30 bg-amber-500/10' : 'border-emerald-500/30 bg-emerald-500/10'}`}><div className="flex flex-wrap items-center gap-2"><Badge variant={inspectionResult.safe_to_fetch ? 'outline' : 'destructive'}>{inspectionResult.signals?.length ? 'Revisar señales' : 'Sin señales estructurales'}</Badge><strong>{inspectionResult.host}</strong><Badge variant="outline">Análisis local</Badge></div>{inspectionResult.normalized && <p className="mt-2 break-all text-xs text-muted-foreground">{inspectionResult.normalized}</p>}<p className="mt-2 text-xs text-muted-foreground">{inspectionResult.scheme?.toUpperCase()} · puerto {inspectionResult.port || 'predeterminado'} · {inspectionResult.query_parameters || 0} parámetros</p><div className="mt-2 flex flex-wrap gap-1">{(inspectionResult.signals || []).map((signal) => <Badge key={signal} variant="outline">{signal}</Badge>)}</div></div>}
+        </section>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-xl border p-4">

@@ -30,6 +30,7 @@ import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
 import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashAdminInviteToken,
   normalizeGroupDelegation, normalizeTelegramClaim, normalizeWebAdminProfile, publicAdminInvite, WEB_ADMIN_PROFILES, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
 import { requestMoonbot } from '../utils/moonbotConnection.js';
+import { sanitizeUrlInspectionRequest } from '../utils/moonbotSecurityProxy.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
@@ -1384,15 +1385,27 @@ router.all('/security', async (req, res) => {
     const response = await moonRequest('/api/internal/security', {
       method: req.method,
       body: req.method === 'POST'
-        ? JSON.stringify(
-          req.body?.action === 'set_image_policy' ? sanitizeImagePolicy(req.body || {}) : (req.body || {}),
-        )
+        ? JSON.stringify(req.body?.action === 'set_image_policy' ? sanitizeImagePolicy(req.body || {}) : (req.body || {}))
         : undefined,
     });
     return res.status(response.status).json(await response.json());
   } catch (error) {
     logger.warn(`[moonbot-security] ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudo consultar el centro de seguridad' });
+  }
+});
+
+router.post('/security/url-inspect', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  try {
+    const body = sanitizeUrlInspectionRequest(req.body || {});
+    const response = await moonRequest('/api/internal/security/url-inspect', { method: 'POST', body: JSON.stringify(body) });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    const invalidInput = error instanceof TypeError;
+    if (!invalidInput) logger.warn(`[moonbot-url-inspect] ${error.message}`);
+    return res.status(invalidInput ? 400 : 502).json({ ok: false, error: invalidInput ? error.message : 'No se pudo inspeccionar la URL' });
   }
 });
 
