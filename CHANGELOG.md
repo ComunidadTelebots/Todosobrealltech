@@ -1,5 +1,24 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.36 - 2026-08-09
+
+- Propaga `chat_id`, `chat_type` y `bot_id` desde el worker y los consumidores internos para aplicar la segmentación sobre el destino real, no sobre una campaña genérica.
+- Añade segmentación inclusiva y exclusiva por país e idioma, con códigos normalizados y coincidencia segura de variantes regionales.
+- Incorpora días, franjas horarias que pueden cruzar medianoche y zonas horarias IANA para programar cada campaña.
+- Permite incluir o excluir canales y grupos concretos; las exclusiones prevalecen y el panel master comprueba si Moonbot conserva acceso al destino.
+- Centraliza el límite de frecuencia por usuario y ventana temporal; los identificadores internos se reducen a huellas criptográficas y la web utiliza una cookie `HttpOnly`.
+- Segmenta por categoría y palabras del artículo o mensaje, con términos requeridos y exclusiones de contenido prioritarias.
+- Añade límites diarios de clics e impresiones, objetivos totales y finalización automática cuando se alcanza el presupuesto de entrega.
+- Incorpora una vista previa por superficie para web, móvil, canal, Telegram React y Hub sin modificar el diseño público existente.
+- Registra métricas con país, ubicación, chat y bot, conservando el desglose temporal disponible en el panel analítico.
+- Añade una auditoría exclusiva del creator para altas, ediciones, aprobación, pausa, duplicado, eliminación y reinicio de métricas.
+- Verifica desde Moonbot que los canales y grupos seleccionados existen y que el bot continúa presente antes de activar la entrega.
+- Etiqueta de forma visible contenido oficial, campaña comunitaria, afiliado e Inside Ads; los datos privados de los presets se eliminan de las respuestas públicas.
+- Separa los presets y destinos de Inside Ads del resto de campañas, con selección server-side según superficie y permisos exclusivos del creator.
+- Añade pruebas A/B con asignación estable por visitante y variantes limitadas y normalizadas.
+- Refuerza los clics con huella HMAC, límite antiabuso, `Retry-After`, deduplicación de reportes y redirecciones HTTPS validadas.
+- Verificación: pruebas de políticas, auditoría, seguridad pública, antifraude e Inside Ads superadas; API y worker válidos y compilación Vite completa.
+
 ### 18.23.35 - 2026-08-06
 
 - Actualiza el roadmap de Telegram React a `0.0.652` con un centro de apariencia navegable.

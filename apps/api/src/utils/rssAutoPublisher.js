@@ -864,9 +864,16 @@ function formatTelegramBackfillRichMarkdown(originalText, slug, categoria, hasht
   return [news, preservedAd ? '---' : '', preservedAd].filter(Boolean).join('\n\n');
 }
 
-async function loadTelegramHouseAd(now = Date.now()) {
+async function loadTelegramHouseAd({ now = Date.now(), chatId = '', chatType = 'channel', language = '' } = {}) {
   try {
-    const response = await fetch(HOUSE_ADS_INTERNAL_URL, { signal: AbortSignal.timeout(HOUSE_ADS_TIMEOUT_MS) });
+    const url = new URL(HOUSE_ADS_INTERNAL_URL);
+    if (chatId) url.searchParams.set('chat_id', String(chatId));
+    if (chatType) url.searchParams.set('chat_type', String(chatType));
+    if (language) url.searchParams.set('language', String(language));
+    const response = await fetch(url, {
+      headers: process.env.MOON_ADMIN_API_KEY ? { 'X-Moon-Admin-Key': process.env.MOON_ADMIN_API_KEY } : {},
+      signal: AbortSignal.timeout(HOUSE_ADS_TIMEOUT_MS),
+    });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (data?.ads?.[0]?.id && data.ads[0].title) return data.ads[0];
@@ -876,6 +883,20 @@ async function loadTelegramHouseAd(now = Date.now()) {
     logger.warn(`[rssAutoPublisher] Campañas internas no disponibles; se usa la rotación oficial: ${error.message}`);
     return OFFICIAL_ADS[index];
   }
+}
+
+const publishChatIds = new Map();
+async function resolvePublishChatId(chat) {
+  const raw = String(chat || '').trim();
+  if (/^-?\d{5,24}$/.test(raw)) return raw;
+  if (!raw || !tokenForPublishChannel(raw)) return raw;
+  if (publishChatIds.has(raw)) return publishChatIds.get(raw);
+  try {
+    const result = await telegramApi('getChat', { chat_id: raw }, TELEGRAM_MAX_RETRIES, tokenForPublishChannel(raw));
+    const id = String(result?.result?.id || '');
+    if (id) publishChatIds.set(raw, id);
+    return id || raw;
+  } catch { return raw; }
 }
 
 // RSSHub permite recuperar el texto que Inside Ads añade al post. Lo separamos
@@ -1086,7 +1107,9 @@ async function publishToTelegram(article, slug, selectedHouseAd, publishChannel 
   const header = `📰 ${escapeHtml(article.titulo)}`;
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
   const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
-  const houseAd = selectedHouseAd || await loadTelegramHouseAd();
+  // La API necesita el destino real para aplicar inclusiones y exclusiones.
+  // No reutilizamos una campaña genérica entre canales distintos.
+  const houseAd = await loadTelegramHouseAd({ chatId: await resolvePublishChatId(publishChannel), chatType: 'channel' }) || selectedHouseAd;
   const houseAdBlock = formatTelegramHouseAd(houseAd);
   const richMarkdown = formatTelegramNewsRichMarkdown(article, slug, houseAd);
   const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 <a href="${ivUrl}">Leer en NoticiasWeb3</a>${houseAdBlock ? `\n\n${houseAdBlock}` : ''}`;
@@ -1351,7 +1374,7 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
       .flatMap((result) => (result.status === 'fulfilled' ? result.value : []))
       .filter((item) => item.telegramUrl && item.telegramOriginalText)
       .map((item) => [item.telegramUrl, item]));
-    const telegramHouseAd = await loadTelegramHouseAd();
+    let telegramHouseAd = null;
 
     let edited = 0;
     let failedPermanent = 0;
@@ -1359,6 +1382,8 @@ async function backfillTelegramLinks({ force = false, limit = IV_BACKFILL_MAX_PE
 
     for (const record of records) {
       try {
+        const targetChannel = String(record.telegram_url || '').match(/t\.me\/(?:s\/)?([A-Za-z0-9_]+)/)?.[1];
+        telegramHouseAd = await loadTelegramHouseAd({ chatId: targetChannel ? await resolvePublishChatId(`@${targetChannel}`) : '', chatType: 'channel' });
         let live = livePosts.get(record.telegram_url);
         if (!live?.telegramOriginalText) {
           live = await fetchTelegramPublicPost(record.telegram_url);
@@ -1440,7 +1465,7 @@ async function runAutoPublish() {
     }
 
     // 1. Reunir todos los feeds: canales Telegram + fijos + dinámicos.
-    const telegramHouseAd = BOT_TOKEN ? await loadTelegramHouseAd() : null;
+    const telegramHouseAd = BOT_TOKEN ? await loadTelegramHouseAd({ chatId: PUBLISH_CHANNEL, chatType: 'channel' }) : null;
     const pendingResult = await retryPendingTelegramPublications(telegramHouseAd);
     if (pendingResult.retried) {
       logger.info(`[rssAutoPublisher] Cola Telegram: ${pendingResult.published}/${pendingResult.retried} publicaciones recuperadas.`);

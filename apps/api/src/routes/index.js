@@ -14,6 +14,7 @@ import noticiasRssRouter from './noticias-rss.js';
 import noticiasViewRouter from './noticias-view.js';
 import noticiasRecommendedRouter from './noticias-recommended.js';
 import noticiasWorkerRouter from './noticias-worker.js';
+import noticiasSeoAuditRouter from './noticias-seo-audit.js';
 import previewRouter from './preview.js';
 import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
@@ -39,6 +40,7 @@ export default () => {
     router.use('/noticias/view', noticiasViewRouter);
     router.use('/noticias/recommended', noticiasRecommendedRouter);
     router.use('/noticias/worker', noticiasWorkerRouter);
+    router.use('/noticias/seo-audit', noticiasSeoAuditRouter);
     router.use('/preview', previewRouter);
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);

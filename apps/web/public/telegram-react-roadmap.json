@@ -1,5 +1,5 @@
 {
-  "version": "0.0.652 · 2026-08-06",
+  "version": "0.0.653 · 2026-08-09",
   "repository": "ComunidadTelebots/telegram-react",
   "design_profiles": [
     { "id": "current", "label": "Web React", "versions": ["Standard", "Compact"] },
@@ -20,8 +20,9 @@
     "src/Components/ColumnLeft/MainMenuButton.js",
     "src/Components/ColumnLeft/AndroidSettings.js"
   ],
-  "summary": { "implemented": 56, "partial": 1, "pending": 31 },
+  "summary": { "implemented": 61, "partial": 1, "pending": 26 },
   "releases": [
+    { "version": "0.0.653", "title": "Preferencias visuales Plus multidiseño", "features": ["Fuente del sistema opt-in", "Panel de emoji compacto, original o grande", "Ocultación visual del teléfono", "Preferencias persistentes, exportables y compatibles con el diseño original"] },
     { "version": "0.0.652", "title": "Centro visual de apariencia", "features": ["Galeria multidiseño", "Versiones historicas", "Vista previa antes de aplicar", "Editor por categorias", "Comparador visual", "Importar y compartir"] },
     { "version": "0.0.651", "title": "Mensajeria resistente y herramientas Plus", "features": ["Sonidos separados", "Sincronizacion durante llamadas", "Vistas inteligentes", "Ordenacion de chats", "Acciones masivas", "Deteccion segura de capacidades MTProto"] },
     { "version": "0.0.650", "title": "Reacciones extendidas multidiseño", "features": ["Buscador de reacciones", "Compactacion +N", "Nombres al pasar el cursor", "Doble clic con reaccion grande"] },
@@ -66,14 +67,14 @@
     { "id": "tr-plus-avatar-action", "title": "Accion configurable al pulsar el avatar", "status": "implemented", "area": "Navegacion", "evidence": ["src/Components/ColumnRight/ChatDetails.js", "src/Components/ColumnLeft/PlusSettings.js"] },
     { "id": "tr-plus-preferences-backup", "title": "Exportacion e importacion segura de preferencias", "status": "implemented", "area": "Cuenta", "evidence": ["src/Utils/PlusPreferences.js", "src/Components/ColumnLeft/PlusSettings.js"], "note": "Allowlist versionada; excluye sesiones, tokens, claves, chats y contactos." },
     { "id": "tr-plus-theme-editor", "title": "Editor completo de temas Plus", "status": "pending", "area": "Plus Messenger · Apariencia", "evidence": [], "note": "Colores y tamaños de textos, iconos, avatares y cabeceras; importar, exportar y compartir temas." },
-    { "id": "tr-plus-hide-phone", "title": "Ocultar el telefono en menus y ajustes", "status": "pending", "area": "Plus Messenger · Privacidad", "evidence": [], "note": "Oculta visualmente el numero sin alterar la privacidad configurada en Telegram." },
-    { "id": "tr-plus-original-filenames", "title": "Guardar archivos con su nombre original", "status": "pending", "area": "Plus Messenger · Multimedia", "evidence": [] },
+    { "id": "tr-plus-hide-phone", "title": "Ocultar el telefono en menus y ajustes", "status": "implemented", "area": "Plus Messenger · Privacidad", "evidence": ["src/Components/ColumnLeft/PlusSettings.js", "src/Utils/PlusPreferences.js", "src/Components/Additional/PlusSettings.css"], "note": "Oculta visualmente el numero sin alterar la privacidad configurada en Telegram." },
+    { "id": "tr-plus-original-filenames", "title": "Guardar archivos con su nombre original", "status": "implemented", "area": "Plus Messenger · Multimedia", "evidence": ["src/Utils/File.js"] },
     { "id": "tr-plus-video-compression", "title": "Compresion personalizada de video", "status": "pending", "area": "Plus Messenger · Multimedia", "evidence": [], "note": "Selector seguro de calidad, resolucion y tamaño antes de enviar." },
-    { "id": "tr-plus-system-font", "title": "Usar la fuente del sistema", "status": "pending", "area": "Plus Messenger · Apariencia", "evidence": [] },
+    { "id": "tr-plus-system-font", "title": "Usar la fuente del sistema", "status": "implemented", "area": "Plus Messenger · Apariencia", "evidence": ["src/Components/ColumnLeft/PlusSettings.js", "src/Utils/PlusPreferences.js", "src/Components/Additional/PlusSettings.css", "src/index.js"] },
     { "id": "tr-plus-bubble-avatars", "title": "Avatares configurables dentro de las burbujas", "status": "pending", "area": "Plus Messenger · Apariencia", "evidence": [], "note": "Permite mostrar la foto propia, la del remitente o ninguna." },
     { "id": "tr-plus-chat-wallpaper", "title": "Cambiar el fondo directamente desde el chat", "status": "pending", "area": "Plus Messenger · Apariencia", "evidence": [] },
-    { "id": "tr-plus-emoji-size", "title": "Tamaño configurable del panel de emoji", "status": "pending", "area": "Plus Messenger · Apariencia", "evidence": [] },
-    { "id": "tr-plus-main-mute", "title": "Silenciar chats desde la lista principal", "status": "pending", "area": "Plus Messenger · Conversaciones", "evidence": [] },
+    { "id": "tr-plus-emoji-size", "title": "Tamaño configurable del panel de emoji", "status": "implemented", "area": "Plus Messenger · Apariencia", "evidence": ["src/Components/ColumnLeft/PlusSettings.js", "src/Utils/PlusPreferences.js", "src/Components/Additional/PlusSettings.css"] },
+    { "id": "tr-plus-main-mute", "title": "Silenciar chats desde la lista principal", "status": "implemented", "area": "Plus Messenger · Conversaciones", "evidence": ["src/Components/Tile/Dialog.js"] },
     { "id": "tr-plus-add-member-chat", "title": "Añadir miembros directamente desde el chat", "status": "pending", "area": "Plus Messenger · Grupos", "evidence": [] },
     { "id": "tr-plus-hide-bottom-navigation", "title": "Ocultar la navegacion inferior", "status": "pending", "area": "Plus Messenger · Navegacion", "evidence": [] },
     { "id": "tr-plus-hide-bottom-on-scroll", "title": "Ocultar la navegacion inferior al desplazarse", "status": "pending", "area": "Plus Messenger · Navegacion", "evidence": [] },

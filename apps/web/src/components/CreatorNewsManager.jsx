@@ -12,6 +12,7 @@ import ContentAnalyticsDialog from '@/components/ContentAnalyticsDialog.jsx';
 import NewsLayoutBlocksEditor, { parseNewsBlocks } from '@/components/NewsLayoutBlocksEditor.jsx';
 import RichNewsTextEditor from '@/components/RichNewsTextEditor.jsx';
 import RssWorkerControlPanel from '@/components/RssWorkerControlPanel.jsx';
+import NewsSeoAuditPanel from '@/components/NewsSeoAuditPanel.jsx';
 
 const EMPTY_FORM = {
   titulo: '',
@@ -153,6 +154,11 @@ const CreatorNewsManager = () => {
   return (
     <section className="space-y-5">
       <RssWorkerControlPanel />
+      <NewsSeoAuditPanel onOpenArticle={(articleId) => {
+        const article = posts.find((item) => item.id === articleId);
+        if (article) openEditor(article);
+        else toast.error('La publicación ya no está disponible en la lista actual');
+      }} />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h2 className="text-2xl font-bold">Gestión de NoticiasWeb3</h2>

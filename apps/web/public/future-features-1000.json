@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T11:36:45.584Z",
+  "generated_at": "2026-08-09T17:08:24.790Z",
   "status": "in_progress",
-  "implemented": 1855,
+  "implemented": 1857,
   "scaffolded": 328,
-  "specified": 548,
+  "specified": 546,
   "proposed": 3269,
-  "remaining_real": 4145,
-  "verified_percent": 30.92,
+  "remaining_real": 4143,
+  "verified_percent": 30.95,
   "totals": {
     "web": 2004,
     "moonbot": 1998,
@@ -43,6 +43,242 @@
         "apps/web/src/components/CommunityCampaignSlot.jsx",
         "apps/web/src/pages/HomePage.jsx",
         "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-ads-real-destination-context",
+      "title": "Propagar chat, tipo y bot a la entrega publicitaria",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El worker y la API entregan el contexto real del canal, grupo y bot para que la segmentación no dependa de valores genéricos.",
+      "evidence": [
+        "apps/api/src/utils/rssAutoPublisher.js",
+        "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-ads-country-language",
+      "title": "Segmentar campañas por país e idioma",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "La política normaliza inclusiones y exclusiones geográficas y lingüísticas, incluidas variantes regionales.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPolicy.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-timezone-schedule",
+      "title": "Programar campañas por días, horario y zona IANA",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El motor admite días concretos, franjas normales o nocturnas y zonas horarias IANA verificadas.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPolicy.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-destination-exclusions",
+      "title": "Excluir canales, grupos, países e idiomas",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Las exclusiones tienen prioridad sobre las inclusiones y se configuran desde el panel master.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-frequency-window",
+      "title": "Limitar frecuencia global por usuario y ventana",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "La API aplica el límite con cookie HttpOnly o identificador interno convertido en huella, sin guardar la identidad original.",
+      "evidence": [
+        "apps/api/src/routes/house-ads.js",
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-content-rules",
+      "title": "Segmentar anuncios según contexto del contenido",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Categorías, palabras requeridas y términos excluidos deciden la entrega con normalización y límites.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-budgets-goals",
+      "title": "Detener campañas por límites diarios y objetivos",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Los límites de clics e impresiones diarios y totales frenan automáticamente campañas que alcanzan su objetivo.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-surface-preview",
+      "title": "Previsualizar campañas por superficie",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El editor representa cada campaña en web, canal, Telegram React y Hub antes de guardarla.",
+      "evidence": [
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-chat-metrics",
+      "title": "Desglosar métricas por ubicación, país, chat y bot",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "La entrega y los clics transmiten chat y bot al backend y el panel mantiene el análisis temporal, geográfico y por ubicación.",
+      "evidence": [
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/web/src/components/ContentAnalyticsDialog.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-master-audit",
+      "title": "Auditar las operaciones publicitarias del master",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Un registro persistente y reducido conserva actor, acción y resumen antes/después sin copiar destinos sensibles.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsAudit.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsAudit.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-destination-health",
+      "title": "Comprobar acceso del bot a destinos publicitarios",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El panel consulta Moonbot para identificar chats válidos y destinos donde el bot ya no está presente.",
+      "evidence": [
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-disclosure",
+      "title": "Mostrar transparencia publicitaria por relación",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Cada entrega declara si es oficial, comunitaria, afiliada o Inside Ads mediante una etiqueta normalizada.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPublicSecurity.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-inside-isolation",
+      "title": "Aislar permisos y destinos de Inside Ads",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Los presets se resuelven en servidor por superficie, solo el creator los administra y la respuesta pública omite campos internos.",
+      "evidence": [
+        "apps/api/src/utils/insideAdsPresets.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/InsideAdsLinksPanel.jsx",
+        "apps/api/test/insideAdsPresets.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-ab-testing",
+      "title": "Ejecutar pruebas A/B estables de campañas",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Hasta cuatro variantes ponderadas se asignan de forma estable al visitante tras normalizar sus campos.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPolicy.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-antifraud",
+      "title": "Detectar y limitar clics publicitarios abusivos",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "La API utiliza huellas HMAC, ventana antiabuso, Retry-After y deduplicación de reportes sin almacenar direcciones IP.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsAntiFraud.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/api/test/houseAdsAntiFraud.test.js"
       ]
     },
     {
@@ -24783,9 +25019,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/newsSeoAudit.js",
+        "apps/api/src/routes/noticias-seo-audit.js",
+        "apps/web/src/components/NewsSeoAuditPanel.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1217",
@@ -25021,9 +25261,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/newsSeoAudit.js",
+        "apps/api/src/routes/noticias-seo-audit.js",
+        "apps/web/src/components/NewsSeoAuditPanel.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1231",
@@ -116048,15 +116292,15 @@
     }
   ],
   "completion": {
-    "implemented": 1855,
+    "implemented": 1857,
     "partial": 328,
-    "not_implemented": 3817
+    "not_implemented": 3815
   },
   "data_quality": {
     "unique_ids": 6000,
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T11:36:45.584Z"
+    "verified_at": "2026-08-09T17:08:24.790Z"
   }
 }
