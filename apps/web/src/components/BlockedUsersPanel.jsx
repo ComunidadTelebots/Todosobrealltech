@@ -13,6 +13,28 @@ import { toast } from 'sonner';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 
+const sourceHelp = {
+  cas: 'Detectado por Combot Anti-Spam (CAS) y registrado por Moonbot. Es una señal externa; revisa el motivo antes de actuar.',
+  cas_export: 'Coincidencia encontrada en la copia local del registro CAS descargada por Moonbot.',
+  cas_feed: 'Coincidencia reciente observada por Moonbot en el canal público de avisos de CAS.',
+  gban: 'Baneo global administrado por Moonbot y aplicable a los grupos configurados.',
+  global: 'Bloqueo global de Moonbot, no limitado a un único grupo.',
+  moonbot_local: 'Baneo local aplicado únicamente dentro del grupo indicado.',
+  local: 'Baneo limitado a un grupo concreto.',
+  web: 'Bloqueo de acceso a TodoSobreAllTech; no implica por sí solo un baneo en Telegram.',
+  manual: 'Registro añadido manualmente por un administrador autorizado.',
+  csv: 'Registro importado desde una lista CSV revisada por un administrador.',
+  json: 'Registro importado desde una lista JSON revisada por un administrador.',
+};
+
+const cleanSource = (user) => String(user.source || user.import_source || user.registry || 'unknown').toLowerCase();
+const sourceExplanation = (user) => sourceHelp[cleanSource(user)] || (user.registry === 'cas' ? sourceHelp.cas : user.scope === 'group' ? sourceHelp.local : 'Registro de seguridad conservado por Moonbot. Abre la ficha para revisar su alcance y procedencia.');
+const reasonExplanation = (user) => user.reason
+  ? `Motivo registrado: ${user.reason}. Origen: ${sourceExplanation(user)}`
+  : `No existe un motivo textual en este registro. ${sourceExplanation(user)}`;
+const displayName = (user) => user.name || user.first_name || (user.username ? `@${String(user.username).replace(/^@/, '')}` : 'Nombre no disponible');
+const formatDateTime = (value) => { if (!value) return 'No disponible'; const date = new Date(value); return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString('es-ES'); };
+
 const BlockedUsersPanel = () => {
   const { currentUser } = useAuth();
   const [users, setUsers] = useState([]);
@@ -20,6 +42,7 @@ const BlockedUsersPanel = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [registrySource, setRegistrySource] = useState('all');
   const [registryStats, setRegistryStats] = useState({ cas: 0, moonbot: 0, global: 0, local: 0, web: 0 });
+  const [selectedUser, setSelectedUser] = useState(null);
   const [globalCaptcha, setGlobalCaptcha] = useState({ status: 'idle', percentage: 0 });
   const [globalCaptchaSettings, setGlobalCaptchaSettings] = useState({
     enabled: true, channel: 'TodoSobreAllTech', channels: ['TodoSobreAllTech'], suggested_channels: [], strict_enforcement: false, reverify_interval_hours: 12,
@@ -86,6 +109,7 @@ const BlockedUsersPanel = () => {
       if (!response.ok) throw new Error(data.error || 'No se pudo cargar el directorio');
       setUsers(data.records || []);
       setRegistryStats(data.stats || {});
+      setSelectedUser((current) => current ? (data.records || []).find((item) => item.id === current.id) || current : null);
     } catch (error) {
       console.error('Failed to fetch blocked users:', error);
       toast.error('No se pudo cargar la lista de bloqueos web');
@@ -593,8 +617,31 @@ const BlockedUsersPanel = () => {
           </div>
         </CardHeader>
         <CardContent>
+          {selectedUser && <section className="mb-4 overflow-hidden rounded-xl border border-sky-500/30 bg-gradient-to-br from-sky-500/10 via-background to-cyan-500/5 shadow-sm">
+            <div className="flex flex-wrap items-start justify-between gap-3 border-b bg-background/70 p-4">
+              <div className="flex min-w-0 items-center gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-sky-600 text-lg font-bold text-white">{displayName(selectedUser).charAt(0).toUpperCase()}</span><div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wide text-sky-700">Ficha del usuario seleccionado</p><h3 className="truncate text-lg font-bold">{displayName(selectedUser)}</h3><p className="font-mono text-xs text-muted-foreground">ID {selectedUser.user_id || selectedUser.telegram_id || 'no disponible'}{selectedUser.username ? ` · @${String(selectedUser.username).replace(/^@/, '')}` : ''}</p></div></div>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setSelectedUser(null)} aria-label="Cerrar ficha"><XCircle className="h-4 w-4"/></Button>
+            </div>
+            <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div><p className="text-xs text-muted-foreground">Motivo</p><p className="font-medium">{selectedUser.reason || 'Sin motivo registrado'}</p></div>
+              <div><p className="text-xs text-muted-foreground">Origen y alcance</p><p className="font-medium">{selectedUser.source || selectedUser.import_source || selectedUser.registry || 'Desconocido'} · {selectedUser.scope || (selectedUser.group_id ? 'grupo' : 'global')}</p></div>
+              <div><p className="text-xs text-muted-foreground">Estado</p><p className="font-medium">{selectedUser.status || (selectedUser.is_active ? 'active' : 'inactive')}</p></div>
+              <div><p className="text-xs text-muted-foreground">Fecha</p><p className="font-medium">{formatDateTime(selectedUser.imported_date || selectedUser.created_at || selectedUser.created || selectedUser.timestamp)}</p></div>
+              <div><p className="text-xs text-muted-foreground">Grupo</p><p className="font-medium">{selectedUser.group_name || selectedUser.group_id || 'Todos / no indicado'}</p></div>
+              <div><p className="text-xs text-muted-foreground">Idioma conocido</p><p className="font-medium">{selectedUser.language || selectedUser.language_code || 'No disponible'}</p></div>
+              <div><p className="text-xs text-muted-foreground">Última actividad</p><p className="font-medium">{formatDateTime(selectedUser.last_seen)}</p></div>
+              <div><p className="text-xs text-muted-foreground">Mensajes observados</p><p className="font-medium">{Number(selectedUser.messages || 0).toLocaleString('es-ES')}</p></div>
+            </div>
+            <div className="flex items-start gap-2 border-t bg-muted/20 px-4 py-3 text-sm text-muted-foreground"><HelpCircle className="mt-0.5 h-4 w-4 shrink-0"/><p>{sourceExplanation(selectedUser)}</p></div>
+          </section>}
           <div className="mb-4 grid grid-cols-2 gap-2 md:grid-cols-5">
-            {[['CAS detectados', registryStats.cas], ['Moonbot', registryStats.moonbot], ['Globales', registryStats.global], ['Locales', registryStats.local], ['Web', registryStats.web]].map(([label, value]) => <div key={label} className="rounded-lg border bg-muted/20 p-3"><p className="text-xs text-muted-foreground">{label}</p><b className="text-xl">{Number(value || 0).toLocaleString('es-ES')}</b></div>)}
+            {[
+              ['CAS detectados', registryStats.cas, sourceHelp.cas],
+              ['Moonbot', registryStats.moonbot, 'Todos los registros de seguridad que Moonbot conserva, incluidos CAS, GBAN y baneos locales.'],
+              ['Globales', registryStats.global, sourceHelp.global],
+              ['Locales', registryStats.local, sourceHelp.local],
+              ['Web', registryStats.web, sourceHelp.web],
+            ].map(([label, value, help]) => <div key={label} className="rounded-lg border bg-muted/20 p-3"><p className="flex items-center gap-1 text-xs text-muted-foreground">{label}<HelpCircle className="h-3.5 w-3.5 cursor-help" title={help} aria-label={help}/></p><b className="text-xl">{Number(value || 0).toLocaleString('es-ES')}</b></div>)}
           </div>
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <div className="relative w-full max-w-sm">
@@ -640,24 +687,25 @@ const BlockedUsersPanel = () => {
                   </TableRow>
                 ) : (
                   filteredUsers.map((user) => (
-                    <TableRow key={user.id} className={!user.is_active ? 'opacity-60 bg-muted/30' : ''}>
+                    <TableRow key={user.id} className={`${!user.is_active ? 'opacity-60 bg-muted/30' : ''} ${selectedUser?.id === user.id ? 'bg-sky-500/10' : ''}`}>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">{user.username || `Usuario ${user.user_id}`}</span>
+                          <button type="button" className="w-fit text-left font-medium text-sky-700 hover:underline" onClick={() => setSelectedUser(user)} title="Abrir ficha completa">{displayName(user)}</button>
+                          {user.username && <span className="text-xs text-muted-foreground">@{String(user.username).replace(/^@/, '')}</span>}
                           <span className="text-xs text-muted-foreground font-mono">{user.user_id}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="max-w-[250px] truncate" title={user.reason}>
-                        {user.reason || <span className="text-muted-foreground italic">Sin motivo registrado</span>}
+                      <TableCell className="max-w-[250px]">
+                        <span className="inline-flex max-w-full items-center gap-1"><span className="truncate">{user.reason || <span className="text-muted-foreground italic">Sin motivo registrado</span>}</span><HelpCircle className="h-4 w-4 shrink-0 cursor-help text-muted-foreground" title={reasonExplanation(user)} aria-label={reasonExplanation(user)}/></span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={
+                        <span className="inline-flex items-center gap-1"><Badge variant="outline" className={
                           user.source === 'api' || user.import_source === 'cas' ? 'bg-blue-500/10 text-blue-600 border-blue-500/20' : 
                           user.import_source === 'manual' ? 'bg-orange-500/10 text-orange-600 border-orange-500/20' :
                           'bg-purple-500/10 text-purple-600 border-purple-500/20'
                         }>
                           {user.import_source || user.source || 'unknown'}
-                        </Badge>
+                        </Badge><HelpCircle className="h-4 w-4 cursor-help text-muted-foreground" title={sourceExplanation(user)} aria-label={sourceExplanation(user)}/></span>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {user.imported_date || user.created || user.timestamp ? new Date(user.imported_date || user.created || user.timestamp).toLocaleDateString('es-ES') : '—'}

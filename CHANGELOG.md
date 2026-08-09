@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.43 - 2026-08-09
+
+- Mejora el directorio unificado de bloqueos con explicaciones contextuales al pasar el cursor por cada contador, origen y motivo.
+- Muestra el nombre conocido, alias de Telegram e ID de cada usuario y permite abrir una ficha superior desde su nombre.
+- La ficha reúne motivo, procedencia, alcance, estado, grupo, fechas, idioma, última actividad y mensajes observados, indicando cuándo un dato no está disponible.
+- Resalta el registro seleccionado y mantiene separadas las acciones editables de bloqueos web de los registros administrados por Moonbot.
+
 ### 18.23.42 - 2026-08-09
 
 - Sustituye el placeholder de `/afiliarte` por una página pública y adaptable para solicitar presencia en las campañas comunitarias.
