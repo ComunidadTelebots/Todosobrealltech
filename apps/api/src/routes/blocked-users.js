@@ -262,10 +262,35 @@ async function testCasApiAvailability() {
 router.get('/status', async (req, res) => {
   logger.info('[Status] Checking availability of import sources');
 
-  const casAvailable = await testCasApiAvailability();
+  let localCas = { available: false, loaded: false, records: 0 };
+  let casFeed = { available: false, records: 0 };
+  if (MOONBOT_INTERNAL_URL && process.env.MOON_ADMIN_API_KEY) {
+    try {
+      const response = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/cas-sources/status`, {
+        headers: moonHeaders(), signal: AbortSignal.timeout(5000),
+      });
+      if (response.ok) {
+        const payload = await response.json();
+        localCas = payload.local_export || localCas;
+        casFeed = payload.feed || casFeed;
+      }
+    } catch (error) {
+      logger.warn(`[Status] Moonbot CAS local unavailable: ${error.message}`);
+    }
+  }
+  // La consulta remota es informativa y solo se intenta cuando el export local
+  // no está listo; así el panel no queda esperando una API externa innecesaria.
+  const casApiAvailable = localCas.available ? false : await testCasApiAvailability();
+  const casAvailable = Boolean(localCas.available || casApiAvailable);
 
   res.json({
     cas_available: casAvailable,
+    cas_api_available: casApiAvailable,
+    cas_local_available: Boolean(localCas.available),
+    cas_local_records: Number(localCas.records || 0),
+    cas_feed_available: Boolean(casFeed.available),
+    cas_feed_records: Number(casFeed.records || 0),
+    cas_mode: localCas.available ? 'moonbot_local_export' : casApiAvailable ? 'remote_api' : 'unavailable',
     csv_available: true,
     json_available: true,
     manual_available: true,

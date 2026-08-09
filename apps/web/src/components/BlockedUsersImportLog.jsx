@@ -173,16 +173,22 @@ const BlockedUsersImportLog = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3 items-center">
-            {renderStatusBadge('CAS API', importStatus?.cas_available)}
+            {renderStatusBadge(importStatus?.cas_local_available ? 'CAS local · Moonbot' : 'CAS API remota', importStatus?.cas_available)}
             {renderStatusBadge('CSV Upload', importStatus?.csv_available)}
             {renderStatusBadge('JSON Upload', importStatus?.json_available)}
             {renderStatusBadge('Manual Entry', importStatus?.manual_available)}
           </div>
           
+          {importStatus?.cas_local_available && (
+            <div className="mt-3 flex items-center gap-2 rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2 text-sm text-emerald-700">
+              <CheckCircle2 className="h-4 w-4" />
+              Export CAS local operativo en Moonbot: {Number(importStatus.cas_local_records || 0).toLocaleString('es-ES')} IDs. {importStatus.cas_feed_available ? `Feed reciente activo (${Number(importStatus.cas_feed_records || 0).toLocaleString('es-ES')} IDs).` : ''}
+            </div>
+          )}
           {importStatus && !importStatus.cas_available && (
             <div className="mt-3 text-sm text-destructive flex items-center gap-2 bg-destructive/5 p-2 rounded-md border border-destructive/10">
               <AlertCircle className="w-4 h-4" />
-              CAS API no disponible en este momento. Las importaciones manuales, CSV y JSON siguen funcionando.
+              No están disponibles ni el export CAS local de Moonbot ni la API remota. Las importaciones manuales, CSV y JSON siguen funcionando.
             </div>
           )}
         </CardContent>

@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.44 - 2026-08-09
+
+- Corrige el indicador rojo permanente de CAS: antes validaba la API remota como si devolviera la lista completa e ignoraba el export local activo de Moonbot.
+- Muestra por separado el export CAS local, su cantidad de IDs y el feed reciente; solo presenta una alerta roja cuando todas las fuentes CAS están realmente inactivas.
+- Evita esperar a la API externa cuando Moonbot confirma que el export local ya está cargado.
+
 ### 18.23.43 - 2026-08-09
 
 - Mejora el directorio unificado de bloqueos con explicaciones contextuales al pasar el cursor por cada contador, origen y motivo.
