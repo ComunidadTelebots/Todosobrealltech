@@ -905,6 +905,18 @@ h1 {
 .campaign-cta, .campaign-boost { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; font-size: 12px; font-weight: 800; }
 .campaign-cta { padding: 9px 13px; color: #07171f; background: #3ee0c7; }
 .campaign-boost { position: absolute; right: 30px; bottom: -10px; padding: 6px 10px; color: #dffcff; background: #153e55; border: 1px solid rgba(62, 224, 199, .4); text-decoration: none; }
+.community-campaign--feed { grid-column: 1 / -1; width: 100%; max-width: none; margin: 2px 0; padding: 0; }
+.campaign-rail { position: fixed; z-index: 5; top: 150px; width: 160px; }
+.campaign-rail--left { left: max(10px, calc(50% - 770px)); }
+.campaign-rail--right { right: max(10px, calc(50% - 770px)); }
+.campaign-rail .community-campaign { width: 160px; max-width: 160px; margin: 0; padding: 0; }
+.community-campaign--vertical > a:first-child { box-sizing: border-box; width: 160px; min-height: 360px; padding: 12px 10px; flex-direction: column; align-items: stretch; text-align: left; overflow: hidden; }
+.community-campaign--vertical img,.community-campaign--vertical .campaign-mark { width: 100%; height: 112px; flex-basis: 112px; }
+.community-campaign--vertical .campaign-copy { width: 100%; min-width: 0; }
+.community-campaign--vertical .campaign-copy small,.community-campaign--vertical .campaign-copy strong,.community-campaign--vertical .campaign-copy > span { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.community-campaign--vertical .campaign-cta { box-sizing: border-box; width: 100%; justify-content: center; text-align: center; }
+.community-campaign--vertical .campaign-boost { position: static; box-sizing: border-box; width: 100%; margin-top: 7px; justify-content: center; }
+@media (max-width: 1560px) { .campaign-rail { display: none; } }
 @media (max-width: 620px) {
   .community-campaign { margin: 12px auto; padding: 0 12px; }
   .community-campaign > a:first-child { min-height: 68px; padding: 10px 12px; }
