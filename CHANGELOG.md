@@ -1,5 +1,35 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.42 - 2026-08-09
+
+- Sustituye el placeholder de `/afiliarte` por una página pública y adaptable para solicitar presencia en las campañas comunitarias.
+- Incorpora formulario de proyecto, contacto privado, ubicaciones preferidas, aceptación de condiciones y vista previa con el diseño real de afiliados.
+- Registra cada solicitud en una colección privada de PocketBase y crea una campaña desactivada y pendiente en el gestor existente; nunca se publica sin aprobación del master.
+- Añade referencia aleatoria para consultar el estado y sincroniza automáticamente la aprobación o el rechazo realizados desde el panel de campañas.
+- Protege el alta con validación HTTPS, límites de longitud, honeypot y un máximo de tres solicitudes diarias por navegador/red.
+- Exige una cuenta gratuita para afiliarse, vincula cada solicitud a su propietario y restringe la consulta del estado al solicitante o al equipo autorizado.
+- Añade al panel `/afiliarte` las ventajas del registro, accesos para crear cuenta o iniciar sesión, formulario bloqueado para visitantes y confirmación visual de la cuenta vinculada.
+
+### 18.23.41 - 2026-08-09
+
+- Añade al panel de canales de Moonbot la gestión de enlaces oficiales de suscripción de pago de Telegram.
+- Permite crear enlaces mensuales en Telegram Stars, copiarlos, renombrarlos y revocarlos desde TodoSobreAllTech.
+- Limita la función a canales y administradores web autorizados; Moonbot vuelve a comprobar el tipo de chat y el permiso de invitación antes de llamar a Telegram.
+- Informa de los límites oficiales (30 días y 1–10.000 Stars) y evita presentar como editable un precio que Telegram no permite cambiar sobre un enlace existente.
+
+### 18.23.40 - 2026-08-09
+
+- Sustituye la página provisional `/suscribirme` de NoticiasWeb3 por un panel funcional para Telegram, RSS y preferencias editoriales.
+- Permite guardar por cuenta los temas, la frecuencia preferida y el estado activo de la suscripción.
+- Añade la colección privada `nw3_subscriptions`, con relación única por usuario y reglas de lectura y escritura limitadas al propietario o administradores web.
+- Incorpora diseño adaptable compatible con las vistas 2014 y 2026, estados de carga, confirmación, error y acceso al inicio de sesión.
+
+### 18.23.39 - 2026-08-09
+
+- Convierte la campaña oficial «Comunidad TeleBots» en un multipanel aprobado con TodoSobreAllTech, Comunidad TeleBots, Resistencia a la Censura y Todo Sobre Gameplays.
+- Distribuye los cuatro canales en porciones iguales dentro de los anuncios verticales y horizontales de NoticiasWeb3.
+- Corrige los clics de campañas oficiales con varios destinos para abrir y medir el canal seleccionado en lugar del enlace general.
+
 ### 18.23.38 - 2026-08-09
 
 - Unifica las inserciones automáticas de portada, barra lateral y listado de NoticiasWeb3 con el catálogo general de campañas comunitarias; los bloques editoriales «Recomendado» quedan reservados al editor Lego.

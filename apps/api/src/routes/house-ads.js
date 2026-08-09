@@ -9,6 +9,7 @@ import { disclosureFor, houseAdMatches, normalizeHouseAd, normalizeHouseAdDestin
 import { insideAdsDestinationFor, insideAdsPresetByUrl, insideAdsPresetsFor, mayManageInsideAdsCampaign, mayReadInsideAdsPresets } from '../utils/insideAdsPresets.js';
 import { acceptAdClick, adRequestFingerprint } from '../utils/houseAdsAntiFraud.js';
 import { appendHouseAdsAudit, readHouseAdsAudit } from '../utils/houseAdsAudit.js';
+import pocketbaseClient from '../utils/pocketbaseClient.js';
 
 const router = Router();
 const MOON_URLS = [...new Set([
@@ -25,6 +26,7 @@ const CATALOG_FRESH_MS = 60_000;
 const CATALOG_STALE_MS = 10 * 60_000;
 const catalogCache = { data: null, fetchedAt: 0, refresh: null };
 const deliveryFrequency = new Map();
+const affiliateApplicationRate = new Map();
 const viewerCookie = 'tsa_ad_viewer';
 const safeAdDestination = (value) => {
   const fallback = 'https://todosobreall.tech';
@@ -120,6 +122,48 @@ const validInternalRequest = (req) => {
   const supplied = Buffer.from(String(req.get('X-Moon-Admin-Key') || '').trim());
   return expected.length >= 32 && supplied.length === expected.length && crypto.timingSafeEqual(expected, supplied);
 };
+
+router.post('/apply', async (req, res) => {
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: 'Debes registrarte o iniciar sesión para solicitar una afiliación' });
+  const fingerprint = crypto.createHash('sha256').update(`${req.ip}|${req.get('user-agent') || ''}`).digest('hex').slice(0, 32);
+  const now = Date.now();
+  const recent = (affiliateApplicationRate.get(fingerprint) || []).filter((stamp) => now - stamp < 86_400_000);
+  if (recent.length >= 3) return res.status(429).json({ ok: false, error: 'Has alcanzado el límite de solicitudes de hoy' });
+  if (String(req.body?.company_website || '').trim()) return res.status(202).json({ ok: true });
+  const title = String(req.body?.title || '').trim().replace(/[<>]/g, '').slice(0, 80);
+  const description = String(req.body?.description || '').trim().replace(/[<>]/g, '').slice(0, 240);
+  const contact = String(req.body?.contact || '').trim().slice(0, 120);
+  const destination = normalizeHouseAdDestination(req.body?.url);
+  const kind = ['telegram', 'website', 'social', 'project'].includes(req.body?.kind) ? req.body.kind : 'project';
+  if (title.length < 3 || description.length < 10 || !destination) return res.status(400).json({ ok: false, error: 'Completa el nombre, la descripción y un enlace HTTPS válido' });
+  if (!/^@?[A-Za-z0-9_.+-]{3,64}$/.test(contact) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) return res.status(400).json({ ok: false, error: 'Indica un correo o usuario de Telegram válido' });
+  if (req.body?.accepted_terms !== true) return res.status(400).json({ ok: false, error: 'Debes aceptar las condiciones de colaboración' });
+  const reference = `NW3-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+  const campaignId = `affiliate-${crypto.randomUUID()}`;
+  try {
+    await pocketbaseClient.collection('nw3_affiliate_applications').create({ user: auth.user.id, reference, campaign_id: campaignId, title, description, url: destination, contact, kind, status: 'pending', requested_placements: Array.isArray(req.body?.placements) ? req.body.placements.filter((item) => ['top', 'left', 'right', 'inline', 'footer'].includes(item)).slice(0, 5) : [] });
+  } catch (error) {
+    return res.status(503).json({ ok: false, error: 'No se pudo registrar la solicitud' });
+  }
+  affiliateApplicationRate.set(fingerprint, [...recent, now]);
+  try {
+    await moon({ method: 'POST', body: JSON.stringify({ action: 'upsert', ad: normalizeHouseAd({ id: campaignId, title, description, url: destination, cta: 'Visitar', enabled: false, approval_status: 'pending', relationship_type: 'affiliate', disclosure_type: 'affiliate', placement: 'all', placements: Array.isArray(req.body?.placements) ? req.body.placements : ['all'], priority: 10, submitted_by: auth.user.id }) }) });
+  } catch { /* La solicitud persiste aunque Moonbot esté reiniciándose. */ }
+  return res.status(201).json({ ok: true, reference, status: 'pending', message: 'Solicitud enviada para revisión' });
+});
+
+router.get('/apply/:reference', async (req, res) => {
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) return res.status(auth.status).json({ ok: false, error: 'Debes iniciar sesión para consultar la solicitud' });
+  const reference = String(req.params.reference || '').trim().toUpperCase();
+  if (!/^NW3-[A-F0-9]{12}$/.test(reference)) return res.status(400).json({ ok: false, error: 'Referencia no válida' });
+  try {
+    const record = await pocketbaseClient.collection('nw3_affiliate_applications').getFirstListItem(`reference="${reference}"`, { fields: 'reference,status,updated,user' });
+    if (String(record.user) !== String(auth.user.id) && !['admin', 'creator'].includes(auth.user.role)) return res.status(403).json({ ok: false, error: 'No puedes consultar esta solicitud' });
+    return res.json({ ok: true, application: record });
+  } catch { return res.status(404).json({ ok: false, error: 'Solicitud no encontrada' }); }
+});
 
 async function ownerReferralEligible(user) {
   const telegramId = String(user?.telegram_id || '').trim();
@@ -295,6 +339,11 @@ router.post('/', async (req, res) => {
         invalidateCatalog();
         const updated = (data.ads || []).find((item) => String(item.id) === String(candidateId || payload.ad?.id || '')) || payload.ad || null;
         appendHouseAdsAudit({ action, actor: auth.user, adId: candidateId || updated?.id, before: existingAd, after: updated }).catch(() => {});
+        if (candidateId && ['approve', 'reject'].includes(action)) {
+          pocketbaseClient.collection('nw3_affiliate_applications').getFirstListItem(`campaign_id="${candidateId.replaceAll('"', '')}"`)
+            .then((application) => pocketbaseClient.collection('nw3_affiliate_applications').update(application.id, { status: action === 'approve' ? 'approved' : 'rejected' }))
+            .catch(() => {});
+        }
       }
       return res.status(response.status).json(data);
     }
@@ -411,9 +460,13 @@ router.get('/:id/click', async (req, res) => {
     return res.redirect(302, 'https://todosobreall.tech');
   }
   if (officialAd) {
-    moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: officialAd.id, placement, site, country }) }).catch(() => {});
+    const requestedItem = String(req.query.chat || '').slice(0, 64);
+    const communityItem = Array.isArray(officialAd.community_items)
+      ? officialAd.community_items.find((item) => String(item.id) === requestedItem)
+      : null;
+    moon({ method: 'POST', body: JSON.stringify({ action: 'click', id: officialAd.id, placement, site, country, item_id: communityItem?.id || '' }) }).catch(() => {});
     recordContentEvent({ kind: 'community_ad', targetId: officialAd.id, eventType: 'click', country, placement });
-    return res.redirect(302, officialAd.url);
+    return res.redirect(302, safeAdDestination(communityItem?.url || officialAd.url));
   }
   try {
     const current = await moon();

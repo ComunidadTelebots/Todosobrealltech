@@ -1238,6 +1238,23 @@ router.all('/groups/:id', async (req, res) => {
   }
 });
 
+router.all('/groups/:id/paid-subscriptions', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  const cid = String(req.params.id || '').trim();
+  if (!/^-?\d{5,20}$/.test(cid)) return res.status(400).json({ ok: false, error: 'ID de canal no válido' });
+  try {
+    const response = await moonRequest(`/api/internal/groups/${encodeURIComponent(cid)}/paid-subscriptions`, {
+      method: req.method,
+      body: req.method === 'GET' ? undefined : JSON.stringify(req.body || {}),
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-paid-subscriptions] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudieron gestionar las suscripciones de Telegram' });
+  }
+});
+
 router.get('/groups/:id/photo', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;
