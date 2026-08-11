@@ -31,6 +31,14 @@ import { canElevateWebRole, createAdminInvite, createTelegramVerification, hashA
   normalizeGroupDelegation, normalizeTelegramClaim, normalizeWebAdminProfile, publicAdminInvite, WEB_ADMIN_PROFILES, WEB_ADMIN_ROLES } from '../utils/webAdminInvites.js';
 import { requestMoonbot } from '../utils/moonbotConnection.js';
 import { sanitizeUrlInspectionRequest } from '../utils/moonbotSecurityProxy.js';
+import { createAccountDelegation, isAccountDelegationActive,
+  publicAccountDelegation } from '../utils/accountDelegations.js';
+import { defaultCommunicationPreferences,
+  sanitizeCommunicationPreferences } from '../utils/accountCommunicationPreferences.js';
+import { applyAccountIncidentState, correlateAccountIncidents,
+  updateAccountIncidentState } from '../utils/accountIncidentCenter.js';
+import { acknowledgeOnboardingStep, buildAccountOnboarding,
+  diagnoseCreatorAccount } from '../utils/accountOnboarding.js';
 
 const router = express.Router();
 const RELEASE_SESSION_COOKIE = 'moon_release_session';
@@ -205,6 +213,10 @@ const accountWebhooksFile = '/data/account-webhooks.json';
 const accountTemplatesFile = '/data/account-config-templates.json';
 const accountReviewSchedulesFile = '/data/account-review-schedules.json';
 const accountAdminThreadsFile = '/data/account-admin-threads.json';
+const accountDelegationsFile = '/data/account-delegations.json';
+const accountCommunicationPreferencesFile = '/data/account-communication-preferences.json';
+const accountIncidentStateFile = '/data/account-incident-state.json';
+const accountOnboardingStateFile = '/data/account-onboarding-state.json';
 let accountMetricsState = createAccountMetricsState();
 let webAdminInviteMutation = Promise.resolve();
 
@@ -276,6 +288,14 @@ const readAccountAdminThreads = async () => {
   try { return JSON.parse(await fs.readFile(accountAdminThreadsFile, 'utf8')); }
   catch (error) { if (error.code === 'ENOENT') return []; throw error; }
 };
+
+const readJsonState = async (filename, fallback) => {
+  try { return JSON.parse(await fs.readFile(filename, 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT') return fallback; throw error; }
+};
+
+const writeJsonState = (filename, value) => fs.writeFile(filename,
+  JSON.stringify(value, null, 2), { mode: 0o600 });
 
 const recordAccountMetric = (type, dimensions = {}) => {
   try {
@@ -823,6 +843,120 @@ router.all('/account-tools/approvals', async (req, res) => {
     return res.status(400).json({ ok: false, error: error.message });
   }
 });
+
+router.all('/account-tools/delegations', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) {
+    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+    return res.status(auth.status).json({ ok: false, error: auth.error });
+  }
+  if (auth.user.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo creator puede administrar delegaciones' });
+  const records = await readJsonState(accountDelegationsFile, []);
+  if (req.method === 'GET') {
+    return res.json({ ok: true, delegations: records.slice(-500).reverse().map(publicAccountDelegation) });
+  }
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const action = req.body?.action || 'create';
+    if (action === 'create') {
+      const account = await pocketbaseClient.collection('users').getOne(String(req.body?.delegate_id || ''));
+      if (account.role === 'creator' || account.is_frozen) throw new Error('La cuenta no admite delegaciones');
+      const delegation = createAccountDelegation(req.body, auth.user.id);
+      records.push(delegation);
+      await writeJsonState(accountDelegationsFile, records.slice(-1000));
+      return res.status(201).json({ ok: true, delegation: publicAccountDelegation(delegation) });
+    }
+    if (action === 'revoke') {
+      const delegation = records.find((item) => item.id === req.body?.delegation_id);
+      if (!delegation) return res.status(404).json({ ok: false, error: 'Delegación no encontrada' });
+      if (!delegation.revoked_at) delegation.revoked_at = new Date().toISOString();
+      await writeJsonState(accountDelegationsFile, records.slice(-1000));
+      return res.json({ ok: true, delegation: publicAccountDelegation(delegation) });
+    }
+    return res.status(400).json({ ok: false, error: 'Acción no válida' });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+
+router.get('/account-tools/delegated-summary', async (req, res) => {
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) {
+    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+    return res.status(auth.status).json({ ok: false, error: auth.error });
+  }
+  const records = await readJsonState(accountDelegationsFile, []);
+  const active = records.filter((item) => isAccountDelegationActive(item, auth.user.id, 'view_account_summary'));
+  if (!active.length) return res.status(403).json({ ok: false, error: 'No tienes una delegación activa' });
+  const [accounts, proxies] = await Promise.all([
+    pocketbaseClient.collection('users').getFullList({ fields: 'id,role,is_frozen' }),
+    pocketbaseClient.collection('user_proxies').getFullList({ fields: 'id,status' }),
+  ]);
+  return res.json({
+    ok: true,
+    summary: {
+      accounts: accounts.length,
+      frozen_accounts: accounts.filter((item) => item.is_frozen).length,
+      admin_accounts: accounts.filter((item) => ['admin', 'creator'].includes(item.role)).length,
+      proxies: proxies.length,
+      active_proxies: proxies.filter((item) => item.status === 'active').length,
+    },
+    delegations: active.map(publicAccountDelegation),
+  });
+});
+
+router.all('/account-tools/communication-preferences', async (req, res) => {
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) {
+    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+    return res.status(auth.status).json({ ok: false, error: auth.error });
+  }
+  const records = await readJsonState(accountCommunicationPreferencesFile, {});
+  const key = crypto.createHash('sha256').update(String(auth.user.id)).digest('hex');
+  const current = { ...defaultCommunicationPreferences(), ...(records[key] || {}) };
+  if (req.method === 'GET') return res.json({ ok: true, preferences: current });
+  if (req.method !== 'PUT') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const preferences = sanitizeCommunicationPreferences(req.body, current);
+    records[key] = preferences;
+    await writeJsonState(accountCommunicationPreferencesFile, records);
+    return res.json({ ok: true, preferences });
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+});
+router.all('/account-tools/onboarding', async (req, res) => {
+  const auth = await authorizeAuthenticatedUser(req);
+  if (auth.error) {
+    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+    return res.status(auth.status).json({ ok: false, error: auth.error });
+  }
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  try {
+    const accountId = String(auth.user.id || '');
+    if (!/^[a-z0-9]+$/i.test(accountId)) return res.status(400).json({ ok: false, error: 'Cuenta no válida' });
+    const key = crypto.createHash('sha256').update(accountId).digest('hex');
+    const [account, allProxies, communicationRecords, onboardingRecords] = await Promise.all([
+      pocketbaseClient.collection('users').getOne(accountId),
+      pocketbaseClient.collection('user_proxies').getFullList({ filter: `user_id = "${accountId}"`, fields: 'id,user_id,status' }),
+      readJsonState(accountCommunicationPreferencesFile, {}),
+      readJsonState(accountOnboardingStateFile, {}),
+    ]);
+    const proxies = allProxies.filter((item) => String(item.user_id) === accountId);
+    if (req.method === 'POST') {
+      onboardingRecords[key] = acknowledgeOnboardingStep(onboardingRecords[key], String(req.body?.step_id || ''));
+      await writeJsonState(accountOnboardingStateFile, onboardingRecords);
+    }
+    return res.json({ ok: true,
+      onboarding: buildAccountOnboarding({ account, proxies, communicationPreferences: communicationRecords[key], acknowledged: onboardingRecords[key] }),
+      creator_diagnostic: diagnoseCreatorAccount({ account, proxies }),
+    });
+  } catch (error) {
+    if (error.message.includes('completa verificando')) return res.status(400).json({ ok: false, error: error.message });
+    logger.error(`[account-onboarding] ${error.message}`);
+    return res.status(500).json({ ok: false, error: 'No se pudo cargar el recorrido de incorporación' });
+  }
+});
 router.get('/account-tools/anomalies', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   try {
@@ -836,6 +970,40 @@ router.get('/account-tools/anomalies', async (req, res) => {
   } catch (error) {
     logger.error(`[moonbot-admin] Detección de anomalías falló: ${error.message}`);
     return res.status(502).json({ ok: false, error: 'No se pudieron analizar las cuentas' });
+  }
+});
+router.all('/account-tools/incidents', async (req, res) => {
+  const auth = await authorizeAdminOrCreator(req);
+  if (auth.error) {
+    if (auth.retryAfter) res.set('Retry-After', String(auth.retryAfter));
+    return res.status(auth.status).json({ ok: false, error: auth.error });
+  }
+  try {
+    const [users, proxies, approvals, savedState] = await Promise.all([
+      pocketbaseClient.collection('users').getFullList({ sort: '-created' }),
+      pocketbaseClient.collection('user_proxies').getFullList({ sort: '-updated' }),
+      readJsonState(accountApprovalsFile, []),
+      readJsonState(accountIncidentStateFile, {}),
+    ]);
+    const base = correlateAccountIncidents({ anomalies: detectAccountAnomalies(users, proxies), approvals });
+    if (req.method === 'GET') {
+      const incidents = base.map((item) => applyAccountIncidentState(item, savedState));
+      return res.json({ ok: true, incidents, summary: {
+        total: incidents.length,
+        open: incidents.filter((item) => item.status === 'open').length,
+        critical: incidents.filter((item) => item.severity === 'critical' && item.status !== 'resolved').length,
+        acknowledged: incidents.filter((item) => item.status === 'acknowledged').length,
+      } });
+    }
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido' });
+    const incident = base.find((item) => item.id === req.body?.incident_id);
+    if (!incident) return res.status(404).json({ ok: false, error: 'La incidencia ya no está activa' });
+    const nextState = updateAccountIncidentState(savedState, req.body, auth.user.id);
+    await writeJsonState(accountIncidentStateFile, nextState);
+    return res.json({ ok: true, incident: applyAccountIncidentState(incident, nextState) });
+  } catch (error) {
+    logger.error(`[account-incidents] ${error.message}`);
+    return res.status(500).json({ ok: false, error: 'No se pudo actualizar el centro de incidencias' });
   }
 });
 router.all('/account-tools/history', async (req, res) => {

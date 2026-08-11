@@ -1,5 +1,33 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.50 - 2026-08-11
+
+- Sincroniza Telegram React `0.0.656` y su roadmap: ID de perfil opcional, Mensajes guardados ocultable e indicadores de presencia independientes sin sondeos adicionales.
+- Completa los recorridos personalizados de incorporación (`future-2025`) con pasos según rol y progreso calculado desde el estado real del perfil, Telegram y preferencias sincronizadas.
+- Añade un diagnóstico autónomo y no destructivo para cuentas `creator` (`future-3703`), sin exponer correo, ID de Telegram ni valores de proxies en su respuesta.
+- Integra ambos controles en Ajustes reutilizando tarjetas, botones y jerarquía visual existentes; los demás roles no reciben el diagnóstico reservado al creador.
+- Impide marcar manualmente requisitos verificables: solo se pueden confirmar los pasos informativos incluidos en una lista cerrada.
+- Actualiza el roadmap con evidencia de API, interfaz y pruebas unitarias para las dos funciones completadas.
+
+### 18.23.49 - 2026-08-11
+
+- Sincroniza Telegram React `0.0.655` y su roadmap: permite ocultar Contactos, los títulos de navegación y las sugerencias de comandos de bots sin alterar el perfil visual activo.
+- Completa el centro de incidencias correlacionadas para cuentas agrupando anomalías y aprobaciones pendientes por cuenta sin exponer correos ni valores sensibles.
+- Calcula severidad, responsable y SLA verificable para cada incidencia; los avisos críticos se elevan a `creator` y los de severidad alta o media al equipo administrador.
+- Permite reconocer, posponer cuatro horas y resolver incidencias desde el panel existente, conservando el estado en el servidor y sin ejecutar sanciones automáticas.
+- Limita acciones, identificadores y duraciones mediante listas cerradas y comprueba que la señal siga activa antes de aceptar una transición.
+- Actualiza el roadmap con evidencia de API, interfaz y pruebas para `future-2001` y `future-2011`.
+
+### 18.23.48 - 2026-08-11
+
+- Sincroniza el roadmap de Telegram React con la versión `0.0.654`: navegación inferior ocultable, repliegue al desplazarse y botón flotante de mensaje nuevo configurable, preservando cada perfil visual.
+- Completa la delegación temporal de cuentas con caducidad automática, revocación y un único permiso de resumen agregado sin nombres, correos ni identificadores personales.
+- Reserva la creación y revocación de delegaciones al rol `creator`; la delegación no altera roles web ni concede permisos sobre grupos.
+- Añade al panel existente de cuentas la interfaz de delegaciones y muestra al usuario delegado un resumen limitado desde sus ajustes.
+- Completa el centro de preferencias de comunicación sincronizado entre dispositivos: canales, temas, frecuencia de resumen y horario silencioso.
+- Persiste las preferencias por una clave derivada del ID de cuenta y valida listas cerradas, horarios y zona horaria en el servidor.
+- Actualiza el roadmap únicamente para `future-2003` y `future-2204`, ambas verificadas mediante API, interfaz y pruebas unitarias.
+
 ### 18.23.47 - 2026-08-09
 
 - Integra el inspector estructural de URL y dominio de Moonbot en el Centro de seguridad web sin duplicar su motor.
