@@ -69,7 +69,7 @@ const RoadmapProgressPanel = () => {
     load();
     loadActions();
 
-    fetch('/telegram-react-roadmap.json')
+    fetch('/telegram-react-roadmap.json', { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then(setTelegramReact)
       .catch(() => setTelegramReact(null));

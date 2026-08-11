@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.51 - 2026-08-11
+
+- Evita que `/roadmap` conserve catálogos antiguos: los JSON de funciones y Telegram React se solicitan sin caché y Nginx los entrega con cabeceras `no-store`.
+- Mantiene alineadas las cifras del roadmap público y el resumen dinámico del dashboard después de cada despliegue.
+
 ### 18.23.50 - 2026-08-11
 
 - Sincroniza Telegram React `0.0.656` y su roadmap: ID de perfil opcional, Mensajes guardados ocultable e indicadores de presencia independientes sin sondeos adicionales.

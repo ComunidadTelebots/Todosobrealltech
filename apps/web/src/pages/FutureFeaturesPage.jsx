@@ -32,14 +32,14 @@ const RoadmapPage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('/future-features-1000.json')
+    fetch('/future-features-1000.json', { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then(setCatalog)
       .catch(() => setError('No se pudo cargar el roadmap.'));
   }, []);
 
   useEffect(() => {
-    fetch('/telegram-react-roadmap.json')
+    fetch('/telegram-react-roadmap.json', { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then(setTelegramReact)
       .catch(() => setTelegramReact({ items: [], summary: {} }));
