@@ -222,6 +222,20 @@ const implementedEvidence = new Map([
   ['future-2254', ['apps/web/src/components/HouseAdsManager.jsx', 'apps/api/src/routes/house-ads.js', 'apps/noticiasweb3/src/components/AdSense.jsx']],
   ['future-1216', ['apps/api/src/utils/newsSeoAudit.js', 'apps/api/src/routes/noticias-seo-audit.js', 'apps/web/src/components/NewsSeoAuditPanel.jsx']],
   ['future-1230', ['apps/api/src/utils/newsSeoAudit.js', 'apps/api/src/routes/noticias-seo-audit.js', 'apps/web/src/components/NewsSeoAuditPanel.jsx']],
+  ['future-2003', ['apps/api/src/utils/accountDelegations.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountDelegationsPanel.jsx', 'apps/web/src/components/CommunicationPreferencesPanel.jsx', 'apps/api/test/accountDelegations.test.js']],
+  ['future-2204', ['apps/api/src/utils/accountCommunicationPreferences.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/CommunicationPreferencesPanel.jsx', 'apps/api/test/accountCommunicationPreferences.test.js']],
+  ['future-2001', ['apps/api/src/utils/accountIncidentCenter.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountIncidentCenterPanel.jsx', 'apps/api/test/accountIncidentCenter.test.js']],
+  ['future-2011', ['apps/api/src/utils/accountIncidentCenter.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountIncidentCenterPanel.jsx', 'apps/api/test/accountIncidentCenter.test.js']],
+  ['future-2025', ['apps/api/src/utils/accountOnboarding.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountOnboardingPanel.jsx', 'apps/api/test/accountOnboarding.test.js']],
+  ['future-3703', ['apps/api/src/utils/accountOnboarding.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountOnboardingPanel.jsx', 'apps/api/test/accountOnboarding.test.js']],
+  ['future-0339', ['moonbot:core/moderation_insights.py', 'moonbot:core/routes_public.py', 'moonbot:web/hub.html', 'moonbot:tests/test_moderation_insights.py']],
+  ['future-0340', ['moonbot:core/moderation_insights.py', 'moonbot:core/routes_public.py', 'moonbot:web/hub.html', 'moonbot:tests/test_moderation_insights.py']],
+  ['future-0350', ['moonbot:core/moderation_insights.py', 'moonbot:core/routes_public.py', 'moonbot:web/hub.html', 'moonbot:tests/test_moderation_insights.py']],
+  ['future-0367', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0373', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0374', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0379', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0387', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
 ]);
 const partialEvidence = new Map();
 

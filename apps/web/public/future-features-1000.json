@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-08-09T21:49:06.911Z",
+  "generated_at": "2026-08-11T18:29:37.890Z",
   "status": "in_progress",
-  "implemented": 1816,
-  "scaffolded": 368,
+  "implemented": 1830,
+  "scaffolded": 360,
   "specified": 546,
-  "proposed": 3270,
-  "remaining_real": 4184,
-  "verified_percent": 30.27,
+  "proposed": 3264,
+  "remaining_real": 4170,
+  "verified_percent": 30.5,
   "totals": {
     "web": 2004,
     "moonbot": 1998,
@@ -8031,9 +8031,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "snapshots",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/moderation_insights.py",
+        "moonbot:core/routes_public.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_moderation_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0340",
@@ -8048,9 +8053,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "auditoría",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/moderation_insights.py",
+        "moonbot:core/routes_public.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_moderation_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0341",
@@ -8218,9 +8228,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/moderation_insights.py",
+        "moonbot:core/routes_public.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_moderation_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0351",
@@ -8507,9 +8522,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0368",
@@ -8609,9 +8629,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice vectorial",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0374",
@@ -8626,9 +8651,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "modelo de lenguaje",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0375",
@@ -8711,9 +8741,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "políticas de retención",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0380",
@@ -8847,9 +8882,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "línea base",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0388",
@@ -39627,9 +39667,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "eventos y trazas",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountIncidentCenter.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountIncidentCenterPanel.jsx",
+        "apps/api/test/accountIncidentCenter.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2002",
@@ -39661,9 +39706,15 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "roles con caducidad",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountDelegations.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountDelegationsPanel.jsx",
+        "apps/web/src/components/CommunicationPreferencesPanel.jsx",
+        "apps/api/test/accountDelegations.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2004",
@@ -39797,9 +39848,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas de escalado",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountIncidentCenter.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountIncidentCenterPanel.jsx",
+        "apps/api/test/accountIncidentCenter.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2012",
@@ -40035,9 +40091,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "segmentación funcional",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountOnboarding.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountOnboardingPanel.jsx",
+        "apps/api/test/accountOnboarding.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2026",
@@ -43090,9 +43151,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "perfiles de usuario",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountCommunicationPreferences.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/CommunicationPreferencesPanel.jsx",
+        "apps/api/test/accountCommunicationPreferences.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2205",
@@ -70932,9 +70998,14 @@
       "priority": "high",
       "difficulty": "easy",
       "dependency": "identity contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountOnboarding.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountOnboardingPanel.jsx",
+        "apps/api/test/accountOnboarding.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-3704",
@@ -116565,15 +116636,15 @@
     }
   ],
   "completion": {
-    "implemented": 1816,
-    "partial": 368,
-    "not_implemented": 3816
+    "implemented": 1830,
+    "partial": 360,
+    "not_implemented": 3810
   },
   "data_quality": {
     "unique_ids": 6000,
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-08-09T21:49:06.911Z"
+    "verified_at": "2026-08-11T18:29:37.890Z"
   }
 }
