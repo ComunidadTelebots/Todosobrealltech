@@ -9,3 +9,12 @@ test('el catÃ¡logo pÃºblico no filtra destinos, preset, actor ni cÃ³digo I
   assert.equal(publicAd.click_url, '/house-ads/inside-1/click');
   assert.equal(JSON.stringify(publicAd).includes('sensitive'), false);
 });
+
+test('añade automáticamente la foto segura del chat a campañas comunitarias', () => {
+  const publicAd = publicAdView({ id: 'community-1', community_items: [
+    { id: '-1001234567890', title: 'Canal', url: 'https://t.me/canal' },
+    { id: 'custom', title: 'Externo', url: 'https://example.com', image: 'https://cdn.example/avatar.jpg' },
+  ] });
+  assert.equal(publicAd.community_items[0].image, 'https://api.todosobreall.tech/house-ads/community-photo/-1001234567890');
+  assert.equal(publicAd.community_items[1].image, 'https://cdn.example/avatar.jpg');
+});

@@ -22,7 +22,7 @@ function toRfc822(dateStr) {
 
 router.get('/', async (req, res) => {
   try {
-    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}&fields=id,slug,titulo,contenido,fecha,categoria,created`;
+    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}&fields=id,slug,titulo,contenido,fecha,categoria,created,visitas`;
     const pbRes = await fetch(url);
     const pbData = await pbRes.json();
     const pbRecords = pbData.items || [];
@@ -33,6 +33,7 @@ router.get('/', async (req, res) => {
       description: (r.contenido || '').slice(0, 300),
       category: r.categoria || 'Tecnología',
       date: new Date(r.fecha || r.created),
+      views: Number(r.visitas) || 0,
     }));
 
     const staticItems = staticArticles.map(a => ({
@@ -41,6 +42,7 @@ router.get('/', async (req, res) => {
       description: a.description || '',
       category: a.category || 'Tecnología',
       date: new Date(a.date),
+      views: 0,
     }));
 
     // Merge and sort newest first
@@ -55,6 +57,7 @@ router.get('/', async (req, res) => {
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${toRfc822(item.date)}</pubDate>
       <category>${escapeXml(item.category)}</category>
+      <views>${item.views}</views>
       <description>${escapeXml(item.description)}</description>
     </item>`;
     }).join('');

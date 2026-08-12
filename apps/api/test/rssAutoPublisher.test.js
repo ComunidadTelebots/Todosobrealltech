@@ -13,6 +13,8 @@ import {
   formatTelegramNewsRichMarkdown,
   formatTelegramBackfillRichMarkdown,
   telegramHouseAdTrackingUrl,
+  newsInstantId,
+  newsWebAppUrl,
   parseTelegramViewCount,
   cleanTelegramSummaryText,
   cleanTelegramEditedBase,
@@ -23,6 +25,12 @@ import {
   telegramPendingFilter,
   telegramPublishFailureStatus,
 } from '../src/utils/rssAutoPublisher.js';
+
+test('crea un startapp estable para abrir una noticia concreta en el Hub', () => {
+  const articleUrl = 'https://noticiasweb3.todosobreall.tech/noticias/noticia-de-prueba';
+  assert.match(newsInstantId(articleUrl), /^[a-f0-9]{16}$/);
+  assert.equal(newsWebAppUrl(articleUrl), `https://t.me/CintiaBot?startapp=news_${newsInstantId(articleUrl)}`);
+});
 
 test('detecta el enlace de IFTTT sin confundirlo con el post de Telegram', () => {
   const html = '<p>Titular breve</p><a href="https://ift.tt/abc123">Fuente</a>';
@@ -165,7 +173,7 @@ test('genera el anuncio y la noticia como Rich Markdown 10.2 sin imágenes exter
 
   const message = formatTelegramNewsRichMarkdown({ titulo: 'Titular', excerpt: 'Una frase breve.', categoria: 'IA', hashtags: '#IA #NW3' }, 'titular', ad);
   assert.match(message, /^## 📰 Titular/);
-  assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
+  assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/CintiaBot\?startapp=news_[a-f0-9]{16}\)/);
   assert.match(message, /\n\n---\n\n\| \*\*COMUNIDAD DESTACADA\*\* \|/);
 });
 
@@ -180,7 +188,7 @@ test('el backfill genera el mismo diseño Rich Markdown 10.2', () => {
   );
   assert.match(message, /^## /);
   assert.match(message, /Titular de la noticia/);
-  assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/iv\?/);
+  assert.match(message, /\[Leer en NoticiasWeb3\]\(https:\/\/t\.me\/CintiaBot\?startapp=news_[a-f0-9]{16}\)/);
   assert.match(message, /\| \*\*COMUNIDAD DESTACADA\*\* \|/);
   assert.doesNotMatch(message, /<blockquote>|ift\.tt/);
 });

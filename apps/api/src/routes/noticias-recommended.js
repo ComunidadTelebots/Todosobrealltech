@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { authorizeAdminOrCreator } from './stats.js';
+import staticArticles from '../data/staticArticles.js';
 
 const router = Router();
 const moonBase = String(process.env.MOONBOT_INTERNAL_URL || 'http://moonbot:5000').replace(/\/$/, '');
 const moonHeaders = () => ({ Accept: 'application/json', 'X-Moon-Admin-Key': String(process.env.MOON_ADMIN_API_KEY || '').trim() });
 const rssCache = { expiresAt: 0, items: [] };
+const pbBase = String(process.env.POCKETBASE_HOST || process.env.POCKETBASE_INTERNAL_URL || process.env.POCKETBASE_URL || 'http://localhost:8090').replace(/\/$/, '');
 
 export const RECOMMENDED_SLOTS = [
   { id: 'home-after-content', label: 'Portada · después del contenido', variants: ['grid', 'stack', 'compact'] },
@@ -26,6 +28,43 @@ export const RECOMMENDED_ITEMS = [
 router.get('/slots', (_req, res) => {
   res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
   return res.json({ ok: true, total: RECOMMENDED_SLOTS.length, slots: RECOMMENDED_SLOTS });
+});
+
+router.get('/articles', async (req, res) => {
+  const category = String(req.query.category || '').trim().slice(0, 80);
+  const exclude = String(req.query.exclude || '').trim().slice(0, 180);
+  const limit = Math.min(Math.max(Number(req.query.limit) || 4, 1), 8);
+  const safe = (value) => String(value).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+  try {
+    const clauses = ['oculto != true'];
+    if (exclude) clauses.push(`slug != "${safe(exclude)}"`);
+    const url = new URL(`${pbBase}/api/collections/nw3_noticias/records`);
+    url.searchParams.set('filter', clauses.join(' && '));
+    url.searchParams.set('sort', '-destacado,-created');
+    url.searchParams.set('perPage', String(Math.max(limit * 4, 16)));
+    url.searchParams.set('fields', 'id,slug,titulo,categoria,fecha,created,excerpt,contenido,imagen,destacado');
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) throw new Error(`PocketBase HTTP ${response.status}`);
+    const payload = await response.json();
+    const ranked = (payload.items || [])
+      .filter((item) => item.slug && item.titulo)
+      .map((item) => ({ ...item, _sameCategory: category && item.categoria === category ? 1 : 0 }))
+      .sort((a, b) => b._sameCategory - a._sameCategory || Number(b.destacado) - Number(a.destacado))
+      .slice(0, limit)
+      .map((item) => ({ id: item.id, slug: item.slug, title: item.titulo, category: item.categoria || 'Tecnología',
+        date: item.fecha || item.created || '', summary: String(item.excerpt || item.contenido || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 180),
+        image: item.imagen || '', url: `/noticias/${encodeURIComponent(item.slug)}` }));
+    res.set('Cache-Control', 'public, max-age=120, stale-while-revalidate=600');
+    return res.json({ ok: true, total: ranked.length, items: ranked });
+  } catch {
+    const fallback = staticArticles
+      .filter((item) => item.slug !== exclude)
+      .sort((a, b) => Number(b.category === category) - Number(a.category === category))
+      .slice(0, limit)
+      .map((item) => ({ slug: item.slug, title: item.title, category: item.category || 'Tecnología', date: item.date || '',
+        summary: String(item.description || '').slice(0, 180), image: '', url: `/noticias/${encodeURIComponent(item.slug)}` }));
+    return res.json({ ok: true, total: fallback.length, items: fallback, fallback: true });
+  }
 });
 
 router.get('/rss-blocks', async (req, res) => {

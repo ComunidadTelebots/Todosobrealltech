@@ -180,7 +180,7 @@ export default function HouseAdsManager({ groups = [] }) {
     if (!group) return;
     const username = String(group.username || group.public_username || '').replace(/^@/, '');
     const photo = group.photo_url || group.photo || group.image || '';
-    setDraft((current) => ({ ...current, title: group.name || current.title, description: current.description || `Únete a ${group.name || 'nuestra comunidad'} en Telegram.`, url: username ? `https://t.me/${username}` : current.url, boost_url: username ? `https://t.me/boost/${username}` : current.boost_url, image: photo || current.image, cta: group.ctype === 'channel' ? 'Seguir canal' : 'Unirme al grupo', destination_mode: 'single', community_id: '', community_items: [] }));
+    setDraft((current) => ({ ...current, title: group.name || current.title, description: current.description || `Únete a ${group.name || 'nuestra comunidad'} en Telegram.`, url: username ? `https://t.me/${username}` : current.url, boost_url: username ? `https://t.me/boost/${username}` : current.boost_url, image: photo || current.image, source_chat_id: String(group.id), cta: group.ctype === 'channel' ? 'Seguir canal' : 'Unirme al grupo', destination_mode: 'single', community_id: '', community_items: [] }));
     setAdvice(username ? `Destino seleccionado: ${group.name}.` : `${group.name} no tiene enlace público detectado; escribe su enlace de invitación.`);
   };
   const selectTelegramCommunity = (community) => {

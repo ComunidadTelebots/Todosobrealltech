@@ -3,6 +3,7 @@ import logger from './logger.js';
 import { rewriteText } from './textRewriter.js';
 import { OFFICIAL_ADS } from './houseAdsCatalog.js';
 import { recordContentEvent } from './contentAnalytics.js';
+import { createHash } from 'node:crypto';
 
 /**
  * rssAutoPublisher
@@ -110,6 +111,19 @@ const RSS_APP_FEEDS = [
 // Canal propio donde se publican como posts NUEVOS los artículos de los feeds de
 // rss.app (a diferencia de los canales de Telegram, cuyo post original se edita).
 const PUBLISH_CHANNEL = '@TodoSobreAllTech';
+const CINTIABOT_MINIAPP_URL = 'https://t.me/CintiaBot?startapp=';
+
+function newsInstantId(articleUrl = '') {
+  return createHash('sha256').update(String(articleUrl)).digest('hex').slice(0, 16);
+}
+
+function newsWebAppUrl(articleUrl = '') {
+  return `${CINTIABOT_MINIAPP_URL}news_${newsInstantId(articleUrl)}`;
+}
+
+function newsInstantViewUrl(articleUrl = '') {
+  return `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+}
 
 function tokenForPublishChannel(channel = PUBLISH_CHANNEL) {
   // Un único bot publica y edita en todos los canales propios. El canal se
@@ -834,7 +848,7 @@ function formatTelegramHouseAdMarkdown(ad = {}) {
 
 function formatTelegramNewsRichMarkdown(article, slug, houseAd) {
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
-  const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+  const webAppUrl = newsWebAppUrl(articleUrl);
   const title = escapeRichMarkdown(String(article.titulo || '').slice(0, 200));
   const cleanBody = cleanTelegramSummaryText(article.excerpt || article.contenido, article.titulo);
   const body = escapeRichMarkdown(summarize(cleanBody, MAX_TELEGRAM_BODY_CHARS));
@@ -844,7 +858,7 @@ function formatTelegramNewsRichMarkdown(article, slug, houseAd) {
     `## 📰 ${title}`,
     body,
     hashtags,
-    `[Leer en NoticiasWeb3](${ivUrl})`,
+    `[Leer en NoticiasWeb3](${webAppUrl})`,
     campaign ? '---' : '',
     campaign,
   ].filter(Boolean).join('\n\n');
@@ -1020,12 +1034,13 @@ async function appendNw3LinkToTelegramPost(telegramUrl, slug, originalText, cate
   const chatId = `@${match[1]}`;
   const messageId = Number(match[2]);
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
-  const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+  const webAppUrl = newsWebAppUrl(articleUrl);
+  const ivUrl = newsInstantViewUrl(articleUrl);
   const originalBase = (originalText || '').trim();
 
   const richMarkdown = formatTelegramBackfillRichMarkdown(originalBase, slug, categoria, hashtags, houseAd);
   const insideAdsButton = extractInsideAdsButton(originalBase) || knownInsideAdsButton;
-  const mergedKeyboard = buildTelegramPostKeyboard(ivUrl, houseAd, insideAdsButton);
+  const mergedKeyboard = buildTelegramPostKeyboard(webAppUrl, houseAd, insideAdsButton);
 
   // El backfill usa exclusivamente la edición enriquecida de Bot API 10.2 para
   // que el diseño sea idéntico al de las publicaciones nuevas.
@@ -1106,13 +1121,14 @@ function summarize(text = '', maxLen = MAX_TELEGRAM_BODY_CHARS) {
 async function publishToTelegram(article, slug, selectedHouseAd, publishChannel = PUBLISH_CHANNEL) {
   const header = `📰 ${escapeHtml(article.titulo)}`;
   const articleUrl = `${SITE_URL}/noticias/${slug}`;
-  const ivUrl = `https://t.me/iv?url=${encodeURIComponent(articleUrl)}&rhash=170fab6bf56287`;
+  const webAppUrl = newsWebAppUrl(articleUrl);
+  const ivUrl = newsInstantViewUrl(articleUrl);
   // La API necesita el destino real para aplicar inclusiones y exclusiones.
   // No reutilizamos una campaña genérica entre canales distintos.
   const houseAd = await loadTelegramHouseAd({ chatId: await resolvePublishChatId(publishChannel), chatType: 'channel' }) || selectedHouseAd;
   const houseAdBlock = formatTelegramHouseAd(houseAd);
   const richMarkdown = formatTelegramNewsRichMarkdown(article, slug, houseAd);
-  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 <a href="${ivUrl}">Leer en NoticiasWeb3</a>${houseAdBlock ? `\n\n${houseAdBlock}` : ''}`;
+  const footer = `${article.hashtags || buildHashtags(article.categoria)}\n\n🔗 <a href="${webAppUrl}">Leer en NoticiasWeb3</a>${houseAdBlock ? `\n\n${houseAdBlock}` : ''}`;
 
   // Cuerpo = resumen breve (2-3 frases, máx. 300 caracteres), no el contenido
   // completo. Preferimos el excerpt del feed y caemos al contenido reescrito.
@@ -1127,7 +1143,7 @@ async function publishToTelegram(article, slug, selectedHouseAd, publishChannel 
   const text = `${header}\n\n${escapeHtml(body)}\n\n${footer}`;
   const publishToken = tokenForPublishChannel(publishChannel);
   if (!publishToken) return null;
-  const campaignKeyboard = buildTelegramPostKeyboard(ivUrl, houseAd);
+  const campaignKeyboard = buildTelegramPostKeyboard(webAppUrl, houseAd);
 
   try {
     let result = await telegramApi('sendRichMessage', {
@@ -1751,6 +1767,8 @@ export {
   formatTelegramNewsRichMarkdown,
   formatTelegramBackfillRichMarkdown,
   telegramHouseAdTrackingUrl,
+  newsInstantId,
+  newsWebAppUrl,
   parseTelegramViewCount,
   fetchOfficialTelegramViews,
   syncOfficialTelegramViews,

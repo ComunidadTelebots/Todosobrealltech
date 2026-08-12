@@ -46,6 +46,7 @@ function PageTracker() {
   return null;
 }
 import SiteHeader from './components/SiteHeader.jsx';
+import ReadingPreferences from './components/ReadingPreferences.jsx';
 import AdSense from './components/AdSense.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import BottomNav from './components/BottomNav.jsx';
@@ -198,6 +199,7 @@ function Layout({ children }) {
       />
       <Fab siteVersion={siteVersion} appPlatform={appPlatform} />
       <CookieBanner />
+      <ReadingPreferences />
     </div>
     </>
   );

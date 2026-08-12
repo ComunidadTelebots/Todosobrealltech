@@ -25,6 +25,7 @@ const reportsFile = '/data/house-ad-reports.json';
 const imageTypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 const CATALOG_FRESH_MS = 60_000;
 const CATALOG_STALE_MS = 10 * 60_000;
+const PUBLIC_API_URL = String(process.env.PUBLIC_API_URL || 'https://api.todosobreall.tech').replace(/\/$/, '');
 const catalogCache = { data: null, fetchedAt: 0, refresh: null };
 const deliveryFrequency = new Map();
 const affiliateApplicationRate = new Map();
@@ -216,10 +217,39 @@ async function cachedCatalog() {
 const invalidateCatalog = () => {
   catalogCache.fetchedAt = 0;
 };
+const automaticCommunityPhotoUrl = (chatId) => /^-?\d{5,24}$/.test(String(chatId || ''))
+  ? `${PUBLIC_API_URL}/house-ads/community-photo/${encodeURIComponent(String(chatId))}` : '';
+
+const withAutomaticCommunityPhotos = (ad = {}) => ({
+  ...ad,
+  image: String(ad.image || '').trim() || automaticCommunityPhotoUrl(ad.source_chat_id),
+  community_items: Array.isArray(ad.community_items) ? ad.community_items.map((item) => ({
+    ...item,
+    image: String(item?.image || '').trim() || automaticCommunityPhotoUrl(item?.id),
+  })) : [],
+});
+
 export const publicAdView = (ad = {}) => {
   const { url, web_url, telegram_url, boost_url, code, inside_ads_scope, inside_ads_preset, submitted_by, ...safe } = ad;
-  return { ...safe, has_boost: Boolean(boost_url), click_url: `/house-ads/${encodeURIComponent(String(ad.id || ''))}/click` };
+  return { ...withAutomaticCommunityPhotos(safe), has_boost: Boolean(boost_url), click_url: `/house-ads/${encodeURIComponent(String(ad.id || ''))}/click` };
 };
+
+router.get('/community-photo/:chatId', async (req, res) => {
+  const chatId = String(req.params.chatId || '');
+  if (!/^-?\d{5,24}$/.test(chatId)) return res.status(400).json({ ok: false, error: 'ID de comunidad no válido' });
+  try {
+    const response = await moonEndpoint(`/api/internal/groups/${encodeURIComponent(chatId)}/photo`, { timeoutMs: 10_000 });
+    if (!response.ok) return res.status(response.status === 404 ? 404 : 502).json({ ok: false, error: 'Foto no disponible' });
+    const contentType = String(response.headers.get('content-type') || '');
+    if (!contentType.startsWith('image/')) return res.status(502).json({ ok: false, error: 'Respuesta de imagen no válida' });
+    const body = Buffer.from(await response.arrayBuffer());
+    if (!body.length || body.length > 5 * 1024 * 1024) return res.status(502).json({ ok: false, error: 'Imagen no válida' });
+    res.set({ 'Content-Type': contentType, 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400', 'X-Content-Type-Options': 'nosniff' });
+    return res.send(body);
+  } catch {
+    return res.status(502).json({ ok: false, error: 'Moonbot no pudo obtener la foto' });
+  }
+});
 
 // Calienta el catálogo sin retrasar el arranque de la API.
 setTimeout(() => refreshCatalog().catch(() => {}), 0).unref?.();
@@ -260,7 +290,7 @@ router.get('/', async (req, res) => {
       }
     }
     const fingerprint = adRequestFingerprint(req, ads[0]?.id || 'catalog');
-    return res.json({ ok: true, ads: ads.map((ad) => { const selected = selectAdVariant(ad, fingerprint); const delivered = { ...selected, disclosure: disclosureFor(selected) }; return canInspectDestinations ? delivered : publicAdView(delivered); }), delivery: { placement, site, chat_id: chatId, chat_type: chatType, bot_id: botId, country, language, content_category: contentCategory } });
+    return res.json({ ok: true, ads: ads.map((ad) => { const selected = selectAdVariant(ad, fingerprint); const delivered = withAutomaticCommunityPhotos({ ...selected, disclosure: disclosureFor(selected) }); return canInspectDestinations ? delivered : publicAdView(delivered); }), delivery: { placement, site, chat_id: chatId, chat_type: chatType, bot_id: botId, country, language, content_category: contentCategory } });
   } catch {
     const ads = fallbackAds();
     return res.json({ ok: true, ads, fallback: true });

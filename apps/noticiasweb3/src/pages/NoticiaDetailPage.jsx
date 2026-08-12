@@ -8,6 +8,7 @@ import { TelegramEmbed, getTelegramPost } from '../components/TelegramEmbed.jsx'
 import { trackArticleView } from '../utils/analytics.js';
 import { getSiteInfo } from '../utils/site.js';
 import { ArticleLayoutPreview, parseLayoutBlocks } from '../components/NewsLegoEditor.jsx';
+import RelatedNews from '../components/RelatedNews.jsx';
 
 const DEFAULT_OG_IMAGE = 'https://noticiasweb3.todosobreall.tech/og-default.png';
 
@@ -85,7 +86,11 @@ export default function NoticiaDetailPage({ siteVersion }) {
     const key = `nw3_view_${slug}`;
     if (sessionStorage.getItem(key)) return;
     sessionStorage.setItem(key, '1');
-    fetch(`${import.meta.env.VITE_API_URL || 'https://api.todosobreall.tech'}/noticias/view/${slug}`, { method: 'POST' })
+    fetch(`${import.meta.env.VITE_API_URL || 'https://api.todosobreall.tech'}/noticias/view/${slug}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source: 'web' }),
+    })
       .then(r => r.json())
       .then(d => { if (d.visitas !== undefined) setVisitas(d.visitas); })
       .catch(() => {});
@@ -227,6 +232,8 @@ export default function NoticiaDetailPage({ siteVersion }) {
         const post = getTelegramPost(article);
         return post ? <TelegramEmbed post={post} /> : null;
       })()}
+
+      <RelatedNews category={article.category} excludeSlug={article.slug} />
 
       <div style={{ marginTop: '24px', borderTop: '1px solid #ddd', paddingTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
         <Link to="/noticias">← Volver a noticias</Link>
