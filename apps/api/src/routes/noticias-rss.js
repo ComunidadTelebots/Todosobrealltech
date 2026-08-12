@@ -22,10 +22,17 @@ function toRfc822(dateStr) {
 
 router.get('/', async (req, res) => {
   try {
-    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}&fields=id,slug,titulo,contenido,fecha,categoria,created,visitas`;
-    const pbRes = await fetch(url);
-    const pbData = await pbRes.json();
-    const pbRecords = pbData.items || [];
+    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}`;
+    let pbRecords = [];
+    try {
+      const pbRes = await fetch(url);
+      if (!pbRes.ok) throw new Error(`PocketBase returned ${pbRes.status}`);
+      const pbData = await pbRes.json();
+      pbRecords = Array.isArray(pbData.items) ? pbData.items : [];
+    } catch (err) {
+      // Keep the public feed available with bundled articles while PocketBase recovers.
+      console.error('[noticias-rss] PocketBase unavailable:', err.message);
+    }
 
     const pbItems = pbRecords.map(r => ({
       slug: r.slug,
@@ -78,6 +85,7 @@ router.get('/', async (req, res) => {
     res.set('Cache-Control', 'public, max-age=300');
     res.send(xml);
   } catch (err) {
+    console.error('[noticias-rss] Feed generation failed:', err);
     res.status(500).send('<?xml version="1.0"?><error>Error generating feed</error>');
   }
 });
