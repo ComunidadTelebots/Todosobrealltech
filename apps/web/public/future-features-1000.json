@@ -759,6 +759,25 @@
         "moon-multibot:scripts/moon-autoscale.py",
         "moon-multibot:config/moon-autoscaler.service"
       ]
+    },
+    {
+      "id": "task-transport-real-osm-routes",
+      "title": "Conducción 3D sobre rutas reales de OpenStreetMap",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El planificador consulta OSRM, convierte la geometría OpenStreetMap en una carretera 3D conducible y sincroniza sobre ella vehículo, navegación, tráfico con IA y un corredor limitado de edificios, terrenos, agua y vegetación. El escenario recto anterior queda como respaldo y el entorno OSM se muestrea para proteger el rendimiento móvil.",
+      "evidence": [
+        "moon-multibot:web/transport-osm-routing.js",
+        "moon-multibot:web/transport-osm-road-mesh.js",
+        "moon-multibot:web/transport-route-navigation.js",
+        "moon-multibot:web/transport-route-runtime.js",
+        "moon-multibot:web/transport-osm-corridor.js",
+        "moon-multibot:web/transport-europe-map.js",
+        "moon-multibot:web/transport-3d.html"
+      ]
     }
   ],
   "items": [
