@@ -227,6 +227,7 @@ export default function App() {
   }
 
   useEffect(() => {
+    document.documentElement.classList.toggle('miniapp', new URLSearchParams(window.location.search).get('miniapp') === '1');
     initGA();
     loadChannel();
   }, []);

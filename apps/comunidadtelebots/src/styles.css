@@ -480,3 +480,36 @@ h1 {
   }
   .site-tabs { overflow-x: auto; }.site-tabs button { flex: 0 0 auto; }.archive-hero { padding: 24px; }.archive-hero > svg { display: none; }.archive-card, .archive-card.image-right { grid-template-columns: 1fr; padding: 18px; }.archive-card.image-right .archive-card-icon, .archive-card.image-right .archive-card-copy { grid-column: 1; grid-row: auto; }.archive-card-icon { width: 110px; height: 110px; }
 }
+
+/* Vista integrada en CintiaBot Hub, alineada con la lectura de NoticiasWeb3. */
+html.miniapp body { min-width: 0; background: #070b14; }
+html.miniapp body.telebots-legacy main, html.miniapp main { width: 100%; max-width: 760px; padding: 12px 12px calc(30px + env(safe-area-inset-bottom)); }
+html.miniapp .site-tabs { display: none; }
+html.miniapp .channel-hero { grid-template-columns: 1fr; gap: 16px; min-height: 0; padding: 18px; border-color: #263044; border-radius: 18px; box-shadow: none; }
+html.miniapp h1 { margin: 16px 0 8px; font-size: clamp(2rem, 10vw, 3rem); line-height: 1.02; }
+html.miniapp .hero-content p { font-size: .95rem; line-height: 1.55; }
+html.miniapp .hero-actions { margin-top: 18px; }
+html.miniapp .live-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+html.miniapp .stat { min-height: 78px; padding: 11px; }
+html.miniapp .stat strong { font-size: .95rem; }
+html.miniapp .toolbar { position: sticky; top: 0; z-index: 4; gap: 8px; margin: 10px 0; padding: 8px 0; background: rgba(7, 11, 20, .96); backdrop-filter: blur(12px); }
+html.miniapp .search-box { width: 100%; border-color: #263044; border-radius: 13px; background: #111722; }
+html.miniapp .freshness { padding-inline: 4px; }
+html.miniapp .content-grid, html.miniapp .feed { grid-template-columns: 1fr; gap: 12px; }
+html.miniapp .ad-preview-side { display: none; }
+html.miniapp .ad-preview-top, html.miniapp .ad-preview-inline { min-height: 88px; margin-top: 10px; border-radius: 14px; }
+html.miniapp .post-card { min-height: 0; border-color: #263044; border-radius: 17px; background: #111722; }
+html.miniapp .post-image { aspect-ratio: 16 / 9; }
+html.miniapp .post-body { min-height: 0; padding: 15px; }
+html.miniapp .post-body p { font-size: 1rem; line-height: 1.62; }
+html.miniapp .post-link { width: 100%; min-height: 44px; border-radius: 12px; }
+
+@media (max-width: 520px) {
+  html:not(.miniapp) main { width: calc(100% - 16px); }
+  html:not(.miniapp) .channel-hero { padding: 18px; border-radius: 14px; }
+  html:not(.miniapp) h1 { font-size: clamp(2.2rem, 14vw, 3.4rem); overflow-wrap: anywhere; }
+  .post-card { min-height: 0; border-radius: 14px; }
+  .post-body { min-height: 0; padding: 15px; }
+  html.miniapp .live-panel { grid-template-columns: 1fr; }
+  html.miniapp .stat { min-height: 0; }
+}
