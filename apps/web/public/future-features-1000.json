@@ -1,6 +1,6 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-08-11T18:46:29.223Z",
+  "generated_at": "2026-08-13T00:00:00.000Z",
   "status": "in_progress",
   "implemented": 1830,
   "scaffolded": 360,
@@ -642,6 +642,121 @@
         "apps/api/src/routes/moonbot-admin.js",
         "apps/web/src/components/MoonbotSecurityCenter.jsx",
         "apps/api/test/moonbotSecurityProxy.test.js"
+      ]
+    },
+    {
+      "id": "task-hub-instant-news",
+      "title": "NoticiasWeb3 Instant dentro del Hub",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El Hub consume el RSS público de NoticiasWeb3, presenta las publicaciones con una interfaz móvil propia y permite ampliar cada noticia sin abandonar Telegram.",
+      "evidence": [
+        "apps/api/src/routes/noticias-rss.js",
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
+    },
+    {
+      "id": "task-news-reading-recommendations",
+      "title": "Lectura adaptable y noticias recomendadas",
+      "products": [
+        "web",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "NoticiasWeb3 incorpora preferencias de tipografía y tamaño, detección del navegador y recomendaciones relacionadas, con presentación coherente en web y Telegram.",
+      "evidence": [
+        "apps/noticiasweb3/src/components/ReadingPreferences.jsx",
+        "apps/noticiasweb3/src/components/RelatedNews.jsx",
+        "apps/noticiasweb3/src/components/RecommendedBlock.jsx",
+        "apps/api/src/routes/noticias-recommended.js"
+      ]
+    },
+    {
+      "id": "task-hub-games-platform",
+      "title": "Plataforma de juegos integrada en el Hub",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El Hub reúne juegos compatibles con Telegram, perfiles gráficos, versiones 2D y 3D, modo convoy y una red logística compartida entre experiencias.",
+      "evidence": [
+        "moon-multibot:web/games.html",
+        "moon-multibot:web/games-graphics.js",
+        "moon-multibot:web/games-convoy.js",
+        "moon-multibot:web/games-logistics-network.js",
+        "moon-multibot:assets/telegram-games/640x360"
+      ]
+    },
+    {
+      "id": "task-transport-simulator-evolution",
+      "title": "Simulador europeo de transporte 2D y 3D",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Rutas del Continente conserva la edición 2D y añade una edición 3D acelerada por GPU con carrera, contratos, carga, convoyes, logros y transporte especial.",
+      "evidence": [
+        "moon-multibot:web/transport-3d.html",
+        "moon-multibot:web/transport-career.js",
+        "moon-multibot:web/transport-special-cargo.js",
+        "moon-multibot:web/transport-achievements.js"
+      ]
+    },
+    {
+      "id": "task-transport-europe-world",
+      "title": "Mapa europeo, carreteras y mundo dinámico",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El simulador incorpora ciudades y rutas europeas, mapa con varios niveles de zoom y posición, carreteras continuas, paisaje basado en OpenStreetMap, servicios y eventos dinámicos.",
+      "evidence": [
+        "moon-multibot:web/transport-europe-data.js",
+        "moon-multibot:web/transport-europe-map.js",
+        "moon-multibot:web/transport-osm-scenery.js",
+        "moon-multibot:web/transport-road-surface.js",
+        "moon-multibot:web/transport-world-events.js"
+      ]
+    },
+    {
+      "id": "task-transport-vehicles-cabins-physics",
+      "title": "Vehículos, cabinas y físicas avanzadas",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Camiones, autobuses y vehículos de emergencia cuentan con texturas y materiales propios, cabinas diferenciadas, cristales y espejos funcionales, nueve cámaras, control con ratón y volantes físicos, además de físicas por vehículo, firme y clima.",
+      "evidence": [
+        "moon-multibot:web/transport-truck-exterior.js",
+        "moon-multibot:web/transport-cabin-model.js",
+        "moon-multibot:web/transport-cabin-glazing.js",
+        "moon-multibot:web/transport-bus-cabin.js",
+        "moon-multibot:web/transport-emergency-fleet.js",
+        "moon-multibot:web/transport-wheel-input.js",
+        "moon-multibot:web/transport-physics.js"
+      ]
+    },
+    {
+      "id": "task-moonbot-hostinger-autoscaling",
+      "title": "Escalado horizontal de Moonbot en Hostinger",
+      "products": [
+        "moonbot"
+      ],
+      "status": "implemented",
+      "detail": "Moonbot dispone de una topología de balanceo y un autoscaler para levantar réplicas adicionales cuando aumenta la carga, con servicio administrable en servidores Hostinger.",
+      "evidence": [
+        "moon-multibot:docker-compose.scale.yml",
+        "moon-multibot:scripts/moon-autoscale.py",
+        "moon-multibot:config/moon-autoscaler.service"
       ]
     }
   ],
@@ -116645,6 +116760,6 @@
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-08-11T18:46:29.223Z"
+    "verified_at": "2026-08-13T00:00:00.000Z"
   }
 }
