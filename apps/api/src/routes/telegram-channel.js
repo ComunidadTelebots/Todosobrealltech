@@ -52,9 +52,21 @@ function decodeCssUrl(value) {
   return value.replace(/\\([0-9a-f]{2})\s?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
 
-function extractPhotoUrl(chunk) {
-  const photoMatch = chunk.match(/tgme_widget_message_photo_wrap[^>]+style="[^"]*background-image:url\('([^']+)'\)/);
-  return photoMatch ? decodeCssUrl(photoMatch[1]) : '';
+function extractMedia(chunk) {
+  const candidates = [
+    ['photo', /tgme_widget_message_photo_wrap[^>]+style="[^"]*background-image:url\(['"]?([^'"\)]+)['"]?\)/],
+    ['video', /tgme_widget_message_video_thumb[^>]+style="[^"]*background-image:url\(['"]?([^'"\)]+)['"]?\)/],
+    ['video', /tgme_widget_message_video_player[^>]+poster="([^"]+)"/],
+    ['link', /tgme_widget_message_link_preview_image[^>]+style="[^"]*background-image:url\(['"]?([^'"\)]+)['"]?\)/],
+  ];
+  for (const [type, pattern] of candidates) {
+    const match = chunk.match(pattern);
+    if (match) return { type, previewUrl: decodeCssUrl(match[1]) };
+  }
+  if (/tgme_widget_message_video|<video\b/i.test(chunk)) return { type: 'video', previewUrl: '' };
+  if (/tgme_widget_message_document/i.test(chunk)) return { type: 'document', previewUrl: '' };
+  if (/tgme_widget_message_voice_player|tgme_widget_message_audio/i.test(chunk)) return { type: 'audio', previewUrl: '' };
+  return { type: '', previewUrl: '' };
 }
 
 function extractViews(chunk) {
@@ -78,15 +90,17 @@ function parseMessages(html, channel) {
     if (!dateMatch) continue;
 
     const text = textMatch ? stripHtml(textMatch[1]) : '';
-    const photoUrl = extractPhotoUrl(chunk);
+    const media = extractMedia(chunk);
 
     messages.push({
       id: messageId,
       date: dateMatch[1],
       text,
       views: extractViews(chunk),
-      hasPhoto: Boolean(photoUrl),
-      photoUrl,
+      hasPhoto: media.type === 'photo',
+      hasMedia: Boolean(media.type),
+      mediaType: media.type,
+      photoUrl: media.previewUrl,
       url: `https://t.me/${channel}/${messageId}`,
     });
   }
