@@ -794,6 +794,22 @@
         "moon-multibot:web/transport-osm-corridor.js",
         "moon-multibot:web/transport-3d.html"
       ]
+    },
+    {
+      "id": "task-transport-world-cargo-network",
+      "title": "Red mundial con puertos y aeropuertos de carga 3D",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Tras verificar que solo existía logística abstracta, el simulador incorpora 28 centros en 7 regiones, planificación multimodal y hubs 3D de puerto, aeropuerto y ferrocarril obtenidos de OSM o generados como respaldo. Los tramos terrestres usan OSRM y los enlaces oceánicos se mantienen como barco o avión. Trece perfiles procedurales PBR localizan visualmente cada región.",
+      "evidence": [
+        "moon-multibot:web/transport-world-network.js",
+        "moon-multibot:web/transport-cargo-hubs.js",
+        "moon-multibot:web/transport-regional-materials.js",
+        "moon-multibot:web/transport-3d.html"
+      ]
     }
   ],
   "items": [
