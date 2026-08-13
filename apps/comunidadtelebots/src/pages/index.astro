@@ -6,6 +6,11 @@ import App from '../main.jsx';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script is:inline>
+      if (new URLSearchParams(location.search).get('miniapp') === '1' || window.self !== window.top) {
+        document.documentElement.classList.add('miniapp');
+      }
+    </script>
     <meta name="description" content="Visor web del canal de Telegram Comunidad Telebots." />
     <link rel="canonical" href="https://comunidadtelebots.todosobreall.tech/" />
     <title>Comunidad Telebots</title>

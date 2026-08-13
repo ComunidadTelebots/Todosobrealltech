@@ -426,8 +426,11 @@ h1 {
 /* Vista integrada en CintiaBot Hub, alineada con la lectura de NoticiasWeb3. */
 html.miniapp body {
   min-width: 0;
+  overflow-x: hidden;
   background: #070b14;
 }
+
+html.miniapp tsa-netbar { display: none !important; }
 
 html.miniapp main {
   width: 100%;

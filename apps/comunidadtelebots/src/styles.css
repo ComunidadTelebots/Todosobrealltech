@@ -482,7 +482,8 @@ h1 {
 }
 
 /* Vista integrada en CintiaBot Hub, alineada con la lectura de NoticiasWeb3. */
-html.miniapp body { min-width: 0; background: #070b14; }
+html.miniapp body { min-width: 0; overflow-x: hidden; background: #070b14; }
+html.miniapp tsa-netbar { display: none !important; }
 html.miniapp body.telebots-legacy main, html.miniapp main { width: 100%; max-width: 760px; padding: 12px 12px calc(30px + env(safe-area-inset-bottom)); }
 html.miniapp .site-tabs { display: none; }
 html.miniapp .channel-hero { grid-template-columns: 1fr; gap: 16px; min-height: 0; padding: 18px; border-color: #263044; border-radius: 18px; box-shadow: none; }
