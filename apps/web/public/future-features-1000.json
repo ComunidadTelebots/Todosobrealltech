@@ -778,6 +778,22 @@
         "moon-multibot:web/transport-europe-map.js",
         "moon-multibot:web/transport-3d.html"
       ]
+    },
+    {
+      "id": "task-transport-osm-audited-refinements",
+      "title": "Precisión y rendimiento auditados del mundo OSM",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Tras comprobar los sistemas existentes sin duplicarlos, el simulador corrige el GPS para interpolar por distancia real, incorpora gasolineras, cargadores, aparcamientos, descansos y talleres obtenidos de OpenStreetMap, y repara el filtrado espacial del corredor con sectores, centros reales, histéresis y actualización limitada.",
+      "evidence": [
+        "moon-multibot:web/transport-osm-routing.js",
+        "moon-multibot:web/transport-osm-pois.js",
+        "moon-multibot:web/transport-osm-corridor.js",
+        "moon-multibot:web/transport-3d.html"
+      ]
     }
   ],
   "items": [
