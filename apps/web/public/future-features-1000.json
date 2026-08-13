@@ -735,7 +735,7 @@
         "webapp"
       ],
       "status": "implemented",
-      "detail": "Camiones, autobuses y vehículos de emergencia cuentan con texturas y materiales propios, cabinas diferenciadas, cristales y espejos funcionales, nueve cámaras, control con ratón y volantes físicos, además de físicas por vehículo, firme y clima. La cabina del camión usa una envolvente interior curvada y oculta la piel exterior que obstruía las cámaras interiores.",
+      "detail": "Camiones, autobuses y vehículos de emergencia cuentan con texturas y materiales propios, cabinas diferenciadas, cristales y espejos funcionales, nueve cámaras, control con ratón y volantes físicos, además de físicas por vehículo, firme y clima. La cabina usa una envolvente interior curvada, separa la visibilidad interior y exterior para evitar piezas sobresalientes, suaviza la silueta aerodinámica y añade ruedas con flancos, llantas, bujes, ventilación, tornillos y banda de rodadura modelados.",
       "evidence": [
         "moon-multibot:web/transport-truck-exterior.js",
         "moon-multibot:web/transport-cabin-model.js",
