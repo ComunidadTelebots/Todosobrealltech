@@ -665,6 +665,7 @@
       "title": "Lectura adaptable y noticias recomendadas",
       "products": [
         "web",
+        "moonbot",
         "webapp"
       ],
       "status": "implemented",
