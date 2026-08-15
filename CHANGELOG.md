@@ -1,5 +1,12 @@
 # Changelog - TodoSobreAllTech
 
+### 18.23.52 - 2026-08-15
+
+- Actualiza `/roadmap` con el ciclo real de publicación de Rutas del Continente: Estable, RC, Beta y Alfa.
+- Documenta por separado la primera edición 3D, la simulación terrestre candidata, la carrera europea en pruebas y el mundo multimodal experimental.
+- Explica que el master asigna cada canal por usuario de Telegram y mantiene diferenciadas las funciones publicadas, en progreso y pendientes.
+- Sustituye la versión única `3D v0.4` por un estado de desarrollo por canales respaldado por el historial Git y el código publicado de Moonbot.
+
 ### 18.23.51 - 2026-08-11
 
 - Evita que `/roadmap` conserve catálogos antiguos: los JSON de funciones y Telegram React se solicitan sin caché y Nginx los entrega con cabeceras `no-store`.
