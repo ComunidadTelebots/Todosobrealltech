@@ -68,6 +68,8 @@ Los límites de Telegram mostrados son referencias de envío publicadas en su [F
 
 ### Transporte y ubicación
 
+El desplegable CDN regionales cita el anuncio oficial de 23/07/2017 como cobertura histórica de mejora de descargas (Sudamérica, Turquía, Indonesia, India, Irán e Irak). No confirma ciudades, direcciones operativas ni disponibilidad actual. NetworksDB asocia 91.108.20.0/22 a Azerbaiyán, sin confirmar Bakú o capacidad. No hay evidencia en las fuentes aportadas para presentar Bakú, Teherán, Yakarta, Estambul, São Paulo o Buenos Aires como nodos medidos. Referencias: https://telegram.org/blog/encrypted-cdns y https://networksdb.io/ip-addresses-of/telegram-messenger-inc.
+
 Moonbot `v18.23.17-alpha.2` amplía de 10 a 32 las conexiones retenidas por el pool HTTPS de cada bot durante ráfagas. Ya existía reutilización con Requests; este cambio evita descartar tantas conexiones al superar diez llamadas concurrentes. No impone límite de concurrencia, no añade reintentos automáticos ni altera TLS/proxies. El último 429 se devuelve inmediatamente con `retry_after`; el bucle getUpdates respeta esa espera antes de volver a consultar. No garantiza menor RTT de red.
 
 La API web consulta recursos/operaciones y balanceo en paralelo y libera los cuerpos HTTP fallidos antes de reintentar lecturas. Las ubicaciones DC son referencias regionales de la documentación de Pyrogram, no geolocalización en vivo: DC1/DC3 Miami, DC2/DC4 Ámsterdam, DC5 Singapur. CDN y Bot API quedan como ubicación no confirmada. Configurar `MOON_API_LOCATION` con la ciudad/región real del despliegue para identificar el origen de las mediciones; no se infiere a partir de IPs privadas o de la ubicación del navegador.
