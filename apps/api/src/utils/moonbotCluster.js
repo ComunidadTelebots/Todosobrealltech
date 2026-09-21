@@ -142,6 +142,17 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
       try { return { node: row.id, ...await botRequest(row.id) }; }
       catch { return { node: row.id, ok: false, error: 'Control por bot no disponible; comprueba versión, clave y MOON_NODE_ID' }; }
     }));
+    const workers = await Promise.all(rows.map(async row => {
+      if (!row.running) return { node: row.id, operations: null };
+      if (row.id === active) return { node: row.id, operations, error: operations ? null : 'Telemetría no disponible' };
+      try {
+        if (!token) throw new Error();
+        const node = nodes.find(item => item.id === row.id);
+        const response = await fetcher(`${node.url}/api/telemetry/operations`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3000), redirect: 'error' });
+        if (!response.ok) throw new Error();
+        return { node: row.id, operations: projectOperations(await response.json()) };
+      } catch { return { node: row.id, operations: null, error: 'Telemetría no disponible' }; }
+    }));
     const peerLatency = await Promise.all(rows.filter(row => row.running).map(async row => {
       try {
         const node = nodes.find(item => item.id === row.id);
@@ -155,7 +166,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
             at: typeof item.at === 'number' && Number.isFinite(item.at) ? item.at : null })) };
       } catch { return { source: row.id, error: 'Medición entre nodos no disponible', rows: [] }; }
     }));
-    return { peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
+    return { workers, peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
       ok: true, configured: nodes.length > 0, active, busy, nodes: rows, balancer, balancerError, operations, resources, telemetryErrors,
       api: apiTraffic.snapshot(), events: saved.events, observedAt: new Date().toISOString() };
   }

@@ -61,3 +61,7 @@ Configurar `MOON_PEER_NODES` en cada Moonbot con una lista de `{ "id": "otro-nod
 La web indica dirección, milisegundos, hora, destino detenido, fallo o muestra caducada (60 segundos). Los bots de un mismo proceso no tienen ping entre sí. Por separado, cada bot muestra la media de respuesta de la API de Telegram en 60 segundos, incluyendo long polling, errores y reintentos; no es ICMP ni un indicador puro de latencia de red.
 
 Configurar el identificador y los pares para medir ping no activa la pausa de bots: requiere además habilitar explícitamente MOON_TRAFFIC_CONTROL_ENABLED.
+
+## Mapa de workers
+
+Cada worker del mapa representa un Docker configurado, con su inventario de bots dentro. La API consulta la telemetría de cada Docker en ejecución; los porcentajes comparan llamadas de sus ventanas recientes de 60 segundos y se ocultan si faltan mediciones. No representan saturación de CPU. La ayuda entre workers se realiza mediante traslados manuales, sin autoescalado. El gestor del clúster coordina controles y el destino de la web; no es un receptor central de mensajes de Telegram. Cada bot mantiene su conexión Bot API o TDLib.

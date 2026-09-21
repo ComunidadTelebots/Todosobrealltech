@@ -41,6 +41,33 @@ async function setup(t, options = {}) {
   const cluster = createMoonbotCluster({ nodes, docker, stateFile, wait: async () => {}, attempts: 1, fetcher: async (url) => ({ ok: true, json: async () => ({ ok: !(options.unhealthyBackup && url.includes('backup')) }) }), ...options.overrides });
   return { cluster, calls, running, stateFile };
 }
+test('keeps worker telemetry separate and leaves failed workers unknown', async t => {
+  const requested = [];
+  let failBackup = false;
+  const { cluster, running } = await setup(t, { overrides: { token: 'test', fetcher: async url => {
+    if (url.endsWith('/api/telemetry/operations')) {
+      const host = new URL(url).hostname;
+      requested.push(host);
+      if (host === 'backup' && failBackup) throw new Error('offline');
+      return { ok: true, json: async () => ({ ok: true, schema: 1, total: {}, last60s: { calls: host === 'primary' ? 75 : 25 } }) };
+    }
+    return { ok: true, json: async () => ({ ok: true }) };
+  } } });
+  running['moon-backup'] = true;
+  let status = await cluster.snapshot();
+  assert.deepEqual(status.workers.map(row => [row.node, row.operations.last60s.calls]), [['primary', 75], ['backup', 25]]);
+  assert.equal(requested.filter(host => host === 'primary').length, 1);
+  failBackup = true;
+  status = await cluster.snapshot();
+  assert.equal(status.workers[1].operations, null);
+  assert.ok(status.workers[1].error);
+  requested.length = 0;
+  running['moon-backup'] = false;
+  status = await cluster.snapshot();
+  assert.equal(status.workers[1].operations, null);
+  assert.ok(!requested.includes('backup'));
+});
+
 test('validates configured origins and rejects duplicates and injected container names', () => {
   assert.equal(parseNodes(JSON.stringify(nodes)).length, 2);
   assert.throws(() => parseNodes(JSON.stringify([nodes[0], nodes[0]])));
