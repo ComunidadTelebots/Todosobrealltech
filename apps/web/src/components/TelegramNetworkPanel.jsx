@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import apiServerClient from '@/lib/apiServerClient';
+import TelegramNetworkInventory from './TelegramNetworkInventory';
 const ms = (value) => value == null ? '—' : `${value.toLocaleString('es-ES')} ms`;
 
 export default function TelegramNetworkPanel({ client = apiServerClient }) {
@@ -30,5 +31,6 @@ export default function TelegramNetworkPanel({ client = apiServerClient }) {
     {error && <p role="alert" className="rounded-lg border border-amber-500/30 p-3 text-sm">{error}. {data ? 'Se conserva la última medición.' : ''}</p>}
     <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="text-xs text-muted-foreground"><tr>{['Destino', 'IP / dominio', 'Estado', 'Último', 'Media', 'Mín. / máx.', 'Conexiones'].map((label) => <th className="whitespace-nowrap border-b p-2" key={label}>{label}</th>)}</tr></thead><tbody>{data?.targets.map((target) => <tr key={target.id}><td className="whitespace-nowrap p-2 font-medium">{target.label}</td><td className="p-2 font-mono text-xs">{target.host}:{target.port}</td><td className={`whitespace-nowrap p-2 text-xs ${target.ok ? 'text-emerald-600' : 'text-amber-600'}`}>{target.ok ? 'Conecta' : ['EACCES', 'EPERM'].includes(target.error) ? 'Bloqueado en origen' : target.error === 'TIMEOUT' ? 'Sin respuesta' : target.error}</td><td className="whitespace-nowrap p-2 tabular-nums">{ms(target.ms)}</td><td className="whitespace-nowrap p-2 tabular-nums">{ms(target.avgMs)}</td><td className="whitespace-nowrap p-2 text-xs tabular-nums">{ms(target.minMs)} / {ms(target.maxMs)}</td><td className="whitespace-nowrap p-2 text-xs">{target.successful}/{target.samples} correctas</td></tr>)}</tbody></table>{!data && <p className="p-4 text-sm text-muted-foreground">{busy ? 'Comprobando los destinos públicos de Telegram…' : 'Sin mediciones disponibles.'}</p>}</div>
     <p className="text-xs text-muted-foreground">Los dominios incluyen resolución DNS. Un fallo puede deberse a la red de este servidor; no demuestra una caída global. No se mide pérdida de paquetes ICMP.</p><p className="text-xs text-muted-foreground">DC: direcciones de arranque del <a className="underline" href="https://github.com/telegramdesktop/tdesktop/blob/dev/Telegram/SourceFiles/mtproto/mtproto_dc_options.cpp" target="_blank" rel="noreferrer">cliente oficial</a>. CDN: hosts públicos de medios observados en <a className="underline" href="https://t.me/s/telegram" target="_blank" rel="noreferrer">Telegram News</a>. Los CDN cifrados de MTProto se asignan dinámicamente y no se descubren con esta prueba.</p>
+    <TelegramNetworkInventory />
   </section>;
 }
