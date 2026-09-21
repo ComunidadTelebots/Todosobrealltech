@@ -45,6 +45,8 @@ export async function requestMoonbot(path, {
         headers: { ...moonbotAdminHeaders(), 'Content-Type': 'application/json', ...headers },
       });
       if (![502, 503, 504].includes(response.status) || attempt === maxAttempts) return response;
+      // Release the failed response before retrying so its socket is not held.
+      await response.body?.cancel();
       lastError = new Error(`Moonbot HTTP ${response.status}`);
     } catch (error) {
       lastError = error;

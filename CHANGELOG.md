@@ -1,6 +1,7 @@
 # Changelog - TodoSobreAllTech
 
 ### Centro de operaciones Moonbot - 2026-09-21
+- Paraleliza consultas operativas, libera respuestas antes de reintentos y añade ubicación regional DC/origen configurable.
 - Añade balanceo, métricas Telegram/API, recursos y límites Docker al dashboard administrativo.
 - Incorpora conmutación entre contenedores permitidos, verificación de salud y recuperación del origen.
 - Mide tráfico Express sin retener mensajes, credenciales ni rutas privadas.

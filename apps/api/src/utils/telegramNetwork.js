@@ -57,7 +57,7 @@ export function createTelegramNetwork({ probe = tcpProbe, now = Date.now, interv
         history };
     }));
     completedAt = now();
-    cached = { ok: true, measuredAt: new Date(completedAt).toISOString(), intervalSeconds: intervalMs / 1000, origin: 'Servidor API de todosobreall.tech', method: 'TCP connect :443 (DNS incluido para dominios)', targets: rows };
+    cached = { ok: true, measuredAt: new Date(completedAt).toISOString(), intervalSeconds: intervalMs / 1000, origin: 'Servidor API de todosobreall.tech', originLocation: String(process.env.MOON_API_LOCATION || '').trim().slice(0, 120) || null, method: 'TCP connect :443 (DNS incluido para dominios)', targets: rows };
     return cached;
   }
   function snapshot() {

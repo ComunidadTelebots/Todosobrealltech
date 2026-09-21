@@ -105,6 +105,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     let operations = null;
     let resources = null;
     const telemetryErrors = [];
+    const telemetryTask = (async () => {
     if (token && node) {
       await Promise.all([
         ['/api/telemetry/operations', projectOperations, (value) => { operations = value; }, 'Telegram: instala la instrumentación de telemetría en Moonbot o comprueba su JWT.'],
@@ -117,6 +118,8 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         } catch { telemetryErrors.push(message); }
       }));
     } else telemetryErrors.push('Configura un nodo y MOON_BALANCER_TOKEN para leer Telegram y los recursos.');
+    })();
+    const balancerTask = (async () => {
     if (!token) balancerError = 'Falta MOON_BALANCER_TOKEN para consultar el balanceador de aprendizaje.';
     else if (node) {
       try {
@@ -128,6 +131,8 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
           plan: data.state.last_plan || {}, words: data.stats.words, rate: data.stats.rate, progress: data.stats.billion_progress };
       } catch { balancerError = 'Moonbot no devuelve telemetría válida del balanceador.'; }
     }
+    })();
+    await Promise.all([telemetryTask, balancerTask]);
     return { ok: true, configured: nodes.length > 0, active, busy, nodes: rows, balancer, balancerError, operations, resources, telemetryErrors,
       api: apiTraffic.snapshot(), events: saved.events, observedAt: new Date().toISOString() };
   }

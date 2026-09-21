@@ -6,6 +6,26 @@ import path from 'node:path';
 import { createMoonbotCluster, parseNodes } from '../src/utils/moonbotCluster.js';
 
 const nodes = [{ id: 'primary', container: 'moon-primary', url: 'http://primary:5000' }, { id: 'backup', container: 'moon-backup', url: 'http://backup:5000' }];
+
+test('starts balance telemetry while resource requests are still pending', async (t) => {
+  const started = [];
+  let release;
+  const barrier = new Promise((resolve) => { release = resolve; });
+  const { cluster } = await setup(t, { overrides: { token: 'test', fetcher: async (url) => {
+    if (url.endsWith('/health')) return { ok: true, json: async () => ({ ok: true }) };
+    started.push(new URL(url).pathname);
+    if (started.length === 3) release();
+    await barrier;
+    return { ok: true, json: async () => ({ ok: true, state: {}, stats: {} }) };
+  } } });
+  const timeout = setTimeout(release, 1000);
+  try {
+    const pending = cluster.snapshot();
+    await barrier;
+    assert.equal(started.length, 3, 'all independent telemetry requests must start before any completes');
+    await pending;
+  } finally { clearTimeout(timeout); release(); }
+});
 async function setup(t, options = {}) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'moon-cluster-'));
   t.after(() => fs.rm(dir, { recursive: true, force: true }));

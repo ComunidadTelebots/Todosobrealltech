@@ -2,6 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { requestMoonbot } from '../src/utils/moonbotConnection.js';
 
+test('libera el cuerpo fallido antes de reintentar sin cancelar la respuesta final', async () => {
+  const events = [];
+  await requestMoonbot('/health', {
+    retryDelayMs: 1,
+    fetchImpl: async () => {
+      events.push('fetch');
+      return { status: events.length === 1 ? 503 : 200, body: { cancel: async () => events.push('cancel') } };
+    },
+  });
+  assert.deepEqual(events, ['fetch', 'cancel', 'fetch']);
+});
+
 test('reintenta lecturas mientras Moonbot arranca', async () => {
   let calls = 0;
   const response = await requestMoonbot('/health', {

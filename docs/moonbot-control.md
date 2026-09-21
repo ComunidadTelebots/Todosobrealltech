@@ -66,6 +66,14 @@ Los límites de Telegram mostrados son referencias de envío publicadas en su [F
 
 ## Ping de centros de datos y CDN
 
+### Transporte y ubicación
+
+Moonbot `v18.23.17-alpha.2` amplía de 10 a 32 las conexiones retenidas por el pool HTTPS de cada bot durante ráfagas. Ya existía reutilización con Requests; este cambio evita descartar tantas conexiones al superar diez llamadas concurrentes. No impone límite de concurrencia, no añade reintentos automáticos ni altera TLS/proxies. El último 429 se devuelve inmediatamente con `retry_after`; el bucle getUpdates respeta esa espera antes de volver a consultar. No garantiza menor RTT de red.
+
+La API web consulta recursos/operaciones y balanceo en paralelo y libera los cuerpos HTTP fallidos antes de reintentar lecturas. Las ubicaciones DC son referencias regionales de la documentación de Pyrogram, no geolocalización en vivo: DC1/DC3 Miami, DC2/DC4 Ámsterdam, DC5 Singapur. CDN y Bot API quedan como ubicación no confirmada. Configurar `MOON_API_LOCATION` con la ciudad/región real del despliegue para identificar el origen de las mediciones; no se infiere a partir de IPs privadas o de la ubicación del navegador.
+
+Para comparar antes/después, usar la misma máquina, ruta y carga: RTT TCP mide apertura; la latencia Telegram incluye long polling. Observar latencia de respuestas, errores y 429 por separado. No se fuerza una IP/DC diferente para Bot API ni se reducen las esperas de Telegram. Un traslado de hosting o un servidor Bot API local requiere mediciones y configuración de despliegue específica.
+
 El panel incluye un inventario desplegable de los 9 rangos IPv4 y 5 IPv6 publicados en `https://core.telegram.org/resources/cidr.txt`, consultados el 21/09/2026, y enlaza la referencia NetworksDB aportada por el usuario. El inventario es una instantánea documentada, no un descubrimiento de servidores: no asigna un ping al rango, no escanea IPs y no deduce ubicación o función a partir del registro de organización.
 
 `GET /moonbot-admin/cluster/network` exige la misma autenticación administrativa y mide apertura TCP al puerto 443 desde el proceso Express (incluye DNS para dominios). Usa exclusivamente nueve destinos fijos: cinco DC de producción, un alternativo de DC2, dos CDN públicos de medios observados en Telegram News y Bot API. No acepta IPs, dominios ni puertos del navegador. Las direcciones DC se verificaron en el [código oficial de Telegram Desktop](https://github.com/telegramdesktop/tdesktop/blob/dev/Telegram/SourceFiles/mtproto/mtproto_dc_options.cpp); los hosts CDN `cdn1.telesco.pe` y `cdn4.telesco.pe` se observaron en `https://t.me/s/telegram` el 21/09/2026.
