@@ -17,6 +17,7 @@ const MoonbotAutomationsCenter = lazy(() => import('@/components/MoonbotAutomati
 const MoonbotIntegrationsCenter = lazy(() => import('@/components/MoonbotIntegrationsCenter.jsx'));
 const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperationsCenter.jsx'));
 const MoonbotLoadBalancer = lazy(() => import('@/components/MoonbotLoadBalancer.jsx'));
+const MoonbotEnvironments = lazy(() => import('@/components/MoonbotEnvironments.jsx'));
 const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
 const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotModerationProductivity.jsx'));
 const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
@@ -24,7 +25,10 @@ const MoonbotTelegramChat = lazy(() => import('@/components/MoonbotTelegramChat.
 const RoadmapProgressPanel = lazy(() => import('@/components/RoadmapProgressPanel.jsx'));
 const MoonbotFeatureCenter = lazy(() => import('@/components/MoonbotFeatureCenter.jsx'));
 
+const MoonbotMessageRanking = lazy(() => import('@/components/MoonbotMessageRanking.jsx'));
+
 const MASTER_SECTIONS = [
+  ['Ranking de mensajes', 'moon-message-ranking'],
   ['Experiencia y preferencias', 'moon-experience'],
   ['Grupos', 'moon-groups'],
   ['Canales', 'moon-channels'],
@@ -42,6 +46,7 @@ const MASTER_SECTIONS = [
   ['Integraciones', 'moon-integrations'],
   ['Operaciones', 'moon-operations'],
   ['Balanceo y contenedores', 'moon-balancer'],
+  ['Versiones y entornos', 'moon-environments'],
   ['Funciones verificadas', 'moon-features'],
 ];
 
@@ -105,7 +110,7 @@ const MoonbotAdminOverview = () => {
     window.setTimeout(() => document.getElementById('moon-active-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
   };
   const activeLabel = MASTER_SECTIONS.find(([, id]) => id === activeSection)?.[0];
-  const activePanel = activeSection === 'moon-experience' ? <MoonbotExperienceCenter groups={data?.groups || []} />
+  const activePanel = activeSection === 'moon-message-ranking' ? <MoonbotMessageRanking /> : activeSection === 'moon-experience' ? <MoonbotExperienceCenter groups={data?.groups || []} />
     : activeSection === 'moon-groups' ? <MoonbotGroupsManager groups={telegramGroups} entityType="group" />
       : activeSection === 'moon-channels' ? <MoonbotGroupsManager groups={telegramChannels} entityType="channel" />
         : activeSection === 'moon-chat' ? <MoonbotTelegramChat bots={data?.instances || []} />
@@ -121,6 +126,7 @@ const MoonbotAdminOverview = () => {
                           : activeSection === 'moon-automations' ? <MoonbotAutomationsCenter groups={data?.groups || []} />
                             : activeSection === 'moon-integrations' ? <MoonbotIntegrationsCenter groups={data?.groups || []} />
                               : activeSection === 'moon-operations' ? <MoonbotOperationsCenter groups={data?.groups || []} />
+                                : activeSection === 'moon-environments' ? <MoonbotEnvironments />
                                 : activeSection === 'moon-balancer' ? <MoonbotLoadBalancer />
                                 : activeSection === 'moon-features' ? <MoonbotFeatureCenter /> : null;
 
@@ -142,6 +148,8 @@ const MoonbotAdminOverview = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <Button variant="outline" onClick={() => openSection('moon-balancer')}>Abrir balanceo y contenedores</Button>
+        <Button variant="outline" onClick={() => openSection('moon-environments')}>Versiones y entornos Moonbot</Button>
+        {isMaster && <Button variant="outline" onClick={() => openSection('moon-message-ranking')}>Ranking de mensajes por chat</Button>}
         {error && <div className="flex gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
         {data && <>
           <RoadmapProgressPanel />
@@ -156,7 +164,7 @@ const MoonbotAdminOverview = () => {
             <h3 className="font-semibold">Acciones master</h3>
             <p className="mb-3 text-sm text-muted-foreground">Los mismos centros de gestión de la MiniApp, organizados para la web.</p>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
-              {MASTER_SECTIONS.map(([label, id]) => (
+              {MASTER_SECTIONS.filter(([, id]) => id !== 'moon-message-ranking' || isMaster).map(([label, id]) => (
                 <Button key={id} variant={activeSection === id ? 'default' : 'outline'} className="h-auto justify-start py-3 text-left" onClick={() => openSection(id)}>
                   {label}
                 </Button>

@@ -75,3 +75,16 @@ test('observes real HTTP responses through Express', async (t) => {
   assert.equal(snapshot.total.limited, 1);
   assert.equal(snapshot.inflight, 0);
 });
+
+
+test('per-bot projection accepts only anonymous ids and numeric counters', () => {
+  const result = projectOperations({ ok: true, schema: 1, total: {}, last60s: {}, bots: [
+    { id: 'aabbccddeeff', token: 'SECRET', last60s: { calls: 2, received: -1, text: 'PRIVATE' } },
+    { id: 'SECRET', last60s: { calls: 10 } },
+  ] });
+  assert.equal(result.bots.length, 1);
+  assert.equal(result.bots[0].last60s.calls, 2);
+  assert.equal(result.bots[0].last60s.received, null);
+  assert.ok(!JSON.stringify(result).includes('SECRET'));
+  assert.ok(!JSON.stringify(result).includes('PRIVATE'));
+});

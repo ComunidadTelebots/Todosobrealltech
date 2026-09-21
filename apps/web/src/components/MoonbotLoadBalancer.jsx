@@ -1,8 +1,10 @@
+import MoonbotDeploymentControl from '@/components/MoonbotDeploymentControl.jsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Activity, ArrowRight, Box, RefreshCw, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import apiServerClient from '@/lib/apiServerClient';
 import MoonbotTrafficPanel from '@/components/MoonbotTrafficPanel.jsx';
+import MoonbotTelegramFlow from '@/components/MoonbotTelegramFlow.jsx';
 import TelegramNetworkPanel from '@/components/TelegramNetworkPanel.jsx';
 
 const labels = { running: 'En ejecución', exited: 'Detenido', created: 'Preparado', unavailable: 'Sin conexión', restarting: 'Reiniciando' };
@@ -53,7 +55,7 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
   };
   const balancer = data?.balancer;
   const stale = Boolean(error);
-  const blocked = readOnly || switching || data?.busy || stale || !data?.active;
+  const blocked = readOnly || !data?.canManage || data?.interrupted || switching || data?.busy || stale || !data?.active;
   const maxSources = Math.max(1, ...history.map((point) => Number(point.sources) || 0));
 
   return <section className="mt-6 space-y-5 rounded-2xl border border-cyan-500/25 bg-background p-4 sm:p-6" aria-label="Balanceo y contenedores Moonbot">
@@ -79,6 +81,8 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
         {target && <div className="mt-4 rounded-xl border border-amber-500/40 p-4" role="region" aria-label="Confirmar cambio"><p className="text-sm">Cambiar de <b>{data.active}</b> a <b>{target.id}</b>. El destino debe tener los mismos datos y configuración de bots.</p><div className="mt-3 flex flex-wrap gap-2"><Button disabled={blocked} onClick={switchNode}>Confirmar cambio</Button><Button variant="ghost" disabled={switching} onClick={() => setTarget(null)}>Cancelar</Button></div></div>}
       </section>
     </div>
+    <MoonbotDeploymentControl data={data} client={client} readOnly={readOnly} stale={stale} refresh={load} />
+    <MoonbotTelegramFlow data={data} stale={stale} />
     <MoonbotTrafficPanel data={data} />
     <TelegramNetworkPanel client={client} />
     <section><h3 className="mb-3 font-semibold">Historial de conmutaciones</h3><div className="space-y-2">{data?.events.slice(0, 10).map((event, index) => <div key={`${event.at}-${index}`} className="flex flex-wrap justify-between gap-2 rounded-lg border px-3 py-2 text-sm"><span>{events[event.status] || event.status} · {event.from} → {event.to}</span><time className="text-xs text-muted-foreground">{new Date(event.at).toLocaleString()}</time></div>)}{!data?.events.length && <p className="text-sm text-muted-foreground">Sin conmutaciones registradas.</p>}</div></section>

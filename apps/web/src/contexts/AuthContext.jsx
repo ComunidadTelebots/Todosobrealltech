@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
 
     const unsubscribe = pb.authStore.onChange((token, model) => {
       setCurrentUser(model);
+      if (!token) apiServerClient.fetch('/moonbot-environments/session', { method: 'DELETE' }).catch(() => {});
     });
 
     return () => {
