@@ -17,11 +17,16 @@ export function projectResources(data) {
 export function projectTdlibMigration(data) {
   if (data?.ok !== true || data.schema !== 1 || !Array.isArray(data.bots)) throw new Error('Estado TDLib no disponible');
   return { configured: data.configured === true, readyForFullMigration: false,
+    inbox: data.inbox?.enabled === true ? (data.inbox.error ? { enabled: true, error: 'Cola no disponible' } : {
+      enabled: true, capacity: number(data.inbox.capacity), oldestPendingSeconds: number(data.inbox.oldest_pending_seconds),
+      states: Object.fromEntries(['pending', 'claimed', 'running', 'uncertain', 'done'].map(key => [key, number(data.inbox.states?.[key] ?? 0)])),
+      workers: Array.isArray(data.inbox.workers) ? data.inbox.workers.slice(0, 200).map(worker => ({ id: text(worker.id), paused: Boolean(worker.paused), running: number(worker.running), completed: number(worker.completed) })) : [],
+    }) : { enabled: false },
     audit: data.audit ? Object.fromEntries(['methods', 'call_sites', 'dynamic_calls', 'parse_errors'].map(key => [key, number(data.audit[key])])) : null,
     botsTruncated: data.bots_truncated === true,
     bots: data.bots.slice(0, 200).filter(row => /^[a-f0-9]{12}$/.test(row?.id)).map(row => ({
       id: row.id, loaded: row.loaded === true, ready: row.ready === true, running: row.running === true,
-      authState: text(row.auth_state), incoming: row.incoming === 'bot_api' ? 'bot_api' : 'unknown',
+      authState: text(row.auth_state), incoming: ['bot_api', 'local_bot_api_tdlib'].includes(row.incoming) ? row.incoming : 'unknown',
       receiver: row.receiver ? { events: number(row.receiver.events), queued: number(row.receiver.queued), capacity: number(row.receiver.capacity),
         overflows: number(row.receiver.overflows), manualStop: row.receiver.manual_stop === true } : null,
     })) };
