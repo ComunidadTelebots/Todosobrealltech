@@ -13,3 +13,5 @@ El ranking corresponde al despliegue conectado, no fusiona réplicas o Docker in
 ## Flujo animado de Telegram
 
 La telemetría publica una ventana de 60 segundos por bot (hasta 64 identidades anónimas derivadas de la configuración). El panel dibuja los 8 con más llamadas: cyan para mensajes recibidos y violeta para peticiones a la Bot API, con velocidad creciente según volumen. No representa latencia ni un paquete por punto, ni implementa redistribución de actualizaciones entre tokens. Se pausa manualmente, con movimiento reducido o al caducar la lectura tras 15 segundos. Los bots sin actividad no tienen puntos en movimiento.
+
+El panel incluye el gestor de contenedores activo/reserva y la cuota de peticiones por bot (peticiones del bot / total global de los últimos 60 s). No confunde esa cuota con saturación de CPU ni capacidad Docker: esa medida no está disponible por contenedor. Con cero peticiones el porcentaje no aplica. No existe todavía distribución automática de tokens entre varios contenedores activos.
