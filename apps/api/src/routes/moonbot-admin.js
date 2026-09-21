@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import dns from 'node:dns/promises';
 import logger from '../utils/logger.js';
+import { moonbotCluster } from '../utils/moonbotCluster.js';
 import { authorizeAdminOrCreator, authorizeAuthenticatedUser } from './stats.js';
 import pocketbaseClient from '../utils/pocketbaseClient.js';
 import { createAccountRecoveryPlan } from '../utils/accountRecovery.js';
@@ -694,7 +695,8 @@ function serviceConfig(res) {
 
 async function moonRequest(path, { timeoutMs = 6000, ...options } = {}) {
   const serviceKey = (process.env.MOON_ADMIN_API_KEY || '').trim();
-  return fetch(`${MOONBOT_INTERNAL_URL}${path}`, {
+  const origin = await moonbotCluster().activeUrl(MOONBOT_INTERNAL_URL);
+  return fetch(`${origin}${path}`, {
     ...options,
     signal: AbortSignal.timeout(timeoutMs),
     headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Moon-Admin-Key': serviceKey, ...(options.headers || {}) },

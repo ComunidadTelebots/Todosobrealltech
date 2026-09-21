@@ -16,6 +16,7 @@ const MoonbotAIAdvancedTools = lazy(() => import('@/components/MoonbotAIAdvanced
 const MoonbotAutomationsCenter = lazy(() => import('@/components/MoonbotAutomationsCenter.jsx'));
 const MoonbotIntegrationsCenter = lazy(() => import('@/components/MoonbotIntegrationsCenter.jsx'));
 const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperationsCenter.jsx'));
+const MoonbotLoadBalancer = lazy(() => import('@/components/MoonbotLoadBalancer.jsx'));
 const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
 const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotModerationProductivity.jsx'));
 const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
@@ -40,6 +41,7 @@ const MASTER_SECTIONS = [
   ['Automatizaciones', 'moon-automations'],
   ['Integraciones', 'moon-integrations'],
   ['Operaciones', 'moon-operations'],
+  ['Balanceo y contenedores', 'moon-balancer'],
   ['Funciones verificadas', 'moon-features'],
 ];
 
@@ -118,6 +120,7 @@ const MoonbotAdminOverview = () => {
                           : activeSection === 'moon-automations' ? <MoonbotAutomationsCenter groups={data?.groups || []} />
                             : activeSection === 'moon-integrations' ? <MoonbotIntegrationsCenter groups={data?.groups || []} />
                               : activeSection === 'moon-operations' ? <MoonbotOperationsCenter groups={data?.groups || []} />
+                                : activeSection === 'moon-balancer' ? <MoonbotLoadBalancer />
                                 : activeSection === 'moon-features' ? <MoonbotFeatureCenter /> : null;
 
   return (
@@ -128,6 +131,7 @@ const MoonbotAdminOverview = () => {
         <Button size="sm" variant="outline" onClick={load} disabled={loading}><RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Actualizar</Button>
       </CardHeader>
       <CardContent className="space-y-6">
+        <Button variant="outline" onClick={() => openSection('moon-balancer')}>Abrir balanceo y contenedores</Button>
         {error && <div className="flex gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
         {data && <>
           <RoadmapProgressPanel />
@@ -158,7 +162,7 @@ const MoonbotAdminOverview = () => {
         </>}
       </CardContent>
     </Card>
-    {data && activePanel && <section id="moon-active-panel" className="scroll-mt-24"><div className="mt-6 flex items-center justify-between rounded-xl border bg-background p-3"><Button variant="ghost" onClick={() => setActiveSection('')}><ArrowLeft className="mr-2 h-4 w-4" />Volver al índice</Button><Badge variant="secondary">{activeLabel}</Badge></div><Suspense fallback={<div className="mt-4 h-40 animate-pulse rounded-2xl border bg-muted/20" />}>{activePanel}</Suspense></section>}
+    {activePanel && <section id="moon-active-panel" className="scroll-mt-24"><div className="mt-6 flex items-center justify-between rounded-xl border bg-background p-3"><Button variant="ghost" onClick={() => setActiveSection('')}><ArrowLeft className="mr-2 h-4 w-4" />Volver al índice</Button><Badge variant="secondary">{activeLabel}</Badge></div><Suspense fallback={<div className="mt-4 h-40 animate-pulse rounded-2xl border bg-muted/20" />}>{activePanel}</Suspense></section>}
     </>
   );
 };

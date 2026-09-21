@@ -16,6 +16,7 @@ import previewRouter from './preview.js';
 import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
 import moonbotAdminRouter from './moonbot-admin.js';
+import moonbotClusterRouter from './moonbot-cluster.js';
 import houseAdsRouter from './house-ads.js';
 
 const router = Router();
@@ -37,6 +38,7 @@ export default () => {
     router.use('/preview', previewRouter);
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);
+    router.use('/moonbot-admin/cluster', moonbotClusterRouter);
     router.use('/moonbot-admin', moonbotAdminRouter);
     router.use('/house-ads', houseAdsRouter);
     // Alias neutral: algunos bloqueadores interceptan cualquier URL que incluya

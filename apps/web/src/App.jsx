@@ -25,6 +25,7 @@ const BotsPage = lazy(() => import('@/pages/BotsPage.jsx'));
 const AdminPage = lazy(() => import('@/pages/AdminPage.jsx'));
 const AdminStatisticsPage = lazy(() => import('@/pages/AdminStatisticsPage.jsx'));
 const CreatorPage = lazy(() => import('@/pages/CreatorPage.jsx'));
+const MoonbotControlPreview = import.meta.env.DEV ? lazy(() => import('@/pages/MoonbotControlPreview.jsx')) : null;
 const TranslationsPage = lazy(() => import('@/pages/TranslationsPage.jsx'));
 const OnionWebManagement = lazy(() => import('@/pages/OnionWebManagement.jsx'));
 const BlogPage = lazy(() => import('@/pages/BlogPage.jsx'));
@@ -97,6 +98,7 @@ function App() {
                   <Route path="/terms" element={<TermsPage />} />
                   <Route path="/cookies" element={<CookiePolicyPage />} />
                   <Route path="/roadmap" element={<FutureFeaturesPage />} />
+                  {import.meta.env.DEV && <Route path="/dev/moonbot-control" element={<MoonbotControlPreview />} />}
                   
                   <Route
                     path="/dashboard"

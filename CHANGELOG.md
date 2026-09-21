@@ -1,5 +1,11 @@
 # Changelog - TodoSobreAllTech
 
+### Centro de operaciones Moonbot - 2026-09-21
+- Añade balanceo, métricas Telegram/API, recursos y límites Docker al dashboard administrativo.
+- Incorpora conmutación entre contenedores permitidos, verificación de salud y recuperación del origen.
+- Mide tráfico Express sin retener mensajes, credenciales ni rutas privadas.
+- Integra telemetría Moonbot con contrato v1 y vista previa exclusiva de desarrollo.
+
 ### Estructura de builds web por canal - 2026-07-30
 - Mantiene `web` como despliegue stable predeterminado y aÃ±ade servicios opt-in separados para RC, beta y alpha.
 - Cada imagen hornea su canal y versiÃ³n, mostrados permanentemente junto al nombre de la web.

@@ -18,5 +18,9 @@ Thumbs.db
 .env.example.bak*
 
 # Backups temporales
+.moonbot-reference/
+.moonbot-integration/
+integrations/moonbot/__pycache__/
+apps/api/data/moonbot-cluster.json*
 *.bak
 *.bak*
