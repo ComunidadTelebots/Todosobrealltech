@@ -1113,6 +1113,22 @@ async function moonRequest(path, { timeoutMs = 6000, ...options } = {}) {
   return requestMoonbot(path, { timeoutMs, ...options });
 }
 
+router.get('/message-ranking', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (req.adminUser.role !== 'creator') return res.status(403).json({ ok: false, error: 'El ranking global está reservado al creador' });
+  if (!serviceConfig(res)) return;
+  const days = String(req.query.days || '7'); const kind = String(req.query.kind || 'all');
+  if (!['1', '7', '30'].includes(days) || !['all', 'animation', 'photo', 'video', 'video_note', 'voice', 'audio', 'document', 'sticker', 'poll', 'contact', 'location', 'venue', 'dice', 'text', 'other'].includes(kind)) return res.status(400).json({ ok: false, error: 'Filtros inválidos' });
+  res.set('Cache-Control', 'private, no-store');
+  try {
+    const response = await moonRequest(`/api/internal/message-ranking?days=${days}&kind=${kind}`);
+    if (!response.ok) return res.status(502).json({ ok: false, error: 'Analítica no disponible. Comprueba la versión y el almacenamiento de Moonbot.' });
+    return res.json(await response.json());
+  } catch {
+    return res.status(502).json({ ok: false, error: 'No se pudo conectar con la analítica de Moonbot' });
+  }
+});
+
 router.get('/dashboard', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (!serviceConfig(res)) return;

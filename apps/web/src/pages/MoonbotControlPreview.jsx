@@ -1,6 +1,21 @@
 import React from 'react';
+import MoonbotMessageRanking from '@/components/MoonbotMessageRanking.jsx';
 import MoonbotLoadBalancer from '@/components/MoonbotLoadBalancer.jsx';
 import MoonbotEnvironments from '@/components/MoonbotEnvironments.jsx';
+
+const rankingPreview = {
+  fetch: async (url) => ({ ok: true, url }),
+  readJson: async (response) => {
+    const params = new URL(response.url, 'http://localhost').searchParams;
+    const days = Number(params.get('days')); const kind = params.get('kind');
+    const rows = [{ id: '-10001', name: 'Telebots · ejemplo', types: { text: 120, photo: 32, voice: 8 } }, { id: '-10002', name: 'Moonbot · ejemplo', types: { text: 80, video: 42, sticker: 60 } }].map(row => {
+      const types = Object.fromEntries(Object.entries(row.types).map(([key, value]) => [key, value * days]));
+      const total = Object.values(types).reduce((a, b) => a + b, 0);
+      return { ...row, types, total, score: kind === 'all' ? total : types[kind] || 0 };
+    }).filter(row => row.score).sort((a, b) => b.score - a.score);
+    return { ok: true, rows, total: rows.reduce((sum, row) => sum + row.score, 0), chats: rows.length, observed_since: Date.now() / 1000 - days * 86400 };
+  },
+};
 
 const environmentPreview = {
   fetch: async () => ({ ok: true }),
@@ -40,5 +55,5 @@ const client = {
   }),
 };
 export default function MoonbotControlPreview() {
-  return <main className="mx-auto max-w-7xl px-4 py-8"><div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"><b>Vista previa local · datos de ejemplo</b><p className="text-sm">Esta pantalla permite revisar el diseño sin PocketBase ni Docker. Los controles están deshabilitados. En el Dashboard encontrarás Versiones y entornos y Balanceo y contenedores.</p></div><MoonbotEnvironments client={environmentPreview} readOnly /><MoonbotLoadBalancer client={client} readOnly /></main>;
+  return <main className="mx-auto max-w-7xl px-4 py-8"><div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"><b>Vista previa local · datos de ejemplo</b><p className="text-sm">Esta pantalla permite revisar el diseño sin PocketBase ni Docker. Las acciones sobre Docker están deshabilitadas; puedes probar los filtros del ranking. En el Dashboard encontrarás Versiones y entornos y Balanceo y contenedores.</p></div><MoonbotMessageRanking client={rankingPreview} /><MoonbotEnvironments client={environmentPreview} readOnly /><MoonbotLoadBalancer client={client} readOnly /></main>;
 }
