@@ -91,3 +91,69 @@ test('reports Docker unavailability without inventing healthy nodes', async (t) 
   assert.ok(status.nodes.every((node) => node.status === 'unavailable' && !node.healthy));
   assert.equal(status.balancer, null);
 });
+
+async function finishJob(cluster) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const snapshot = await cluster.snapshot();
+    if (!snapshot.busy && snapshot.job?.status !== 'running') return snapshot;
+    await new Promise(resolve => setTimeout(resolve, 5));
+  }
+  throw new Error('job did not finish');
+}
+
+test('pauses routing persistently and resumes only after container health', async t => {
+  const { cluster, running, stateFile } = await setup(t);
+  await cluster.startJob({ action: 'pause-container', node: 'primary', actor: 'creator' });
+  const paused = await finishJob(cluster);
+  assert.equal(paused.paused, true);
+  assert.equal(paused.active, null);
+  assert.equal(running['moon-primary'], false);
+  await assert.rejects(cluster.activeUrl('fallback'), /pausado/);
+  assert.equal(JSON.parse(await fs.readFile(stateFile)).paused, true);
+  await cluster.startJob({ action: 'resume-container', node: 'primary', actor: 'creator' });
+  assert.equal((await finishJob(cluster)).job.status, 'completed');
+  assert.equal(await cluster.activeUrl('fallback'), 'http://primary:5000');
+});
+
+test('updates the stopped reserve from the allowlist and serializes with switching', async t => {
+  const replacements = [];
+  const { cluster } = await setup(t, { overrides: { releases: [{ id: 'alpha', image: 'fixed-digest' }], replaceContainer: async options => { replacements.push(options); return { backup: 'previous' }; } } });
+  await assert.rejects(cluster.startJob({ action: 'update', node: 'backup', release: 'arbitrary' }));
+  await cluster.startJob({ action: 'update', node: 'backup', release: 'alpha', actor: 'creator' });
+  await assert.rejects(cluster.switchTo({ from: 'primary', to: 'backup' }), /en curso/);
+  assert.equal((await finishJob(cluster)).job.status, 'completed');
+  assert.equal(replacements[0].image, 'fixed-digest');
+  await cluster.startJob({ action: 'update', node: 'primary', release: 'alpha' });
+  assert.equal((await finishJob(cluster)).job.status, 'failed');
+  assert.equal(replacements.length, 1);
+});
+
+test('transfers bot only after confirmed drain and keeps source paused on uncertain destination', async t => {
+  const bot = 'aabbccddeeff'; const operations = [];
+  const states = { primary: { id: bot, controllable: true, paused: false, revision: 0, offset: 17, inflight: 0 }, backup: { id: bot, controllable: true, paused: true, revision: 0, offset: 0, inflight: 0 } };
+  const { cluster, running } = await setup(t, { overrides: { adminKey: 'private-key', fetcher: async (url, options) => {
+    const node = new URL(url).hostname;
+    if (url.endsWith('/health')) return { ok: true, json: async () => ({ ok: true }) };
+    if (options?.method === 'POST') {
+      const request = JSON.parse(options.body); operations.push(`${node}/${request.action}`);
+      states[node].paused = request.action === 'pause'; states[node].revision++;
+      if (request.offset != null) states[node].offset = request.offset;
+      if (node === 'backup') throw new Error('reply lost');
+    }
+    return { ok: true, json: async () => ({ ok: true, node, bots: [{ ...states[node] }] }) };
+  } } });
+  running['moon-backup'] = true;
+  await cluster.startJob({ action: 'transfer-bot', node: 'primary', to: 'backup', bot });
+  const result = await finishJob(cluster);
+  assert.equal(result.job.status, 'failed');
+  assert.deepEqual(operations, ['primary/pause', 'backup/resume']);
+  assert.equal(states.primary.paused, true);
+  assert.equal(states.backup.offset, 17);
+});
+
+test('a restarted API blocks new operations when the prior job was unfinished', async t => {
+  const { stateFile } = await setup(t);
+  await fs.writeFile(stateFile, JSON.stringify({ active: 'primary', events: [], job: { status: 'running' } }));
+  const cluster = createMoonbotCluster({ nodes, stateFile, docker: async () => { throw new Error('must not mutate'); } });
+  await assert.rejects(cluster.startJob({ action: 'pause-container', node: 'primary' }), /interrumpida/);
+});

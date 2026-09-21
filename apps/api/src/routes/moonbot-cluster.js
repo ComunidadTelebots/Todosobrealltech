@@ -10,10 +10,11 @@ router.use(async (req, res, next) => {
   const auth = await authorizeAdminOrCreator(req);
   if (auth.error) return res.status(auth.status).json({ ok: false, error: auth.error });
   req.clusterActor = auth.user.id;
+  req.clusterCanManage = auth.user.role === 'creator';
   next();
 });
 router.get('/', async (req, res) => {
-  try { res.json(await moonbotCluster().snapshot()); }
+  try { res.json({ ...await moonbotCluster().snapshot(), canManage: req.clusterCanManage }); }
   catch (error) { res.status(error.status || 503).json({ ok: false, error: error.message }); }
 });
 router.get('/network', async (req, res) => {
@@ -36,7 +37,15 @@ router.get('/cdn', async (req, res) => {
   } catch { res.status(503).json({ ok: false, error: 'Descubrimiento CDN no disponible en Moonbot.' }); }
 });
 router.post('/switch', async (req, res) => {
+  if (!req.clusterCanManage) return res.status(403).json({ ok: false, error: 'Solo el creador puede gestionar tráfico y versiones' });
   try { res.json(await moonbotCluster().switchTo({ from: req.body?.from, to: req.body?.to, actor: req.clusterActor })); }
   catch (error) { res.status(error.status || 503).json({ ok: false, error: error.message }); }
+});
+router.post('/operations', express.json({ limit: '8kb' }), async (req, res) => {
+  if (!req.clusterCanManage) return res.status(403).json({ ok: false, error: 'Solo el creador puede gestionar tráfico y versiones' });
+  try {
+    const { action, node, to, bot, release } = req.body || {};
+    res.status(202).json(await moonbotCluster().startJob({ action, node, to, bot, release, actor: req.clusterActor }));
+  } catch (error) { res.status(error.status || 503).json({ ok: false, error: error.message }); }
 });
 export default router;
