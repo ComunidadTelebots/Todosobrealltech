@@ -1,4 +1,5 @@
 import MoonbotWorkerTopology from '@/components/MoonbotWorkerTopology.jsx';
+import MoonbotTdlibMigration from '@/components/MoonbotTdlibMigration.jsx';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -36,6 +37,7 @@ export default function MoonbotTelegramFlow({ data, stale }) {
     <p className="mt-2 text-xs text-muted-foreground">Modo activo/reserva: el gestor cambia el Docker activo; no distribuye automáticamente bots por token entre varios Docker. Cada cliente usa su token, que permanece oculto.</p>
     <div className="mt-3 rounded-lg border border-violet-500/30 p-3"><h4 className="font-semibold">Gestor de contenedores · activo / reserva</h4><div className="mt-2 flex flex-wrap gap-2">{(data?.nodes || []).map(node => <span key={node.id} className={`rounded-lg border px-3 py-2 text-sm ${data.active === node.id ? 'border-violet-500 bg-violet-500/10' : 'bg-muted/20'}`}><b>{node.id}</b> · {data.active === node.id ? 'Activo seleccionado' : node.running ? 'En ejecución · no seleccionado' : 'Reserva detenida'}</span>)}</div><p className="mt-2 text-xs text-muted-foreground">{data?.busy ? 'Conmutación en curso.' : 'La conmutación y la comprobación de salud se controlan desde Cambio de contenedor.'} El mapa de workers muestra el reparto de peticiones por Docker; no mide el porcentaje de saturación del contenedor.</p></div>
     <MoonbotWorkerTopology data={data} running={running} />
+    <MoonbotTdlibMigration data={data} />
     <details><summary className="cursor-pointer py-2 text-sm font-semibold">Detalle de conexiones del Docker principal</summary>
     {!rows.length ? <p className="my-4 rounded-lg border border-dashed p-4 text-sm">{bots == null ? 'El despliegue aún no publica tráfico por bot. Actualiza Moonbot para ver las conexiones individuales.' : 'Todavía no se han observado llamadas de bots.'} API de Telegram: api.telegram.org.</p> : <>
       <div className="overflow-x-auto"><svg viewBox={`0 0 1180 ${height}`} className="mt-3 w-full min-w-[850px]" role="img" aria-label="Telegram y su Bot API conectados con los bots del Docker activo; detalle numérico en la tabla">

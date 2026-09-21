@@ -4,7 +4,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { apiTraffic } from './apiTraffic.js';
-import { projectOperations, projectResources } from './moonbotTelemetry.js';
+import { projectOperations, projectResources, projectTdlibMigration } from './moonbotTelemetry.js';
 
 const failure = (message, status = 409) => Object.assign(new Error(message), { status });
 
@@ -166,7 +166,16 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
             at: typeof item.at === 'number' && Number.isFinite(item.at) ? item.at : null })) };
       } catch { return { source: row.id, error: 'Medición entre nodos no disponible', rows: [] }; }
     }));
-    return { workers, peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
+    const tdlib = await Promise.all(rows.filter(row => row.running).map(async row => {
+      try {
+        if (!token) throw new Error();
+        const node = nodes.find(item => item.id === row.id);
+        const response = await fetcher(`${node.url}/api/telemetry/tdlib-migration`, { headers: { Authorization: `Bearer ${token}` }, redirect: 'error', signal: AbortSignal.timeout(3000) });
+        if (!response.ok) throw new Error();
+        return { node: row.id, ...projectTdlibMigration(await response.json()) };
+      } catch { return { node: row.id, error: 'Estado TDLib no disponible; comprueba versión y conexión.' }; }
+    }));
+    return { tdlib, workers, peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
       ok: true, configured: nodes.length > 0, active, busy, nodes: rows, balancer, balancerError, operations, resources, telemetryErrors,
       api: apiTraffic.snapshot(), events: saved.events, observedAt: new Date().toISOString() };
   }
