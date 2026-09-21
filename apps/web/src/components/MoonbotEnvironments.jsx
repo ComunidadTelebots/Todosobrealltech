@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ExternalLink, RefreshCw, Server, ShieldCheck, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import apiServerClient from '@/lib/apiServerClient.js';
+import MoonbotPermissionAlerts from '@/components/MoonbotPermissionAlerts.jsx';
 
 const channels = { dev: 'Desarrollo', alpha: 'Alfa', beta: 'Beta', rc: 'RC' };
 const colors = { dev: 'bg-violet-500/10 text-violet-700', alpha: 'bg-amber-500/10 text-amber-700', beta: 'bg-blue-500/10 text-blue-700', rc: 'bg-emerald-500/10 text-emerald-700' };
@@ -92,6 +93,10 @@ export default function MoonbotEnvironments({ client = apiServerClient, readOnly
       {!data.targets.length && <p className="rounded-lg border border-dashed p-5 text-sm text-muted-foreground">{data.configured ? 'No tienes entornos asignados. El creador puede habilitarlos para tu cuenta.' : 'Todavía no hay entornos Docker registrados. Configura sus direcciones protegidas para poder asignarlos aquí.'}</p>}
       <p className="flex items-start gap-2 rounded-lg bg-cyan-500/5 p-3 text-sm"><ShieldCheck className="h-5 w-5 shrink-0 text-cyan-700" /><span>El acceso se comprueba al entrar y en cada nueva petición. La sesión dura 10 minutos; puedes renovarla abriendo el entorno desde aquí. Moonbot conserva su propio inicio de sesión y sus permisos internos.</span></p>
       {data.canManage && <div className="space-y-5 border-t pt-5"><div><h3 className="flex items-center gap-2 text-lg font-semibold"><Users className="h-5 w-5" />Asignar acceso a administradores</h3><p className="mt-1 text-sm text-muted-foreground">Solo el creador puede cambiar estos permisos. Los permisos propios sustituyen a los generales; el creador tiene acceso a todos los entornos registrados.</p></div>
+        <MoonbotPermissionAlerts security={data.security} accounts={data.accounts} disabled={readOnly || loading || !!error} review={async (id, outcome) => {
+          await call(`/alerts/${encodeURIComponent(id)}/review`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ outcome }) });
+          await load();
+        }} />
         {savedMessage && <p role="status" className="text-sm text-emerald-700">{savedMessage}</p>}
         <AccessEditor key={`global-${data.global.revision}`} policy={data.global} targets={data.targets} title="Acceso general de administradores" disabled={readOnly || !!error || loading} save={save} />
         <label className="block text-sm">Buscar administrador<input className="mt-2 block w-full rounded-md border bg-background px-3 py-2" placeholder="Nombre o identificador" value={query} onChange={(event) => setQuery(event.target.value)} /></label>

@@ -5,6 +5,10 @@ import MoonbotEnvironments from '@/components/MoonbotEnvironments.jsx';
 const environmentPreview = {
   fetch: async () => ({ ok: true }),
   readJson: async () => ({ ok: true, canManage: true, source: 'creator', configured: true, accessReady: true,
+    security: { available: true, rules: [{ kind: 'denied_open', title: 'Accesos reiterados sin permiso', threshold: 5 }], alerts: [
+      { id: 'demo-denied', kind: 'denied_open', actor: 'admin-demo-ana', target: 'moon-dev', status: 'open', severity: 'warning', count: 6, lastAt: Date.now(), title: 'Accesos reiterados sin permiso', explanation: 'Ejemplo: seis aperturas de desarrollo denegadas en cinco minutos. Revisa si se trata de un enlace antiguo o un intento de acceso indebido.' },
+      { id: 'demo-grant', kind: 'broad_grant', actor: 'creador-demo', scope: 'global', added: ['moon-rc'], status: 'reviewed', severity: 'warning', count: 1, lastAt: Date.now() - 600000, reviewedAt: Date.now() - 300000, reviewedBy: 'creador-demo', outcome: 'expected', title: 'Ampliación de permisos para revisar', explanation: 'Ejemplo: se concedió acceso general a RC.' },
+    ] },
     targets: ['dev', 'alpha', 'beta', 'rc'].map((channel) => ({ id: `moon-${channel}`, channel,
       name: `Moonbot ${channel === 'alpha' ? 'Alfa' : channel.toUpperCase()}`, version: `18.23.17-${channel}.3`,
       host: `moon-${channel}.todosobreall.tech`, url: `https://moon-${channel}.todosobreall.tech` })),

@@ -26,12 +26,15 @@ import { createEnvironmentRouter } from './moonbot-environments.js';
 import { createEnvironmentService, environmentConfig, environmentRepository } from '../utils/moonbotEnvironments.js';
 import pb from '../utils/pocketbaseClient.js';
 import { authorizeAdminOrCreator } from './stats.js';
+import { createPermissionAbuseMonitor } from '../utils/permissionAbuse.js';
+import path from 'node:path';
 
 let environments;
 const environmentService = () => {
     if (!environments) environments = createEnvironmentService({
         ...environmentConfig(process.env.MOON_ENVIRONMENTS, process.env.RELEASE_COOKIE_DOMAIN),
         secret: process.env.MOON_ENVIRONMENT_SECRET, repository: environmentRepository(pb),
+        monitor: createPermissionAbuseMonitor({ stateFile: process.env.MOON_PERMISSION_AUDIT_FILE || (process.platform === 'win32' ? path.resolve('data/moonbot-permission-audit.json') : '/data/moonbot-permission-audit.json') }),
     });
     return environments;
 };

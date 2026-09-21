@@ -52,6 +52,20 @@ Si los Docker ya existen, aplica a **todos sus routers** las etiquetas ForwardAu
 
 ## API y verificación
 
+### Detección de abuso de permisos
+
+El creador ve las alertas en **Versiones y entornos**, con identidad comprobada, umbral, motivo y alcance cuando están disponibles. No implica culpabilidad y no congela cuentas automáticamente. Puede marcar una observación como actividad esperada o revisada para investigar. Una nueva observación que alcance el umbral vuelve a abrir la alerta y conserva la última revisión.
+
+Se detectan cinco aperturas denegadas o veinte sesiones nuevas en cinco minutos, cualquier intento autenticado de asignar permisos sin autorización, ampliaciones del acceso general o de tres entornos a una cuenta, y uso reiterado de sesiones válidas sin permiso vigente. En el gateway se cuenta como máximo una denegación por cuenta/entorno cada treinta segundos para reducir el ruido de assets y pestañas abiertas. Cookies ausentes o caducadas y errores de configuración o base de datos no cuentan como abuso.
+
+Las firmas inválidas se agregan sin atribuirlas a cuentas: nunca se confía en la identidad escrita dentro de una cookie no verificada. Se toma como máximo una muestra por entorno cada dos segundos y se alerta a partir de veinte muestras en cinco minutos. Este agregado no identifica al origen de las peticiones.
+
+El archivo `MOON_PERMISSION_AUDIT_FILE` conserva hasta 200 alertas durante siete días y 2000 observaciones en la ventana activa. El valor predeterminado es `/data/moonbot-permission-audit.json` en Linux y `data/moonbot-permission-audit.json` en Windows. El servicio API ya monta `/data`; mantén una sola réplica escritora y no compartas el archivo entre réplicas. Se serializan escrituras y se sustituye el archivo de forma atómica. Si falla el almacenamiento se muestra una advertencia; los controles de autorización siguen funcionando. Los límites y el muestreo pueden omitir eventos bajo carga. No es un registro forense completo.
+
+No se guardan tokens, cookies, IP, cuerpos de peticiones ni mensajes. La revisión solo guarda resultado, autor y fecha. Los administradores no pueden leer ni revisar alertas. Se consulta al actualizar el panel; no se envían notificaciones externas. Este detector cubre los permisos de entrada a los entornos, no las acciones internas de Moonbot ni el resto de permisos de la web.
+
+`POST /moonbot-environments/alerts/:id/review` acepta `{outcome: "expected" | "investigate"}` exclusivamente para el creador.
+
 - `GET /moonbot-environments`: destinos propios; para el creador también políticas generales y administradores.
 - `PUT /moonbot-environments/access`: solo creador; `{scope: "global" | accountId, mode: "custom" | "inherit", targets: [id], revision: number}`.
 - `POST /moonbot-environments/:id/open`: emite la cookie HttpOnly/Secure específica y devuelve la URL permitida.

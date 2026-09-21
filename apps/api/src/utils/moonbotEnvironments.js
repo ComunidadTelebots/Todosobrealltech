@@ -25,7 +25,7 @@ export function environmentConfig(raw = '[]', cookieDomain = '.todosobreall.tech
   return { targets, domain };
 }
 
-export function createEnvironmentService({ repository, targets, domain, secret, now = () => Date.now() }) {
+export function createEnvironmentService({ repository, targets, domain, secret, now = () => Date.now(), monitor = { record: async () => {}, snapshot: async () => ({ available: false, alerts: [], rules: [] }) } }) {
   const locks = new Set();
   const targetFor = (id) => {
     const target = targets.find((item) => item.id === id);
@@ -62,6 +62,7 @@ export function createEnvironmentService({ repository, targets, domain, secret, 
         configured: targets.length > 0, accessReady: typeof secret === 'string' && secret.length >= 32,
         targets: targets.filter((item) => access.targets.includes(item.id)) };
       if (user.role === 'creator') {
+        result.security = await monitor.snapshot();
         result.global = policyView(await repository.policy('global'), 'global');
         result.accounts = await Promise.all((await repository.admins()).map(async (account) => ({
           id: account.id, name: account.name || account.username || account.id, frozen: !!account.is_frozen,
@@ -71,7 +72,12 @@ export function createEnvironmentService({ repository, targets, domain, secret, 
       return result;
     },
     async assign(actorId, { scope, mode, targets: selected, revision }) {
-      if ((await getUser(actorId)).role !== 'creator') throw fail('Solo el creador puede asignar accesos', 403);
+      try {
+        if ((await getUser(actorId)).role !== 'creator') throw fail('Solo el creador puede asignar accesos', 403);
+      } catch (error) {
+        if (error.status === 403) await monitor.record({ kind: 'denied_assign', actor: actorId });
+        throw error;
+      }
       if (!ID.test(scope || '') || !['custom', 'inherit'].includes(mode) || (scope === 'global' && mode !== 'custom')
         || !Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(selected) || selected.length > 24
         || selected.some((id) => typeof id !== 'string') || new Set(selected).size !== selected.length) throw fail('Asignación inválida');
@@ -83,40 +89,66 @@ export function createEnvironmentService({ repository, targets, domain, secret, 
       try {
         const previous = await repository.policy(scope);
         if ((previous?.revision || 0) !== revision) throw fail('Los permisos cambiaron; actualiza antes de guardar', 409);
+        const general = scope === 'global' ? [] : (await repository.policy('global'))?.targets || [];
+        const before = previous?.mode === 'custom' ? previous.targets || [] : general;
+        const after = mode === 'custom' ? selected : general;
+        const added = after.filter((id) => !before.includes(id));
         const next = { scope, mode, targets: selected, revision: revision + 1, assigned_by: actorId,
           history: [{ at: new Date(now()).toISOString(), actor: actorId, mode, targets: selected,
             previousMode: previous?.mode || 'inherit', previousTargets: previous?.targets || [] }, ...(previous?.history || [])].slice(0, 50) };
         await repository.save(previous, next);
+        if (added.length && (scope === 'global' || added.length >= 3)) await monitor.record({ kind: 'broad_grant', actor: actorId, scope, added });
         return { ok: true, policy: policyView(next, scope) };
       } finally { locks.delete(scope); }
     },
     async open(actorId, id) {
-      const target = targetFor(id); const user = await getUser(actorId);
-      if (!await allowed(user, id)) throw fail('No tienes acceso a este entorno', 403);
+      let target; let user;
+      try {
+        user = await getUser(actorId); target = targetFor(id);
+        if (!await allowed(user, id)) throw fail('No tienes acceso a este entorno', 403);
+      } catch (error) {
+        if ([403, 404].includes(error.status)) await monitor.record({ kind: 'denied_open', actor: actorId, target: targets.some((item) => item.id === id) ? id : null });
+        throw error;
+      }
       const issued = Math.floor(now() / 1000);
       const body = Buffer.from(JSON.stringify({ sub: user.id, target: id, fingerprint: fingerprint(target), iat: issued, exp: issued + TTL })).toString('base64url');
       const signature = crypto.createHmac('sha256', key()).update(body).digest('base64url');
+      await monitor.record({ kind: 'sessions', actor: actorId, target: id });
       return { url: target.url, cookie: cookie(id, `${body}.${signature}`), expiresIn: TTL };
     },
     async authorize(id, cookies, host, protocol) {
       const target = targetFor(id);
       if (host !== target.host || protocol !== 'https') throw fail('Destino no autorizado', 403);
       const token = String(cookies || '').split(';').map((part) => part.trim()).find((part) => part.startsWith(`${cookieName(id)}=`))?.slice(cookieName(id).length + 1);
-      if (!token || token.length > 2048) throw fail('Abre este entorno desde todosobreall.tech', 403);
+      if (!token) throw fail('Abre este entorno desde todosobreall.tech', 403);
+      const invalid = async () => {
+        await monitor.record({ kind: 'invalid_signature', target: id });
+        return fail('Sesión inválida', 403);
+      };
+      if (token.length > 2048) throw await invalid();
       const [body, signature, extra] = token.split('.');
-      if (!body || !signature || extra) throw fail('Sesión inválida', 403);
+      if (!body || !signature || extra) throw await invalid();
       const expected = crypto.createHmac('sha256', key()).update(body).digest();
       const supplied = Buffer.from(signature, 'base64url');
-      if (expected.length !== supplied.length || !crypto.timingSafeEqual(expected, supplied)) throw fail('Sesión inválida', 403);
+      if (expected.length !== supplied.length || !crypto.timingSafeEqual(expected, supplied)) throw await invalid();
       let session;
       try { session = JSON.parse(Buffer.from(body, 'base64url').toString()); } catch { throw fail('Sesión inválida', 403); }
       const current = Math.floor(now() / 1000);
       if (!session || session.target !== id || session.fingerprint !== fingerprint(target)
         || !Number.isInteger(session.iat) || !Number.isInteger(session.exp) || session.exp <= current
         || session.iat > current || session.exp - session.iat !== TTL) throw fail('Sesión caducada o inválida', 403);
-      const user = await getUser(session.sub);
-      if (!await allowed(user, id)) throw fail('Acceso revocado', 403);
+      try {
+        const user = await getUser(session.sub);
+        if (!await allowed(user, id)) throw fail('Acceso revocado', 403);
+      } catch (error) {
+        if (error.status === 403) await monitor.record({ kind: 'denied_gate', actor: session.sub, target: id });
+        throw error;
+      }
       return true;
+    },
+    async reviewAlert(actorId, id, outcome) {
+      if ((await getUser(actorId)).role !== 'creator') throw fail('Solo el creador puede revisar alertas', 403);
+      return monitor.review(id, actorId, outcome);
     },
     clearCookies: () => targets.map((target) => cookie(target.id, '', 0)),
   };

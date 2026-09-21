@@ -17,6 +17,9 @@ export function createEnvironmentRouter({ service, authenticate }) {
     req.environmentActor = auth.user.id; next();
   });
   router.get('/', async (req, res) => { res.json(await service().view(req.environmentActor)); });
+  router.post('/alerts/:id/review', express.json({ limit: '8kb' }), async (req, res) => {
+    res.json(await service().reviewAlert(req.environmentActor, req.params.id, req.body?.outcome));
+  });
   router.put('/access', express.json({ limit: '8kb' }), async (req, res) => {
     res.json(await service().assign(req.environmentActor, req.body || {}));
   });
