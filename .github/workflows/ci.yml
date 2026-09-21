@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 permissions:
   contents: read
@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -31,3 +31,27 @@ jobs:
         run: npm test
       - name: Build all web applications
         run: npm run build:webs
+      - name: Build proxy application
+        run: npm run build --prefix apps/proxy
+
+  standalone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [api, canales, comunidadtelebots, resistencia-censura, todosobregameplays]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/${{ matrix.app }}/package-lock.json
+      - name: Verify standalone Docker dependency installation
+        run: npm ci --workspaces=false --ignore-scripts --no-audit --no-fund
+      - name: Build standalone application
+        run: npm run build --if-present

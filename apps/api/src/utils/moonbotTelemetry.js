@@ -1,0 +1,14 @@
+const number = (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+const text = (value) => typeof value === 'string' ? value.slice(0, 80) : null;
+const counts = (value = {}) => Object.fromEntries(['updates', 'received', 'sent', 'calls', 'errors', 'limited', 'timeouts', 'http', 'http_errors', 'retry_after_max', 'latency_ms'].map((key) => [key, number(value?.[key])]));
+
+export function projectOperations(data) {
+  if (data?.ok !== true || data.schema !== 1 || !data.total || !data.last60s) throw new Error('Contrato de telemetría no disponible');
+  return { since: text(data.since), total: counts(data.total), last60s: counts(data.last60s),
+    history: Array.isArray(data.history) ? data.history.slice(-60).map((row) => ({ at: text(row.at), ...counts(row) })) : [],
+  };
+}
+export function projectResources(data) {
+  if (data?.ok !== true) throw new Error('Sin métricas de recursos');
+  return { cpu: number(data.cpu), ram: number(data.ram), ramUsedGb: number(data.ram_used), ramTotalGb: number(data.ram_total), disk: number(data.disk), uptime: text(data.uptime), version: text(data.version) };
+}

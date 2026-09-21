@@ -1,0 +1,9 @@
+# Opt-in on the Docker host that contains the configured Moonbot containers.
+# Run exactly one API replica: the switch lock belongs to that process.
+services:
+  api:
+    environment:
+      MOON_CLUSTER_STATE_FILE: /data/moonbot-cluster.json
+      MOON_DOCKER_SOCKET: /var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

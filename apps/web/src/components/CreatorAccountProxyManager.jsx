@@ -20,8 +20,10 @@ import AccountLearningCenter from '@/components/AccountLearningCenter.jsx';
 import AccountSearchReviewPanel from '@/components/AccountSearchReviewPanel.jsx';
 import AccountCollaborationMetricsPanel from '@/components/AccountCollaborationMetricsPanel.jsx';
 import AccountInteroperableConnector from '@/components/AccountInteroperableConnector.jsx';
+import WebAdminAccessManager from '@/components/WebAdminAccessManager.jsx';
 
 const ROLE_OPTIONS = ['user', 'moderator', 'admin'];
+const RELEASE_CHANNEL_OPTIONS = ['stable', 'rc', 'beta', 'alpha'];
 
 const CreatorAccountProxyManager = () => {
   const { currentUser } = useAuth();
@@ -40,6 +42,7 @@ const CreatorAccountProxyManager = () => {
   const [accountComparison, setAccountComparison] = useState(null);
   const [privacyMode, setPrivacyMode] = useState(() => getAccountPrivacyMode(currentUser.id));
   const [revealSensitive, setRevealSensitive] = useState(false);
+  const [releaseAccess, setReleaseAccess] = useState({});
 
   useEffect(() => {
     const updatePrivacy = (event) => {
@@ -82,6 +85,17 @@ const CreatorAccountProxyManager = () => {
     } catch { setApprovals([]); }
   };
 
+  const fetchReleaseAccess = async () => {
+    if (currentUser.role !== 'creator') return;
+    try {
+      const response = await apiServerClient.fetch('/moonbot-admin/feature-release-access', {
+        headers: { Authorization: `Bearer ${pb.authStore.token}` },
+      });
+      const data = await response.json();
+      if (response.ok) setReleaseAccess(Object.fromEntries((data.records || []).map((item) => [item.account_id, item])));
+    } catch { setReleaseAccess({}); }
+  };
+
   const fetchAccountForecast = async () => {
     try {
       const response = await apiServerClient.fetch('/moonbot-admin/account-tools/forecast', { headers: { Authorization: `Bearer ${pb.authStore.token}` } });
@@ -102,6 +116,7 @@ const CreatorAccountProxyManager = () => {
     fetchResources();
     fetchApprovals();
     fetchAccountForecast();
+    fetchReleaseAccess();
   }, []);
 
   useEffect(() => { fetchAccountComparison(accountPeriod); }, [accountPeriod, users.length]);
@@ -173,14 +188,7 @@ const CreatorAccountProxyManager = () => {
         return;
       }
       if (role === 'admin' && user.role !== 'admin') {
-        const response = await apiServerClient.fetch('/moonbot-admin/account-tools/approvals', {
-          method: 'POST', headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'request', account_id: user.id, role }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error);
-        await fetchApprovals();
-        toast.success('Elevación enviada al flujo de aprobación');
+        toast.error('Usa “Accesos de administración web” para exigir la verificación por Telegram');
         return;
       }
       const updated = await pb.collection('users').update(user.id, { role }, { $autoCancel: false });
@@ -190,6 +198,29 @@ const CreatorAccountProxyManager = () => {
     } catch (error) {
       console.error('Failed to change user role:', error);
       toast.error(error.message || 'No se pudo cambiar el rol');
+    } finally {
+      setProcessingId('');
+    }
+  };
+
+  const handleReleaseChannelChange = async (user, releaseChannel) => {
+    if (currentUser.role !== 'creator' || !RELEASE_CHANNEL_OPTIONS.includes(releaseChannel)) {
+      toast.error('Solo el creador puede asignar canales de versiones');
+      return;
+    }
+    setProcessingId(user.id);
+    try {
+      const response = await apiServerClient.fetch('/moonbot-admin/feature-release-access', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${pb.authStore.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account_id: user.id, release_channel: releaseChannel, enabled: true }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setReleaseAccess((current) => ({ ...current, [user.id]: data.record }));
+      toast.success(`Canal ${releaseChannel} asignado a ${user.telegram_name || user.name || user.email}`);
+    } catch (error) {
+      toast.error(error.message || 'No se pudo actualizar el canal de versiones');
     } finally {
       setProcessingId('');
     }
@@ -365,6 +396,7 @@ const CreatorAccountProxyManager = () => {
       <div id="account-tool-learning"><AccountLearningCenter userId={currentUser.id} /></div>
       <div id="account-tool-collaboration"><span id="account-tool-metrics" /><AccountCollaborationMetricsPanel users={users} /></div>
       <div id="account-tool-connector"><AccountInteroperableConnector accounts={users} onValidatedPackage={() => toast.success('Paquete validado; pendiente de revisión manual')} /></div>
+      {currentUser.role === 'creator' && <WebAdminAccessManager users={users} onChanged={fetchResources} />}
       <section className="rounded-xl border bg-background p-4"><h3 className="mb-1 font-semibold">Aprobaciones de cuentas</h3><p className="mb-3 text-sm text-muted-foreground">Las elevaciones a administrador requieren revisión de creator y no pueden ser aprobadas por quien las solicitó.</p><div className="space-y-2">{approvals.filter((item) => item.status === 'pending').map((item) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-sm"><span><b>{displayEmail(usersById.get(item.account_id)?.email)}</b> · {item.change.before} → {item.change.after}<small className="block text-muted-foreground">Solicitada por {item.requested_by}</small></span>{currentUser.role === 'creator' && <span className="flex gap-2"><Button size="sm" disabled={processingId === item.id || item.requested_by === currentUser.id} onClick={() => decideApproval(item, 'approved')}>Aprobar</Button><Button size="sm" variant="outline" disabled={processingId === item.id} onClick={() => decideApproval(item, 'rejected')}>Rechazar</Button></span>}</div>)}{!approvals.some((item) => item.status === 'pending') && <p className="text-sm text-muted-foreground">No hay solicitudes pendientes.</p>}</div></section>
 
       <Tabs defaultValue="accounts">
@@ -405,6 +437,18 @@ const CreatorAccountProxyManager = () => {
                       >
                         {ROLE_OPTIONS.map((role) => <option key={role} value={role}>{role}</option>)}
                       </select>
+                    </label>
+                    <label className="grid gap-1 text-sm">
+                      <span className="text-muted-foreground">Canal de funciones</span>
+                      <select
+                        value={user.id === currentUser.id ? 'alpha' : (releaseAccess[user.id]?.release_channel || 'stable')}
+                        onChange={(event) => handleReleaseChannelChange(user, event.target.value)}
+                        disabled={processingId === user.id || currentUser.role !== 'creator' || user.id === currentUser.id}
+                        className="h-9 rounded-md border bg-background px-3"
+                      >
+                        {RELEASE_CHANNEL_OPTIONS.map((channel) => <option key={channel} value={channel}>{channel}</option>)}
+                      </select>
+                      <small className="text-muted-foreground">Telegram ID: {user.telegram_id || 'sin vincular'}</small>
                     </label>
                     <Button variant="outline" size="sm" onClick={() => handleFreeze(user)} disabled={processingId === user.id || user.id === currentUser.id}>
                       <Snowflake className="mr-2 h-4 w-4" />

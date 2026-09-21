@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { canUseFeatureInGroup, canUseMoonbotFeature, filterMoonbotFeatures,
-  moonRoleFor, normalizeFeatureGroups, payloadGroupId } from '../src/utils/moonbotFeatureAccess.js';
+  moonRoleFor, normalizeFeatureGroups, normalizeReleaseChannel, payloadGroupId } from '../src/utils/moonbotFeatureAccess.js';
 
 const features = [
   { id: 'public', minimum_role: 'user' },
@@ -9,6 +9,17 @@ const features = [
   { id: 'owner', minimum_role: 'group_creator' },
   { id: 'master', minimum_role: 'master' },
 ];
+
+test('release channels progressively expose stable, rc, beta and alpha features', () => {
+  const channelFeatures = [
+    { id: 'stable', minimum_role: 'user', release_channel: 'stable' },
+    { id: 'rc', minimum_role: 'user', release_channel: 'rc' },
+    { id: 'beta', minimum_role: 'user', release_channel: 'beta' },
+    { id: 'alpha', minimum_role: 'user', release_channel: 'alpha' },
+  ];
+  assert.deepEqual(filterMoonbotFeatures(channelFeatures, 'user', 'beta').map((item) => item.id), ['stable', 'rc', 'beta']);
+  assert.equal(normalizeReleaseChannel('invalid'), 'stable');
+});
 
 test('maps application roles to Moonbot roles without privilege escalation', () => {
   assert.equal(moonRoleFor('creator'), 'master');

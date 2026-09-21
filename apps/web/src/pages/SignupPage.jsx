@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,11 @@ import { UserPlus, AlertCircle } from 'lucide-react';
 const SignupPage = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
+  const afterSignup = () => {
+    const target = sessionStorage.getItem('post_auth_path');
+    sessionStorage.removeItem('post_auth_path');
+    navigate(target?.startsWith('/admin/invite/') ? target : '/dashboard');
+  };
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -58,7 +63,7 @@ const SignupPage = () => {
     );
     
     if (result.success) {
-      navigate('/dashboard');
+      afterSignup();
     } else {
       setError(result.error || 'Failed to create account');
     }

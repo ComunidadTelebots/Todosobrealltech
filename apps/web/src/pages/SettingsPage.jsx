@@ -21,6 +21,8 @@ import { useAnalytics } from '@/contexts/AnalyticsProvider.jsx';
 import pb from '@/lib/pocketbaseClient.js';
 import { hasPersonalVault, openPersonalVault, removePersonalVault, savePersonalVault } from '@/lib/personalVault.js';
 import { getAccountPrivacyMode, setAccountPrivacyMode } from '@/lib/accountPrivacy.js';
+import CommunicationPreferencesPanel from '@/components/CommunicationPreferencesPanel.jsx';
+import AccountOnboardingPanel from '@/components/AccountOnboardingPanel.jsx';
 
 const getPreferenceKey = (userId) => `settings:${userId}`;
 
@@ -266,6 +268,8 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-6">
+        <AccountOnboardingPanel />
+        <CommunicationPreferencesPanel />
         <Section icon={User} title="Perfil">
           <div className="grid gap-4 md:grid-cols-2">
             <div>

@@ -296,6 +296,10 @@ export default defineConfig({
 	],
 	server: {
 		port: 3000,
+		proxy: {
+			'/hcgi/api': { target: 'http://127.0.0.1:3001', changeOrigin: true, rewrite: (url) => url.replace(/^\/hcgi\/api/, '') },
+			'/hcgi/platform': { target: 'http://127.0.0.1:8090', changeOrigin: true, rewrite: (url) => url.replace(/^\/hcgi\/platform/, '') },
+		},
 		cors: true,
 		headers: {
 			'Cross-Origin-Embedder-Policy': 'credentialless',

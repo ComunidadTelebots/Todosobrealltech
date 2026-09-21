@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import pb from '@/lib/pocketbaseClient';
 import { Card, CardContent } from '@/components/ui/card';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { Button } from '@/components/ui/button';

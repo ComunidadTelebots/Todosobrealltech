@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "geoip-lite": "^1.4.10"
+    "geoip-lite": "^2.0.3"
   }
 }

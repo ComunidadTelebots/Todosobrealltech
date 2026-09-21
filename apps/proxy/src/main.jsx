@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import {
   Activity, AlertCircle, BarChart3, Check, ChevronDown, ChevronLeft, ChevronRight, Copy,
   ExternalLink, Globe, Instagram, Radio, RefreshCw, Search, Send, Server, ShieldCheck,
@@ -343,6 +342,46 @@ function SocialButtons() {
 }
 
 // Devuelve la ventana de páginas a mostrar (con huecos como -1).
+const CAMPAIGN_CACHE_KEY = 'tsa:community-campaign:proxy';
+
+function ProxyCommunityCampaign({ placement = 'inline', variant = 'inline' }) {
+  const cacheKey = `${CAMPAIGN_CACHE_KEY}:${placement}`;
+  const [campaign, setCampaign] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch { return null; }
+  });
+
+  useEffect(() => {
+    let active = true;
+    fetch(`/hcgi/api/community-cards?placement=${encodeURIComponent(placement)}&site=proxy`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+      .then((payload) => {
+        if (!active) return;
+        const next = payload.ads?.[0] || null;
+        setCampaign(next);
+        if (next) localStorage.setItem(cacheKey, JSON.stringify(next));
+        else localStorage.removeItem(cacheKey);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [cacheKey, placement]);
+
+  if (!campaign?.id || !campaign?.title) return null;
+  const clickUrl = `/hcgi/api/community-cards/${encodeURIComponent(campaign.id)}/click?placement=${encodeURIComponent(placement)}&site=proxy`;
+  const relation = campaign.builtin || campaign.relationship_type === 'official'
+    ? 'Comunidad oficial TodoSobreAllTech'
+    : campaign.telegram_verified && campaign.community_verified
+      ? '✓ Verificada por Telegram y TodoSobreAllTech'
+      : 'Comunidad afiliada · intercambio de visitas';
+  return <aside className={`community-campaign community-campaign--${variant}`} aria-label="Comunidad recomendada">
+    <a href={clickUrl} target="_blank" rel="noopener noreferrer sponsored">
+      {campaign.image ? <img src={campaign.image} alt="" loading="lazy" /> : <span className="campaign-mark"><Send size={21} /></span>}
+      <span className="campaign-copy"><small>{relation}</small><strong>{campaign.title}</strong><span>{campaign.description}</span></span>
+      <span className="campaign-cta">{campaign.cta || 'Abrir'} <ExternalLink size={14} /></span>
+    </a>
+    {campaign.boost_url ? <a className="campaign-boost" href={`/hcgi/api/community-cards/${encodeURIComponent(campaign.id)}/boost?placement=${encodeURIComponent(placement)}&site=proxy`} target="_blank" rel="noopener noreferrer sponsored">🚀 Impulsar</a> : null}
+  </aside>;
+}
+
 function pageWindow(current, total) {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   const pages = new Set([1, total, current, current - 1, current + 1]);
@@ -459,7 +498,7 @@ function ProxyCard({ proxy }) {
 
 /* ------------------------------- App ------------------------------ */
 
-function App() {
+export default function App() {
   const [payload, setPayload] = useState(null);
   const [status, setStatus] = useState('loading');
   const [query, setQuery] = useState('');
@@ -553,6 +592,10 @@ function App() {
         </div>
       </section>
 
+      <ProxyCommunityCampaign placement="top" />
+      <div className="campaign-rail campaign-rail--left"><ProxyCommunityCampaign placement="left" variant="vertical" /></div>
+      <div className="campaign-rail campaign-rail--right"><ProxyCommunityCampaign placement="right" variant="vertical" /></div>
+
       <section className="toolbar" aria-label="Herramientas">
         <label className="search-box">
           <Search size={18} aria-hidden="true" />
@@ -584,7 +627,10 @@ function App() {
         {status === 'loading' && proxies.length === 0
           ? Array.from({ length: 6 }).map((_, i) => <div className="skeleton" key={i} />)
           : null}
-        {pageItems.map((proxy) => <ProxyCard key={proxy.id + proxy.secret.slice(0, 6)} proxy={proxy} />)}
+        {pageItems.map((proxy, index) => <React.Fragment key={proxy.id + proxy.secret.slice(0, 6)}>
+          <ProxyCard proxy={proxy} />
+          {(index + 1) % 6 === 0 && index < pageItems.length - 1 ? <ProxyCommunityCampaign placement="inline" variant="feed" /> : null}
+        </React.Fragment>)}
         {status === 'ready' && filtered.length === 0 ? (
           <div className="empty-state">No hay proxies que coincidan con ese filtro.</div>
         ) : null}
@@ -607,5 +653,3 @@ function App() {
     </main>
   );
 }
-
-createRoot(document.getElementById('root')).render(<App />);

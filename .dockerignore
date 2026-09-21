@@ -1,0 +1,17 @@
+.git
+.github
+.agents
+.codex
+.env
+.env.*
+!.env.example
+**/node_modules
+**/dist
+dist
+coverage
+**/.vite
+**/.cache
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

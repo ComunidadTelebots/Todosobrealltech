@@ -1,5 +1,483 @@
 # Changelog - TodoSobreAllTech
 
+### Centro de operaciones Moonbot - 2026-09-21
+- Paraleliza consultas operativas, libera respuestas antes de reintentos y añade ubicación regional DC/origen configurable.
+- Añade balanceo, métricas Telegram/API, recursos y límites Docker al dashboard administrativo.
+- Incorpora conmutación entre contenedores permitidos, verificación de salud y recuperación del origen.
+- Mide tráfico Express sin retener mensajes, credenciales ni rutas privadas.
+- Integra telemetría Moonbot con contrato v1 y vista previa exclusiva de desarrollo.
+- Añade latencia TCP a centros de datos, CDN públicas y Bot API de Telegram, con estadísticas y fallos por destino.
+
+### 18.23.51 - 2026-08-11
+
+- Evita que `/roadmap` conserve catálogos antiguos: los JSON de funciones y Telegram React se solicitan sin caché y Nginx los entrega con cabeceras `no-store`.
+- Mantiene alineadas las cifras del roadmap público y el resumen dinámico del dashboard después de cada despliegue.
+
+### 18.23.50 - 2026-08-11
+
+- Sincroniza Telegram React `0.0.656` y su roadmap: ID de perfil opcional, Mensajes guardados ocultable e indicadores de presencia independientes sin sondeos adicionales.
+- Completa los recorridos personalizados de incorporación (`future-2025`) con pasos según rol y progreso calculado desde el estado real del perfil, Telegram y preferencias sincronizadas.
+- Añade un diagnóstico autónomo y no destructivo para cuentas `creator` (`future-3703`), sin exponer correo, ID de Telegram ni valores de proxies en su respuesta.
+- Integra ambos controles en Ajustes reutilizando tarjetas, botones y jerarquía visual existentes; los demás roles no reciben el diagnóstico reservado al creador.
+- Impide marcar manualmente requisitos verificables: solo se pueden confirmar los pasos informativos incluidos en una lista cerrada.
+- Actualiza el roadmap con evidencia de API, interfaz y pruebas unitarias para las dos funciones completadas.
+
+### 18.23.49 - 2026-08-11
+
+- Sincroniza Telegram React `0.0.655` y su roadmap: permite ocultar Contactos, los títulos de navegación y las sugerencias de comandos de bots sin alterar el perfil visual activo.
+- Completa el centro de incidencias correlacionadas para cuentas agrupando anomalías y aprobaciones pendientes por cuenta sin exponer correos ni valores sensibles.
+- Calcula severidad, responsable y SLA verificable para cada incidencia; los avisos críticos se elevan a `creator` y los de severidad alta o media al equipo administrador.
+- Permite reconocer, posponer cuatro horas y resolver incidencias desde el panel existente, conservando el estado en el servidor y sin ejecutar sanciones automáticas.
+- Limita acciones, identificadores y duraciones mediante listas cerradas y comprueba que la señal siga activa antes de aceptar una transición.
+- Actualiza el roadmap con evidencia de API, interfaz y pruebas para `future-2001` y `future-2011`.
+
+### 18.23.48 - 2026-08-11
+
+- Sincroniza el roadmap de Telegram React con la versión `0.0.654`: navegación inferior ocultable, repliegue al desplazarse y botón flotante de mensaje nuevo configurable, preservando cada perfil visual.
+- Completa la delegación temporal de cuentas con caducidad automática, revocación y un único permiso de resumen agregado sin nombres, correos ni identificadores personales.
+- Reserva la creación y revocación de delegaciones al rol `creator`; la delegación no altera roles web ni concede permisos sobre grupos.
+- Añade al panel existente de cuentas la interfaz de delegaciones y muestra al usuario delegado un resumen limitado desde sus ajustes.
+- Completa el centro de preferencias de comunicación sincronizado entre dispositivos: canales, temas, frecuencia de resumen y horario silencioso.
+- Persiste las preferencias por una clave derivada del ID de cuenta y valida listas cerradas, horarios y zona horaria en el servidor.
+- Actualiza el roadmap únicamente para `future-2003` y `future-2204`, ambas verificadas mediante API, interfaz y pruebas unitarias.
+
+### 18.23.47 - 2026-08-09
+
+- Integra el inspector estructural de URL y dominio de Moonbot en el Centro de seguridad web sin duplicar su motor.
+- Añade un proxy autenticado para administradores y `creator` que usa exclusivamente la URL interna de Moonbot y su clave administrativa; el navegador no recibe esa clave ni puede elegir el servidor de destino.
+- Muestra host, esquema, puerto, parámetros, URL normalizada y señales estructurales sin visitar el enlace ni realizar peticiones al dominio analizado.
+- Limita las entradas a 2.048 caracteres, elimina campos ajenos al contrato y rechaza caracteres de control antes de enviarlas a Moonbot.
+- Verificación: pruebas del proxy seguro, comprobación de sintaxis, evidencia del roadmap y compilación de producción de la interfaz.
+
+### 18.23.46 - 2026-08-09
+
+- Completa el mantenimiento de notas internas de campañas: los administradores pueden corregir su contenido desde el mismo panel y queda registrada la identidad y fecha de edición.
+- Permite al `creator` eliminar notas internas y retirar tareas obsoletas de la lista de aprobación, sin conceder esas acciones destructivas a administradores web.
+- Añade controles compactos de edición y retirada reutilizando los componentes y estilos existentes del gestor de campañas.
+- Valida en servidor los identificadores opacos de cada elemento y rechaza rutas, claves reservadas o referencias malformadas.
+- Verificación: pruebas unitarias del ciclo de vida, comprobación de sintaxis y compilación de la interfaz.
+
+### 18.23.45 - 2026-08-09
+
+- Añade un espacio de gobernanza dentro del panel de campañas sin alterar su diseño ni el flujo de entrega existente.
+- Permite a administradores y creator compartir notas internas, asignar responsables, fijar vencimientos, aplicar etiquetas y mantener listas de aprobación.
+- Incorpora seguimiento personal y un resumen de campañas coordinadas, vencidas, tareas abiertas y vistas guardadas.
+- Permite al creator guardar vistas de trabajo y crear instantáneas resumidas del estado de revisión.
+- Persiste el estado mediante escritura atómica con permisos restrictivos y valida IDs, acciones, fechas, filtros y longitudes en servidor.
+- Mantiene separados los roles web de los roles de grupos: los administradores colaboran y las vistas e instantáneas quedan reservadas al creator.
+- Añade pruebas unitarias de validación, coordinación, métricas e higiene de entradas.
+
+### 18.23.44 - 2026-08-09
+
+- Corrige el indicador rojo permanente de CAS: antes validaba la API remota como si devolviera la lista completa e ignoraba el export local activo de Moonbot.
+- Muestra por separado el export CAS local, su cantidad de IDs y el feed reciente; solo presenta una alerta roja cuando todas las fuentes CAS están realmente inactivas.
+- Evita esperar a la API externa cuando Moonbot confirma que el export local ya está cargado.
+
+### 18.23.43 - 2026-08-09
+
+- Mejora el directorio unificado de bloqueos con explicaciones contextuales al pasar el cursor por cada contador, origen y motivo.
+- Muestra el nombre conocido, alias de Telegram e ID de cada usuario y permite abrir una ficha superior desde su nombre.
+- La ficha reúne motivo, procedencia, alcance, estado, grupo, fechas, idioma, última actividad y mensajes observados, indicando cuándo un dato no está disponible.
+- Resalta el registro seleccionado y mantiene separadas las acciones editables de bloqueos web de los registros administrados por Moonbot.
+
+### 18.23.42 - 2026-08-09
+
+- Sustituye el placeholder de `/afiliarte` por una página pública y adaptable para solicitar presencia en las campañas comunitarias.
+- Incorpora formulario de proyecto, contacto privado, ubicaciones preferidas, aceptación de condiciones y vista previa con el diseño real de afiliados.
+- Registra cada solicitud en una colección privada de PocketBase y crea una campaña desactivada y pendiente en el gestor existente; nunca se publica sin aprobación del master.
+- Añade referencia aleatoria para consultar el estado y sincroniza automáticamente la aprobación o el rechazo realizados desde el panel de campañas.
+- Protege el alta con validación HTTPS, límites de longitud, honeypot y un máximo de tres solicitudes diarias por navegador/red.
+- Exige una cuenta gratuita para afiliarse, vincula cada solicitud a su propietario y restringe la consulta del estado al solicitante o al equipo autorizado.
+- Añade al panel `/afiliarte` las ventajas del registro, accesos para crear cuenta o iniciar sesión, formulario bloqueado para visitantes y confirmación visual de la cuenta vinculada.
+
+### 18.23.41 - 2026-08-09
+
+- Añade al panel de canales de Moonbot la gestión de enlaces oficiales de suscripción de pago de Telegram.
+- Permite crear enlaces mensuales en Telegram Stars, copiarlos, renombrarlos y revocarlos desde TodoSobreAllTech.
+- Limita la función a canales y administradores web autorizados; Moonbot vuelve a comprobar el tipo de chat y el permiso de invitación antes de llamar a Telegram.
+- Informa de los límites oficiales (30 días y 1–10.000 Stars) y evita presentar como editable un precio que Telegram no permite cambiar sobre un enlace existente.
+
+### 18.23.40 - 2026-08-09
+
+- Sustituye la página provisional `/suscribirme` de NoticiasWeb3 por un panel funcional para Telegram, RSS y preferencias editoriales.
+- Permite guardar por cuenta los temas, la frecuencia preferida y el estado activo de la suscripción.
+- Añade la colección privada `nw3_subscriptions`, con relación única por usuario y reglas de lectura y escritura limitadas al propietario o administradores web.
+- Incorpora diseño adaptable compatible con las vistas 2014 y 2026, estados de carga, confirmación, error y acceso al inicio de sesión.
+
+### 18.23.39 - 2026-08-09
+
+- Convierte la campaña oficial «Comunidad TeleBots» en un multipanel aprobado con TodoSobreAllTech, Comunidad TeleBots, Resistencia a la Censura y Todo Sobre Gameplays.
+- Distribuye los cuatro canales en porciones iguales dentro de los anuncios verticales y horizontales de NoticiasWeb3.
+- Corrige los clics de campañas oficiales con varios destinos para abrir y medir el canal seleccionado en lugar del enlace general.
+
+### 18.23.38 - 2026-08-09
+
+- Unifica las inserciones automáticas de portada, barra lateral y listado de NoticiasWeb3 con el catálogo general de campañas comunitarias; los bloques editoriales «Recomendado» quedan reservados al editor Lego.
+- Mantiene los anuncios laterales izquierdo y derecho visibles durante el desplazamiento, sin ocupar el contenido central y con adaptación para pantallas de poca altura.
+- Conserva los formatos no intrusivos existentes `auto`, `compact`, `mosaic`, `cards`, `spotlight` y `ticker` y valida el valor recibido en la API.
+- Permite mostrar un chat en cuadro compacto, un chat ocupando todo el slot o hasta cuatro chats repartidos en porciones iguales: cuadrícula 2×2 en vertical y división uniforme en horizontal.
+- Actualiza la vista previa del panel de campañas para representar la distribución real seleccionada antes de publicar.
+- Verificación: compilaciones de NoticiasWeb3 y TodoSobreAllTech completadas correctamente.
+
+### 18.23.37 - 2026-08-09
+
+- Corrige el diseño de las campañas verticales izquierda y derecha de NoticiasWeb3: imagen, relación publicitaria, texto, llamada a la acción y enlace boost permanecen dentro del ancho lateral sin recortes.
+- Conserva intacto el formato horizontal superior de NoticiasWeb3 y oculta los laterales cuando la pantalla no ofrece espacio suficiente.
+- Añade a Proxy campañas comunitarias laterales independientes a izquierda y derecha para escritorios anchos.
+- Intercala una campaña horizontal cada seis tarjetas del directorio de proxies, manteniendo la cuadrícula adaptable en tabletas y móviles.
+- Separa caché y medición de campañas en Proxy por ubicación `top`, `left`, `right` e `inline`.
+- Concilia el Roadmap 6000 con las implementaciones reales: registra las tres mejoras visuales anteriores y mantiene las quince funciones publicitarias de `18.23.36` asociadas al producto correcto.
+- Verifica las evidencias de código e interfaz de las funciones incorporadas hoy, sin IDs ni títulos duplicados ni referencias a archivos inexistentes.
+- Verificación: compilaciones de NoticiasWeb3, Proxy y TodoSobreAllTech completadas; catálogo válido con 6000 funciones y 1857 implementaciones respaldadas por evidencias.
+
+### 18.23.36 - 2026-08-09
+
+- Propaga `chat_id`, `chat_type` y `bot_id` desde el worker y los consumidores internos para aplicar la segmentación sobre el destino real, no sobre una campaña genérica.
+- Añade segmentación inclusiva y exclusiva por país e idioma, con códigos normalizados y coincidencia segura de variantes regionales.
+- Incorpora días, franjas horarias que pueden cruzar medianoche y zonas horarias IANA para programar cada campaña.
+- Permite incluir o excluir canales y grupos concretos; las exclusiones prevalecen y el panel master comprueba si Moonbot conserva acceso al destino.
+- Centraliza el límite de frecuencia por usuario y ventana temporal; los identificadores internos se reducen a huellas criptográficas y la web utiliza una cookie `HttpOnly`.
+- Segmenta por categoría y palabras del artículo o mensaje, con términos requeridos y exclusiones de contenido prioritarias.
+- Añade límites diarios de clics e impresiones, objetivos totales y finalización automática cuando se alcanza el presupuesto de entrega.
+- Incorpora una vista previa por superficie para web, móvil, canal, Telegram React y Hub sin modificar el diseño público existente.
+- Registra métricas con país, ubicación, chat y bot, conservando el desglose temporal disponible en el panel analítico.
+- Añade una auditoría exclusiva del creator para altas, ediciones, aprobación, pausa, duplicado, eliminación y reinicio de métricas.
+- Verifica desde Moonbot que los canales y grupos seleccionados existen y que el bot continúa presente antes de activar la entrega.
+- Etiqueta de forma visible contenido oficial, campaña comunitaria, afiliado e Inside Ads; los datos privados de los presets se eliminan de las respuestas públicas.
+- Separa los presets y destinos de Inside Ads del resto de campañas, con selección server-side según superficie y permisos exclusivos del creator.
+- Añade pruebas A/B con asignación estable por visitante y variantes limitadas y normalizadas.
+- Refuerza los clics con huella HMAC, límite antiabuso, `Retry-After`, deduplicación de reportes y redirecciones HTTPS validadas.
+- Verificación: pruebas de políticas, auditoría, seguridad pública, antifraude e Inside Ads superadas; API y worker válidos y compilación Vite completa.
+
+### 18.23.35 - 2026-08-06
+
+- Actualiza el roadmap de Telegram React a `0.0.652` con un centro de apariencia navegable.
+- Conserva Android, Android Nuevo, Android Glass, Web, Webogram, iOS, macOS, Desktop, Windows/Unigram, Telegram X y Aurora.
+- Documenta versiones históricas, vista previa antes de aplicar, editor por categorías, comparador e importación/exportación.
+
+### 18.23.34 - 2026-08-06
+
+- Actualiza el roadmap de Telegram React a `0.0.651` con sonidos separados y sincronización resistente durante llamadas grupales.
+- Incorpora vistas inteligentes inspiradas en Plus Messenger, ordenación opcional y acciones masivas de chats.
+- Documenta detección segura de capacidades MTProto para Passkeys y mercado de regalos sin habilitar operaciones no soportadas.
+- Añade navegación rápida, doble clic configurable, calidad de fotografías, lista en 2/3 líneas, avisos privados, acción de avatar y copia segura de preferencias.
+- Agrupa la configuración en un panel «Opciones Plus Messenger» accesible desde Ajustes y enlaza al repositorio oficial al final.
+- Estado verificado: 56 funciones implementadas, 1 parcial y 1 pendiente en la comparativa principal.
+
+### 18.23.33 - 2026-08-06
+
+- Actualiza Telegram React a `0.0.650` e incorpora reacciones extendidas en todos los perfiles visuales.
+- Registra buscador, compactación `+N`, nombres de usuarios al pasar el cursor y reacción grande mediante doble clic.
+- Conserva las reacciones pagadas, el modal de participantes, las partículas y la sincronización ya existentes.
+
+### 18.23.32 - 2026-08-06
+
+- Actualiza Telegram React a `0.0.649` con autores reales en hilos, salto «Ver en el chat» y sincronización de menciones leídas.
+- Añade al roadmap dos mejoras solicitadas por usuarios: entrega resistente durante llamadas grupales y sonidos entrantes/salientes independientes.
+- Las prioridades proceden de incidencias publicadas en el rastreador oficial de Telegram y no duplican funciones ya presentes.
+
+### 18.23.31 - 2026-08-06
+
+- Actualiza Telegram React a `0.0.647` y ordena cada selector visual desde la versión más moderna hasta la más antigua.
+- Conserva intactos el registro de diseños y la versión persistida del usuario.
+- Verificación: 35 pruebas y compilación Vite/PWA completa.
+
+### 18.23.30 - 2026-08-05
+
+- Actualiza Telegram React a `0.0.646` con una compilación Docker reproducible.
+- Evita que dependencias antiguas del servidor sobrescriban las instaladas dentro de la imagen y mezclen PostCSS 7 con PostCSS 8.
+- Reduce el contexto de construcción excluyendo `node_modules`, artefactos, historial Git, cobertura y registros.
+
+### 18.23.29 - 2026-08-05
+
+- Actualiza Telegram React a `0.0.645` y registra 41 funciones implementadas, 1 parcial y 1 pendiente.
+- Completa el compositor de álbumes de hasta 20 Stories con orden, edición individual, progreso y recuperación sin duplicados.
+- Completa las videollamadas privadas ya existentes y el vídeo remoto de participantes en llamadas grupales mediante SIM/FID.
+- Añade una cuadrícula responsive de vídeo y pantalla compartida compatible con todos los perfiles visuales.
+- Incorpora catálogo oficial de regalos, saldo y compra real con Stars, sustituyendo una llamada MTProto inexistente.
+- Mantiene el mercado de reventa como parcial y Passkeys como pendiente porque la capa MTProto instalada no ofrece esas operaciones.
+- Verificación final: 34 pruebas, compilación Vite/PWA y auditoría sin vulnerabilidades moderadas, altas ni críticas.
+
+### 18.23.28 - 2026-08-05
+
+- Actualiza el apartado de Telegram React a la versión `0.0.644` con evidencias verificadas en el código y en sus pruebas.
+- Marca como completo el editor multimedia: recorte, giro, volteo, brillo, contraste, restauración, previsualización Canvas y exportación PNG/JPEG.
+- Integra el mismo editor visual en la sustitución de imágenes de mensajes y en el compositor de Stories, conservando el flujo anterior para documentos y vídeos.
+- Sincroniza el selector de perfiles visuales cuando el diseño o su versión cambian desde otra interfaz.
+- Refuerza los destinos de notificaciones y del visor AMP, retira registros sensibles y desactiva los mapas de código de producción por defecto.
+- Añade cabeceras web defensivas compatibles con llamadas, geolocalización, Mini Apps y multimedia.
+- Verificación final: 19 pruebas, compilación Vite y auditoría sin vulnerabilidades moderadas, altas ni críticas.
+- El roadmap queda en 38 funciones implementadas, 3 parciales y 2 pendientes.
+
+### 18.23.27 - 2026-08-05
+
+- Actualiza el apartado de Telegram React a la versión `0.0.643` tras completar la ubicación en directo.
+- Marca la ubicación en directo como implementada con evidencias de interfaz, GramJS, seguimiento continuo y pruebas.
+- El roadmap queda en 37 funciones implementadas, 4 parciales y 2 pendientes.
+
+### 18.23.26 - 2026-08-05
+
+- Añade al panel de control del worker la edición individual de una publicación mediante su URL de Telegram.
+- Permite actualizar directamente mensajes como `https://t.me/TodoSobreAllTech/228347`, conservando íntegramente Inside Ads, su enlace afiliado, el botón del bot y la campaña comunitaria.
+- Evita descargar y recorrer todos los canales cuando el master solicita una publicación concreta, reduciendo el trabajo a un único registro.
+- Reduce de ocho a cuatro segundos el tiempo máximo de cada intento de recuperación pública de Telegram.
+- Valida en la API que el destino pertenezca a una publicación válida de `t.me` y limita la orden individual a un solo mensaje.
+- Las órdenes manuales forzadas omiten la espera reservada al ciclo automático, por lo que una publicación concreta puede corregirse inmediatamente.
+- Corrige la edición enriquecida para utilizar `editMessageText` con el contenido Rich Markdown compatible, evitando el error `Not Found` provocado por un método inexistente.
+- Delimita y conserva literalmente todo el bloque comprendido entre `PUBLICIDAD · INSIDE ADS` y la firma enlazada `[InsideAds](https://t.me/InsideAds_bot/open?startapp=...)`, incluidos sus enlaces publicitarios.
+- Prioriza el enlace profundo de `@InsideAds_bot` como botón inline de la campaña y mantiene dentro del texto cualquier enlace afiliado adicional aportado por Inside Ads.
+- Reaudita Telegram React frente a su código actual y actualiza el roadmap público de `0.0.640` a `0.0.642` con evidencias verificables.
+- Marca la multicuenta y la visualización completa de Stories como implementadas; registra el compositor de Stories como parcial hasta incorporar edición avanzada y álbumes.
+- Añade al roadmap las migraciones verificadas a Vite/Vitest y Workbox, incluyendo la retirada de la cadena abandonada de Create React App.
+- El apartado Telegram React queda en 35 funciones implementadas, 6 parciales y 2 pendientes, con todas las rutas de evidencia comprobadas en el repositorio.
+- Una segunda auditoría confirma como completas las llamadas privadas de voz: intercambio DH, RTC/TURN, señalización, audio WebRTC y controles de llamada; el estado queda en 36 implementadas, 5 parciales y 2 pendientes.
+
+### 18.23.25 - 2026-08-05
+
+- Añade al panel de NoticiasWeb3 un control persistente del worker con estado, progreso, errores por feed, cola de Telegram, resultados y recuento gaming.
+- Permite al master ejecutar inmediatamente el ciclo RSS o lanzar un backfill histórico limitado; los administradores pueden consultar el estado sin ejecutar tareas.
+- El worker recibe las órdenes mediante PocketBase, por lo que el navegador puede cerrarse sin perder el trabajo ni su resultado.
+- Actualiza publicaciones anteriores accesibles con el diseño vigente sin duplicarlas y conservando el texto y botón detectados de Inside Ads.
+- Acorta la tarjeta comunitaria para evitar recortes en Telegram y mueve las acciones a botones inline ordenados como `Leer noticia`, `Inside Ads` y comunidad.
+- Sustituye los feeds separados y el flujo de IFTTT por el agregado oficial `RSS Telegram Alltech` (`_V6S1IOxd3DMA4V76`), que incluye Xataka, Instagram y el resto de fuentes de TodoSobreAllTech.
+- El worker deduplica las entradas del agregado por su URL original, crea el artículo y publica el mensaje completo con formato NW3, anuncios comunitarios y reintentos persistentes.
+- El backfill recupera primero el mensaje vivo desde los feeds y, si no aparece, desde la vista pública individual de Telegram; así puede reconstruir publicaciones antiguas sin eliminar el contenido de Inside Ads.
+- Reconstruye el teclado de cada publicación editable con `Leer noticia`, el botón original de Inside Ads cuando es detectable y la campaña comunitaria, incluso si el enlace NW3 ya existía como texto.
+
+### 18.23.24 - 2026-08-05
+
+- Integra campañas comunitarias aprobadas en Proxy MTProto usando el catálogo común, seguimiento de clics, enlaces boost y segmentación `site=proxy`.
+- Carga primero la última campaña guardada y actualiza el anuncio en segundo plano para no retrasar el directorio de proxies.
+- Corrige el worker para comprobar por separado el enlace de NoticiasWeb3 y la campaña comunitaria, evitando falsos mensajes completados.
+- Procesa inmediatamente los posts sin Inside Ads y, cuando Inside Ads ya está presente, conserva su texto y teclado dentro del mensaje enriquecido.
+- Unifica titular, resumen, hashtags, enlace a NoticiasWeb3, campaña comunitaria y bloque aportado por Inside Ads sin confundir sus estados.
+- Fusiona en una misma fila inline el botón HTTPS detectado de Inside Ads y el botón medido de la campaña; si no puede reconstruirlo con seguridad, conserva el teclado existente.
+- Incorpora el feed RSS.app gaming `_CDNEKnSOiQkbSr1i` al worker y dirige sus publicaciones a `@TodoSobreGameplaysCanal` con artículo propio, formato enriquecido, campaña comunitaria e integración posterior de Inside Ads.
+- Conserva el canal de destino en PocketBase para que los reintentos nunca publiquen una noticia gaming por error en `@TodoSobreAllTech`; el mismo `BOT_TOKEN_NW3` publica en ambos canales propios.
+
+### 18.23.23 - 2026-08-05
+
+- Añade enlaces boost oficiales de Telegram a las campañas de canales, grupos y comunidades completas.
+- Completa automáticamente `https://t.me/boost/usuario` al elegir un chat público y admite enlaces privados `https://t.me/boost?c=ID`.
+- Valida los destinos boost en el API para impedir redirecciones externas o esquemas inseguros.
+- Muestra un botón secundario «Impulsar» en TodoSobreAllTech, NoticiasWeb3 y en cada chat compatible de una campaña comunitaria.
+- Incorpora el enlace de impulso a las tarjetas Rich Markdown publicadas por el worker en Telegram.
+- Mide los clics boost por campaña, país y ubicación mediante métricas `boost_*`, separadas visualmente de los accesos principales.
+
+### 18.23.22 - 2026-08-04
+
+- Editor de noticias tipo Word, con formato seguro, enlaces HTTPS, listas, citas, vista previa adaptable, recuento de palabras, tiempo de lectura y borrador local automático.
+- Bloques RSS de Moonbot disponibles como piezas visuales dentro del editor de NoticiasWeb3 y del panel creador de TodoSobreAllTech.
+- Añade un editor visual de “legos” por noticia, independiente de las campañas comunitarias generales.
+- Permite insertar, arrastrar, ordenar y posicionar contenido recomendado, campañas comunitarias aprobadas, futuros afiliados, recuadros y separadores entre párrafos.
+- Incorpora previsualización del artículo tanto en NoticiasWeb3 tras iniciar sesión como en el gestor de noticias del dashboard TodoSobreAllTech.
+- Guarda el diseño por noticia en `layout_blocks`, limita cada artículo a 50 bloques y mantiene un renderizado seguro y compatible con noticias anteriores.
+- Añade endpoints propios de recomendados y catálogo de slots de NoticiasWeb3, con caché pública y respaldo local.
+
+### 18.23.21 - 2026-08-04
+- Acelera las campañas comunitarias con caché del catálogo de Moonbot, deduplicación de consultas simultáneas, precalentamiento y actualización en segundo plano.
+- Reduce de seis a dos segundos el límite de espera de la lectura inicial y conserva el catálogo reciente mientras se refresca.
+- Añade caché y reintento controlado en ComunidadTelebots, Resistencia a la Censura y TodoSobreGameplays sin modificar sus diseños.
+- Optimiza NoticiasWeb3 separando la carga comunitaria del estado de AdSense, evitando consultas duplicadas y manteniendo la campaña propia visible con prioridad.
+- Sustituye las imágenes externas de “Bienvenidos a noticiasweb3” y “Nuestro contenido” por HTML y CSS responsive con estética retro, texto accesible y carga inmediata.
+- Recrea también con código “Nuestro pasado en capturas” y el mensaje del centro de soporte, conservando el contorno azul y eliminando otras dos dependencias de Wayback.
+- Añade bloques modulares de recomendados reutilizables como piezas por `slot`, con formatos de cuadrícula, barra lateral y tarjeta compacta para portada, noticias y otras posiciones.
+- Corrige la segmentación usando posiciones estándar (`top`, `right`, `inline`) y el sitio como dimensión independiente.
+- Hace resiliente el proxy interno de cuatro webs con DNS dinámico de Docker, cabeceras HTTPS preservadas y respuesta JSON rápida si la API se recrea.
+- Incorpora al dashboard una tarjeta independiente del roadmap auditado de Telegram React de ComunidadTelebots.
+
+### 18.23.20 - 2026-08-03
+- Migra GamerGitBug, Proxies MTProto, ComunidadTelebots, Resistencia a la Censura y TodoSobreGameplays a Astro estático.
+- Conserva sin cambios sus componentes, diseños, anuncios, analítica, netbar y consultas dinámicas como islas React hidratadas.
+- Entrega títulos, contenido inicial, canonical, Open Graph y Twitter desde HTML para acelerar la primera carga y mejorar la indexación.
+- Mantiene las rutas y dominios actuales; la migración no introduce redirecciones ni cambios de URL que perjudiquen el SEO.
+- Verifica individualmente la compilación de producción de las cinco webs.
+
+### 18.23.19 - 2026-08-03
+- Actualiza `ip-address` a 10.4.0 en los lockfiles raíz y de la API, corrigiendo los avisos SSRF y de clasificación de direcciones.
+- Mantiene React Router 7.18.2, última versión publicada compatible, y verifica automáticamente que las aplicaciones Vite no importen las API RSC inestables afectadas por GHSA-qwww-vcr4-c8h2.
+- Audita individualmente todos los lockfiles del monorepo; las aplicaciones auxiliares quedan sin vulnerabilidades conocidas alcanzables.
+
+### 18.23.18 - 2026-08-03
+- Amplía el gestor de publicidad comunitaria con selección múltiple de posiciones y destinos concretos por sitio.
+- Añade programación, duración visible, frecuencia máxima por sesión y objetivos independientes de clics e impresiones.
+- Filtra la entrega en la API por sitio, posición y objetivos alcanzados sin romper las campañas anteriores.
+- Permite reportar anuncios desde TodoSobreAllTech y resolver o descartar las denuncias desde el panel del creador.
+- Conserva métricas de impresiones, clics, CTR, país y posición, añadiendo el destino a la telemetría.
+- Añade validación y pruebas automatizadas de las políticas de entrega publicitaria.
+
+### Roadmap Telegram React 0.0.640 - 2026-08-03
+- Confirma la integración obligatoria de anuncios oficiales de Telegram en canales y bots.
+- Registra impresiones, clics, recomendados, información del patrocinador y denuncias mediante la API oficial.
+- El catálogo público queda en 31 implementadas, 6 parciales y 4 pendientes.
+
+### Roadmap Telegram React 0.0.639 - 2026-08-03
+- Registra las campañas aprobadas de TodoSobreAllTech insertadas entre publicaciones de canales.
+- Documenta la rotación pública, el clic medido y la exclusión de grupos y conversaciones privadas.
+- El catálogo público queda en 30 implementadas, 6 parciales y 4 pendientes.
+
+### Roadmap Telegram React 0.0.638 - 2026-08-03
+- Añade una matriz visible con las 11 familias y 43 versiones de diseño registradas en Telegram React.
+- Documenta que los componentes funcionales son compartidos por todas las apariencias y versiones.
+- Explica los dos modos disponibles: todas las funciones actuales o solo las funciones propias de la época, manteniendo la API moderna.
+- Publica evidencia directa del registro de diseños, selector de versiones y controles de compatibilidad.
+- Marca la consulta de Comunidades enlazadas como implementada tras verificar el descubrimiento MTProto y la apertura desde los detalles del chat.
+- El catálogo público queda en 29 implementadas, 6 parciales y 4 pendientes.
+
+### Roadmap Telegram React 0.0.637 - 2026-08-03
+- Marca como implementadas la grabación real de mensajes de voz y el navegador interno multipestaña seguro.
+- Registra compartir pantalla y cámara mediante el transporte de presentación de chats de voz.
+- Actualiza llamadas grupales: audio, administración y presentación funcionan; solo queda parcial el vídeo nativo SIM/FID.
+- El catálogo Telegram React alcanza 28 funciones implementadas, 6 parciales y 5 pendientes.
+
+### Roadmap Telegram React 0.0.633–0.0.636 - 2026-08-03
+- Actualiza `/roadmap` con Telegram Business, efectos de mensajes, Mensajes guardados, canales similares y perfiles de descarga automática ya verificados.
+- Registra la conexión de audio WebRTC a chats de voz, micrófono, mute, participantes, grabación e invitaciones.
+- Muestra el estado parcial real de llamadas grupales: faltan publicación de vídeo y presentación de pantalla.
+- Incorpora al catálogo web la evidencia técnica de cada función y la versión actual `0.0.636`.
+
+### Robustez e interfaz completa del captcha multicanal - 2026-08-03
+- Corrige respuestas HTML inesperadas de la API sin provocar el error `Unexpected token '<'`.
+- Normaliza respuestas antiguas de canal único y evita que desaparezca la selección tras guardar.
+- Evita solicitudes automáticas de apelación duplicadas durante una actualización del grupo.
+- Completa por grupo la búsqueda y los banners con foto, riesgo, estado del bot y acciones de unión o selección.
+
+### Recomendaciones de canales con revisión de contenido - 2026-08-01
+- Los banners del captcha muestran la foto pública, identidad y bot asociado de cada canal.
+- Moonbot retira de las recomendaciones los canales con contenido observado de alto riesgo.
+- El panel muestra la cobertura del análisis y su puntuación sin bloquear los canales ya elegidos manualmente por el master.
+- Incorpora buscador, acción rápida para añadir canales y enlace «Unir bot» cuando falta una instancia en el canal.
+
+### Captcha obligatorio multicanal - 2026-08-01
+- El master puede exigir hasta diez canales globales simultáneos desde tarjetas seleccionables.
+- Cada grupo dispone de su propia lista de hasta diez canales locales, independiente de la lista global.
+- Web y Hub recomiendan solo canales donde está unido el bot correspondiente y conservan la edición manual.
+- Los administradores de grupo gestionan únicamente su lista local; la configuración global continúa reservada al master.
+
+### Verificación visual del captcha global - 2026-07-31
+- El panel master muestra `Sí/No` para cada usuario y un indicador general de verificación completa.
+- El canal global predeterminado es `@TodoSobreAllTech` y la comprobación automática se realiza cada 12 horas.
+
+### Backfill exclusivo Bot API 10.2 - 2026-07-31
+- El backfill edita con el mismo Rich Markdown 10.2 usado por las publicaciones nuevas.
+- Se elimina la degradación visual a HTML: si la edición enriquecida no está disponible, el mensaje permanece intacto y pendiente.
+- Instant View y la tarjeta comunitaria conservan el mismo diseño en publicaciones nuevas y recuperadas.
+
+### Backfill e Instant View coherentes - 2026-07-31
+- Las publicaciones enriquecidas fijan explícitamente la previsualización de Instant View sin perder el diseño compacto ni la campaña comunitaria.
+- El backfill elimina paréntesis huérfanos, enlaces IFTTT y fragmentos repetidos antes de editar publicaciones antiguas.
+
+### Barra vertical de canales en NoticiasWeb3 - 2026-07-31
+- NoticiasWeb3 incorpora una barra publicitaria vertical izquierda con canales de Telegram aprobados y rotación comunitaria.
+- La barra es independiente de AdSense, se oculta en pantallas estrechas y conserva los anuncios superior y lateral derecho existentes.
+- La API permite solicitar exclusivamente campañas con destino a canales públicos de Telegram.
+
+### Revisión administrativa del directorio de canales - 2026-07-31
+- El directorio público muestra exclusivamente canales aprobados por un administrador autorizado.
+- Los administradores de canal pueden solicitar la inclusión desde el Hub, pero no publicarse directamente.
+- El master puede aprobar desde el Hub y los administradores web desde la ficha del canal en TodoSobreAllTech.
+- Los canales pendientes, rechazados, retirados o antiguos sin revisar quedan ocultos de listados, fichas y rankings.
+
+### Aprobación master obligatoria para publicidad - 2026-07-31
+- Toda campaña creada o editada queda pendiente aunque la prepare el propio creador.
+- Solo el master puede aprobarla desde el panel de anuncios de TodoSobreAllTech.
+- Web, NoticiasWeb3, canal de Telegram y mensajes de bots aceptan únicamente campañas con aprobación explícita.
+- Pausar conserva la aprobación, pero una campaña pendiente o rechazada no puede reactivarse.
+
+### Comunidades vinculadas al directorio de canales - 2026-07-31
+- Las fichas de `canales.todosobreall.tech` muestran la comunidad de Telegram detectada por Moonbot y sus canales relacionados.
+- El directorio identifica visualmente los canales que pertenecen a una comunidad.
+- Los anuncios incluidos en respuestas informativas del bot enlazan a la ficha pública del canal y conservan medición propia de clics.
+- Las respuestas privadas y las operaciones sensibles de moderación, captcha y seguridad quedan libres de publicidad.
+
+### Conexión interna Moonbot tolerante al arranque - 2026-07-31
+- Reintenta automáticamente las lecturas internas cuando Moonbot todavía está arrancando tras una reconstrucción.
+- Mantiene las acciones administrativas POST en un único intento para impedir operaciones duplicadas.
+- Evita que el dashboard y el mapa lingüístico conviertan un fallo temporal de conexión en paneles vacíos.
+- Hace que Nginx vuelva a resolver dinámicamente API y PocketBase cuando Docker recrea sus contenedores, sin reinicios manuales de `web`.
+- Conserva el borrador del canal global mientras el progreso se actualiza y muestra la comunidad asignada en una tarjeta visual con nivel, periodicidad y ayudas contextuales.
+
+### Publicador Telegram recuperable - 2026-07-31
+- Convierte la publicación de noticias en una cola persistente: el artículo se guarda primero y Telegram se reintenta después de timeouts o reinicios.
+- Recupera automáticamente publicaciones fallidas de las últimas 48 horas sin volver a importar ni duplicar la noticia.
+- Añade timeout, reintentos exponenciales y tratamiento específico de errores 429/5xx de Bot API.
+- Impide que dos ciclos de RSS se solapen y publiquen dos veces el mismo artículo.
+- Conserva el resumen breve, Instant View, Rich Markdown, anuncio comunitario medible y el texto y botón añadidos posteriormente por Inside Ads.
+
+- Añade en `/admin` un ajuste master independiente para el canal obligatorio global, captcha estricto y reverificación periódica de todos los grupos.
+- Mantiene en cada grupo un canal obligatorio local adicional; el captcha exige tanto el canal global como el local cuando ambos están configurados.
+- Sincroniza y persiste estos ajustes en Moonbot mediante la conexión interna autenticada, sin depender del navegador.
+
+- El inicio del captcha global admite campañas grandes sin devolver un falso error de API: amplía el tiempo del POST y recupera automáticamente el estado persistido si se pierde la respuesta inicial.
+- El panel administrador deja de bloquear toda la pantalla indefinidamente: aplica un límite de diez segundos por fuente y muestra los datos parciales disponibles.
+- Los canales RC, beta y alfa esperan también a que PocketBase esté saludable antes de servir sus interfaces.
+- Unifica todas las consultas de administración, bloqueos y mapa lingüístico sobre `MOONBOT_INTERNAL_URL`, con destino interno seguro `http://moonbot:5000` aunque la variable falte; elimina caídas silenciosas a la URL pública.
+- Añade un `.dockerignore` común para impedir que dependencias locales antiguas sobrescriban las instaladas por `npm ci`; corrige la resolución de `@remix-run/router` en NoticiasWeb3 y reduce el contexto y el tiempo de compilación.
+- El despliegue espera a que PocketBase termine las migraciones y responda correctamente antes de iniciar API, worker y web, evitando campos o registros ausentes tras una actualización.
+
+### Compatibilidad con Inside Ads e IFTTT - 2026-07-31
+- Los posts nuevos de `@TodoSobreAllTech` contienen únicamente el titular, una frase breve y el enlace a NoticiasWeb3.
+- El backfill deja de sustituir esos mensajes por el artículo completo y conserva el bloque y los enlaces añadidos por `@InsideAds_bot`.
+- Las ediciones de posts externos esperan cinco minutos y utilizan el texto vivo del canal; si no puede leerse, se omite la edición para no borrar publicidad.
+- Los enlaces cortos de IFTTT se reconocen como fuente, se importan en NoticiasWeb3 y dejan de ser descartados por confundir Inside Ads con contenido patrocinado.
+- Cuando Inside Ads ya ha insertado una campaña, el worker no vuelve a editar el mensaje y conserva tanto el texto publicitario como su botón original.
+- Añade tras «Leer en NoticiasWeb3» una tarjeta compacta de campañas TodoSobreAllTech; rota desde el mismo panel web y mide clics, ubicación Telegram y país mediante el enlace propio antes de que Inside Ads incorpore su anuncio.
+- Las publicaciones nuevas usan `sendRichMessage` y Rich Markdown de Bot API 10.2 con encabezado, divisor y cita publicitaria nativos, sin imágenes externas; conservan un fallback HTML para servidores Telegram anteriores.
+- La campaña comunitaria adopta una tarjeta horizontal nativa: información a la izquierda y CTA medible a la derecha, inspirada en el formato de anuncios de la web.
+- Cada noticia y campaña comunitaria incorpora un panel privado con filtros por 24 horas, 7/30/90 días, país, hora y día.
+- Las visitas web y los clics se registran por país sin guardar IP ni identificadores personales.
+- Las impresiones de publicaciones del canal proceden del contador oficial de Telegram, sincronizado cada quince minutos; el worker deja de contabilizar como impresión la mera consulta del catálogo.
+
+### Dependencias y compilaciones reproducibles - 2026-07-31
+- Actualiza Canales y NoticiasWeb3 a Vite 7.3.6, `@vitejs/plugin-react` 5.2.0 y React Router 7.18.2, eliminando las versiones afectadas por lectura de archivos, redirección abierta y XSS.
+- Regenera los lockfiles de API, ComunidadTelebots, Resistencia Censura, TodoSobreGameplays y scripts con `js-yaml`, PostCSS, esbuild, Babel e `ip-address` corregidos.
+- Añade un lockfile propio a Canales y sustituye instalaciones Docker no deterministas por `npm ci` o por el lockfile raíz del monorepo.
+- Actualiza GitHub Actions a `checkout@v7` y `setup-node@v7` y corrige el único incumplimiento previo del lint de la API.
+- Se conserva React Router 7.18.2 como última versión publicada; la alerta residual afecta al modo RSC, que estas aplicaciones SPA no habilitan. La otra alerta residual procede de `brace-expansion` dentro del lint de desarrollo y todavía no dispone de una actualización compatible aguas arriba.
+
+### Directorio unificado de bloqueos - 2026-07-31
+- `/admin` reúne los usuarios que Moonbot registró como detectados por CAS, los GBAN, los baneos locales y los bloqueos web.
+- El contador CAS ya no representa el export completo: cuenta únicamente detecciones registradas por Moonbot.
+- Añade búsqueda y filtros por origen, conserva la separación entre bloqueos Telegram y cuentas web y evita escrituras directas desde el navegador.
+- Corrige la validación manual y traduce los controles principales del directorio.
+- Añade al master un control global para iniciar captcha en todos los grupos únicamente a usuarios que todavía no lo superaron, con porcentaje y métricas en directo.
+- Conserva la campaña en Moonbot y muestra al reabrir `/admin` el estado por grupo, usuarios restantes y cada protocolo pendiente.
+
+### Verificación Telegram para administradores web - 2026-07-31
+- Las invitaciones y elevaciones dejan el acceso pendiente hasta verificar por mensaje privado la cuenta de Telegram indicada.
+- Genera códigos de un solo uso con quince minutos de validez y almacena exclusivamente su huella criptográfica.
+- El bot confirma servidor a servidor el ID y username reales del remitente antes de activar el rol `admin` y vincular Telegram.
+- La web permite comprobar el estado, renovar la sesión autenticada y entrar al panel únicamente después de la confirmación.
+- El Hub reconoce el administrador web por su cuenta PocketBase verificada y muestra un panel propio, sin conceder controles master ni permisos de grupo.
+
+### Invitaciones y elevación de administración web - 2026-07-31
+- Permite al master crear enlaces de acceso caducables, revocables y de uno o varios usos para convertir cuentas en administradores de la web.
+- Los enlaces guardan únicamente una huella SHA-256 del token y se consumen de forma cerrada antes de aplicar la elevación.
+- Añade una pantalla de aceptación que conserva el enlace durante el inicio de sesión o el registro.
+- Permite al master elevar directamente usuarios existentes con motivo obligatorio y registro de auditoría.
+- Separa expresamente el rol administrativo web de los permisos de grupos Telegram y bloquea desde PocketBase la autoelevación o la asignación de roles durante el registro.
+
+### Gateway autenticado para canales web - 2026-07-31
+- Protege los bundles RC, beta y alpha completos —HTML, JavaScript y recursos— mediante ForwardAuth antes de servirlos.
+- Emite una sesión breve en cookie `HttpOnly`, `Secure` y firmada con HMAC tras autenticar la cuenta en PocketBase.
+- Fija el canal requerido en la ruta interna de cada middleware y no confía en cabeceras ni valores enviados por el navegador.
+- Revalida en cada acceso la cuenta, su ID de Telegram, su estado y el canal asignado; cualquier fallo del backend deniega el acceso.
+- Mantiene stable como canal público y deja los canales superiores desactivados hasta configurar el secreto y habilitar su publicación.
+
+### Estructura de builds web por canal - 2026-07-30
+- Mantiene `web` como despliegue stable predeterminado y aÃ±ade servicios opt-in separados para RC, beta y alpha.
+- Cada imagen hornea su canal y versiÃ³n, mostrados permanentemente junto al nombre de la web.
+- La etiqueta diferencia el bundle ejecutado del canal autorizado para la cuenta autenticada.
+- Los servicios superiores permanecen internos y deshabilitados en Traefik hasta incorporar el gateway autenticado.
+- Las respuestas de permisos y catÃ¡logos usan cachÃ© privada desactivada para impedir cruces entre cuentas o canales.
+
+### Canales de funciones Alpha, Beta y RC - 2026-07-30
+- AÃ±ade a las cuentas el canal progresivo `stable`, `rc`, `beta` o `alpha`, vinculado con su ID de Telegram.
+- El creador puede asignar el canal desde el panel de cuentas y comprobar si Telegram estÃ¡ vinculado.
+- La web y el Hub muestran solo las funciones permitidas simultÃ¡neamente por rol y canal.
+- El backend envÃ­a el canal validado a Moonbot y ambos servicios vuelven a comprobarlo antes de ejecutar.
+- El master conserva acceso completo al canal alpha; cualquier valor ausente o invÃ¡lido se reduce a stable.
+
 ### Permisos contextuales y centro unificado Moonbot - 2026-07-30
 - Las funciones usan exclusivamente los roles existentes `user`, `group_admin`, `group_creator` y `master`.
 - Las operaciones de grupo exigen seleccionar un grupo administrable y el servidor vuelve a validar y fijar su identificador.
@@ -1056,3 +1534,8 @@
 - Los canales administrados por el master generan campañas propias medibles automáticamente.
 - La entrega rota entre campañas con la misma prioridad según sus impresiones por ubicación.
 - El panel identifica las campañas automáticas y mantiene AdSense como alternativa.
+# Administración web: perfiles predefinidos
+
+- Añadidos perfiles rápidos de soporte, contenido, seguridad, analítica, operaciones y administración completa.
+- Separada explícitamente la autorización web del acceso a grupos Telegram; el master puede delegar grupos de forma adicional.
+- Los perfiles se aplican desde invitaciones, elevaciones verificadas y cambios posteriores auditados.

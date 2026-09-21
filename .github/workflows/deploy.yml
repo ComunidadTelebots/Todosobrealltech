@@ -21,7 +21,7 @@ jobs:
           fi
       - name: SSH deploy
         if: env.VPS_CONFIGURED == 'true'
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}

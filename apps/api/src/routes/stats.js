@@ -146,7 +146,7 @@ async function authorizeUser(req, adminOnly) {
   }
 
   const record = result.record;
-  const user = { id: record.id, role: record.role, username: record.username };
+  const user = { id: record.id, role: record.role, username: record.username, telegram_id: record.telegram_id };
   pruneTokenCache(now);
   tokenCache.set(key, { user, expiresAt: now + TOKEN_CACHE_TTL_MS });
 

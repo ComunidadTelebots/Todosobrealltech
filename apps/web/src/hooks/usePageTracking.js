@@ -9,7 +9,7 @@ export const usePageTracking = () => {
 
   useEffect(() => {
     if (analyticsEnabled) {
-      // Small timeout ensures react-helmet has applied the new document.title
+      // Small timeout ensures react-helmet-async has applied the new document.title
       const timeoutId = setTimeout(() => {
         trackEvent('page_view', {
           page_path: location.pathname + location.search,

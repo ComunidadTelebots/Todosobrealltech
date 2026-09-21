@@ -2,11 +2,106 @@ import express from 'express';
 import pb from '../utils/pocketbaseClient.js';
 import logger from '../utils/logger.js';
 import adminOrCreatorMiddleware from '../middleware/admin-or-creator.js';
+import { MOONBOT_INTERNAL_URL, moonbotAdminHeaders } from '../utils/moonbotConnection.js';
 
 const router = express.Router();
+const moonHeaders = moonbotAdminHeaders;
 
 // Every endpoint either contacts CAS or reads/writes privileged blocklist data.
 router.use(adminOrCreatorMiddleware);
+
+// This collection blocks TodoSobreAllTech accounts. Telegram CAS/GBAN records
+// remain in Moonbot's security registry and are intentionally kept separate.
+router.get('/', async (req, res) => {
+  try {
+    const webRecords = await pb.collection('blocked_users').getFullList({ sort: '-imported_date' });
+    let moon = { records: [], stats: { cas: 0, moonbot: 0, global: 0, local: 0 } };
+    if (MOONBOT_INTERNAL_URL && process.env.MOON_ADMIN_API_KEY) {
+      try {
+        const params = new URLSearchParams({ source: String(req.query.source || 'all'), q: String(req.query.q || ''),
+          page: String(req.query.page || 1), per_page: String(req.query.per_page || 100) });
+        const response = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/ban-directory?${params}`, {
+          headers: moonHeaders(), signal: AbortSignal.timeout(8000),
+        });
+        if (response.ok) moon = await response.json();
+        else logger.warn(`[Web blocks] Moonbot directory returned ${response.status}`);
+      } catch (error) {
+        // Web-account blocks remain available even during a Moonbot restart.
+        logger.warn(`[Web blocks] Moonbot directory unavailable: ${error.message}`);
+      }
+    }
+    const source = String(req.query.source || 'all');
+    const webRows = ['all', 'web'].includes(source)
+      ? webRecords.map((record) => ({ ...record, registry: 'web', scope: 'web' })) : [];
+    const moonRows = (moon.records || []).map((record, index) => ({ ...record,
+      id: record.id || `moon:${record.source}:${record.group_id || 'global'}:${record.user_id}:${index}`,
+      registry: record.source === 'cas_export' ? 'cas' : 'moonbot', is_active: record.status !== 'revoked' }));
+    return res.json({ ok: true, records: [...moonRows, ...webRows], stats: {
+      ...moon.stats, web: webRows.filter((record) => record.is_active).length,
+    }, page: moon.page || 1, has_more: Boolean(moon.has_more) });
+  } catch (error) {
+    logger.error(`[Web blocks] List failed: ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'No se pudieron consultar los bloqueos web' });
+  }
+});
+
+router.all('/captcha-global', async (req, res) => {
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false, error: 'Método no permitido' });
+  // Los administradores web pueden consultar el estado. Solo el creator/master
+  // puede modificar ajustes o ejecutar y cancelar campañas globales.
+  if (req.method === 'POST' && req.state?.user?.role !== 'creator') {
+    return res.status(403).json({ ok: false, error: 'Solo el master puede modificar el captcha global' });
+  }
+  if (!MOONBOT_INTERNAL_URL || !process.env.MOON_ADMIN_API_KEY) {
+    return res.status(503).json({ ok: false, error: 'Conexión interna con Moonbot no configurada' });
+  }
+  try {
+    const response = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/captcha-global`, {
+      method: req.method, headers: { ...moonHeaders(), 'Content-Type': 'application/json' },
+      body: req.method === 'POST' ? JSON.stringify(req.body || {}) : undefined,
+      // El inicio recorre todos los grupos y puede preparar cientos de usuarios.
+      // Un límite corto devolvía 502 aunque Moonbot guardase la campaña.
+      signal: AbortSignal.timeout(req.method === 'POST' ? 60_000 : 10_000),
+    });
+    return res.status(response.status).json(await response.json());
+  } catch (error) {
+    if (req.method === 'POST') {
+      try {
+        // Recupera una campaña que llegó a iniciarse aunque se perdiera la
+        // respuesta del POST, evitando mostrar un fallo falso al master.
+        const statusResponse = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/captcha-global`, {
+          headers: moonHeaders(), signal: AbortSignal.timeout(10_000),
+        });
+        const statusPayload = await statusResponse.json();
+        if (statusResponse.ok && statusPayload?.campaign?.status === 'running') {
+          return res.status(202).json({ ...statusPayload, ok: true, started: true, recovered: true });
+        }
+      } catch { /* conserva el error original */ }
+    }
+    logger.warn(`[Global captcha] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'Moonbot no respondió al control global de captcha' });
+  }
+});
+
+router.patch('/:id', async (req, res) => {
+  try {
+    const record = await pb.collection('blocked_users').update(String(req.params.id), {
+      is_active: Boolean(req.body?.is_active),
+    });
+    return res.json({ ok: true, record });
+  } catch {
+    return res.status(400).json({ ok: false, error: 'No se pudo actualizar el bloqueo web' });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    await pb.collection('blocked_users').delete(String(req.params.id));
+    return res.json({ ok: true });
+  } catch {
+    return res.status(400).json({ ok: false, error: 'No se pudo eliminar el bloqueo web' });
+  }
+});
 
 // Helper function to implement exponential backoff retry logic
 async function fetchWithRetry(url, options = {}, maxAttempts = 3) {
@@ -167,10 +262,35 @@ async function testCasApiAvailability() {
 router.get('/status', async (req, res) => {
   logger.info('[Status] Checking availability of import sources');
 
-  const casAvailable = await testCasApiAvailability();
+  let localCas = { available: false, loaded: false, records: 0 };
+  let casFeed = { available: false, records: 0 };
+  if (MOONBOT_INTERNAL_URL && process.env.MOON_ADMIN_API_KEY) {
+    try {
+      const response = await fetch(`${MOONBOT_INTERNAL_URL}/api/internal/cas-sources/status`, {
+        headers: moonHeaders(), signal: AbortSignal.timeout(5000),
+      });
+      if (response.ok) {
+        const payload = await response.json();
+        localCas = payload.local_export || localCas;
+        casFeed = payload.feed || casFeed;
+      }
+    } catch (error) {
+      logger.warn(`[Status] Moonbot CAS local unavailable: ${error.message}`);
+    }
+  }
+  // La consulta remota es informativa y solo se intenta cuando el export local
+  // no está listo; así el panel no queda esperando una API externa innecesaria.
+  const casApiAvailable = localCas.available ? false : await testCasApiAvailability();
+  const casAvailable = Boolean(localCas.available || casApiAvailable);
 
   res.json({
     cas_available: casAvailable,
+    cas_api_available: casApiAvailable,
+    cas_local_available: Boolean(localCas.available),
+    cas_local_records: Number(localCas.records || 0),
+    cas_feed_available: Boolean(casFeed.available),
+    cas_feed_records: Number(casFeed.records || 0),
+    cas_mode: localCas.available ? 'moonbot_local_export' : casApiAvailable ? 'remote_api' : 'unavailable',
     csv_available: true,
     json_available: true,
     manual_available: true,
@@ -235,9 +355,12 @@ router.get('/import', async (req, res) => {
           // Create new blocked user record
           await pb.collection('blocked_users').create({
             user_id: String(userId),
-            source: 'cas_api',
+            username: user.username || String(userId),
+            source: 'api',
+            import_source: 'cas',
             reason: user.reason || '',
             blocked_at: user.blocked_at || timestamp,
+            is_active: true,
           });
 
           logger.info(`[Import] Created blocked user record: ${userId}`);
@@ -387,10 +510,12 @@ router.post('/import', async (req, res) => {
         // Create new blocked user record
         await pb.collection('blocked_users').create({
           user_id: userId,
-          username: user.username || '',
-          source,
+          username: user.username || userId,
+          source: source === 'manual' ? 'manual' : 'api',
+          import_source: source,
           reason: user.reason || '',
           blocked_at: user.blocked_at || timestamp,
+          is_active: true,
         });
 
         logger.info(`[Import] Created blocked user: ${userId} from source ${source}`);
@@ -437,8 +562,8 @@ router.post('/validate', async (req, res) => {
     return res.status(400).json({ error: 'source is required (cas|csv|json)' });
   }
 
-  if (!['cas', 'csv', 'json'].includes(source)) {
-    return res.status(400).json({ error: 'source must be one of: cas, csv, json' });
+  if (!['cas', 'csv', 'json', 'manual'].includes(source)) {
+    return res.status(400).json({ error: 'source must be one of: cas, csv, json, manual' });
   }
 
   logger.info(`[Validate] Testing connectivity for source: ${source}`);
@@ -483,7 +608,7 @@ router.post('/validate', async (req, res) => {
           message: `CAS API is unavailable: ${error.message}`,
         });
       }
-    } else if (source === 'csv' || source === 'json') {
+    } else if (source === 'csv' || source === 'json' || source === 'manual') {
       if (!testData) {
         return res.status(400).json({ error: `testData is required for source: ${source}` });
       }

@@ -1,13 +1,13 @@
 {
   "version": "Roadmap",
-  "generated_at": "2026-07-30T11:36:45.584Z",
+  "generated_at": "2026-08-13T00:00:00.000Z",
   "status": "in_progress",
-  "implemented": 1855,
-  "scaffolded": 328,
-  "specified": 548,
-  "proposed": 3269,
-  "remaining_real": 4145,
-  "verified_percent": 30.92,
+  "implemented": 1830,
+  "scaffolded": 360,
+  "specified": 546,
+  "proposed": 3264,
+  "remaining_real": 4170,
+  "verified_percent": 30.5,
   "totals": {
     "web": 2004,
     "moonbot": 1998,
@@ -42,6 +42,448 @@
       "evidence": [
         "apps/web/src/components/CommunityCampaignSlot.jsx",
         "apps/web/src/pages/HomePage.jsx",
+        "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-campaign-note-editing",
+      "title": "Edición trazable de notas internas de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Los administradores pueden corregir una nota y el motor conserva quién y cuándo la editó.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-note-removal",
+      "title": "Eliminación restringida de notas de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Solo el creator puede retirar notas mediante identificadores validados en servidor.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-checklist-removal",
+      "title": "Retirada de tareas obsoletas de aprobación",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Solo el creator puede eliminar tareas del checklist sin afectar las demás revisiones.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-review-notes",
+      "title": "Notas internas de revisión de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-assignees",
+      "title": "Responsables de revisión por campaña",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-due-dates",
+      "title": "Vencimientos operativos de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-governance-tags",
+      "title": "Etiquetas de gobernanza publicitaria",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-approval-checklist",
+      "title": "Lista compartida de aprobación",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-personal-watch",
+      "title": "Seguimiento personal de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-saved-views",
+      "title": "Vistas de campañas guardadas por el creator",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-review-snapshots",
+      "title": "Instantáneas del estado de revisión",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-overdue-summary",
+      "title": "Resumen de campañas vencidas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-campaign-open-review-metrics",
+      "title": "Métricas de tareas de revisión abiertas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.",
+      "evidence": [
+        "apps/api/src/utils/campaignGovernance.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/CampaignGovernancePanel.jsx",
+        "apps/api/test/campaignGovernance.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-real-destination-context",
+      "title": "Propagar chat, tipo y bot a la entrega publicitaria",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "El worker y la API entregan el contexto real del canal, grupo y bot para que la segmentación no dependa de valores genéricos.",
+      "evidence": [
+        "apps/api/src/utils/rssAutoPublisher.js",
+        "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-ads-country-language",
+      "title": "Segmentar campañas por país e idioma",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "La política normaliza inclusiones y exclusiones geográficas y lingüísticas, incluidas variantes regionales.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPolicy.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-timezone-schedule",
+      "title": "Programar campañas por días, horario y zona IANA",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "El motor admite días concretos, franjas normales o nocturnas y zonas horarias IANA verificadas.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPolicy.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-destination-exclusions",
+      "title": "Excluir canales, grupos, países e idiomas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Las exclusiones tienen prioridad sobre las inclusiones y se configuran desde el panel master.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-frequency-window",
+      "title": "Limitar frecuencia global por usuario y ventana",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "La API aplica el límite con cookie HttpOnly o identificador interno convertido en huella, sin guardar la identidad original.",
+      "evidence": [
+        "apps/api/src/routes/house-ads.js",
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-content-rules",
+      "title": "Segmentar anuncios según contexto del contenido",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Categorías, palabras requeridas y términos excluidos deciden la entrega con normalización y límites.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-budgets-goals",
+      "title": "Detener campañas por límites diarios y objetivos",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Los límites de clics e impresiones diarios y totales frenan automáticamente campañas que alcanzan su objetivo.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-surface-preview",
+      "title": "Previsualizar campañas por superficie",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "El editor representa cada campaña en web, canal, Telegram React y Hub antes de guardarla.",
+      "evidence": [
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-chat-metrics",
+      "title": "Desglosar métricas por ubicación, país, chat y bot",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "La entrega y los clics transmiten chat y bot al backend y el panel mantiene el análisis temporal, geográfico y por ubicación.",
+      "evidence": [
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/web/src/components/ContentAnalyticsDialog.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-master-audit",
+      "title": "Auditar las operaciones publicitarias del master",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Un registro persistente y reducido conserva actor, acción y resumen antes/después sin copiar destinos sensibles.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsAudit.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsAudit.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-destination-health",
+      "title": "Comprobar acceso del bot a destinos publicitarios",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "El panel consulta Moonbot para identificar chats válidos y destinos donde el bot ya no está presente.",
+      "evidence": [
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/HouseAdsManager.jsx"
+      ]
+    },
+    {
+      "id": "task-ads-disclosure",
+      "title": "Mostrar transparencia publicitaria por relación",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Cada entrega declara si es oficial, comunitaria, afiliada o Inside Ads mediante una etiqueta normalizada.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPublicSecurity.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-inside-isolation",
+      "title": "Aislar permisos y destinos de Inside Ads",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Los presets se resuelven en servidor por superficie, solo el creator los administra y la respuesta pública omite campos internos.",
+      "evidence": [
+        "apps/api/src/utils/insideAdsPresets.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/web/src/components/InsideAdsLinksPanel.jsx",
+        "apps/api/test/insideAdsPresets.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-ab-testing",
+      "title": "Ejecutar pruebas A/B estables de campañas",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Hasta cuatro variantes ponderadas se asignan de forma estable al visitante tras normalizar sus campos.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsPolicy.js",
+        "apps/web/src/components/HouseAdsManager.jsx",
+        "apps/api/test/houseAdsPolicy.test.js"
+      ]
+    },
+    {
+      "id": "task-ads-antifraud",
+      "title": "Detectar y limitar clics publicitarios abusivos",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "La API utiliza huellas HMAC, ventana antiabuso, Retry-After y deduplicación de reportes sin almacenar direcciones IP.",
+      "evidence": [
+        "apps/api/src/utils/houseAdsAntiFraud.js",
+        "apps/api/src/routes/house-ads.js",
+        "apps/api/test/houseAdsAntiFraud.test.js"
+      ]
+    },
+    {
+      "id": "task-nw3-vertical-campaign-layout",
+      "title": "Adaptar campañas verticales de NoticiasWeb3",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Los anuncios laterales izquierdo y derecho reorganizan imagen, etiqueta, texto, llamada a la acción y boost dentro de 160 píxeles, evitando recortes sin alterar el banner horizontal.",
+      "evidence": [
+        "apps/noticiasweb3/src/components/AdSense.jsx",
+        "apps/noticiasweb3/src/index.css"
+      ]
+    },
+    {
+      "id": "task-proxy-community-side-rails",
+      "title": "Mostrar campañas comunitarias laterales en Proxy",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "Proxy incorpora ubicaciones independientes a izquierda y derecha en pantallas anchas, con diseño vertical, caché por placement y medición diferenciada.",
+      "evidence": [
+        "apps/proxy/src/main.jsx",
+        "apps/proxy/src/styles.css",
+        "apps/api/src/routes/house-ads.js"
+      ]
+    },
+    {
+      "id": "task-proxy-community-feed-inserts",
+      "title": "Intercalar campañas comunitarias entre proxies",
+      "products": [
+        "web"
+      ],
+      "status": "implemented",
+      "detail": "El directorio introduce una campaña horizontal cada seis proxies, conserva la cuadrícula responsive y registra clics e impresiones bajo la ubicación inline.",
+      "evidence": [
+        "apps/proxy/src/main.jsx",
+        "apps/proxy/src/styles.css",
         "apps/api/src/routes/house-ads.js"
       ]
     },
@@ -104,8 +546,11 @@
         "webapp"
       ],
       "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "detail": "Existe la lista privada por usuario, pero falta vincular cada tarea a un grupo autorizado para cumplir el contrato completo.",
+      "evidence": [
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-shared-notes",
@@ -114,9 +559,12 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "El espacio de trabajo exige autorización contextual del grupo, limita y persiste notas compartidas y ofrece su administración en el Hub.",
+      "evidence": [
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-local-group-digest",
@@ -125,9 +573,13 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "El resumen procesa localmente el historial conservado del grupo y devuelve actividad, medios y participantes principales sin enviarlo a terceros.",
+      "evidence": [
+        "moon-multibot:plugins/group_digest.py",
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-wayback-history",
@@ -136,9 +588,12 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "Moonbot integra el cliente Wayback y los comandos /wayback, /archivo y /archive con URL y fecha opcional.",
+      "evidence": [
+        "moon-multibot:core/wayback.py",
+        "moon-multibot:moon_multibot.py"
+      ]
     },
     {
       "id": "task-managed-task-queue",
@@ -147,20 +602,13 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
-    },
-    {
-      "id": "task-url-domain-inspector",
-      "title": "Inspector de URLs y dominios",
-      "products": [
-        "moonbot",
-        "webapp"
-      ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "La cola persistente de Moonbot expone estado, priorización y cancelación mediante rutas autenticadas y controles del Hub.",
+      "evidence": [
+        "moon-multibot:core/task_queue.py",
+        "moon-multibot:core/routes_queue.py",
+        "moon-multibot:web/hub.html"
+      ]
     },
     {
       "id": "task-named-blocklists",
@@ -169,9 +617,199 @@
         "moonbot",
         "webapp"
       ],
-      "status": "not_implemented",
-      "detail": "Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.",
-      "evidence": []
+      "status": "implemented",
+      "detail": "El gestor mantiene listas independientes con nombre, alcance global o por grupo y estado activo, separadas de CAS y de los bloqueos locales.",
+      "evidence": [
+        "moon-multibot:ban_manager.py",
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
+    },
+    {
+      "id": "task-url-domain-inspector",
+      "title": "Inspector de URLs y dominios",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Moonbot inspecciona localmente la estructura sin conectar con el destino y TodoSobreAllTech ofrece un proxy autenticado y una interfaz de resultados en Seguridad.",
+      "evidence": [
+        "moon-multibot:plugins/url_tools.py",
+        "moon-multibot:core/routes_public.py",
+        "apps/api/src/utils/moonbotSecurityProxy.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/MoonbotSecurityCenter.jsx",
+        "apps/api/test/moonbotSecurityProxy.test.js"
+      ]
+    },
+    {
+      "id": "task-hub-instant-news",
+      "title": "NoticiasWeb3 Instant dentro del Hub",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El Hub consume el RSS público de NoticiasWeb3, presenta las publicaciones con una interfaz móvil propia y permite ampliar cada noticia sin abandonar Telegram.",
+      "evidence": [
+        "apps/api/src/routes/noticias-rss.js",
+        "moon-multibot:core/routes_public.py",
+        "moon-multibot:web/hub.html"
+      ]
+    },
+    {
+      "id": "task-news-reading-recommendations",
+      "title": "Lectura adaptable y noticias recomendadas",
+      "products": [
+        "web",
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "NoticiasWeb3 incorpora preferencias de tipografía y tamaño, detección del navegador y recomendaciones relacionadas, con presentación coherente en web y Telegram.",
+      "evidence": [
+        "apps/noticiasweb3/src/components/ReadingPreferences.jsx",
+        "apps/noticiasweb3/src/components/RelatedNews.jsx",
+        "apps/noticiasweb3/src/components/RecommendedBlock.jsx",
+        "apps/api/src/routes/noticias-recommended.js"
+      ]
+    },
+    {
+      "id": "task-hub-games-platform",
+      "title": "Plataforma de juegos integrada en el Hub",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El Hub reúne juegos compatibles con Telegram, perfiles gráficos, versiones 2D y 3D, modo convoy y una red logística compartida entre experiencias.",
+      "evidence": [
+        "moon-multibot:web/games.html",
+        "moon-multibot:web/games-graphics.js",
+        "moon-multibot:web/games-convoy.js",
+        "moon-multibot:web/games-logistics-network.js",
+        "moon-multibot:assets/telegram-games/640x360"
+      ]
+    },
+    {
+      "id": "task-transport-simulator-evolution",
+      "title": "Simulador europeo de transporte 2D y 3D",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Rutas del Continente conserva la edición 2D y añade una edición 3D acelerada por GPU con carrera, contratos, carga, convoyes, logros y transporte especial.",
+      "evidence": [
+        "moon-multibot:web/transport-3d.html",
+        "moon-multibot:web/transport-career.js",
+        "moon-multibot:web/transport-special-cargo.js",
+        "moon-multibot:web/transport-achievements.js"
+      ]
+    },
+    {
+      "id": "task-transport-europe-world",
+      "title": "Mapa europeo, carreteras y mundo dinámico",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El simulador incorpora ciudades y rutas europeas, mapa con varios niveles de zoom y posición, carreteras continuas, paisaje basado en OpenStreetMap, servicios y eventos dinámicos.",
+      "evidence": [
+        "moon-multibot:web/transport-europe-data.js",
+        "moon-multibot:web/transport-europe-map.js",
+        "moon-multibot:web/transport-osm-scenery.js",
+        "moon-multibot:web/transport-road-surface.js",
+        "moon-multibot:web/transport-world-events.js"
+      ]
+    },
+    {
+      "id": "task-transport-vehicles-cabins-physics",
+      "title": "Vehículos, cabinas y físicas avanzadas",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Camiones, autobuses y vehículos de emergencia cuentan con texturas y materiales propios, cabinas diferenciadas, cristales y espejos funcionales, nueve cámaras, control con ratón y volantes físicos, además de físicas por vehículo, firme y clima. La cabina usa una envolvente interior curvada, separa la visibilidad interior y exterior para evitar piezas sobresalientes, suaviza la silueta aerodinámica y añade ruedas con flancos, llantas, bujes, ventilación, tornillos y banda de rodadura modelados.",
+      "evidence": [
+        "moon-multibot:web/transport-truck-exterior.js",
+        "moon-multibot:web/transport-cabin-model.js",
+        "moon-multibot:web/transport-cabin-glazing.js",
+        "moon-multibot:web/transport-bus-cabin.js",
+        "moon-multibot:web/transport-emergency-fleet.js",
+        "moon-multibot:web/transport-wheel-input.js",
+        "moon-multibot:web/transport-physics.js"
+      ]
+    },
+    {
+      "id": "task-moonbot-hostinger-autoscaling",
+      "title": "Escalado horizontal de Moonbot en Hostinger",
+      "products": [
+        "moonbot"
+      ],
+      "status": "implemented",
+      "detail": "Moonbot dispone de una topología de balanceo y un autoscaler para levantar réplicas adicionales cuando aumenta la carga, con servicio administrable en servidores Hostinger.",
+      "evidence": [
+        "moon-multibot:docker-compose.scale.yml",
+        "moon-multibot:scripts/moon-autoscale.py",
+        "moon-multibot:config/moon-autoscaler.service"
+      ]
+    },
+    {
+      "id": "task-transport-real-osm-routes",
+      "title": "Conducción 3D sobre rutas reales de OpenStreetMap",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "El planificador consulta OSRM, convierte la geometría OpenStreetMap en una carretera 3D conducible y sincroniza sobre ella vehículo, navegación, tráfico con IA y un corredor limitado de edificios, terrenos, agua y vegetación. El escenario recto anterior queda como respaldo y el entorno OSM se muestrea para proteger el rendimiento móvil.",
+      "evidence": [
+        "moon-multibot:web/transport-osm-routing.js",
+        "moon-multibot:web/transport-osm-road-mesh.js",
+        "moon-multibot:web/transport-route-navigation.js",
+        "moon-multibot:web/transport-route-runtime.js",
+        "moon-multibot:web/transport-osm-corridor.js",
+        "moon-multibot:web/transport-europe-map.js",
+        "moon-multibot:web/transport-3d.html"
+      ]
+    },
+    {
+      "id": "task-transport-osm-audited-refinements",
+      "title": "Precisión y rendimiento auditados del mundo OSM",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Tras comprobar los sistemas existentes sin duplicarlos, el simulador corrige el GPS para interpolar por distancia real, incorpora gasolineras, cargadores, aparcamientos, descansos y talleres obtenidos de OpenStreetMap, y repara el filtrado espacial del corredor con sectores, centros reales, histéresis y actualización limitada.",
+      "evidence": [
+        "moon-multibot:web/transport-osm-routing.js",
+        "moon-multibot:web/transport-osm-pois.js",
+        "moon-multibot:web/transport-osm-corridor.js",
+        "moon-multibot:web/transport-3d.html"
+      ]
+    },
+    {
+      "id": "task-transport-world-cargo-network",
+      "title": "Red mundial con puertos y aeropuertos de carga 3D",
+      "products": [
+        "moonbot",
+        "webapp"
+      ],
+      "status": "implemented",
+      "detail": "Tras verificar que solo existía logística abstracta, el simulador incorpora 28 centros en 7 regiones, planificación multimodal y hubs 3D de puerto, aeropuerto y ferrocarril obtenidos de OSM o generados como respaldo. Los tramos terrestres usan OSRM y los enlaces oceánicos se mantienen como barco o avión. Trece perfiles procedurales PBR localizan visualmente cada región.",
+      "evidence": [
+        "moon-multibot:web/transport-world-network.js",
+        "moon-multibot:web/transport-cargo-hubs.js",
+        "moon-multibot:web/transport-regional-materials.js",
+        "moon-multibot:web/transport-3d.html"
+      ]
     }
   ],
   "items": [
@@ -7560,9 +8198,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "snapshots",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/moderation_insights.py",
+        "moonbot:core/routes_public.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_moderation_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0340",
@@ -7577,9 +8220,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "auditoría",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/moderation_insights.py",
+        "moonbot:core/routes_public.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_moderation_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0341",
@@ -7747,9 +8395,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "telemetría",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/moderation_insights.py",
+        "moonbot:core/routes_public.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_moderation_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0351",
@@ -8036,9 +8689,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "motor de eventos",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0368",
@@ -8138,9 +8796,14 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice vectorial",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0374",
@@ -8155,9 +8818,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "modelo de lenguaje",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0375",
@@ -8240,9 +8908,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "políticas de retención",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0380",
@@ -8376,9 +9049,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "línea base",
-      "status": "scaffolded",
-      "evidence": [],
-      "completion_state": "partial"
+      "status": "implemented",
+      "evidence": [
+        "moonbot:core/security_insights.py",
+        "moonbot:core/routes_security.py",
+        "moonbot:web/hub.html",
+        "moonbot:tests/test_security_insights.py"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-0388",
@@ -24783,9 +25461,13 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "validación de datos",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/newsSeoAudit.js",
+        "apps/api/src/routes/noticias-seo-audit.js",
+        "apps/web/src/components/NewsSeoAuditPanel.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1217",
@@ -25021,9 +25703,13 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "índice de similitud",
-      "status": "specified",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/newsSeoAudit.js",
+        "apps/api/src/routes/noticias-seo-audit.js",
+        "apps/web/src/components/NewsSeoAuditPanel.jsx"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-1231",
@@ -39148,9 +39834,14 @@
       "priority": "critical",
       "difficulty": "advanced",
       "dependency": "eventos y trazas",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountIncidentCenter.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountIncidentCenterPanel.jsx",
+        "apps/api/test/accountIncidentCenter.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2002",
@@ -39182,9 +39873,15 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "roles con caducidad",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountDelegations.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountDelegationsPanel.jsx",
+        "apps/web/src/components/CommunicationPreferencesPanel.jsx",
+        "apps/api/test/accountDelegations.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2004",
@@ -39318,9 +40015,14 @@
       "priority": "high",
       "difficulty": "advanced",
       "dependency": "reglas de escalado",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountIncidentCenter.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountIncidentCenterPanel.jsx",
+        "apps/api/test/accountIncidentCenter.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2012",
@@ -39556,9 +40258,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "segmentación funcional",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountOnboarding.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountOnboardingPanel.jsx",
+        "apps/api/test/accountOnboarding.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2026",
@@ -41640,11 +42347,9 @@
       "priority": "medium",
       "difficulty": "advanced",
       "dependency": "reconocimiento de voz",
-      "status": "implemented",
-      "evidence": [
-        "apps/web/src/components/VoiceNavigation.jsx"
-      ],
-      "completion_state": "implemented"
+      "status": "proposed",
+      "evidence": [],
+      "completion_state": "not_implemented"
     },
     {
       "id": "future-2148",
@@ -42613,9 +43318,14 @@
       "priority": "medium",
       "difficulty": "medium",
       "dependency": "perfiles de usuario",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountCommunicationPreferences.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/CommunicationPreferencesPanel.jsx",
+        "apps/api/test/accountCommunicationPreferences.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-2205",
@@ -70455,9 +71165,14 @@
       "priority": "high",
       "difficulty": "easy",
       "dependency": "identity contract v1",
-      "status": "proposed",
-      "evidence": [],
-      "completion_state": "not_implemented"
+      "status": "implemented",
+      "evidence": [
+        "apps/api/src/utils/accountOnboarding.js",
+        "apps/api/src/routes/moonbot-admin.js",
+        "apps/web/src/components/AccountOnboardingPanel.jsx",
+        "apps/api/test/accountOnboarding.test.js"
+      ],
+      "completion_state": "implemented"
     },
     {
       "id": "future-3704",
@@ -97680,13 +98395,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ux contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5043",
@@ -97741,13 +98457,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5046",
@@ -97802,13 +98519,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5049",
@@ -97863,13 +98581,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5052",
@@ -97924,13 +98643,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5055",
@@ -97985,13 +98705,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5058",
@@ -98046,13 +98767,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "planning contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5061",
@@ -98107,13 +98829,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "accessibility contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5064",
@@ -98168,13 +98891,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5067",
@@ -98229,13 +98953,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5070",
@@ -98290,13 +99015,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5073",
@@ -98351,13 +99077,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5076",
@@ -98412,13 +99139,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5079",
@@ -98473,13 +99201,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5082",
@@ -98534,13 +99263,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5085",
@@ -98595,13 +99325,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5088",
@@ -98656,13 +99387,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5091",
@@ -98717,13 +99449,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "notifications contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5094",
@@ -98778,13 +99511,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5097",
@@ -98839,13 +99573,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "resilience contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5100",
@@ -98900,13 +99635,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5103",
@@ -98961,13 +99697,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "moderation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5106",
@@ -99022,13 +99759,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5109",
@@ -99083,13 +99821,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5112",
@@ -99144,13 +99883,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "content contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5115",
@@ -99205,13 +99945,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5118",
@@ -99266,13 +100007,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "governance contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5121",
@@ -99327,13 +100069,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "integrations contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5124",
@@ -99388,13 +100131,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "automation contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5127",
@@ -99449,13 +100193,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "security contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5130",
@@ -99510,13 +100255,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "accessibility contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5133",
@@ -99571,13 +100317,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5136",
@@ -99632,13 +100379,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ai contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5139",
@@ -99693,13 +100441,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "ux contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5142",
@@ -99754,13 +100503,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "analytics contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5145",
@@ -99815,13 +100565,14 @@
       "priority": "critical",
       "difficulty": "medium",
       "dependency": "privacy contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5148",
@@ -99876,13 +100627,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "operations contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5151",
@@ -99937,13 +100689,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "identity contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5154",
@@ -99998,13 +100751,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "community contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5157",
@@ -100059,13 +100813,14 @@
       "priority": "high",
       "difficulty": "medium",
       "dependency": "planning contract v1",
-      "status": "implemented",
+      "status": "scaffolded",
       "evidence": [
-        "moon-multibot:core/feature_runtime.py",
-        "moon-multibot:tests/test_feature_runtime.py",
-        "moon-multibot:core/routes_public.py"
+        "moon-multibot:resource_localization_easy_voice_grouped_manifest.py",
+        "moon-multibot:resource_localization_easy_reading_engines.py",
+        "moon-multibot:resource_voice_grouped_notification_engines.py",
+        "moon-multibot:tests/test_resource_localization_easy_voice_grouped.py"
       ],
-      "completion_state": "implemented"
+      "completion_state": "partial"
     },
     {
       "id": "future-5160",
@@ -116048,15 +116803,15 @@
     }
   ],
   "completion": {
-    "implemented": 1855,
-    "partial": 328,
-    "not_implemented": 3817
+    "implemented": 1830,
+    "partial": 360,
+    "not_implemented": 3810
   },
   "data_quality": {
     "unique_ids": 6000,
     "duplicate_ids": 0,
     "implemented_without_evidence": 0,
     "encoding_errors": 0,
-    "verified_at": "2026-07-30T11:36:45.584Z"
+    "verified_at": "2026-08-13T00:00:00.000Z"
   }
 }

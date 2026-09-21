@@ -25,6 +25,7 @@ const BotsPage = lazy(() => import('@/pages/BotsPage.jsx'));
 const AdminPage = lazy(() => import('@/pages/AdminPage.jsx'));
 const AdminStatisticsPage = lazy(() => import('@/pages/AdminStatisticsPage.jsx'));
 const CreatorPage = lazy(() => import('@/pages/CreatorPage.jsx'));
+const MoonbotControlPreview = import.meta.env.DEV ? lazy(() => import('@/pages/MoonbotControlPreview.jsx')) : null;
 const TranslationsPage = lazy(() => import('@/pages/TranslationsPage.jsx'));
 const OnionWebManagement = lazy(() => import('@/pages/OnionWebManagement.jsx'));
 const BlogPage = lazy(() => import('@/pages/BlogPage.jsx'));
@@ -37,6 +38,7 @@ const TermsPage = lazy(() => import('@/pages/TermsPage.jsx'));
 const CookiePolicyPage = lazy(() => import('@/pages/CookiePolicyPage.jsx'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage.jsx'));
 const FutureFeaturesPage = lazy(() => import('@/pages/FutureFeaturesPage.jsx'));
+const WebAdminInvitePage = lazy(() => import('@/pages/WebAdminInvitePage.jsx'));
 
 const PageFallback = () => <div className="mx-auto min-h-[60vh] max-w-7xl animate-pulse px-4 py-12"><div className="h-40 rounded-2xl bg-muted/30" /></div>;
 
@@ -97,6 +99,9 @@ function App() {
                   <Route path="/terms" element={<TermsPage />} />
                   <Route path="/cookies" element={<CookiePolicyPage />} />
                   <Route path="/roadmap" element={<FutureFeaturesPage />} />
+                  {import.meta.env.DEV && <Route path="/dev/moonbot-control" element={<MoonbotControlPreview />} />}
+
+                  <Route path="/admin/invite/:token" element={<WebAdminInvitePage />} />
                   
                   <Route
                     path="/dashboard"

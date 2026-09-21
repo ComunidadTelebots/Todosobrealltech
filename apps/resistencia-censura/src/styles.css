@@ -251,6 +251,19 @@ h1 {
   line-height: 1.35;
 }
 
+.community-ad { padding: 0; border: 0; background: transparent; }
+.community-ad > a { display: flex; width: 100%; min-height: inherit; align-items: center; gap: 14px; padding: 14px; overflow: hidden; border: 1px solid; border-radius: 12px; color: inherit; text-align: left; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+.community-ad > a:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.22); }
+.community-ad img, .community-ad-icon { width: 54px; height: 54px; flex: 0 0 54px; border-radius: 12px; object-fit: cover; }
+.community-ad-icon { display: grid; place-items: center; background: rgba(255,255,255,.75); color: #168acd !important; font-size: 1rem !important; font-weight: 900; letter-spacing: 0 !important; }
+.community-ad-copy { min-width: 0; flex: 1; display: grid; gap: 2px; color: inherit !important; text-transform: none !important; letter-spacing: 0 !important; }
+.community-ad-copy small { color: inherit; font-size: .65rem; font-weight: 800; opacity: .65; text-transform: uppercase; }
+.community-ad-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.community-ad-copy > span { color: inherit; font-size: .82rem; font-weight: 400; opacity: .8; }
+.community-ad b { display: flex; align-items: center; gap: 5px; flex: 0 0 auto; padding: 9px 12px; border-radius: 999px; color: #fff; font-size: .78rem; }
+.community-ad.ad-preview-side > a { flex-direction: column; justify-content: center; text-align: center; }
+@media (max-width: 520px) { .community-ad > a { gap: 9px; padding: 10px; } .community-ad img, .community-ad-icon { width: 44px; height: 44px; flex-basis: 44px; } .community-ad-copy > span { display: none; } .community-ad b { padding: 7px 9px; font-size: .7rem; } }
+
 .ad-preview-top {
   margin: 18px 0 0;
   min-height: 112px;
@@ -408,4 +421,37 @@ h1 {
   .social-button {
     width: 100%;
   }
+}
+
+/* Vista integrada en CintiaBot Hub, alineada con la lectura de NoticiasWeb3. */
+html.miniapp body { min-width: 0; overflow-x: hidden; background: #070b14; }
+html.miniapp tsa-netbar { display: none !important; }
+html.miniapp main { width: 100%; max-width: 760px; padding: 12px 12px calc(30px + env(safe-area-inset-bottom)); }
+html.miniapp .channel-hero { grid-template-columns: 1fr; gap: 16px; min-height: 0; padding: 18px; border-color: #263044; border-radius: 18px; box-shadow: none; }
+html.miniapp h1 { margin: 16px 0 8px; font-size: clamp(2rem, 10vw, 3rem); line-height: 1.02; }
+html.miniapp .hero-content p { font-size: .95rem; line-height: 1.55; }
+html.miniapp .hero-actions { margin-top: 18px; }
+html.miniapp .live-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+html.miniapp .stat { min-height: 78px; padding: 11px; }
+html.miniapp .stat strong { font-size: .95rem; }
+html.miniapp .toolbar { position: sticky; top: 0; z-index: 4; gap: 8px; margin: 10px 0; padding: 8px 0; background: rgba(7, 11, 20, .96); backdrop-filter: blur(12px); }
+html.miniapp .search-box { width: 100%; border-color: #263044; border-radius: 13px; background: #111722; }
+html.miniapp .freshness { padding-inline: 4px; }
+html.miniapp .content-grid, html.miniapp .feed { grid-template-columns: 1fr; gap: 12px; }
+html.miniapp .ad-preview-side { display: none; }
+html.miniapp .ad-preview-top, html.miniapp .ad-preview-inline { min-height: 88px; margin-top: 10px; border-radius: 14px; }
+html.miniapp .post-card { min-height: 0; border-color: #263044; border-radius: 17px; background: #111722; }
+html.miniapp .post-image { aspect-ratio: 16 / 9; }
+html.miniapp .post-body { min-height: 0; padding: 15px; }
+html.miniapp .post-body p { font-size: 1rem; line-height: 1.62; }
+html.miniapp .post-link { width: 100%; min-height: 44px; border-radius: 12px; }
+
+@media (max-width: 520px) {
+  html:not(.miniapp) main { width: calc(100% - 16px); }
+  html:not(.miniapp) .channel-hero { padding: 18px; border-radius: 14px; }
+  html:not(.miniapp) h1 { font-size: clamp(2.2rem, 14vw, 3.4rem); overflow-wrap: anywhere; }
+  .post-card { min-height: 0; border-radius: 14px; }
+  .post-body { min-height: 0; padding: 15px; }
+  html.miniapp .live-panel { grid-template-columns: 1fr; }
+  html.miniapp .stat { min-height: 0; }
 }

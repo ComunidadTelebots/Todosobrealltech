@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,11 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [telegramLoading, setTelegramLoading] = useState(false);
+  const afterLogin = () => {
+    const target = sessionStorage.getItem('post_auth_path');
+    sessionStorage.removeItem('post_auth_path');
+    navigate(target?.startsWith('/admin/invite/') ? target : '/dashboard');
+  };
   const [tgReady, setTgReady] = useState(false);
   const [telegramEnabled, setTelegramEnabled] = useState(false);
   const [telegramConfig, setTelegramConfig] = useState(null);
@@ -92,7 +97,7 @@ const LoginPage = () => {
         const res = await loginWithTelegram({ id_token: result.id_token, nonce: config.nonce });
         if (res.success) {
           toast.success('Sesión iniciada con Telegram');
-          navigate('/dashboard');
+          afterLogin();
         } else {
           const errorMsg = res.error === 'Esta cuenta ha sido congelada. Contacta al administrador.'
             ? 'Tu cuenta ha sido congelada. Por favor contacta al administrador para más información.'
@@ -125,7 +130,7 @@ const LoginPage = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      navigate('/dashboard');
+      afterLogin();
     } else {
       const errorMsg = result.error === 'Esta cuenta ha sido congelada. Contacta al administrador.' 
         ? 'Tu cuenta ha sido congelada. Por favor contacta al administrador para más información.'
