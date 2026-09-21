@@ -7,7 +7,7 @@ const history = Array.from({ length: 20 }, (_, i) => ({ at: new Date(minute - (1
 const traffic = { updates: 196, received: 164, sent: 72, calls: 248, errors: 3, limited: 2, timeouts: 1, retry_after_max: 7, latency_ms: 128960, http: 180, http_errors: 1 };
 const http = { requests: 342, errors4xx: 4, errors5xx: 0, limited: 1, aborted: 0, avgMs: 84, p95Ms: 250, p95Overflow: false };
 const previewNetwork = { ok: true, measuredAt: new Date().toISOString(), origin: 'Ejemplo · servidor simulado', intervalSeconds: 30,
-  targets: [['DC 1', '149.154.175.50', 108], ['DC 2', '149.154.167.51', 32], ['DC 2 · alternativo', '95.161.76.100', 35], ['DC 3', '149.154.175.100', 112], ['DC 4', '149.154.167.91', 34], ['DC 5', '149.154.171.5', 184], ['CDN público 1', 'cdn1.telesco.pe', 25], ['CDN público 4', 'cdn4.telesco.pe', 28], ['Bot API', 'api.telegram.org', 31]].map(([label, host, latency], i) => ({ id: String(i), label, host, port: 443, ok: true, ms: latency, avgMs: latency + 2, minMs: latency - 3, maxMs: latency + 9, successful: 20, samples: 20 })),
+  targets: [['DC 1', '149.154.175.50', 108], ['DC 2', '149.154.167.51', 32], ['DC 2 · alternativo', '95.161.76.100', 35], ['DC 3', '149.154.175.100', 112], ['DC 4', '149.154.167.91', 34], ['DC 5', '149.154.171.5', 184], ['CDN público 1', 'cdn1.telesco.pe', 25], ['CDN público 4', 'cdn4.telesco.pe', 28], ['Bot API', 'api.telegram.org', 31]].map(([label, host, latency], i) => ({ id: ['dc1', 'dc2', 'dc2-alt', 'dc3', 'dc4', 'dc5', 'cdn1', 'cdn4', 'bot-api'][i], label, host, port: 443, ok: true, ms: latency, avgMs: latency + 2, minMs: latency - 3, maxMs: latency + 9, successful: 20, samples: 20 })),
 };
 const client = {
   fetch: async (endpoint) => ({ ok: true, endpoint }),
