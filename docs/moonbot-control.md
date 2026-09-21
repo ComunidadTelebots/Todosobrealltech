@@ -68,6 +68,8 @@ Los límites de Telegram mostrados son referencias de envío publicadas en su [F
 
 ### Transporte y ubicación
 
+Referencia técnica principal CDN: https://core.telegram.org/cdn. Los destinos dinámicos proceden de `help.getConfig` con `dcOption.cdn`; `help.getCdnConfig` devuelve claves públicas RSA y `upload.fileCdnRedirect` identifica el CDN de una descarga. El panel actual no tiene conectado ese descubrimiento MTProto y no equipara los hosts web telesco.pe a esos CDN cifrados. La documentación no publica un listado de ciudades. Su beneficio se aplica a descarga de medios públicos, no al envío de mensajes por Bot API.
+
 El desplegable CDN regionales cita el anuncio oficial de 23/07/2017 como cobertura histórica de mejora de descargas (Sudamérica, Turquía, Indonesia, India, Irán e Irak). No confirma ciudades, direcciones operativas ni disponibilidad actual. NetworksDB asocia 91.108.20.0/22 a Azerbaiyán, sin confirmar Bakú o capacidad. No hay evidencia en las fuentes aportadas para presentar Bakú, Teherán, Yakarta, Estambul, São Paulo o Buenos Aires como nodos medidos. Referencias: https://telegram.org/blog/encrypted-cdns y https://networksdb.io/ip-addresses-of/telegram-messenger-inc.
 
 Moonbot `v18.23.17-alpha.2` amplía de 10 a 32 las conexiones retenidas por el pool HTTPS de cada bot durante ráfagas. Ya existía reutilización con Requests; este cambio evita descartar tantas conexiones al superar diez llamadas concurrentes. No impone límite de concurrencia, no añade reintentos automáticos ni altera TLS/proxies. El último 429 se devuelve inmediatamente con `retry_after`; el bucle getUpdates respeta esa espera antes de volver a consultar. No garantiza menor RTT de red.
