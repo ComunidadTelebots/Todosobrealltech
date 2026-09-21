@@ -205,7 +205,7 @@
   /* accesibilidad: sin movimiento */
   @media (prefers-reduced-motion: reduce){
     .nx-ring,.nx-ring i,.nx-sc-head,.nx-sc-body,.nx-sc-b.in,.nx-sc-b.out,
-    .nx-gal i,.nx-flip div,.aurora::before,.aurora::after,.aurora i,.pulse{animation:none;}
+    .nx-gal i,.nx-flip div,.aurora::before,.aurora::after,.aurora i,.pulse,.tlx-v15-foot i{animation:none;}
     .nx-gal i{opacity:1;transform:none;}
     .nx-flip div{transform:translateY(-16px);}
   }
@@ -276,6 +276,24 @@
   .tlx-fork{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--violet);}
   .tlx-fork svg{width:26px;height:26px;}
   .tlx-fork span{font-family:var(--mono);font-size:7px;color:var(--muted);}
+  .tlx-v15{width:90px;height:54px;border:1px solid rgba(54,182,240,.35);border-radius:8px;background:linear-gradient(145deg,#0b1628,#101d33);padding:5px;display:grid;grid-template-rows:9px 1fr 10px;gap:4px;box-shadow:0 0 16px rgba(54,182,240,.12);overflow:hidden;}
+  .tlx-v15-head{display:flex;align-items:center;gap:3px;}
+  .tlx-v15-head i{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--cyan));box-shadow:0 0 5px rgba(62,224,199,.55);}
+  .tlx-v15-head b{height:3px;width:28px;border-radius:3px;background:rgba(255,255,255,.75);}
+  .tlx-v15-head em{margin-left:auto;width:7px;height:7px;border:1px solid var(--cyan);border-radius:50%;position:relative;}
+  .tlx-v15-head em::after{content:'';position:absolute;width:2px;height:2px;border-radius:50%;background:var(--cyan);top:2px;left:2px;}
+  .tlx-v15-chat{display:grid;grid-template-columns:18px 1fr;gap:4px;min-height:0;}
+  .tlx-v15-side{border-radius:4px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:3px;}
+  .tlx-v15-side i{width:8px;height:8px;border-radius:50%;background:var(--violet);opacity:.8;}
+  .tlx-v15-side i:nth-child(2){background:var(--cyan)}.tlx-v15-side i:nth-child(3){background:var(--teal)}
+  .tlx-v15-msgs{display:flex;flex-direction:column;gap:3px;justify-content:center;}
+  .tlx-v15-bubble{height:6px;border-radius:4px 4px 4px 1px;background:rgba(255,255,255,.12);width:72%;}
+  .tlx-v15-bubble.out{align-self:flex-end;width:61%;background:linear-gradient(90deg,rgba(54,182,240,.7),rgba(62,224,199,.65));border-radius:4px 4px 1px 4px;}
+  .tlx-v15-ad{height:7px;border-radius:3px;background:rgba(245,158,11,.16);border:1px solid rgba(245,158,11,.45);display:flex;align-items:center;padding:0 3px;font:5px var(--mono);color:#fbbf24;}
+  .tlx-v15-foot{display:flex;gap:3px;align-items:center;}
+  .tlx-v15-foot span{height:6px;border-radius:4px;background:rgba(255,255,255,.1);flex:1;}
+  .tlx-v15-foot i{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:tlx-v15-pulse 2s ease-in-out infinite;}
+  @keyframes tlx-v15-pulse{0%,100%{box-shadow:0 0 0 0 rgba(62,224,199,.5)}50%{box-shadow:0 0 0 4px rgba(62,224,199,0)}}
   .tl-count{font-family:var(--mono);font-size:9px;color:var(--teal);border:1px solid rgba(62,224,199,.35);background:rgba(62,224,199,.08);padding:2px 7px;border-radius:20px;font-weight:600;}
   .tl-card.tl-expand{flex-direction:column;align-items:stretch;}
   .tl-card.tl-expand > .tl-row{display:flex;gap:12px;align-items:flex-start;width:100%;}
@@ -401,11 +419,18 @@
   .bg-state.partial{color:#1a1205;background:linear-gradient(120deg,#ffd479,#ffb43c);}
   .bg-state.pending{color:var(--muted);background:rgba(255,255,255,.06);border:1px solid var(--line);}
   .bg-state.bug{color:#fff;background:linear-gradient(120deg,#f0566e,#c0394f);}
+  .bg-date{font:9px var(--mono);color:var(--muted);white-space:nowrap;margin-left:auto;}
   .bg-card h3{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:-.01em;flex:1;}
   .bg-card p{font-size:13.5px;color:var(--muted);line-height:1.55;}
   .bg-link{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--cyan);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:2px;transition:.2s;}
   .bg-link:hover{color:var(--teal);gap:9px;}
   .bg-link::after{content:'→';transition:.2s;}
+  .bg-more-card{display:none;}
+  .bg-grid.show-more .bg-more-card{display:flex;}
+  .bg-more-btn{margin:-24px auto 36px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);padding:8px 16px;font:600 11px var(--mono);cursor:pointer;transition:.2s;}
+  .bg-more-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(54,182,240,.06);}
+  .bg-more-btn .plus{font-size:16px;line-height:1;color:var(--teal);transition:transform .2s;}
+  .bg-more-btn[aria-expanded="true"] .plus{transform:rotate(45deg);}
   .bg-subtitle{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:8px 0 18px;display:flex;align-items:center;gap:10px;}
   .bg-subtitle::before{content:'';width:22px;height:1px;background:var(--teal);}
   @media(max-width:760px){.bg-grid{grid-template-columns:1fr;}}
@@ -642,27 +667,58 @@
 
     <div class="bg-subtitle">Ya resueltas en este cliente</div>
     <div class="bg-grid">
-      <div class="bg-card">
-        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Temas personalizados</h3></div>
+      <div class="bg-card bg-more-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Temas personalizados</h3><span class="bg-date">17 Jun 2026</span></div>
         <p>Telegram lista los temas personalizados como no soportados en Web K. Aquí tienes editor de variables en vivo, paletas, importar/exportar y compartir por enlace.</p>
         <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
       </div>
-      <div class="bg-card">
-        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Historias (Stories)</h3></div>
+      <div class="bg-card bg-more-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Historias (Stories)</h3><span class="bg-date">17 Jun 2026</span></div>
         <p>Ver y publicar historias desde el navegador, con anillos de estado, visor a pantalla completa y respuestas.</p>
         <a class="bg-link" href="https://bugs.telegram.org/c/83" target="_blank" rel="noopener">Ver ficha oficial</a>
       </div>
-      <div class="bg-card">
-        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Respuesta parcial (cita)</h3></div>
+      <div class="bg-card bg-more-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Respuesta parcial (cita)</h3><span class="bg-date">17 Jun 2026</span></div>
         <p>Responder citando solo un fragmento del mensaje, una de las sugerencias más votadas de la plataforma.</p>
         <a class="bg-link" href="https://bugs.telegram.org/c/1050" target="_blank" rel="noopener">Ver ficha oficial</a>
       </div>
-      <div class="bg-card">
-        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Traducción de mensajes</h3></div>
+      <div class="bg-card bg-more-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Traducción de mensajes</h3><span class="bg-date">17 Jun 2026</span></div>
         <p>Traducción en línea con cerca de 80 idiomas, búsqueda de idioma y alternar original/traducción.</p>
         <a class="bg-link" href="https://bugs.telegram.org/c/4003" target="_blank" rel="noopener">Ver ficha oficial</a>
       </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Llamadas y salas de voz</h3><span class="bg-date">3 Ago 2026</span></div>
+        <p>Llamadas WebRTC, compatibilidad tgcalls, tonos, valoración, salas de grupo y presentaciones.</p>
+        <a class="bg-link" href="https://github.com/ComunidadTelebots/telegram-react/commit/70373861" target="_blank" rel="noopener">Ver implementación</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Bot Web Apps modernas</h3><span class="bg-date">12 Jun 2026</span></div>
+        <p>Botones principal, secundario y atrás; ventanas, pantalla completa, geolocalización y sensores.</p>
+        <a class="bg-link" href="https://github.com/ComunidadTelebots/telegram-react/commit/20dabade" target="_blank" rel="noopener">Ver implementación</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Moderación desde mensajes</h3><span class="bg-date">12 Jun 2026</span></div>
+        <p>Banear usuarios, eliminar todos sus mensajes y consultar la información completa del mensaje.</p>
+        <a class="bg-link" href="https://github.com/ComunidadTelebots/telegram-react/commit/69b7e154" target="_blank" rel="noopener">Ver implementación</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Publicidad oficial de Telegram</h3><span class="bg-date">3 Ago 2026</span></div>
+        <p>Mensajes patrocinados oficiales compatibles con el fork y registro correcto de visualizaciones.</p>
+        <a class="bg-link" href="https://github.com/ComunidadTelebots/telegram-react/commit/7442284c" target="_blank" rel="noopener">Ver implementación</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Diseños históricos completos</h3><span class="bg-date">17 Jun 2026</span></div>
+        <p>Versiones históricas de Android, iOS, macOS, Unigram, Web K, Telegram X, Desktop y Webogram.</p>
+        <a class="bg-link" href="https://github.com/ComunidadTelebots/telegram-react/commit/36ec3bd3" target="_blank" rel="noopener">Ver implementación</a>
+      </div>
+      <div class="bg-card">
+        <div class="bg-card-top"><span class="bg-state done">Resuelto</span><h3>Markdown enriquecido para bots</h3><span class="bg-date">17 Jun 2026</span></div>
+        <p>Encabezados, listas y citas anidadas para que las respuestas de bots sean más claras y visuales.</p>
+        <a class="bg-link" href="https://github.com/ComunidadTelebots/telegram-react/commit/a89365f5" target="_blank" rel="noopener">Ver implementación</a>
+      </div>
     </div>
+    <button class="bg-more-btn" id="resolved-more" type="button" aria-expanded="false"><span class="plus">+</span><span class="label">Ver más resueltas</span></button>
 
     <div class="bg-subtitle">Pedidas por la comunidad</div>
     <div class="bg-grid">
@@ -764,10 +820,54 @@
   <div class="tl-line">
 
     <div class="tl-v tl-now">
+      <div class="tl-card tl-expand">
+        <div class="tl-row">
+          <div class="tl-txt">
+            <div class="tl-h"><span class="tl-n">v0.15</span><span class="tl-d">· 12 Jun – 3 Ago 2026</span><span class="tl-now-tag">actual</span><span class="tl-count">22 bloques</span></div>
+            <p class="tl-t">Paridad moderna, llamadas, anuncios y diseños históricos</p>
+            <p class="tl-ds">Todas las incorporaciones realizadas desde el 12 de junio: experiencia de mensajería, privacidad, bots, llamadas, comunidades, monetización oficial y compatibilidad visual.</p>
+            <button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button>
+          </div>
+          <div class="tl-mk" aria-label="Maqueta de las funciones de Telegram React v0.15">
+            <div class="tlx-v15" aria-hidden="true">
+              <div class="tlx-v15-head"><i></i><b></b><em></em></div>
+              <div class="tlx-v15-chat"><div class="tlx-v15-side"><i></i><i></i><i></i></div><div class="tlx-v15-msgs"><span class="tlx-v15-bubble"></span><span class="tlx-v15-bubble out"></span><span class="tlx-v15-ad">PATROCINADO</span></div></div>
+              <div class="tlx-v15-foot"><span></span><i></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="tl-details">
+          <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Editor enriquecido y verificación <span class="ft-h">03bd2d13</span></p><p class="ft-d">Barra de formato, spoilers, comprobación de datos y canales similares.</p></div><div class="ft-mk"><span class="mk-block">Aa</span></div></div>
+          <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Funciones en todos los diseños <span class="ft-h">b58bb104</span></p><p class="ft-d">Las herramientas modernas respetan los temas y perfiles visuales existentes.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+          <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Audio y reacciones avanzadas <span class="ft-h">1e3719a5</span></p><p class="ft-d">Velocidad de voz, lista de reacciones, ondas y respuesta rápida.</p></div><div class="ft-mk"><div class="mk-voice"><i></i><i></i><i></i><i></i><i></i></div></div></div>
+          <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Búsqueda, GIF y menciones <span class="ft-h">c9bf1bf5</span></p><p class="ft-d">Búsqueda dentro del chat, selector GIF y autocompletado de @menciones.</p></div><div class="ft-mk"><div class="mk-search"><div class="ph"></div></div></div></div>
+          <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Contenido protegido y programación <span class="ft-h">abf2fa8b</span></p><p class="ft-d">Protección de contenido, envío programado inmediato y gestión de mensajes pendientes.</p></div><div class="ft-mk"><span class="mk-secret">🔒</span></div></div>
+          <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Bot Web Apps completo <span class="ft-h">20dabade</span></p><p class="ft-d">MainButton, BackButton, ventanas, pantalla completa, geolocalización y sensores.</p></div><div class="ft-mk"><span class="mk-iv-s">BOT</span></div></div>
+          <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Instant View mejorado <span class="ft-h">c75f573b</span></p><p class="ft-d">Progreso de lectura, compartir, modo oscuro y AMP como respaldo.</p></div><div class="ft-mk"><span class="mk-iv-s">⚡ IV</span></div></div>
+          <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Boosts y herramientas de canal <span class="ft-h">8ad16185</span></p><p class="ft-d">Estado de boosts, aplicación de boost y operaciones Premium, Stars y Business.</p></div><div class="ft-mk"><span style="font-size:15px">⭐</span></div></div>
+          <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Moderación desde mensajes <span class="ft-h">69b7e154</span></p><p class="ft-d">Banear, borrar todo lo enviado por un usuario y consultar datos del mensaje.</p></div><div class="ft-mk"><span class="mk-block">⚒</span></div></div>
+          <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Web A, Web K y versiones visuales <span class="ft-h">8a7c4e1a</span></p><p class="ft-d">Selector universal de versiones y colores propios de cada cliente.</p></div><div class="ft-mk"><div class="mk-skin-s"></div></div></div>
+          <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Traducción integrada <span class="ft-h">e170db34</span></p><p class="ft-d">Traducción por mensaje, mostrar original y selector con 80 idiomas.</p></div><div class="ft-mk"><span style="font-size:13px">文</span></div></div>
+          <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Spoilers y respuestas con cita <span class="ft-h">e9a3c63c</span></p><p class="ft-d">Spoiler visual en fotos y vídeos, citas parciales y resaltado en respuestas.</p></div><div class="ft-mk"><div class="mk-spoiler"></div></div></div>
+          <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Historias completas <span class="ft-h">fc83196c</span></p><p class="ft-d">Visor, respuestas, reacciones, lista de espectadores, publicación y álbumes.</p></div><div class="ft-mk"><div class="mk-ring-s"><i></i></div></div></div>
+          <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Premium, regalos y contenido de pago <span class="ft-h">f1c08005</span></p><p class="ft-d">Stargifts, efectos Premium, reacciones pagadas y vista previa de medios de pago.</p></div><div class="ft-mk"><span class="tlx-gift">🎁</span></div></div>
+          <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Markdown enriquecido para bots <span class="ft-h">a89365f5</span></p><p class="ft-d">Encabezados, listas y citas anidadas en mensajes creados por bots.</p></div><div class="ft-mk"><span class="mk-block">MD</span></div></div>
+          <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Perfiles históricos de clientes <span class="ft-h">36ec3bd3</span></p><p class="ft-d">Épocas Android, iOS, macOS, Unigram, Web K, Telegram X, Desktop y Webogram.</p></div><div class="ft-mk"><div class="tlx-skg"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+          <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Personalización avanzada <span class="ft-h">a85a48be</span></p><p class="ft-d">Paletas, CSS en vivo, importar/exportar temas, fondos, patrones y modo compacto.</p></div><div class="ft-mk"><span style="font-size:14px">🎨</span></div></div>
+          <div class="tl-feat"><span class="dot d3"></span><div class="ft-body"><p class="ft-t">Privacidad y administración <span class="ft-h">0e6b611f</span></p><p class="ft-d">Privacidad global, caducidad de cuenta, auto-descarga, registro admin y solicitudes de unión.</p></div><div class="ft-mk"><span class="mk-secret">🛡</span></div></div>
+          <div class="tl-feat"><span class="dot d4"></span><div class="ft-body"><p class="ft-t">Telegram Business <span class="ft-h">82117d30</span></p><p class="ft-d">Saludo, ausencia, horario, ubicación, introducción y respuestas rápidas.</p></div><div class="ft-mk"><span class="mk-block">BIZ</span></div></div>
+          <div class="tl-feat"><span class="dot d5"></span><div class="ft-body"><p class="ft-t">Llamadas y salas de voz <span class="ft-h">70373861</span></p><p class="ft-d">WebRTC, tgcalls, tonos, valoración, navegador de salas y presentaciones de grupo.</p></div><div class="ft-mk"><span style="font-size:15px">☎</span></div></div>
+          <div class="tl-feat"><span class="dot d1"></span><div class="ft-body"><p class="ft-t">Paridad avanzada con Telegram <span class="ft-h">bce96a91</span></p><p class="ft-d">Controles auditados de Telegram Web y Android adaptados a cada perfil.</p></div><div class="ft-mk"><span class="mk-iv-s">TG</span></div></div>
+          <div class="tl-feat"><span class="dot d2"></span><div class="ft-body"><p class="ft-t">Publicidad oficial y comunitaria <span class="ft-h">7442284c</span></p><p class="ft-d">Mensajes patrocinados oficiales obligatorios y campañas comunitarias entre publicaciones de canales.</p></div><div class="ft-mk"><span style="font-size:15px">📣</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-v">
   <div class="tl-card tl-expand">
     <div class="tl-row">
       <div class="tl-txt">
-        <div class="tl-h"><span class="tl-n">v0.14</span><span class="tl-d">· 12 Jun 2026</span><span class="tl-now-tag">actual</span><span class="tl-count">11 features</span></div>
+        <div class="tl-h"><span class="tl-n">v0.14</span><span class="tl-d">· 12 Jun 2026</span><span class="tl-count">11 features</span></div>
         <p class="tl-t">Admin, descargas, SharedMedia y notificaciones</p>
         <p class="tl-ds">Once mejoras en producción: herramientas de admin, descargas directas, pestañas de medios, notificaciones con foto, boost de canal y seis pulidos más.</p>
         <button class="tl-toggle" type="button" aria-expanded="false"><span class="tl-toggle-label">Ver desglose</span><svg class="chev" width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 4.5 6 7.5 9 4.5"/></svg></button>
@@ -994,6 +1094,7 @@
 </div></div></div>
 
   </div>
+
 </section>
 
   <section id="codigofuente">
@@ -1039,6 +1140,15 @@ document.querySelectorAll('.tl-toggle').forEach(btn => {
     btn.querySelector('.tl-toggle-label').textContent = open ? 'Ocultar desglose' : 'Ver desglose';
   });
 });
+const resolvedMore = document.getElementById('resolved-more');
+if (resolvedMore) {
+  const resolvedGrid = resolvedMore.previousElementSibling;
+  resolvedMore.addEventListener('click', () => {
+    const open = resolvedGrid.classList.toggle('show-more');
+    resolvedMore.setAttribute('aria-expanded', open ? 'true' : 'false');
+    resolvedMore.querySelector('.label').textContent = open ? 'Mostrar menos' : 'Ver más resueltas';
+  });
+}
 </script>
 </body>
 </html>

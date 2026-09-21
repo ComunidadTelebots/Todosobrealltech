@@ -13,7 +13,7 @@ services:
       api:
         condition: service_healthy
       pocketbase:
-        condition: service_started
+        condition: service_healthy
     networks:
       - default
       - traefik
@@ -196,9 +196,10 @@ services:
     env_file:
       - .env
     environment:
-      - MOONBOT_INTERNAL_URL=http://moonbot:5000
+      - MOONBOT_INTERNAL_URL=${MOONBOT_INTERNAL_URL:-http://moonbot:5000}
     depends_on:
-      - pocketbase
+      pocketbase:
+        condition: service_healthy
     volumes:
       - proxy_history:/data
     networks:
@@ -241,7 +242,8 @@ services:
     volumes:
       - proxy_history:/data
     depends_on:
-      - pocketbase
+      pocketbase:
+        condition: service_healthy
     networks:
       - default
       - mtproto
@@ -251,6 +253,12 @@ services:
       context: .
       dockerfile: apps/pocketbase/Dockerfile
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8090/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
     env_file:
       - .env
     volumes:

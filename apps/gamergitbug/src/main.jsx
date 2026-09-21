@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
@@ -122,7 +121,7 @@ const projects = [
 
 const skills = ['React', 'Vite', 'Docker', 'Traefik', 'HTML/CSS', 'SEO', 'Responsive Design', 'UI Systems'];
 
-function App() {
+export default function App() {
   const [showCookieBanner, setShowCookieBanner] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
@@ -252,5 +251,3 @@ function App() {
     </>
   );
 }
-
-createRoot(document.getElementById('root')).render(<App />);

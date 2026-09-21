@@ -25,7 +25,7 @@ for (const item of catalog.items) {
   if (item.status === 'implemented' && (!Array.isArray(item.evidence) || item.evidence.length === 0)) {
     throw new Error(`Funcion implementada sin evidencia: ${item.id}`);
   }
-  if (item.status !== 'implemented' && item.evidence?.length) {
+  if (['specified', 'proposed'].includes(item.status) && item.evidence?.length) {
     throw new Error(`Evidencia contradictoria en ${item.id}`);
   }
   if (item.expansion_unique) {

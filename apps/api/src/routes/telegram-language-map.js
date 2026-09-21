@@ -1,9 +1,8 @@
 import express from 'express';
+import { MOONBOT_INTERNAL_URL, MOONBOT_PUBLIC_URL, requestMoonbot } from '../utils/moonbotConnection.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
-const MOONBOT_INTERNAL_URL = (process.env.MOONBOT_INTERNAL_URL || '').replace(/\/$/, '');
-const MOONBOT_PUBLIC_URL = (process.env.MOONBOT_PUBLIC_URL || 'https://cintiabot.todosobreall.tech').replace(/\/$/, '');
 const CACHE_TTL_MS = 5 * 60 * 1000;
 let cache = null;
 let cacheAt = 0;
@@ -13,10 +12,13 @@ export async function requestLanguageMap(fetchImpl = fetch) {
   let lastError = new Error('Moonbot no configurado');
   for (const base of bases) {
     try {
-      const response = await fetchImpl(`${base}/api/public/stats/language-map`, {
-        signal: AbortSignal.timeout(base === MOONBOT_INTERNAL_URL ? 6000 : 12000),
-        headers: { Accept: 'application/json' },
-      });
+      const response = base === MOONBOT_INTERNAL_URL
+        ? await requestMoonbot('/api/public/stats/language-map', {
+          fetchImpl, timeoutMs: 6000, headers: { Accept: 'application/json' },
+        })
+        : await fetchImpl(`${base}/api/public/stats/language-map`, {
+          signal: AbortSignal.timeout(12000), headers: { Accept: 'application/json' },
+        });
       if (!response.ok) throw new Error(`Moonbot HTTP ${response.status}`);
       const payload = await response.json();
       if (!payload || payload.ok !== true || !Array.isArray(payload.points)) {

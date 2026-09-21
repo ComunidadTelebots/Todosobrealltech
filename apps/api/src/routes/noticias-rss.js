@@ -22,10 +22,17 @@ function toRfc822(dateStr) {
 
 router.get('/', async (req, res) => {
   try {
-    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}&fields=id,slug,titulo,contenido,fecha,categoria,created`;
-    const pbRes = await fetch(url);
-    const pbData = await pbRes.json();
-    const pbRecords = pbData.items || [];
+    const url = `${PB_HOST}/api/collections/nw3_noticias/records?perPage=500&sort=-created&filter=${encodeURIComponent('oculto=false')}`;
+    let pbRecords = [];
+    try {
+      const pbRes = await fetch(url);
+      if (!pbRes.ok) throw new Error(`PocketBase returned ${pbRes.status}`);
+      const pbData = await pbRes.json();
+      pbRecords = Array.isArray(pbData.items) ? pbData.items : [];
+    } catch (err) {
+      // Keep the public feed available with bundled articles while PocketBase recovers.
+      console.error('[noticias-rss] PocketBase unavailable:', err.message);
+    }
 
     const pbItems = pbRecords.map(r => ({
       slug: r.slug,
@@ -33,6 +40,7 @@ router.get('/', async (req, res) => {
       description: (r.contenido || '').slice(0, 300),
       category: r.categoria || 'Tecnología',
       date: new Date(r.fecha || r.created),
+      views: Number(r.visitas) || 0,
     }));
 
     const staticItems = staticArticles.map(a => ({
@@ -41,6 +49,7 @@ router.get('/', async (req, res) => {
       description: a.description || '',
       category: a.category || 'Tecnología',
       date: new Date(a.date),
+      views: 0,
     }));
 
     // Merge and sort newest first
@@ -55,6 +64,7 @@ router.get('/', async (req, res) => {
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${toRfc822(item.date)}</pubDate>
       <category>${escapeXml(item.category)}</category>
+      <views>${item.views}</views>
       <description>${escapeXml(item.description)}</description>
     </item>`;
     }).join('');
@@ -75,6 +85,7 @@ router.get('/', async (req, res) => {
     res.set('Cache-Control', 'public, max-age=300');
     res.send(xml);
   } catch (err) {
+    console.error('[noticias-rss] Feed generation failed:', err);
     res.status(500).send('<?xml version="1.0"?><error>Error generating feed</error>');
   }
 });

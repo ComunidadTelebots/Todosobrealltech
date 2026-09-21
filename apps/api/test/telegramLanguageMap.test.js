@@ -26,8 +26,9 @@ test('usa la URL pública solo como respaldo', async () => {
     return { ok: true, json: async () => ({ ok: true, total_users: 1, languages: 1, points: [] }) };
   });
   assert.equal(result.total_users, 1);
-  assert.equal(calls.length, 2);
-  assert.match(calls[1], /^https:\/\/cintiabot\.example/);
+  assert.equal(calls.length, 5);
+  assert.ok(calls.slice(0, 4).every((url) => url.startsWith('http://moonbot:5000')));
+  assert.match(calls[4], /^https:\/\/cintiabot\.example/);
 });
 
 test('rechaza respuestas que no cumplen el contrato', async () => {

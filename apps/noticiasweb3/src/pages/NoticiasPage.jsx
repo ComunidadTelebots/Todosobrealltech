@@ -737,6 +737,9 @@ export default function NoticiasPage({ siteVersion, appPlatform }) {
                       style={{ minHeight: 110 }}
                     />
                   )}
+                  {siteVersion !== '2014' && index === 1 && (
+                    <AdSense placement="inline" houseOnly />
+                  )}
                 </div>
               );
             });

@@ -10,6 +10,7 @@ const dockerfile = read('apps/web/Dockerfile');
 const header = read('apps/web/src/components/Header.jsx');
 const releaseConfig = read('apps/web/src/lib/releaseChannel.js');
 const apiRoute = read('apps/api/src/routes/moonbot-admin.js');
+const envExample = read('.env.example');
 
 test('keeps the existing stable web service as the default channel', () => {
   assert.match(compose, /web:\s+[\s\S]*VITE_RELEASE_CHANNEL: stable/);
@@ -37,4 +38,21 @@ test('reuses feature_release_access for the authenticated user entitlement', () 
   assert.match(apiRoute, /router\.get\('\/feature-release-access\/me'/);
   assert.match(apiRoute, /releaseChannelForUser\(auth\.user, actorRole\)/);
   assert.match(header, /feature-release-access\/me/);
+});
+
+test('protects every non-stable HTML and asset request with fail-closed ForwardAuth', () => {
+  for (const channel of ['rc', 'beta', 'alpha']) {
+    assert.match(releaseCompose, new RegExp(`todosobrealltech-${channel}\\.middlewares=release-${channel}-auth,release-${channel}-cache`));
+    assert.match(releaseCompose, new RegExp(`release-${channel}-auth\\.forwardauth\\.address=http://api:3001/moonbot-admin/release-forward-auth/${channel}`));
+    assert.match(releaseCompose, new RegExp(`release-${channel}-auth\\.forwardauth\\.authRequestHeaders=Cookie`));
+  }
+  assert.match(releaseCompose, /forwardauth\.trustForwardHeader=false/g);
+  assert.equal((releaseCompose.match(/customResponseHeaders\.Cache-Control=private, no-store, max-age=0/g) || []).length, 3);
+  assert.match(apiRoute, /RELEASE_FORWARD_AUTH_SECRET/);
+  assert.match(apiRoute, /crypto\.timingSafeEqual/);
+  assert.match(apiRoute, /Authorization backend unavailable/);
+  assert.match(apiRoute, /collection\('users'\)\.getOne/);
+  assert.match(header, /moonbot-admin\/release-session/);
+  assert.match(envExample, /RELEASE_FORWARD_AUTH_SECRET=/);
+  assert.match(envExample, /RELEASE_COOKIE_DOMAIN=/);
 });

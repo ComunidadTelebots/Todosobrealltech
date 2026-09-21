@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { COOKIE_CONSENT_KEY } from '../utils/cookieConsent.js';
 
-const updatedAt = '28 de julio de 2026';
+const updatedAt = '4 de agosto de 2026';
 const documents = {
   terms: { title: 'Términos de servicio', intro: 'Estos términos regulan el acceso y uso de NoticiasWeb3, un servicio informativo comunitario, gratuito y sin ánimo de lucro de TodoSobreAllTech.', sections: [
     ['Uso del servicio', 'Puedes consultar y compartir el contenido para fines lícitos. No puedes intentar dañar el servicio, eludir sus medidas de seguridad, suplantar identidades ni utilizarlo para difundir contenido ilegal.'],
     ['Contenido e información', 'Las noticias tienen carácter informativo y pueden contener enlaces a terceros. No constituyen asesoramiento profesional, financiero, jurídico o de seguridad. Procuramos corregir errores cuando son detectados.'],
     ['Cuentas y aportaciones', 'Eres responsable de la actividad de tu cuenta y de que tus aportaciones respeten la ley y los derechos de terceros. Podemos moderar o retirar contenido abusivo.'],
     ['Disponibilidad', 'El servicio se ofrece tal como está y puede cambiar o interrumpirse por mantenimiento, seguridad o causas técnicas.'],
+    ['Anuncios comunitarios y colaboraciones', 'Los anuncios comunitarios y espacios de afiliados no constituyen publicidad remunerada, patrocinio, aval editorial ni recomendación comercial. NoticiasWeb3 no recibe pagos, comisiones, productos, servicios ni otra contraprestación directa o indirecta por mostrarlos. Su finalidad es el intercambio recíproco de visibilidad entre proyectos. Se identifican de forma diferenciada conforme a los principios de transparencia y claridad aplicables en la Unión Europea. Cada anunciante o sitio enlazado responde de su contenido, condiciones y tratamiento de datos.'],
     ['Contacto', 'Para consultas sobre estos términos puedes escribir a info@todosobrealltech.com.'],
   ] },
   privacy: { title: 'Política de privacidad', intro: 'Esta política explica qué datos puede tratar NoticiasWeb3 y con qué finalidad.', sections: [

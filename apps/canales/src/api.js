@@ -67,6 +67,7 @@ function normalize(c) {
     color: GRADS[idx],
     series: c.series || [],
     posts: c.posts || [],
+    community: c.community || null,
   }
 }
 

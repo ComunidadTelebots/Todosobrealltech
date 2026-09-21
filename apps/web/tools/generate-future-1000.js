@@ -206,7 +206,6 @@ const implementedEvidence = new Map([
   ['future-0435', ['core/routes_public.py']], ['future-0438', ['core/routes_public.py']],
   ['future-0708', ['web/hub.html']], ['future-0711', ['web/hub.html']],
   // Control por voz real: navegación web, análisis multimedia Moonbot y acciones rápidas WebApp.
-  ['future-2147', ['apps/web/src/components/VoiceNavigation.jsx']],
   ['future-2571', ['core/media_analyzer.py']], ['future-2814', ['web/hub.html']],
   // Bóveda personal cifrada y consentida en privacidad web y perfil WebApp.
   ['future-2197', ['apps/web/src/lib/personalVault.js']],
@@ -221,7 +220,24 @@ const implementedEvidence = new Map([
   ['future-2074', ['apps/noticiasweb3/src/components/AdSense.jsx', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/HouseAdsManager.jsx']],
   ['future-2134', ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js']],
   ['future-2254', ['apps/web/src/components/HouseAdsManager.jsx', 'apps/api/src/routes/house-ads.js', 'apps/noticiasweb3/src/components/AdSense.jsx']],
+  ['future-1216', ['apps/api/src/utils/newsSeoAudit.js', 'apps/api/src/routes/noticias-seo-audit.js', 'apps/web/src/components/NewsSeoAuditPanel.jsx']],
+  ['future-1230', ['apps/api/src/utils/newsSeoAudit.js', 'apps/api/src/routes/noticias-seo-audit.js', 'apps/web/src/components/NewsSeoAuditPanel.jsx']],
+  ['future-2003', ['apps/api/src/utils/accountDelegations.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountDelegationsPanel.jsx', 'apps/web/src/components/CommunicationPreferencesPanel.jsx', 'apps/api/test/accountDelegations.test.js']],
+  ['future-2204', ['apps/api/src/utils/accountCommunicationPreferences.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/CommunicationPreferencesPanel.jsx', 'apps/api/test/accountCommunicationPreferences.test.js']],
+  ['future-2001', ['apps/api/src/utils/accountIncidentCenter.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountIncidentCenterPanel.jsx', 'apps/api/test/accountIncidentCenter.test.js']],
+  ['future-2011', ['apps/api/src/utils/accountIncidentCenter.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountIncidentCenterPanel.jsx', 'apps/api/test/accountIncidentCenter.test.js']],
+  ['future-2025', ['apps/api/src/utils/accountOnboarding.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountOnboardingPanel.jsx', 'apps/api/test/accountOnboarding.test.js']],
+  ['future-3703', ['apps/api/src/utils/accountOnboarding.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/AccountOnboardingPanel.jsx', 'apps/api/test/accountOnboarding.test.js']],
+  ['future-0339', ['moonbot:core/moderation_insights.py', 'moonbot:core/routes_public.py', 'moonbot:web/hub.html', 'moonbot:tests/test_moderation_insights.py']],
+  ['future-0340', ['moonbot:core/moderation_insights.py', 'moonbot:core/routes_public.py', 'moonbot:web/hub.html', 'moonbot:tests/test_moderation_insights.py']],
+  ['future-0350', ['moonbot:core/moderation_insights.py', 'moonbot:core/routes_public.py', 'moonbot:web/hub.html', 'moonbot:tests/test_moderation_insights.py']],
+  ['future-0367', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0373', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0374', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0379', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
+  ['future-0387', ['moonbot:core/security_insights.py', 'moonbot:core/routes_security.py', 'moonbot:web/hub.html', 'moonbot:tests/test_security_insights.py']],
 ]);
+const partialEvidence = new Map();
 
 // Contratos operativos publicados en Moonbot y accesibles desde el centro master.
 // Se enumeran por los rangos realmente probados; no se infiere implementación por título.
@@ -255,27 +271,77 @@ for (const number of verifiedWebappIds) {
     'moon-multibot:tests/test_feature_runtime.py',
   ]);
 }
-for (let number = 3002; number <= 5159; number += 3) {
+for (let number = 3002; number <= 5039; number += 3) {
   implementedEvidence.set(`future-${String(number).padStart(4, '0')}`, [
     'moon-multibot:core/feature_runtime.py',
     'moon-multibot:tests/test_feature_runtime.py',
     'moon-multibot:core/routes_public.py',
   ]);
 }
+// El lote 5042..5159 tiene contratos y pruebas por ID, pero sus propios
+// manifiestos declaran que falta la integración y devuelven executed=false.
+// Se conserva la evidencia del trabajo parcial sin contarlo como terminado.
+for (let number = 5042; number <= 5159; number += 3) {
+  partialEvidence.set(`future-${String(number).padStart(4, '0')}`, [
+    'moon-multibot:resource_localization_easy_voice_grouped_manifest.py',
+    'moon-multibot:resource_localization_easy_reading_engines.py',
+    'moon-multibot:resource_voice_grouped_notification_engines.py',
+    'moon-multibot:tests/test_resource_localization_easy_voice_grouped.py',
+  ]);
+}
 const trackedTasks = [
   { id: 'task-master-interface-parity', title: 'Equiparar las funciones del master entre TodoSobreAllTech y el Hub', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'El Hub enlaza las herramientas avanzadas de cuentas y la web conserva sus controles completos sin compartir credenciales.', evidence: ['apps/web/src/components/CreatorAccountProxyManager.jsx', 'apps/web/src/components/AccountInteroperableConnector.jsx', 'moon-multibot:web/hub.html'] },
   { id: 'task-community-ads-main', title: 'Mostrar campañas comunitarias de Telegram en todosobreall.tech', products: ['web'], status: 'implemented', detail: 'La portada carga campañas aprobadas, registra impresiones y dirige los clics mediante la ruta de medición propia.', evidence: ['apps/web/src/components/CommunityCampaignSlot.jsx', 'apps/web/src/pages/HomePage.jsx', 'apps/api/src/routes/house-ads.js'] },
+  ...[
+    ['task-campaign-note-editing', 'Edición trazable de notas internas de campañas', 'Los administradores pueden corregir una nota y el motor conserva quién y cuándo la editó.'],
+    ['task-campaign-note-removal', 'Eliminación restringida de notas de campañas', 'Solo el creator puede retirar notas mediante identificadores validados en servidor.'],
+    ['task-campaign-checklist-removal', 'Retirada de tareas obsoletas de aprobación', 'Solo el creator puede eliminar tareas del checklist sin afectar las demás revisiones.'],
+  ].map(([id, title, detail]) => ({ id, title, products: ['web'], status: 'implemented', detail, evidence: ['apps/api/src/utils/campaignGovernance.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/CampaignGovernancePanel.jsx', 'apps/api/test/campaignGovernance.test.js'] })),
+  ...[
+    ['task-campaign-review-notes', 'Notas internas de revisión de campañas'],
+    ['task-campaign-assignees', 'Responsables de revisión por campaña'],
+    ['task-campaign-due-dates', 'Vencimientos operativos de campañas'],
+    ['task-campaign-governance-tags', 'Etiquetas de gobernanza publicitaria'],
+    ['task-campaign-approval-checklist', 'Lista compartida de aprobación'],
+    ['task-campaign-personal-watch', 'Seguimiento personal de campañas'],
+    ['task-campaign-saved-views', 'Vistas de campañas guardadas por el creator'],
+    ['task-campaign-review-snapshots', 'Instantáneas del estado de revisión'],
+    ['task-campaign-overdue-summary', 'Resumen de campañas vencidas'],
+    ['task-campaign-open-review-metrics', 'Métricas de tareas de revisión abiertas'],
+  ].map(([id, title]) => ({ id, title, products: ['web'], status: 'implemented', detail: 'Función integrada en el espacio de gobernanza del panel de campañas, con persistencia validada, permisos web existentes y pruebas unitarias.', evidence: ['apps/api/src/utils/campaignGovernance.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/CampaignGovernancePanel.jsx', 'apps/api/test/campaignGovernance.test.js'] })),
+  ...[
+    ['task-ads-real-destination-context', 'Propagar chat, tipo y bot a la entrega publicitaria', 'El worker y la API entregan el contexto real del canal, grupo y bot para que la segmentación no dependa de valores genéricos.', ['apps/api/src/utils/rssAutoPublisher.js', 'apps/api/src/routes/house-ads.js']],
+    ['task-ads-country-language', 'Segmentar campañas por país e idioma', 'La política normaliza inclusiones y exclusiones geográficas y lingüísticas, incluidas variantes regionales.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/api/test/houseAdsPolicy.test.js']],
+    ['task-ads-timezone-schedule', 'Programar campañas por días, horario y zona IANA', 'El motor admite días concretos, franjas normales o nocturnas y zonas horarias IANA verificadas.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/api/test/houseAdsPolicy.test.js']],
+    ['task-ads-destination-exclusions', 'Excluir canales, grupos, países e idiomas', 'Las exclusiones tienen prioridad sobre las inclusiones y se configuran desde el panel master.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx']],
+    ['task-ads-frequency-window', 'Limitar frecuencia global por usuario y ventana', 'La API aplica el límite con cookie HttpOnly o identificador interno convertido en huella, sin guardar la identidad original.', ['apps/api/src/routes/house-ads.js', 'apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx']],
+    ['task-ads-content-rules', 'Segmentar anuncios según contexto del contenido', 'Categorías, palabras requeridas y términos excluidos deciden la entrega con normalización y límites.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/HouseAdsManager.jsx']],
+    ['task-ads-budgets-goals', 'Detener campañas por límites diarios y objetivos', 'Los límites de clics e impresiones diarios y totales frenan automáticamente campañas que alcanzan su objetivo.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx']],
+    ['task-ads-surface-preview', 'Previsualizar campañas por superficie', 'El editor representa cada campaña en web, canal, Telegram React y Hub antes de guardarla.', ['apps/web/src/components/HouseAdsManager.jsx']],
+    ['task-ads-chat-metrics', 'Desglosar métricas por ubicación, país, chat y bot', 'La entrega y los clics transmiten chat y bot al backend y el panel mantiene el análisis temporal, geográfico y por ubicación.', ['apps/api/src/routes/house-ads.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/web/src/components/ContentAnalyticsDialog.jsx']],
+    ['task-ads-master-audit', 'Auditar las operaciones publicitarias del master', 'Un registro persistente y reducido conserva actor, acción y resumen antes/después sin copiar destinos sensibles.', ['apps/api/src/utils/houseAdsAudit.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/api/test/houseAdsAudit.test.js']],
+    ['task-ads-destination-health', 'Comprobar acceso del bot a destinos publicitarios', 'El panel consulta Moonbot para identificar chats válidos y destinos donde el bot ya no está presente.', ['apps/api/src/routes/house-ads.js', 'apps/web/src/components/HouseAdsManager.jsx']],
+    ['task-ads-disclosure', 'Mostrar transparencia publicitaria por relación', 'Cada entrega declara si es oficial, comunitaria, afiliada o Inside Ads mediante una etiqueta normalizada.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/api/test/houseAdsPublicSecurity.test.js']],
+    ['task-ads-inside-isolation', 'Aislar permisos y destinos de Inside Ads', 'Los presets se resuelven en servidor por superficie, solo el creator los administra y la respuesta pública omite campos internos.', ['apps/api/src/utils/insideAdsPresets.js', 'apps/api/src/routes/house-ads.js', 'apps/web/src/components/InsideAdsLinksPanel.jsx', 'apps/api/test/insideAdsPresets.test.js']],
+    ['task-ads-ab-testing', 'Ejecutar pruebas A/B estables de campañas', 'Hasta cuatro variantes ponderadas se asignan de forma estable al visitante tras normalizar sus campos.', ['apps/api/src/utils/houseAdsPolicy.js', 'apps/web/src/components/HouseAdsManager.jsx', 'apps/api/test/houseAdsPolicy.test.js']],
+    ['task-ads-antifraud', 'Detectar y limitar clics publicitarios abusivos', 'La API utiliza huellas HMAC, ventana antiabuso, Retry-After y deduplicación de reportes sin almacenar direcciones IP.', ['apps/api/src/utils/houseAdsAntiFraud.js', 'apps/api/src/routes/house-ads.js', 'apps/api/test/houseAdsAntiFraud.test.js']],
+  ].map(([id, title, detail, evidence]) => ({ id, title, products: ['web'], status: 'implemented', detail, evidence })),
+  { id: 'task-nw3-vertical-campaign-layout', title: 'Adaptar campañas verticales de NoticiasWeb3', products: ['web'], status: 'implemented', detail: 'Los anuncios laterales izquierdo y derecho reorganizan imagen, etiqueta, texto, llamada a la acción y boost dentro de 160 píxeles, evitando recortes sin alterar el banner horizontal.', evidence: ['apps/noticiasweb3/src/components/AdSense.jsx', 'apps/noticiasweb3/src/index.css'] },
+  { id: 'task-proxy-community-side-rails', title: 'Mostrar campañas comunitarias laterales en Proxy', products: ['web'], status: 'implemented', detail: 'Proxy incorpora ubicaciones independientes a izquierda y derecha en pantallas anchas, con diseño vertical, caché por placement y medición diferenciada.', evidence: ['apps/proxy/src/main.jsx', 'apps/proxy/src/styles.css', 'apps/api/src/routes/house-ads.js'] },
+  { id: 'task-proxy-community-feed-inserts', title: 'Intercalar campañas comunitarias entre proxies', products: ['web'], status: 'implemented', detail: 'El directorio introduce una campaña horizontal cada seis proxies, conserva la cuadrícula responsive y registra clics e impresiones bajo la ubicación inline.', evidence: ['apps/proxy/src/main.jsx', 'apps/proxy/src/styles.css', 'apps/api/src/routes/house-ads.js'] },
   { id: 'task-global-quiet-hours', title: 'Políticas globales de horario silencioso por grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Motor, persistencia canónica, migración heredada, aplazamiento de acciones, rutas y controles del Hub integrados y probados.', evidence: ['moon-multibot:quiet_hours_policy.py', 'moon-multibot:group_suite.py', 'moon-multibot:group_rss.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_integrated_quiet_reminders.py'] },
   { id: 'task-persistent-reminders', title: 'Recordatorios persistentes con recurrencia y zona horaria', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Almacén persistente, recurrencia, zona horaria, entrega idempotente, posponer/cancelar, API y controles del Hub integrados.', evidence: ['moon-multibot:plugins/reminder_store.py', 'moon-multibot:community_members.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_integrated_quiet_reminders.py'] },
   { id: 'task-secure-voice-transcription', title: 'Transcripción segura y consentida de notas de voz', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Flujo real Telegram/OpenAI con consentimiento por grupo, límites, descarga segura, borrado temporal y controles del Hub.', evidence: ['moon-multibot:voice_transcription_pipeline.py', 'moon-multibot:voice_transcription_service.py', 'moon-multibot:moon_multibot.py', 'moon-multibot:web/hub.html', 'moon-multibot:tests/test_voice_transcription_service.py'] },
-  ...[
-    ['task-personal-tasks', 'Tareas personales por usuario y grupo'], ['task-shared-notes', 'Notas compartidas por grupo'],
-    ['task-local-group-digest', 'Resumen local y privado del grupo'], ['task-wayback-history', 'Consulta segura de historial Wayback'],
-    ['task-managed-task-queue', 'Cola de tareas priorizable y cancelable'], ['task-url-domain-inspector', 'Inspector de URLs y dominios'],
-    ['task-named-blocklists', 'Listas de bloqueo independientes con nombre'],
-  ].map(([id, title]) => ({ id, title, products: ['moonbot', 'webapp'], status: 'not_implemented', detail: 'Función candidata auditada en DBTeamV2; todavía no está integrada de forma real en Moonbot.', evidence: [] })),
+  { id: 'task-personal-tasks', title: 'Tareas personales por usuario y grupo', products: ['moonbot', 'webapp'], status: 'not_implemented', detail: 'Existe la lista privada por usuario, pero falta vincular cada tarea a un grupo autorizado para cumplir el contrato completo.', evidence: ['moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-shared-notes', title: 'Notas compartidas por grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'El espacio de trabajo exige autorización contextual del grupo, limita y persiste notas compartidas y ofrece su administración en el Hub.', evidence: ['moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-local-group-digest', title: 'Resumen local y privado del grupo', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'El resumen procesa localmente el historial conservado del grupo y devuelve actividad, medios y participantes principales sin enviarlo a terceros.', evidence: ['moon-multibot:plugins/group_digest.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-wayback-history', title: 'Consulta segura de historial Wayback', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'Moonbot integra el cliente Wayback y los comandos /wayback, /archivo y /archive con URL y fecha opcional.', evidence: ['moon-multibot:core/wayback.py', 'moon-multibot:moon_multibot.py'] },
+  { id: 'task-managed-task-queue', title: 'Cola de tareas priorizable y cancelable', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'La cola persistente de Moonbot expone estado, priorización y cancelación mediante rutas autenticadas y controles del Hub.', evidence: ['moon-multibot:core/task_queue.py', 'moon-multibot:core/routes_queue.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-named-blocklists', title: 'Listas de bloqueo independientes con nombre', products: ['moonbot', 'webapp'], status: 'implemented', detail: 'El gestor mantiene listas independientes con nombre, alcance global o por grupo y estado activo, separadas de CAS y de los bloqueos locales.', evidence: ['moon-multibot:ban_manager.py', 'moon-multibot:core/routes_public.py', 'moon-multibot:web/hub.html'] },
+  { id: 'task-url-domain-inspector', title: 'Inspector de URLs y dominios', products: ['web', 'moonbot', 'webapp'], status: 'implemented', detail: 'Moonbot inspecciona localmente la estructura sin conectar con el destino y TodoSobreAllTech ofrece un proxy autenticado y una interfaz de resultados en Seguridad.', evidence: ['moon-multibot:plugins/url_tools.py', 'moon-multibot:core/routes_public.py', 'apps/api/src/utils/moonbotSecurityProxy.js', 'apps/api/src/routes/moonbot-admin.js', 'apps/web/src/components/MoonbotSecurityCenter.jsx', 'apps/api/test/moonbotSecurityProxy.test.js'] },
 ];
 const implemented = new Set(implementedEvidence.keys());
+const partial = new Set(partialEvidence.keys());
 const items = [];
 for (const product of products) {
   let index = 0;
@@ -376,7 +442,9 @@ for (const operation of expansionOperations) {
       priority: ['security', 'privacy', 'resilience'].includes(category) ? 'critical' : 'high',
       difficulty: difficultyCycle[expansionIndex % difficultyCycle.length],
       dependency: `${category} contract v1`,
-      status: implemented.has(`future-${String(number).padStart(4, '0')}`) ? 'implemented' : 'proposed',
+      status: implemented.has(`future-${String(number).padStart(4, '0')}`)
+        ? 'implemented'
+        : partial.has(`future-${String(number).padStart(4, '0')}`) ? 'scaffolded' : 'proposed',
     });
     expansionIndex += 1;
   }
@@ -402,7 +470,7 @@ for (const item of catalog.items) {
   for (const key of ['product_name', 'capability', 'context', 'title', 'description', 'dependency']) {
     item[key] = cleanText(item[key]);
   }
-  item.evidence = implementedEvidence.get(item.id) || [];
+  item.evidence = implementedEvidence.get(item.id) || partialEvidence.get(item.id) || [];
   item.completion_state = item.status === 'implemented'
     ? 'implemented'
     : item.status === 'scaffolded' ? 'partial' : 'not_implemented';

@@ -38,6 +38,7 @@ const TermsPage = lazy(() => import('@/pages/TermsPage.jsx'));
 const CookiePolicyPage = lazy(() => import('@/pages/CookiePolicyPage.jsx'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage.jsx'));
 const FutureFeaturesPage = lazy(() => import('@/pages/FutureFeaturesPage.jsx'));
+const WebAdminInvitePage = lazy(() => import('@/pages/WebAdminInvitePage.jsx'));
 
 const PageFallback = () => <div className="mx-auto min-h-[60vh] max-w-7xl animate-pulse px-4 py-12"><div className="h-40 rounded-2xl bg-muted/30" /></div>;
 
@@ -99,6 +100,8 @@ function App() {
                   <Route path="/cookies" element={<CookiePolicyPage />} />
                   <Route path="/roadmap" element={<FutureFeaturesPage />} />
                   {import.meta.env.DEV && <Route path="/dev/moonbot-control" element={<MoonbotControlPreview />} />}
+
+                  <Route path="/admin/invite/:token" element={<WebAdminInvitePage />} />
                   
                   <Route
                     path="/dashboard"
