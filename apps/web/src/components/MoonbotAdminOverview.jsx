@@ -17,6 +17,7 @@ const MoonbotAutomationsCenter = lazy(() => import('@/components/MoonbotAutomati
 const MoonbotIntegrationsCenter = lazy(() => import('@/components/MoonbotIntegrationsCenter.jsx'));
 const MoonbotOperationsCenter = lazy(() => import('@/components/MoonbotOperationsCenter.jsx'));
 const MoonbotLoadBalancer = lazy(() => import('@/components/MoonbotLoadBalancer.jsx'));
+const MoonbotEnvironments = lazy(() => import('@/components/MoonbotEnvironments.jsx'));
 const MoonbotExperienceCenter = lazy(() => import('@/components/MoonbotExperienceCenter.jsx'));
 const MoonbotModerationProductivity = lazy(() => import('@/components/MoonbotModerationProductivity.jsx'));
 const HouseAdsManager = lazy(() => import('@/components/HouseAdsManager.jsx'));
@@ -42,6 +43,7 @@ const MASTER_SECTIONS = [
   ['Integraciones', 'moon-integrations'],
   ['Operaciones', 'moon-operations'],
   ['Balanceo y contenedores', 'moon-balancer'],
+  ['Versiones y entornos', 'moon-environments'],
   ['Funciones verificadas', 'moon-features'],
 ];
 
@@ -121,6 +123,7 @@ const MoonbotAdminOverview = () => {
                           : activeSection === 'moon-automations' ? <MoonbotAutomationsCenter groups={data?.groups || []} />
                             : activeSection === 'moon-integrations' ? <MoonbotIntegrationsCenter groups={data?.groups || []} />
                               : activeSection === 'moon-operations' ? <MoonbotOperationsCenter groups={data?.groups || []} />
+                                : activeSection === 'moon-environments' ? <MoonbotEnvironments />
                                 : activeSection === 'moon-balancer' ? <MoonbotLoadBalancer />
                                 : activeSection === 'moon-features' ? <MoonbotFeatureCenter /> : null;
 
@@ -142,6 +145,7 @@ const MoonbotAdminOverview = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <Button variant="outline" onClick={() => openSection('moon-balancer')}>Abrir balanceo y contenedores</Button>
+        <Button variant="outline" onClick={() => openSection('moon-environments')}>Versiones y entornos Moonbot</Button>
         {error && <div className="flex gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
         {data && <>
           <RoadmapProgressPanel />

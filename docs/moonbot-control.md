@@ -66,6 +66,10 @@ Los límites de Telegram mostrados son referencias de envío publicadas en su [F
 
 ## Ping de centros de datos y CDN
 
+### Acceso individual a entornos Docker
+
+El Dashboard incorpora **Versiones y entornos** para asignar a administradores acceso a Docker de desarrollo, alfa, beta y RC. Las políticas por cuenta y generales son independientes de la conmutación global del clúster. Consulta [configuración y despliegue](moonbot-environments.md).
+
 ### Descubrimiento dinámico (Moonbot v18.23.17-alpha.3)
 
 Configurar en Moonbot `TDLIB_API_ID`, `TDLIB_API_HASH` y `MOON_CDN_DISCOVERY_ENABLED=true`. El cliente Telethon 1.45.0 usa una sesión separada solo en memoria y `connect`, nunca `start/sign_in`: no solicita teléfono, códigos ni acceso a una cuenta. Consulta `help.getConfig` bajo demanda, filtra destinos CDN públicos (máximo 32), renueva según `expires` y limita los intentos a uno por minuto. Conserva la lista previa marcada como caducada si falla. No devuelve claves, secretos MTProto ni credenciales.

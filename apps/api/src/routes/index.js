@@ -22,6 +22,19 @@ import moonbotAdminRouter from './moonbot-admin.js';
 import moonbotClusterRouter from './moonbot-cluster.js';
 import houseAdsRouter from './house-ads.js';
 import contentAnalyticsRouter from './content-analytics.js';
+import { createEnvironmentRouter } from './moonbot-environments.js';
+import { createEnvironmentService, environmentConfig, environmentRepository } from '../utils/moonbotEnvironments.js';
+import pb from '../utils/pocketbaseClient.js';
+import { authorizeAdminOrCreator } from './stats.js';
+
+let environments;
+const environmentService = () => {
+    if (!environments) environments = createEnvironmentService({
+        ...environmentConfig(process.env.MOON_ENVIRONMENTS, process.env.RELEASE_COOKIE_DOMAIN),
+        secret: process.env.MOON_ENVIRONMENT_SECRET, repository: environmentRepository(pb),
+    });
+    return environments;
+};
 
 const router = Router();
 
@@ -46,6 +59,7 @@ export default () => {
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);
     router.use('/moonbot-admin/cluster', moonbotClusterRouter);
+    router.use('/moonbot-environments', createEnvironmentRouter({ service: environmentService, authenticate: authorizeAdminOrCreator }));
     router.use('/moonbot-admin', moonbotAdminRouter);
     router.use('/house-ads', houseAdsRouter);
     // Alias neutral: algunos bloqueadores interceptan cualquier URL que incluya

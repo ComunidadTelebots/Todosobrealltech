@@ -1,5 +1,20 @@
 import React from 'react';
 import MoonbotLoadBalancer from '@/components/MoonbotLoadBalancer.jsx';
+import MoonbotEnvironments from '@/components/MoonbotEnvironments.jsx';
+
+const environmentPreview = {
+  fetch: async () => ({ ok: true }),
+  readJson: async () => ({ ok: true, canManage: true, source: 'creator', configured: true, accessReady: true,
+    targets: ['dev', 'alpha', 'beta', 'rc'].map((channel) => ({ id: `moon-${channel}`, channel,
+      name: `Moonbot ${channel === 'alpha' ? 'Alfa' : channel.toUpperCase()}`, version: `18.23.17-${channel}.3`,
+      host: `moon-${channel}.todosobreall.tech`, url: `https://moon-${channel}.todosobreall.tech` })),
+    global: { scope: 'global', mode: 'custom', targets: ['moon-rc'], revision: 1 },
+    accounts: [
+      { id: 'admin-demo-ana', name: 'Ana · ejemplo', policy: { scope: 'admin-demo-ana', mode: 'custom', targets: ['moon-alpha', 'moon-beta'], revision: 1 } },
+      { id: 'admin-demo-luis', name: 'Luis · ejemplo', policy: { scope: 'admin-demo-luis', mode: 'inherit', targets: [], revision: 1 } },
+    ],
+  }),
+};
 
 // This fixture is imported only by the development route. No live requests.
 const minute = Math.floor(Date.now() / 60000) * 60000;
@@ -21,5 +36,5 @@ const client = {
   }),
 };
 export default function MoonbotControlPreview() {
-  return <main className="mx-auto max-w-7xl px-4 py-8"><div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"><b>Vista previa local · datos de ejemplo</b><p className="text-sm">Esta pantalla permite revisar el diseño sin PocketBase ni Docker. Los controles están deshabilitados. El panel real está en Dashboard → Balanceo y contenedores.</p></div><MoonbotLoadBalancer client={client} readOnly /></main>;
+  return <main className="mx-auto max-w-7xl px-4 py-8"><div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4"><b>Vista previa local · datos de ejemplo</b><p className="text-sm">Esta pantalla permite revisar el diseño sin PocketBase ni Docker. Los controles están deshabilitados. En el Dashboard encontrarás Versiones y entornos y Balanceo y contenedores.</p></div><MoonbotEnvironments client={environmentPreview} readOnly /><MoonbotLoadBalancer client={client} readOnly /></main>;
 }

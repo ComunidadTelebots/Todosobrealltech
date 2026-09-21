@@ -1,0 +1,35 @@
+# Una ejecución / proyecto Compose por entorno. Ver docs/moonbot-environments.md.
+services:
+  moonbot-environment:
+    image: ${MOON_ENVIRONMENT_IMAGE:?Indica una imagen Moonbot versionada}
+    restart: unless-stopped
+    env_file:
+      - ${MOON_ENVIRONMENT_FILE:?Indica el archivo de credenciales aisladas del entorno}
+    environment:
+      MOON_ENV: ${MOON_ENVIRONMENT_CHANNEL:?Indica dev, alpha, beta o rc}
+      AUTO_DOCKER_UPDATE: "false"
+    volumes:
+      - environment-data:/app/data
+      - environment-downloads:/app/downloads
+    networks: [traefik]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK:-traefik}"
+      - "traefik.http.routers.${MOON_ENVIRONMENT_ID:?Indica el id del catálogo}.rule=Host(`${MOON_ENVIRONMENT_HOST:?Indica el subdominio protegido}`)"
+      - "traefik.http.routers.${MOON_ENVIRONMENT_ID}.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.${MOON_ENVIRONMENT_ID}.tls=true"
+      - "traefik.http.routers.${MOON_ENVIRONMENT_ID}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.${MOON_ENVIRONMENT_ID}.middlewares=${MOON_ENVIRONMENT_ID}-auth,${MOON_ENVIRONMENT_ID}-cache"
+      - "traefik.http.middlewares.${MOON_ENVIRONMENT_ID}-auth.forwardauth.address=http://todosobrealltech-api:3001/moonbot-environments/forward-auth/${MOON_ENVIRONMENT_ID}"
+      - "traefik.http.middlewares.${MOON_ENVIRONMENT_ID}-auth.forwardauth.trustForwardHeader=false"
+      - "traefik.http.middlewares.${MOON_ENVIRONMENT_ID}-auth.forwardauth.authRequestHeaders=Cookie"
+      - "traefik.http.middlewares.${MOON_ENVIRONMENT_ID}-cache.headers.customResponseHeaders.Cache-Control=private, no-store"
+      - "traefik.http.middlewares.${MOON_ENVIRONMENT_ID}-cache.headers.customResponseHeaders.Vary=Cookie"
+      - "traefik.http.services.${MOON_ENVIRONMENT_ID}.loadbalancer.server.port=5000"
+volumes:
+  environment-data:
+  environment-downloads:
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}

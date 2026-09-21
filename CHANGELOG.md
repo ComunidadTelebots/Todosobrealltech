@@ -1,5 +1,10 @@
 # Changelog - TodoSobreAllTech
 
+### Acceso a entornos Moonbot - 2026-09-21
+- Permite al creador asignar Docker dev/alfa/beta/RC a administradores desde el Dashboard, con permisos generales y excepciones por cuenta.
+- Protege el acceso directo mediante sesiones breves y comprobación de permisos en Traefik; conserva los permisos internos de Moonbot.
+- Añade catálogo configurado, migración de políticas, historial de cambios y una plantilla Compose por entorno con datos aislados.
+
 ### Centro de operaciones Moonbot - 2026-09-21
 - Paraleliza consultas operativas, libera respuestas antes de reintentos y añade ubicación regional DC/origen configurable.
 - Añade balanceo, métricas Telegram/API, recursos y límites Docker al dashboard administrativo.
