@@ -1,6 +1,7 @@
 import express from 'express';
 import { authorizeAdminOrCreator } from './stats.js';
 import { moonbotCluster } from '../utils/moonbotCluster.js';
+import { telegramNetwork } from '../utils/telegramNetwork.js';
 
 const router = express.Router();
 router.use(async (req, res, next) => {
@@ -13,6 +14,9 @@ router.use(async (req, res, next) => {
 router.get('/', async (req, res) => {
   try { res.json(await moonbotCluster().snapshot()); }
   catch (error) { res.status(error.status || 503).json({ ok: false, error: error.message }); }
+});
+router.get('/network', async (req, res) => {
+  res.json(await telegramNetwork.snapshot());
 });
 router.post('/switch', async (req, res) => {
   try { res.json(await moonbotCluster().switchTo({ from: req.body?.from, to: req.body?.to, actor: req.clusterActor })); }

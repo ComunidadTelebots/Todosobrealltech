@@ -24,3 +24,13 @@ test('no repite escrituras administrativas', async () => {
   }));
   assert.equal(calls, 1);
 });
+
+test('las lecturas reintentadas usan el nodo activo actual tras una conmutación', async () => {
+  const origins = ['http://primary:5000', 'http://backup:5000'];
+  const urls = [];
+  await requestMoonbot('/health', {
+    retryDelayMs: 1, resolveOrigin: async () => origins.shift(),
+    fetchImpl: async (url) => { urls.push(url); return new Response('{}', { status: urls.length === 1 ? 503 : 200 }); },
+  });
+  assert.deepEqual(urls, ['http://primary:5000/health', 'http://backup:5000/health']);
+});

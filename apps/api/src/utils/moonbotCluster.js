@@ -7,7 +7,9 @@ import { projectOperations, projectResources } from './moonbotTelemetry.js';
 const failure = (message, status = 409) => Object.assign(new Error(message), { status });
 
 export function parseNodes(raw = '[]') {
-  const nodes = JSON.parse(raw);
+  let nodes;
+  try { nodes = JSON.parse(raw); }
+  catch { throw failure('MOON_CLUSTER_NODES debe ser una lista JSON válida', 503); }
   if (!Array.isArray(nodes) || nodes.length > 12) throw failure('Configuración de nodos inválida', 503);
   const ids = new Set();
   const containers = new Set();

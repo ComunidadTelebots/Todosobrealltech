@@ -5,6 +5,7 @@
 - Incorpora conmutación entre contenedores permitidos, verificación de salud y recuperación del origen.
 - Mide tráfico Express sin retener mensajes, credenciales ni rutas privadas.
 - Integra telemetría Moonbot con contrato v1 y vista previa exclusiva de desarrollo.
+- Añade latencia TCP a centros de datos, CDN públicas y Bot API de Telegram, con estadísticas y fallos por destino.
 
 ### 18.23.51 - 2026-08-11
 

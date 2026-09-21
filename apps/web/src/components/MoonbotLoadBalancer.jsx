@@ -3,6 +3,7 @@ import { Activity, ArrowRight, Box, RefreshCw, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import apiServerClient from '@/lib/apiServerClient';
 import MoonbotTrafficPanel from '@/components/MoonbotTrafficPanel.jsx';
+import TelegramNetworkPanel from '@/components/TelegramNetworkPanel.jsx';
 
 const labels = { running: 'En ejecución', exited: 'Detenido', created: 'Preparado', unavailable: 'Sin conexión', restarting: 'Reiniciando' };
 const events = { started: 'Cambio iniciado', completed: 'Cambio completado', rolled_back: 'Origen restaurado', failed: 'Cambio rechazado', recovery_required: 'Recuperación manual necesaria' };
@@ -79,6 +80,7 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
       </section>
     </div>
     <MoonbotTrafficPanel data={data} />
+    <TelegramNetworkPanel client={client} />
     <section><h3 className="mb-3 font-semibold">Historial de conmutaciones</h3><div className="space-y-2">{data?.events.slice(0, 10).map((event, index) => <div key={`${event.at}-${index}`} className="flex flex-wrap justify-between gap-2 rounded-lg border px-3 py-2 text-sm"><span>{events[event.status] || event.status} · {event.from} → {event.to}</span><time className="text-xs text-muted-foreground">{new Date(event.at).toLocaleString()}</time></div>)}{!data?.events.length && <p className="text-sm text-muted-foreground">Sin conmutaciones registradas.</p>}</div></section>
   </section>;
 }

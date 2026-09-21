@@ -54,10 +54,10 @@ function decodeCssUrl(value) {
 
 function extractMedia(chunk) {
   const candidates = [
-    ['photo', /tgme_widget_message_photo_wrap[^>]+style="[^"]*background-image:url\(['"]?([^'"\)]+)['"]?\)/],
-    ['video', /tgme_widget_message_video_thumb[^>]+style="[^"]*background-image:url\(['"]?([^'"\)]+)['"]?\)/],
+    ['photo', /tgme_widget_message_photo_wrap[^>]+style="[^"]*background-image:url\(['"]?([^'")]+)['"]?\)/],
+    ['video', /tgme_widget_message_video_thumb[^>]+style="[^"]*background-image:url\(['"]?([^'")]+)['"]?\)/],
     ['video', /tgme_widget_message_video_player[^>]+poster="([^"]+)"/],
-    ['link', /tgme_widget_message_link_preview_image[^>]+style="[^"]*background-image:url\(['"]?([^'"\)]+)['"]?\)/],
+    ['link', /tgme_widget_message_link_preview_image[^>]+style="[^"]*background-image:url\(['"]?([^'")]+)['"]?\)/],
   ];
   for (const [type, pattern] of candidates) {
     const match = chunk.match(pattern);
