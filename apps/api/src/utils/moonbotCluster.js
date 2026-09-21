@@ -142,7 +142,20 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
       try { return { node: row.id, ...await botRequest(row.id) }; }
       catch { return { node: row.id, ok: false, error: 'Control por bot no disponible; comprueba versión, clave y MOON_NODE_ID' }; }
     }));
-    return { paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
+    const peerLatency = await Promise.all(rows.filter(row => row.running).map(async row => {
+      try {
+        const node = nodes.find(item => item.id === row.id);
+        if (!adminKey) throw new Error();
+        const response = await fetcher(`${node.url}/api/internal/peer-latency`, { headers: { 'X-Moon-Admin-Key': adminKey }, redirect: 'error', signal: AbortSignal.timeout(3000) });
+        const payload = await response.json();
+        if (!response.ok || payload.ok !== true || payload.node !== row.id || !Array.isArray(payload.rows)) throw new Error();
+        return { source: row.id, configured: payload.configured === true, refreshing: payload.refreshing === true,
+          rows: payload.rows.slice(0, 12).filter(item => item.target !== row.id && nodes.some(peer => peer.id === item.target)).map(item => ({ target: item.target, ok: item.ok === true,
+            ms: typeof item.ms === 'number' && Number.isFinite(item.ms) && item.ms >= 0 ? item.ms : null,
+            at: typeof item.at === 'number' && Number.isFinite(item.at) ? item.at : null })) };
+      } catch { return { source: row.id, error: 'Medición entre nodos no disponible', rows: [] }; }
+    }));
+    return { peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
       ok: true, configured: nodes.length > 0, active, busy, nodes: rows, balancer, balancerError, operations, resources, telemetryErrors,
       api: apiTraffic.snapshot(), events: saved.events, observedAt: new Date().toISOString() };
   }
@@ -248,7 +261,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         } else if (input.action === 'start-worker') {
           const details = await docker(source.container);
           const env = details.Config?.Env || [];
-          if (!env.includes(`MOON_NODE_ID=${source.id}`) || !env.includes('MOON_TRAFFIC_BOOT_PAUSED=true') || !env.includes('MOON_TRAFFIC_DEFAULT_PAUSED=true') || env.some(value => /^TDLIB_API_(ID|HASH)=.+/.test(value))) throw failure('La reserva requiere MOON_NODE_ID, pausa al arrancar y TDLib desactivado para trabajar por bot');
+          if (!env.includes('MOON_TRAFFIC_CONTROL_ENABLED=true') || !env.includes(`MOON_NODE_ID=${source.id}`) || !env.includes('MOON_TRAFFIC_BOOT_PAUSED=true') || !env.includes('MOON_TRAFFIC_DEFAULT_PAUSED=true') || env.some(value => /^TDLIB_API_(ID|HASH)=.+/.test(value))) throw failure('La reserva requiere MOON_NODE_ID, pausa al arrancar y TDLib desactivado para trabajar por bot');
           if (details.State?.Running) throw failure('El nodo ya está arrancado');
           await phase('starting-paused');
           try {

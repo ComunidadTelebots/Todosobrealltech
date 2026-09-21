@@ -32,14 +32,15 @@ Detener tráfico para el contenedor y espera confirmación. Si es el principal, 
 Desplegar el código nativo de control y configurar en cada Docker:
 
 ```dotenv
+MOON_TRAFFIC_CONTROL_ENABLED=true
 MOON_NODE_ID=identificador_igual_al_catalogo
 MOON_TRAFFIC_DEFAULT_PAUSED=true
 MOON_TRAFFIC_BOOT_PAUSED=true
 ```
 
-Los estados se guardan en `data/traffic-<MOON_NODE_ID>.json`, en un volumen persistente. Los IDs deben ser únicos y coincidir con el catálogo. Configurar estas variables activa el control; sin `MOON_NODE_ID` se conserva el comportamiento anterior y el endpoint de control responde no disponible.
+Los estados se guardan en `data/traffic-<MOON_NODE_ID>.json`, en un volumen persistente. Los IDs deben ser únicos y coincidir con el catálogo. Activar explícitamente `MOON_TRAFFIC_CONTROL_ENABLED=true` habilita el control; sin esa opción o sin `MOON_NODE_ID` se conserva el comportamiento anterior y el endpoint de control responde no disponible.
 
-Arrancar con bots pausados requiere esas tres variables y TDLib desactivado. Todos los bots nuevos y los previamente habilitados arrancan pausados. Después se puede reanudar uno desde la web. La API consulta todos los nodos que Docker identifica como ejecutándose y rechaza la activación si otra copia del mismo bot admite tráfico, tiene peticiones en curso o no puede confirmar su estado. Un nodo Docker inaccesible también bloquea esa comprobación.
+Arrancar con bots pausados requiere esas cuatro variables y TDLib desactivado. Todos los bots nuevos y los previamente habilitados arrancan pausados. Después se puede reanudar uno desde la web. La API consulta todos los nodos que Docker identifica como ejecutándose y rechaza la activación si otra copia del mismo bot admite tráfico, tiene peticiones en curso o no puede confirmar su estado. Un nodo Docker inaccesible también bloquea esa comprobación.
 
 Pausar un bot persiste la decisión, deja terminar el lote ya admitido y sus llamadas anidadas, y bloquea nuevos lotes y llamadas de la Bot API. Derivar exige que el token ya esté configurado en ambos nodos; nunca se transporta el token por la interfaz. Espera hasta 120 segundos a que el origen quede pausado y sin operaciones, transfiere el último offset de su bucle y activa el destino. Si hay un error o respuesta incierta al activar el destino, no reactiva automáticamente el origen. Revisar ambos estados antes de reintentar. No garantiza entrega exactamente una vez ni sincroniza las bases de datos de dos Docker.
 
@@ -52,3 +53,11 @@ Los bots con TDLib no admiten pausa o traslado individual: TDLib tiene un ciclo 
 Si se reinicia durante una operación, queda marcada como interrumpida y bloquea nuevas mutaciones. Un operador debe inspeccionar el contenedor original, cualquier `-previous-...`, el estado real de los bots y el último paso registrado en el archivo del clúster. Tras resolver la situación, detener la API y cambiar el estado de `job.status` de `running` a `failed`, conservando la evidencia, antes de reiniciarla. No basta con reintentar a ciegas.
 
 El despliegue y sus permisos se configuran aparte. No se han ejecutado actualizaciones ni pausado bots reales al desarrollar esta interfaz.
+
+## Ping entre nodos
+
+Configurar `MOON_PEER_NODES` en cada Moonbot con una lista de `{ "id": "otro-nodo", "url": "http://nombre-docker:5000" }`, y `MOON_NODE_ID` con su identidad. Son destinos administrados en el servidor, no URLs recibidas del navegador. El endpoint interno autenticado publica mediciones de conexión TCP desde ese Docker a sus pares. Renueva en segundo plano cada 30 segundos, con hasta 12 destinos y cuatro conexiones simultáneas. El tiempo incluye resolución DNS; el timeout de conexión no limita la resolución del sistema. Si una resolución se bloquea, no lanza nuevos lotes mientras el anterior siga en curso.
+
+La web indica dirección, milisegundos, hora, destino detenido, fallo o muestra caducada (60 segundos). Los bots de un mismo proceso no tienen ping entre sí. Por separado, cada bot muestra la media de respuesta de la API de Telegram en 60 segundos, incluyendo long polling, errores y reintentos; no es ICMP ni un indicador puro de latencia de red.
+
+Configurar el identificador y los pares para medir ping no activa la pausa de bots: requiere además habilitar explícitamente MOON_TRAFFIC_CONTROL_ENABLED.

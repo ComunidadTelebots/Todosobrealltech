@@ -22,7 +22,8 @@ export default function MoonbotTelegramFlow({ data, stale }) {
   const share = count => typeof totalCalls === 'number' && totalCalls > 0 && typeof count === 'number' && count >= 0 && count <= totalCalls ? count / totalCalls * 100 : null;
   const percent = count => share(count) == null ? '—' : `${share(count).toLocaleString('es-ES', { maximumFractionDigits: 1 })}%`;
   const visibleCalls = rows.reduce((sum, bot) => sum + (bot.last60s?.calls || 0), 0);
-  const height = Math.max(220, rows.length * 85 + 60);
+  const height = Math.max(220, rows.length * 100 + 85);
+  const apiLatency = traffic => typeof traffic?.latency_ms === 'number' && traffic.calls > 0 ? Math.round(traffic.latency_ms / traffic.calls) : null;
   const middle = height / 2;
   const value = n => n == null ? '—' : Number(n).toLocaleString('es-ES');
   return <section className="rounded-xl border border-cyan-500/30 bg-muted/10 p-4" aria-label="Flujo de Telegram por bot">
@@ -44,14 +45,24 @@ export default function MoonbotTelegramFlow({ data, stale }) {
         <text x="625" y={middle - 16} textAnchor="middle" fill="currentColor" fontSize="15">Moonbot · Docker activo</text>
         <text x="625" y={middle + 7} textAnchor="middle" fill="currentColor" fontSize="12">{data?.active || 'Sin confirmar'}</text>
         <text x="625" y={middle + 29} textAnchor="middle" fill="currentColor" fontSize="12">Clientes por token · {value(totalCalls)} / 60 s</text>
-        {rows.map((bot, index) => { const y = 65 + index * 85; const traffic = bot.last60s || {}; return <g key={bot.id}>
+        {rows.map((bot, index) => { const y = 65 + index * 100; const traffic = bot.last60s || {}; return <g key={bot.id}>
           <Stream path={`M735 ${middle - 8} C810 ${middle - 8} 840 ${y - 8} 915 ${y - 8}`} count={traffic.received} color="#06b6d4" running={running} />
           <Stream path={`M915 ${y + 8} C840 ${y + 8} 810 ${middle + 8} 735 ${middle + 8}`} count={traffic.calls} color="#8b5cf6" running={running} />
-          <rect x="915" y={y - 34} width="250" height="74" rx="12" fill={traffic.errors ? '#f59e0b' : '#06b6d4'} opacity="0.12" /><text x="928" y={y - 8} fill="currentColor" fontSize="14">Bot · {bot.id.slice(0, 8)}</text><text x="928" y={y + 13} fill="currentColor" fontSize="11">↓ {value(traffic.received)} mensajes · ↑ {value(traffic.calls)} llamadas</text><text x="928" y={y + 31} fill="currentColor" fontSize="14" fontWeight="bold">{percent(traffic.calls)} del tráfico total</text>
+          <rect x="915" y={y - 34} width="250" height="94" rx="12" fill={traffic.errors ? '#f59e0b' : '#06b6d4'} opacity="0.12" /><text x="928" y={y - 8} fill="currentColor" fontSize="14">Bot · {bot.id.slice(0, 8)}</text><text x="928" y={y + 13} fill="currentColor" fontSize="11">↓ {value(traffic.received)} mensajes · ↑ {value(traffic.calls)} llamadas</text><text x="928" y={y + 31} fill="currentColor" fontSize="14" fontWeight="bold">{percent(traffic.calls)} del tráfico total</text><text x="928" y={y + 51} fill="currentColor" fontSize="12">Respuesta API: {value(apiLatency(traffic))} ms</text>
         </g>; })}
       </svg></div>
-      <div className="overflow-x-auto"><table className="mt-3 w-full text-left text-sm"><caption className="py-2 text-left text-xs text-muted-foreground">Hasta 8 bots con más llamadas · identificadores anónimos estables por configuración · ventana de 60 s</caption><thead><tr>{['Bot', '% del tráfico', 'Recibidos', 'Peticiones API', 'Enviados', 'Errores', '429'].map(label => <th key={label} className="p-2">{label}</th>)}</tr></thead><tbody>{rows.map(bot => <tr key={bot.id} className="border-t"><td className="p-2">{bot.id.slice(0, 8)}</td><td className="p-2"><b>{percent(bot.last60s?.calls)}</b><div className="mt-1 h-2 w-24 rounded bg-muted"><div className="h-2 rounded bg-violet-500" style={{ width: `${share(bot.last60s?.calls) ?? 0}%` }} /></div></td>{['received', 'calls', 'sent', 'errors', 'limited'].map(key => <td key={key} className="p-2 tabular-nums">{value(bot.last60s?.[key])}</td>)}</tr>)}</tbody></table></div>
+      <div className="overflow-x-auto"><table className="mt-3 w-full text-left text-sm"><caption className="py-2 text-left text-xs text-muted-foreground">Hasta 8 bots con más llamadas · identificadores anónimos estables por configuración · ventana de 60 s</caption><thead><tr>{['Bot', '% del tráfico', 'Recibidos', 'Peticiones API', 'Enviados', 'Errores', '429', 'Respuesta API (ms)'].map(label => <th key={label} className="p-2">{label}</th>)}</tr></thead><tbody>{rows.map(bot => <tr key={bot.id} className="border-t"><td className="p-2">{bot.id.slice(0, 8)}</td><td className="p-2"><b>{percent(bot.last60s?.calls)}</b><div className="mt-1 h-2 w-24 rounded bg-muted"><div className="h-2 rounded bg-violet-500" style={{ width: `${share(bot.last60s?.calls) ?? 0}%` }} /></div></td>{['received', 'calls', 'sent', 'errors', 'limited'].map(key => <td key={key} className="p-2 tabular-nums">{value(bot.last60s?.[key])}</td>)}<td className="p-2 tabular-nums">{value(apiLatency(bot.last60s))}</td></tr>)}</tbody></table></div>
     </>}
+    <p className="mt-2 text-xs text-muted-foreground">Respuesta API: media por petición durante 60 s, incluidos errores, reintentos y la espera de getUpdates. No es ping ICMP ni latencia entre bots. Los bots del mismo Docker comparten proceso.</p>
+    <div className="mt-4 space-y-3 rounded-lg border p-3" aria-label="Ping entre Docker de Moonbot"><h4 className="font-semibold">Ping entre Docker de Moonbot</h4><p className="text-xs text-muted-foreground">Conexión TCP medida desde el nodo de origen al puerto del destino, con DNS si utiliza nombre. Se renueva cada 30 s. No envía mensajes ni mide la latencia de Telegram.</p>
+      {(data?.peerLatency || []).map(group => <div key={group.source} className="space-y-2">{group.error || !group.configured ? <p className="text-sm text-muted-foreground">{group.source}: {group.error || 'Destinos de medición sin configurar'}</p> : <>{group.rows?.map(peer => {
+        const destinationNode = data?.nodes?.find(node => node.id === peer.target);
+        const old = !peer.at || now - peer.at * 1000 > 60000 || stale;
+        const label = destinationNode && !destinationNode.running ? 'Destino detenido o sin estado' : old ? 'Medición caducada' : peer.ok && peer.ms != null ? `${value(peer.ms)} ms` : 'Sin conexión';
+        return <div key={peer.target} className="flex flex-wrap items-center gap-3 rounded-lg bg-muted/20 p-3 text-sm"><b className="rounded border p-2">{group.source}</b><span aria-hidden="true">→</span><span className={`rounded-full px-3 py-1 font-semibold ${peer.ok && !old && destinationNode?.running ? 'bg-emerald-500/15 text-emerald-700' : 'bg-amber-500/15 text-amber-700'}`}>{label}</span><span aria-hidden="true">→</span><b className="rounded border p-2">{peer.target}</b><time className="text-xs text-muted-foreground">{peer.at ? new Date(peer.at * 1000).toLocaleTimeString('es-ES') : 'Sin muestra'}</time></div>;
+      })}{!group.rows?.length && <p className="text-sm">{group.source}: esperando primera medición.</p>}</>}</div>)}
+      {!data?.peerLatency?.length && <p className="text-sm text-muted-foreground">Sin nodos conectados que publiquen mediciones entre Docker.</p>}
+    </div>
     {(bots?.length > 8 || operations?.botsTruncated) && <p className="mt-2 text-xs text-amber-600">Vista parcial: se muestran 8 bots y el origen conserva hasta 64. Los totales globales pueden incluir otros bots.</p>}
   </section>;
 }
