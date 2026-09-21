@@ -66,9 +66,15 @@ Los límites de Telegram mostrados son referencias de envío publicadas en su [F
 
 ## Ping de centros de datos y CDN
 
+### Descubrimiento dinámico (Moonbot v18.23.17-alpha.3)
+
+Configurar en Moonbot `TDLIB_API_ID`, `TDLIB_API_HASH` y `MOON_CDN_DISCOVERY_ENABLED=true`. El cliente Telethon 1.45.0 usa una sesión separada solo en memoria y `connect`, nunca `start/sign_in`: no solicita teléfono, códigos ni acceso a una cuenta. Consulta `help.getConfig` bajo demanda, filtra destinos CDN públicos (máximo 32), renueva según `expires` y limita los intentos a uno por minuto. Conserva la lista previa marcada como caducada si falla. No devuelve claves, secretos MTProto ni credenciales.
+
+`GET /api/telemetry/cdn` requiere JWT en Moonbot; la API web lo consulta a través del nodo activo en `/moonbot-admin/cluster/cdn`, con autorización de administrador/creador. La web lee el estado cada 15 segundos mientras está visible; esas lecturas no fuerzan consultas MTProto mientras la lista siga vigente. Los CDN descubiertos muestran IP/puerto/caducidad, todavía sin sondeo TCP dinámico. Las mediciones existentes siguen correspondiendo a los nueve destinos fijos. El descubrimiento está desactivado por defecto y no se ha verificado con credenciales reales en este entorno.
+
 ### Transporte y ubicación
 
-Referencia técnica principal CDN: https://core.telegram.org/cdn. Los destinos dinámicos proceden de `help.getConfig` con `dcOption.cdn`; `help.getCdnConfig` devuelve claves públicas RSA y `upload.fileCdnRedirect` identifica el CDN de una descarga. El panel actual no tiene conectado ese descubrimiento MTProto y no equipara los hosts web telesco.pe a esos CDN cifrados. La documentación no publica un listado de ciudades. Su beneficio se aplica a descarga de medios públicos, no al envío de mensajes por Bot API.
+Referencia técnica principal CDN: https://core.telegram.org/cdn. Los destinos dinámicos proceden de `help.getConfig` con `dcOption.cdn`; `help.getCdnConfig` devuelve claves públicas RSA y `upload.fileCdnRedirect` identifica el CDN de una descarga. El descubrimiento MTProto requiere activar la integración opcional descrita arriba y no equipara los hosts web telesco.pe a esos CDN cifrados. La documentación no publica un listado de ciudades. Su beneficio se aplica a descarga de medios públicos, no al envío de mensajes por Bot API.
 
 El desplegable CDN regionales cita el anuncio oficial de 23/07/2017 como cobertura histórica de mejora de descargas (Sudamérica, Turquía, Indonesia, India, Irán e Irak). No confirma ciudades, direcciones operativas ni disponibilidad actual. NetworksDB asocia 91.108.20.0/22 a Azerbaiyán, sin confirmar Bakú o capacidad. No hay evidencia en las fuentes aportadas para presentar Bakú, Teherán, Yakarta, Estambul, São Paulo o Buenos Aires como nodos medidos. Referencias: https://telegram.org/blog/encrypted-cdns y https://networksdb.io/ip-addresses-of/telegram-messenger-inc.
 

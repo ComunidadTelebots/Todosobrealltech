@@ -11,7 +11,7 @@ const previewNetwork = { ok: true, measuredAt: new Date().toISOString(), origin:
 };
 const client = {
   fetch: async (endpoint) => ({ ok: true, endpoint }),
-  readJson: async (response) => response.endpoint?.endsWith('/network') ? previewNetwork : ({ ok: true, configured: true, active: 'moon-primary', busy: false, observedAt: new Date().toISOString(),
+  readJson: async (response) => response.endpoint?.endsWith('/cdn') ? { ok: true, enabled: false, configured: false, stale: true, targets: [] } : response.endpoint?.endsWith('/network') ? previewNetwork : ({ ok: true, configured: true, active: 'moon-primary', busy: false, observedAt: new Date().toISOString(),
     nodes: [{ id: 'moon-primary', container: 'moonbot', running: true, status: 'running', healthy: true, restarts: 1, oomKilled: false, limits: { memoryBytes: 4294967296, cpus: 2, pids: 256 } }, { id: 'moon-reserve', container: 'moonbot-backup', running: false, status: 'exited', healthy: false }],
     balancer: { active: true, workers: 8, processed_sources: 42, words: 128400, rate: '2150 p/min', plan: { planned_workers: 8, max_workers: 12 } },
     operations: { since: new Date(minute - 7200000).toISOString(), last60s: traffic, total: { ...traffic, received: 18742, sent: 8450, calls: 28400 }, history },
