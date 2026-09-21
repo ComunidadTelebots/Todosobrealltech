@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ShieldCheck, ShieldX } from 'lucide-react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import apiServerClient from '@/lib/apiServerClient.js';
 import pb from '@/lib/pocketbaseClient.js';
 import { Button } from '@/components/ui/button.jsx';

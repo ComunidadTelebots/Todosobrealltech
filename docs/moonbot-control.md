@@ -6,7 +6,7 @@ La interfaz pertenece a **todosobreall.tech**: `/dashboard?moon=moon-balancer`, 
 
 Se revisó `ComunidadTelebots/moon-multibot`, rama `master`, commit `22d2b1f`. Su endpoint `GET /api/ia/load_balancer` usa JWT de Moonbot en `Authorization: Bearer …`. Devuelve `state` y `stats`: workers asignados, fuentes procesadas, plan y ritmo. Son hilos de aprendizaje Gutenberg dentro de un proceso, no réplicas Docker. No publica carga individual de los workers. La gráfica conserva las últimas treinta lecturas de la sesión.
 
-La API de esta web vive en `apps/api`. Su autenticación PocketBase protege tanto la consulta como la conmutación. El JWT de Moonbot nunca se envía al navegador. La integración nativa se prepara sobre `moon-multibot/alpha` (base `3510737`) como `v18.23.17-alpha.1`; esa rama sí contiene `/api/internal/admin-overview`. La web se integra sobre `Todosobrealltech/main` (base `4dc8eee`), conservando el cliente compartido y su política de reintentos. Las lecturas siguientes a una conmutación resuelven el nuevo nodo activo.
+La API de esta web vive en `apps/api`. Su autenticación PocketBase protege tanto la consulta como la conmutación. El JWT de Moonbot nunca se envía al navegador. La integración nativa se prepara sobre `moon-multibot/alpha` (base `3510737`) como `v18.23.17-alpha.1`; esa rama sí contiene `/api/internal/admin-overview`. La web se integra en `Todosobrealltech/develop`, incorporando `main` (base `4dc8eee`), conservando el cliente compartido y su política de reintentos. Las lecturas siguientes a una conmutación resuelven el nuevo nodo activo.
 
 ## Configuración del servidor
 

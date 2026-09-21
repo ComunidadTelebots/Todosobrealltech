@@ -1,15 +1,18 @@
 version: 2
 updates:
   - package-ecosystem: npm
+    target-branch: develop
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
   - package-ecosystem: github-actions
+    target-branch: develop
     directory: /
     schedule:
       interval: monthly
   - package-ecosystem: docker
+    target-branch: develop
     directory: /
     schedule:
       interval: monthly

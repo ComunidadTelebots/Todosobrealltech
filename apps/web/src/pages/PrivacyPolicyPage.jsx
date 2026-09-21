@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Cookie, Database, Mail } from 'lucide-react';
 import { useAnalytics } from '@/contexts/AnalyticsProvider.jsx';
