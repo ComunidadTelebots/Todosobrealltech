@@ -9,3 +9,7 @@ Moonbot almacena únicamente ID de chat, título, ID de mensaje, instante de rec
 Los contadores comienzan al activar esta versión. Se cuentan mensajes nuevos de grupos y canales recibidos por el bucle de actualizaciones, antes de la moderación; se excluyen mensajes privados, ediciones y envíos directos del bot. Fotos con pie cuentan como foto, animaciones como animación aunque Telegram adjunte también documento. Mensajes de servicio y tipos no reconocidos van a Otros y servicio. No permite reconstruir el pasado a partir del antiguo historial global de 300 entradas, que no conserva tipos fiables.
 
 El ranking corresponde al despliegue conectado, no fusiona réplicas o Docker independientes. La cobertura depende de las actualizaciones que Telegram entregue al bot y del funcionamiento del almacenamiento; no es el total histórico real del chat. Un fallo de registro se anota en Moonbot sin detener la moderación. La vista `/dev/moonbot-control` utiliza ejemplos explícitos, con filtros funcionales.
+
+## Flujo animado de Telegram
+
+La telemetría publica una ventana de 60 segundos por bot (hasta 64 identidades anónimas derivadas de la configuración). El panel dibuja los 8 con más llamadas: cyan para mensajes recibidos y violeta para peticiones a la Bot API, con velocidad creciente según volumen. No representa latencia ni un paquete por punto, ni implementa redistribución de actualizaciones entre tokens. Se pausa manualmente, con movimiento reducido o al caducar la lectura tras 15 segundos. Los bots sin actividad no tienen puntos en movimiento.

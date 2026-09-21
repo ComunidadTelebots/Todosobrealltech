@@ -4,7 +4,8 @@ const counts = (value = {}) => Object.fromEntries(['updates', 'received', 'sent'
 
 export function projectOperations(data) {
   if (data?.ok !== true || data.schema !== 1 || !data.total || !data.last60s) throw new Error('Contrato de telemetría no disponible');
-  return { since: text(data.since), total: counts(data.total), last60s: counts(data.last60s),
+  return { bots: Array.isArray(data.bots) ? data.bots.slice(0, 64).filter(row => /^[a-f0-9]{12}$/.test(row?.id)).map(row => ({ id: row.id, last60s: counts(row.last60s) })) : null,
+    botsTruncated: data.bots_truncated === true, since: text(data.since), total: counts(data.total), last60s: counts(data.last60s),
     history: Array.isArray(data.history) ? data.history.slice(-60).map((row) => ({ at: text(row.at), ...counts(row) })) : [],
   };
 }
