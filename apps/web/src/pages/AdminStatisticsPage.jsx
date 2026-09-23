@@ -29,7 +29,7 @@ const AdminStatisticsPage = () => {
         ]);
 
         setMetrics({
-          visitors: { total: 45231, unique: 12845, trend: '+12.5%' },
+          visitors: { total: null, trend: null },
           bots: { total: bots.totalItems, trend: '+5.2%' },
           onions: { active: Math.floor(onions.totalItems * 0.9), trend: '+2.1%' },
           users: { total: users.totalItems, trend: '+8.4%' },
@@ -86,8 +86,8 @@ const AdminStatisticsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <StatCard
               icon={Activity}
-              title="Total Visitors"
-              value={metrics?.visitors.total.toLocaleString() || '-'}
+              title="Visitas: consultar mapa"
+              value={metrics?.visitors.total?.toLocaleString() || '-'}
               percentage={metrics?.visitors.trend}
               trend="up"
               status="default"
