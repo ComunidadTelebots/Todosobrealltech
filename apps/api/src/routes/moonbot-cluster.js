@@ -14,7 +14,7 @@ router.use(async (req, res, next) => {
   next();
 });
 router.get('/', async (req, res) => {
-  try { res.json({ ...await moonbotCluster().snapshot(), canManage: req.clusterCanManage }); }
+  try { res.json({ ...await moonbotCluster().sharedSnapshot(), canManage: req.clusterCanManage }); }
   catch (error) { res.status(error.status || 503).json({ ok: false, error: error.message }); }
 });
 router.get('/network', async (req, res) => {

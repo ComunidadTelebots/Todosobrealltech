@@ -11,10 +11,10 @@ test('starts balance telemetry while resource requests are still pending', async
   const started = [];
   let release;
   const barrier = new Promise((resolve) => { release = resolve; });
-  const { cluster } = await setup(t, { overrides: { token: 'test', fetcher: async (url) => {
+  const { cluster } = await setup(t, { overrides: { token: 'test', adminKey: 'test-admin', fetcher: async (url) => {
     if (url.endsWith('/health')) return { ok: true, json: async () => ({ ok: true }) };
     started.push(new URL(url).pathname);
-    if (started.length === 3) release();
+    if (started.length === 6) release();
     await barrier;
     return { ok: true, json: async () => ({ ok: true, state: {}, stats: {} }) };
   } } });
@@ -22,7 +22,7 @@ test('starts balance telemetry while resource requests are still pending', async
   try {
     const pending = cluster.snapshot();
     await barrier;
-    assert.equal(started.length, 3, 'all independent telemetry requests must start before any completes');
+    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/status', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency'].sort(), 'all independent telemetry requests must start before any completes');
     await pending;
   } finally { clearTimeout(timeout); release(); }
 });
@@ -183,4 +183,14 @@ test('a restarted API blocks new operations when the prior job was unfinished', 
   await fs.writeFile(stateFile, JSON.stringify({ active: 'primary', events: [], job: { status: 'running' } }));
   const cluster = createMoonbotCluster({ nodes, stateFile, docker: async () => { throw new Error('must not mutate'); } });
   await assert.rejects(cluster.startJob({ action: 'pause-container', node: 'primary' }), /interrumpida/);
+});
+
+
+test('shared monitoring coalesces readers and invalidates after a switch', async t => {
+  const { cluster, calls } = await setup(t);
+  const rows = await Promise.all(Array.from({ length: 1000 }, () => cluster.sharedSnapshot()));
+  assert.ok(rows.every(row => row.active === 'primary'));
+  assert.equal(calls.filter(call => call.endsWith('/json')).length, 2);
+  await cluster.switchTo({ from: 'primary', to: 'backup', actor: 'creator' });
+  assert.equal((await cluster.sharedSnapshot()).active, 'backup');
 });

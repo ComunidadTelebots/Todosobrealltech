@@ -21,24 +21,29 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
   const [history, setHistory] = useState([]);
   const requestRunning = useRef(false);
   const mounted = useRef(true);
+  const retry = useRef({ failures: 0, nextAt: 0 });
   const load = useCallback(async () => {
     if (requestRunning.current) return;
     requestRunning.current = true;
     setLoading(true);
     try {
-      const response = await client.fetch('/moonbot-admin/cluster', { signal: AbortSignal.timeout(12000) });
+      const response = await client.fetch('/moonbot-admin/cluster', { signal: AbortSignal.timeout(40000) });
       const payload = await client.readJson(response);
       if (!response.ok || !payload.ok) throw new Error(payload.error || 'No se puede consultar el clúster');
       if (!mounted.current) return;
+      retry.current = { failures: 0, nextAt: 0 };
       setData(payload); setError('');
       if (payload.balancer) setHistory((previous) => [...previous.slice(-29), { time: payload.observedAt, sources: payload.balancer.processed_sources }]);
-    } catch (reason) { if (mounted.current) setError(reason.message); }
+    } catch (reason) {
+      retry.current.failures = Math.min(4, retry.current.failures + 1);
+      retry.current.nextAt = Date.now() + Math.min(60000, 5000 * 2 ** retry.current.failures) + Math.random() * 1000;
+      if (mounted.current) setError(reason.message); }
     finally { requestRunning.current = false; if (mounted.current) setLoading(false); }
   }, [client]);
   useEffect(() => {
     mounted.current = true;
     load();
-    const timer = window.setInterval(() => { if (!document.hidden) load(); }, 5000);
+    const timer = window.setInterval(() => { if (!document.hidden && Date.now() >= retry.current.nextAt) load(); }, 5000);
     return () => { mounted.current = false; window.clearInterval(timer); };
   }, [load]);
 
@@ -65,6 +70,7 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
     </header>
     <div className="flex flex-wrap gap-3 text-xs text-muted-foreground"><span className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${stale ? 'bg-amber-500' : data ? 'bg-emerald-500' : 'bg-slate-400'}`} />{stale ? 'Datos anteriores · controles bloqueados' : data ? 'Consulta automática cada 5 s' : 'Conectando con la API'}</span>{data && <time>Última lectura: {new Date(data.observedAt).toLocaleTimeString()}</time>}</div>
     {error && <p role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm">{error}</p>}
+    {data?.collection && <p className="text-xs text-muted-foreground">Lectura compartida durante {data.collection.ttlMs / 1000} s · {data.collection.loads} consultas al clúster · {data.collection.hits + data.collection.joined} lecturas reutilizadas en esta API</p>}
     {notice && <p role="status" className="rounded-xl border p-4 text-sm">{notice}</p>}
     {data && !data.configured && <div className="rounded-xl border border-dashed p-6"><h3 className="font-semibold">Todavía no hay contenedores configurados</h3><p className="mt-2 text-sm text-muted-foreground">Configura los nodos de Moonbot en la API para consultar su estado y habilitar la conmutación. Aquí aparecerán únicamente contenedores reales.</p></div>}
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[
