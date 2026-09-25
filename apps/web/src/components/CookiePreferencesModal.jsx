@@ -92,7 +92,7 @@ const CookiePreferencesModal = () => {
                 <Label htmlFor="analytics-toggle" className="text-base font-semibold cursor-pointer">Analíticas</Label>
               </div>
               <p className="text-sm text-muted-foreground">
-                Nos ayudan a entender cómo los visitantes interactúan con el sitio web, recogiendo y reportando información de forma anónima (Google Analytics).
+                Permiten medir el uso de la web con analítica propia y Google Analytics. El mapa propio agrupa vistas, idioma, dispositivo y ubicación aproximada, sin guardar la IP ni identificar visitantes.
               </p>
             </div>
             <Switch 

@@ -1,3 +1,4 @@
+import { createServiceLookup } from '../utils/moonbotHttp.js';
 import 'dotenv/config';
 import express from 'express';
 import crypto from 'crypto';
@@ -7,6 +8,7 @@ import logger from '../utils/logger.js';
 import { summarizeOnionMetrics } from '../utils/dashboardStats.js';
 
 const router = express.Router();
+const serviceLookup = createServiceLookup();
 
 const POCKETBASE_HOST = process.env.POCKETBASE_HOST || 'http://localhost:8090';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
@@ -35,6 +37,7 @@ async function authRefreshWithTimeout(token, timeoutMs) {
     const request = http.request(target, {
       method: 'POST',
       agent: false,
+      lookup: serviceLookup,
       headers: { Authorization: token, Connection: 'close', 'Content-Length': '0' },
     }, (response) => {
       let body = '';
