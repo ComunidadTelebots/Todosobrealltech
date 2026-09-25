@@ -57,6 +57,7 @@ export const AnalyticsProvider = ({ children }) => {
 
   const setAnalyticsEnabled = (enabled) => {
     localStorage.setItem('analytics_consent', enabled ? 'true' : 'false');
+    localStorage.setItem('analytics_consent_source', 'explicit');
     setAnalyticsEnabledState(enabled);
     initialize(enabled);
     window.dispatchEvent(new Event('analyticsConsentUpdate'));

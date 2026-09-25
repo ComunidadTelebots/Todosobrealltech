@@ -22,6 +22,7 @@ import moonbotAdminRouter from './moonbot-admin.js';
 import moonbotClusterRouter from './moonbot-cluster.js';
 import houseAdsRouter from './house-ads.js';
 import contentAnalyticsRouter from './content-analytics.js';
+import visitorAnalyticsRouter from './visitor-analytics.js';
 import { createEnvironmentRouter } from './moonbot-environments.js';
 import { createEnvironmentService, environmentConfig, environmentRepository } from '../utils/moonbotEnvironments.js';
 import pb from '../utils/pocketbaseClient.js';
@@ -69,6 +70,7 @@ export default () => {
     // "ads", incluso cuando son recomendaciones propias sin seguimiento externo.
     router.use('/community-cards', houseAdsRouter);
     router.use('/content-analytics', contentAnalyticsRouter);
+    router.use('/visitor-analytics', visitorAnalyticsRouter);
 
     return router;
 };

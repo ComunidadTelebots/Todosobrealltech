@@ -12,6 +12,8 @@ import { apiTraffic } from './utils/apiTraffic.js';
 
 
 const app = express();
+// Only explicitly configured proxy addresses may supply the visitor IP.
+if (process.env.TRUSTED_PROXY_CIDRS) app.set('trust proxy', process.env.TRUSTED_PROXY_CIDRS.split(',').map(value => value.trim()).filter(Boolean));
 
 process.on('uncaughtException', (error) => {
 	logger.error('Uncaught exception:', error);
