@@ -8,13 +8,15 @@ function Ranking({ title, rows, format = v => v }) {
   const max = Math.max(1, ...rows.map(r => r.value));
   return <section className="rounded-xl border bg-card p-5"><h3 className="mb-4 font-semibold">{title}</h3><ol className="space-y-3">{rows.slice(0, 12).map(r => <li key={r.label}><div className="mb-1 flex justify-between gap-3 text-sm"><span className="truncate">{format(r.label)}</span><b>{r.value.toLocaleString('es')}</b></div><div className="h-1.5 rounded bg-muted"><div className="h-full rounded bg-cyan-500" style={{ width: `${r.value / max * 100}%` }} /></div></li>)}</ol>{!rows.length && <p className="text-sm text-muted-foreground">Sin datos en este periodo.</p>}</section>;
 }
-export default function VisitorAnalyticsSection({ initialSource = 'web' }) {
+export default function VisitorAnalyticsSection({ initialSource = 'web', selectedRange, onRangeChange }) {
   const [source, setSource] = useState(initialSource);
   const telegram = source === 'telegram';
   const [origin, setOrigin] = useState('');
   const observations = telegram && Boolean(origin);
   const unit = observations ? 'observaciones de mensajes' : 'usuarios';
-  const [range, setRange] = useState('7d');
+  const [localRange, setLocalRange] = useState('7d');
+  const range = selectedRange ?? localRange;
+  const setRange = onRangeChange ?? setLocalRange;
   const [reload, setReload] = useState(0);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
