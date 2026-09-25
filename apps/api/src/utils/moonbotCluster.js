@@ -1,3 +1,4 @@
+import { sharedSnapshot } from './sharedSnapshot.js';
 import crypto from 'node:crypto';
 import { parseReleases, replaceStoppedContainer } from './moonbotUpdater.js';
 import http from 'node:http';
@@ -40,13 +41,14 @@ export function dockerRequest(container, action = 'json', method = 'GET') {
         try { resolve(body ? JSON.parse(body) : {}); } catch { reject(failure('Respuesta Docker inválida', 502)); }
       });
     });
-    req.setTimeout(25000, () => req.destroy(failure('Docker no responde', 504)));
+    req.setTimeout(method === 'GET' ? 2000 : action.startsWith('stop?') ? 45000 : 25000, () => req.destroy(failure('Docker no responde', 504)));
     req.on('error', () => reject(failure('No se puede conectar con Docker', 503)));
     req.end();
   });
 }
 
 export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = fetch, stateFile, token = '', wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), attempts = 15, adminKey = '', releases = [], replaceContainer = replaceStoppedContainer }) {
+  const monitor = sharedSnapshot(snapshot);
   let busy = false;
   let state = null;
   let interrupted = false;
@@ -62,6 +64,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     await fs.writeFile(`${stateFile}.tmp`, JSON.stringify(next), { mode: 0o600 });
     await fs.rename(`${stateFile}.tmp`, stateFile);
     state = next;
+    monitor.invalidate();
   }
   async function event(status, from, to, actor) {
     const previous = await read();
@@ -97,8 +100,8 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     const saved = await read();
     const rows = await Promise.all(nodes.map(async (node) => {
       try {
-        const current = await inspect(node);
-        const healthy = current.running && await health(node);
+        const [current, live] = await Promise.all([inspect(node), health(node)]);
+        const healthy = current.running && live;
         return { id: node.id, container: node.container, ...current, healthy };
       } catch (error) { return { id: node.id, container: node.container, status: 'unavailable', healthy: false, error: error.message }; }
     }));
@@ -137,14 +140,13 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
       } catch { balancerError = 'Moonbot no devuelve telemetría válida del balanceador.'; }
     }
     })();
-    await Promise.all([telemetryTask, balancerTask]);
-    const traffic = await Promise.all(rows.filter(row => row.running).map(async row => {
+    const trafficTask = Promise.all(rows.filter(row => row.running).map(async row => {
       try { return { node: row.id, ...await botRequest(row.id) }; }
       catch { return { node: row.id, ok: false, error: 'Control por bot no disponible; comprueba versión, clave y MOON_NODE_ID' }; }
     }));
-    const workers = await Promise.all(rows.map(async row => {
+    const workersTask = Promise.all(rows.map(async row => {
       if (!row.running) return { node: row.id, operations: null };
-      if (row.id === active) return { node: row.id, operations, error: operations ? null : 'Telemetría no disponible' };
+      if (row.id === active) { await telemetryTask; return { node: row.id, operations, error: operations ? null : 'Telemetría no disponible' }; }
       try {
         if (!token) throw new Error();
         const node = nodes.find(item => item.id === row.id);
@@ -153,7 +155,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         return { node: row.id, operations: projectOperations(await response.json()) };
       } catch { return { node: row.id, operations: null, error: 'Telemetría no disponible' }; }
     }));
-    const peerLatency = await Promise.all(rows.filter(row => row.running).map(async row => {
+    const peerLatencyTask = Promise.all(rows.filter(row => row.running).map(async row => {
       try {
         const node = nodes.find(item => item.id === row.id);
         if (!adminKey) throw new Error();
@@ -166,7 +168,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
             at: typeof item.at === 'number' && Number.isFinite(item.at) ? item.at : null })) };
       } catch { return { source: row.id, error: 'Medición entre nodos no disponible', rows: [] }; }
     }));
-    const tdlib = await Promise.all(rows.filter(row => row.running).map(async row => {
+    const tdlibTask = Promise.all(rows.filter(row => row.running).map(async row => {
       try {
         if (!token) throw new Error();
         const node = nodes.find(item => item.id === row.id);
@@ -175,6 +177,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         return { node: row.id, ...projectTdlibMigration(await response.json()) };
       } catch { return { node: row.id, error: 'Estado TDLib no disponible; comprueba versión y conexión.' }; }
     }));
+    const [traffic, workers, peerLatency, tdlib] = await Promise.all([trafficTask, workersTask, peerLatencyTask, tdlibTask, telemetryTask, balancerTask]);
     return { tdlib, workers, peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
       ok: true, configured: nodes.length > 0, active, busy, nodes: rows, balancer, balancerError, operations, resources, telemetryErrors,
       api: apiTraffic.snapshot(), events: saved.events, observedAt: new Date().toISOString() };
@@ -185,7 +188,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     const source = nodes.find((node) => node.id === from);
     const target = nodes.find((node) => node.id === to);
     if (!source || !target || source === target) throw failure('Selecciona dos nodos configurados diferentes', 400);
-    busy = true;
+    busy = true; monitor.invalidate();
     let targetAttempted = false;
     let sourceStopped = false;
     try {
@@ -223,7 +226,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
       }
       await event(status, from, to, actor);
       throw failure(`${error.message}. ${status === 'rolled_back' ? 'Se ha restaurado el origen.' : status === 'recovery_required' ? 'Es necesaria recuperación manual; revisa ambos contenedores.' : 'Revisa el estado antes de reintentar.'}`, error.status || 502);
-    } finally { busy = false; }
+    } finally { busy = false; monitor.invalidate(); }
   }
   async function botRequest(id, body) {
     const node = nodes.find(row => row.id === id);
@@ -268,9 +271,9 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     if (input.action === 'update' && !release) throw failure('Versión no autorizada', 400);
     const job = { id: crypto.randomUUID(), status: 'running', step: 'checking', action: input.action,
       node: source.id, actor: input.actor, at: new Date().toISOString() };
-    busy = true;
+    busy = true; monitor.invalidate();
     try { await save({ ...await read(), job }); }
-    catch (error) { busy = false; throw error; }
+    catch (error) { busy = false; monitor.invalidate(); throw error; }
     const phase = async (step, details = {}) => { Object.assign(job, { step, ...details }); await save({ ...await read(), job: { ...job } }); };
     const run = async () => {
       try {
@@ -330,13 +333,13 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
           await save({ ...await read(), job: { ...job, finishedAt: new Date().toISOString() } });
           await event(job.status === 'completed' ? 'operation_completed' : 'operation_failed', source.id, input.to || source.id, input.actor);
         } catch { interrupted = true; }
-        busy = false;
+        busy = false; monitor.invalidate();
       }
     };
-    setTimeout(() => { run().catch(() => { interrupted = true; busy = false; }); }, 0);
+    setTimeout(() => { run().catch(() => { interrupted = true; busy = false; monitor.invalidate(); }); }, 0);
     return { ok: true, job: { ...job } };
   }
-  return { snapshot, switchTo, activeUrl, startJob };
+  return { snapshot, sharedSnapshot: async () => ({ ...await monitor.read(), collection: monitor.stats() }), switchTo, activeUrl, startJob };
 
 }
 
