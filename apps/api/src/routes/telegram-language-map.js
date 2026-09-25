@@ -6,7 +6,7 @@ const router = express.Router();
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();
 
-export async function requestLanguageMap(fetchImpl = fetch, origin = '') {
+export async function requestLanguageMap(fetchImpl, origin = '') {
   if (origin && !['private', 'group', 'channel'].includes(origin)) throw new Error('Origen no válido');
   const endpoint = '/api/public/stats/language-map' + (origin ? `?origin=${origin}` : '');
   const bases = [...new Set([MOONBOT_INTERNAL_URL, MOONBOT_PUBLIC_URL].filter(Boolean))];
@@ -17,7 +17,7 @@ export async function requestLanguageMap(fetchImpl = fetch, origin = '') {
         ? await requestMoonbot(endpoint, {
           fetchImpl, timeoutMs: 6000, headers: { Accept: 'application/json' },
         })
-        : await fetchImpl(`${base}${endpoint}`, {
+        : await (fetchImpl || fetch)(`${base}${endpoint}`, {
           signal: AbortSignal.timeout(12000), headers: { Accept: 'application/json' },
         });
       if (!response.ok) throw new Error(`Moonbot HTTP ${response.status}`);
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
   const cached = cache.get(origin);
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) return res.json(cached.payload);
   try {
-    const payload = await requestLanguageMap(fetch, origin);
+    const payload = await requestLanguageMap(undefined, origin);
     if (origin && payload.metric !== 'message_observations') throw new Error('Actualiza Moonbot para consultar el origen');
     cache.set(origin, { payload, at: Date.now() });
     return res.json(payload);
