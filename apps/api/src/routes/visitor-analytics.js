@@ -5,7 +5,10 @@ import pb from '../utils/pocketbaseClient.js';
 import { authorizeAdminOrCreator } from './stats.js';
 import { visitorEvent, aggregateVisitors } from '../utils/visitorAnalytics.js';
 
+import { sharedSnapshot } from '../utils/sharedSnapshot.js';
+
 const router = Router();
+const reports = new Map();
 const ranges = { '24h': 1, '7d': 7, '30d': 30, '90d': 90 };
 router.post('/pageview', rateLimit({ windowMs: 60000, limit: 60, standardHeaders: 'draft-7', legacyHeaders: false }), async (req, res) => {
   if (req.get('DNT') === '1' || req.get('Sec-GPC') === '1') return res.sendStatus(204);
@@ -26,10 +29,13 @@ router.get('/', async (req, res) => {
   res.set('Cache-Control', 'private, no-store');
   const range = Object.hasOwn(ranges, req.query.range) ? req.query.range : '7d';
   const source = req.query.source === 'hub' ? 'hub' : 'web';
-  const since = new Date(Date.now() - ranges[range] * 86400000).toISOString();
-  try {
+  // Eight fixed combinations, cached only after per-request authorization.
+  const key = `${source}:${range}`;
+  if (!reports.has(key)) reports.set(key, sharedSnapshot(async () => {
+  const now = Date.now();
+  const since = new Date(now - ranges[range] * 86400000).toISOString();
     const options = {
-      filter: pb.filter('source = {:source} && created >= {:since} && created <= {:until}', { source, since, until: new Date().toISOString() }), sort: '-created,-id',
+      filter: pb.filter('source = {:source} && created >= {:since} && created <= {:until}', { source, since, until: new Date(now).toISOString() }), sort: '-created,-id',
       fields: 'created,page,language,country,city,mapped,lat,lon,device', requestKey: null,
     };
     const result = await pb.collection('web_pageviews').getList(1, 500, options);
@@ -37,8 +43,10 @@ router.get('/', async (req, res) => {
     for (let page = 2; page <= Math.min(result.totalPages, 20); page++) {
       items.push(...(await pb.collection('web_pageviews').getList(page, 500, options)).items);
     }
-    return res.json({ ok: true, source, range, timezone: 'UTC', totalRecorded: result.totalItems,
-      truncated: result.totalItems > items.length, ...aggregateVisitors(items) });
+    return { ok: true, source, range, timezone: 'UTC', totalRecorded: result.totalItems,
+      truncated: result.totalItems > items.length, ...aggregateVisitors(items, now), collectedAt: new Date(now).toISOString() };
+  }, { ttlMs: 5000 }));
+  try { return res.json(await reports.get(key).read());
   } catch { return res.status(503).json({ error: 'No se puede consultar la analítica. Comprueba la migración de PocketBase.' }); }
 });
 export default router;

@@ -11,7 +11,7 @@ export const usePageTracking = () => {
     if (analyticsEnabled) {
       // Small timeout ensures react-helmet-async has applied the new document.title
       const timeoutId = setTimeout(() => {
-        if (navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl) {
+        if (localStorage.getItem('analytics_consent') === 'true' && localStorage.getItem('analytics_consent_source') !== 'regional_default' && navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl) {
           window.fetch('/hcgi/api/visitor-analytics/pageview', {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
             body: JSON.stringify({ consent: true, event_id: crypto.randomUUID(),

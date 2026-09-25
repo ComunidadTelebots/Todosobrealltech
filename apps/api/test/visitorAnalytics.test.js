@@ -24,3 +24,15 @@ test('map groups views by location while retaining language counts', () => {
   assert.deepEqual(result.points[0].languages, { es: 2, en: 1 });
   assert.equal(result.daily[0].value, 3);
 });
+
+test('hourly windows and recent views use actual recorded timestamps, not unique users', () => {
+  const now = Date.parse('2026-09-25T12:30:00Z');
+  const base = { country: 'UNK', language: 'es', page: '/', device: 'mobile', mapped: false };
+  const result = aggregateVisitors(['2026-09-25 12:28:00Z', '2026-09-25 11:59:00Z', '2026-09-24 12:29:00Z'].map(created => ({ ...base, created })), now);
+  assert.equal(result.recentViews, 1);
+  assert.equal(result.hourly.length, 24);
+  assert.equal(result.hourly.at(-1).value, 1);
+  assert.equal(result.hourly.at(-2).value, 1);
+  assert.equal(result.hourly.reduce((n, row) => n + row.value, 0), 2);
+  assert.equal(result.lastRecordedAt, '2026-09-25T12:28:00.000Z');
+});

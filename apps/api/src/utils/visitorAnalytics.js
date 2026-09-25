@@ -18,12 +18,22 @@ export function visitorEvent(body, address, lookup) {
     lat: coords ? Math.round(geo.ll[0]) : 0, lon: coords ? Math.round(geo.ll[1]) : 0,
     device: ['desktop', 'mobile', 'tablet'].includes(body.device) ? body.device : 'unknown' };
 }
-export function aggregateVisitors(events) {
+export function aggregateVisitors(events, now = Date.now()) {
+  const endHour = Math.floor(now / 3600000) * 3600000;
+  const hourly = Array.from({ length: 24 }, (_, i) => ({ at: new Date(endHour - (23 - i) * 3600000).toISOString(), value: 0 }));
+  let recentViews = 0, lastRecordedAt = null;
   const groups = Object.fromEntries(['countries', 'languages', 'cities', 'pages', 'devices', 'daily'].map(k => [k, new Map()]));
   const points = new Map();
   let mapped = 0;
   const add = (map, key) => map.set(key, (map.get(key) || 0) + 1);
   for (const e of events) {
+    const at = Date.parse(e.created.replace(' ', 'T'));
+    if (Number.isFinite(at) && at <= now) {
+      const index = Math.floor((at - (endHour - 23 * 3600000)) / 3600000);
+      if (index >= 0 && index < 24) hourly[index].value++;
+      if (at > now - 300000) recentViews++;
+      if (lastRecordedAt === null || at > Date.parse(lastRecordedAt)) lastRecordedAt = new Date(at).toISOString();
+    }
     add(groups.countries, e.country); add(groups.languages, e.language); add(groups.pages, e.page);
     add(groups.devices, e.device); add(groups.daily, e.created.slice(0, 10));
     add(groups.cities, e.city ? `${e.city}, ${e.country}` : 'Ciudad desconocida');
@@ -34,7 +44,7 @@ export function aggregateVisitors(events) {
       point.views++; point.languages[e.language] = (point.languages[e.language] || 0) + 1; points.set(key, point);
     }
   }
-  return { views: events.length, mapped, unmapped: events.length - mapped,
+  return { hourly, recentViews, lastRecordedAt, views: events.length, mapped, unmapped: events.length - mapped,
     points: [...points.values()], ...Object.fromEntries(Object.entries(groups).map(([k, v]) => [k,
       [...v].map(([label, value]) => ({ label, value })).sort((a, b) => k === 'daily' ? a.label.localeCompare(b.label) : b.value - a.value)])) };
 }
