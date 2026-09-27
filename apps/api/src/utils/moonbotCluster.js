@@ -189,8 +189,18 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         return { node: row.id, names: body.ok === true && Array.isArray(body.bots) ? [...new Set(body.bots.map(bot => bot.username).filter(name => typeof name === 'string' && /^@?[a-zA-Z0-9_]{5,32}$/.test(name)).map(name => '@' + name.replace(/^@/, '')))].slice(0, 200) : [] };
       } catch { return { node: row.id, names: [] }; }
     }));
-    const [traffic, workers, peerLatency, tdlib, botNames] = await Promise.all([trafficTask, workersTask, peerLatencyTask, tdlibTask, botNamesTask, telemetryTask, balancerTask]);
-    return { botNames, tdlib, workers, peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
+    const governorsTask = Promise.all(rows.map(async row => {
+      if (!row.running || !adminKey) return { node: row.id, installed: false };
+      try {
+        const node = nodes.find(item => item.id === row.id);
+        const response = await fetcher(`${node.url}/api/internal/governor`, { headers: { 'X-Moon-Admin-Key': adminKey }, signal: AbortSignal.timeout(3000), redirect: 'error' });
+        const body = await response.json();
+        if (!response.ok || body.ok !== true) throw new Error();
+        return { node: row.id, installed: true, enabled: body.enabled === true, scope: body.scope === 'single_process' ? body.scope : 'unknown', workers: Array.isArray(body.workers) ? body.workers.length : null };
+      } catch { return { node: row.id, installed: false }; }
+    }));
+    const [traffic, workers, peerLatency, tdlib, botNames, governors] = await Promise.all([trafficTask, workersTask, peerLatencyTask, tdlibTask, botNamesTask, governorsTask, telemetryTask, balancerTask]);
+    return { governors, botNames, tdlib, workers, peerLatency, paused: saved.paused === true, job: saved.job || null, interrupted, releases, traffic,
       ok: true, configured: nodes.length > 0, active, busy, nodes: rows, balancer, balancerError, operations, resources, telemetryErrors,
       api: apiTraffic.snapshot(), events: saved.events, observedAt: new Date().toISOString() };
   }
