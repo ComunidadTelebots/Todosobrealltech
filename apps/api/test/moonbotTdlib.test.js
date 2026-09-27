@@ -28,3 +28,19 @@ test('gateway and inbox expose only aggregate counters', () => {
   assert.deepEqual(projectTdlibMigration({ ok: true, schema: 1, bots: [],
     inbox: { enabled: true, error: 'secret' } }).inbox, { enabled: true, error: 'Cola no disponible' });
 });
+
+test('migration problems are allowlisted and direct HTTP audit stays aggregate', () => {
+  const result = projectTdlibMigration({ ok: true, schema: 1,
+    audit: { direct_http_calls: 2, direct_http: [{ token: 'secret' }] },
+    bots: [
+      { id: '112233445566', incoming: 'unknown', issue: 'invalid_gateway_configuration' },
+      { id: 'aabbccddeeff', issue: 'session_status_unavailable' },
+      { id: 'ffeeddccbbaa', issue: 'secret' },
+    ] });
+  assert.equal(result.audit.direct_http_calls, 2);
+  assert.equal(result.bots[0].incoming, 'unknown');
+  assert.equal(result.bots[0].issue, 'invalid_gateway_configuration');
+  assert.equal(result.bots[1].issue, 'session_status_unavailable');
+  assert.equal(result.bots[2].issue, null);
+  assert.ok(!JSON.stringify(result).includes('secret'));
+});
