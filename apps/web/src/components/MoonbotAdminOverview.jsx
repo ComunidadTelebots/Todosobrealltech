@@ -27,6 +27,8 @@ const MoonbotFeatureCenter = lazy(() => import('@/components/MoonbotFeatureCente
 
 const MoonbotMessageRanking = lazy(() => import('@/components/MoonbotMessageRanking.jsx'));
 
+const MoonbotBotExplorer = lazy(() => import('@/components/MoonbotBotExplorer.jsx'));
+
 const MASTER_SECTIONS = [
   ['Ranking de mensajes', 'moon-message-ranking'],
   ['Experiencia y preferencias', 'moon-experience'],
@@ -66,6 +68,7 @@ const uptimeLabel = (seconds = 0) => {
 
 const MoonbotAdminOverview = () => {
   const [data, setData] = useState(null);
+  const [explorerBot, setExplorerBot] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState(() => {
@@ -174,12 +177,13 @@ const MoonbotAdminOverview = () => {
           <div className="grid gap-4 lg:grid-cols-3">
             <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Recursos del servidor</h3><div className="space-y-2 text-sm"><p className="flex justify-between"><span className="flex gap-2"><Cpu className="h-4 w-4" />CPU</span><b>{resources.cpu ?? 'â€”'}%</b></p><p className="flex justify-between"><span className="flex gap-2"><MemoryStick className="h-4 w-4" />RAM</span><b>{resources.ram ?? 'â€”'}%</b></p><p className="flex justify-between"><span className="flex gap-2"><HardDrive className="h-4 w-4" />Disco</span><b>{resources.disk ?? 'â€”'}%</b></p></div></section>
             <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Servicios</h3><div className="space-y-2">{data.services?.map((service) => <div key={service.name} className="flex items-center justify-between text-sm"><span className="flex gap-2"><Database className="h-4 w-4" />{service.name}</span><Badge variant={service.status === 'online' ? 'default' : 'secondary'}>{service.status}</Badge></div>)}</div></section>
-            <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Rendimiento por bot</h3><div className="space-y-3">{data.instances?.map((bot) => <div key={`${bot.id}-${bot.username}`} className="rounded-lg border bg-muted/20 p-3 text-sm"><div className="flex items-start justify-between gap-2"><span><b className="block">{bot.name || bot.username}</b><small className="text-muted-foreground">@{bot.username}</small></span><Badge variant={bot.status === 'online' ? 'default' : 'destructive'}>{bot.status}</Badge></div><div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted-foreground"><span>{bot.groups} grupos totales</span><span>{bot.exclusive_groups ?? 0} exclusivos</span><span>{bot.shared_groups ?? 0} compartidos</span><span>{bot.updates_processed ?? 0} eventos</span><span>{bot.latency_ms == null ? 'latencia —' : `${bot.latency_ms} ms`}</span><span>{bot.api_errors ?? 0} errores API</span><span>Activo {uptimeLabel(bot.uptime_seconds)}</span><span>{bot.poll_failures ? `${bot.poll_failures} fallos polling` : 'polling correcto'}</span></div></div>)}{!data.instances?.length && <p className="text-sm text-muted-foreground">No hay instancias conectadas.</p>}</div></section>
+            <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Rendimiento por bot</h3><div className="space-y-3">{data.instances?.map((bot) => <div key={`${bot.id}-${bot.username}`} className="rounded-lg border bg-muted/20 p-3 text-sm"><div className="flex items-start justify-between gap-2"><span>{isMaster && <Button size="sm" variant="outline" onClick={() => {setExplorerBot(bot.username); window.setTimeout(() => document.getElementById('moon-bot-explorer')?.scrollIntoView({block:'start'}), 0);}}>Ver información y chats</Button>}<b className="block">{bot.name || bot.username}</b><small className="text-muted-foreground">@{bot.username}</small></span><Badge variant={bot.status === 'online' ? 'default' : 'destructive'}>{bot.status}</Badge></div><div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted-foreground"><span>{bot.groups} grupos totales</span><span>{bot.exclusive_groups ?? 0} exclusivos</span><span>{bot.shared_groups ?? 0} compartidos</span><span>{bot.updates_processed ?? 0} eventos</span><span>{bot.latency_ms == null ? 'latencia —' : `${bot.latency_ms} ms`}</span><span>{bot.api_errors ?? 0} errores API</span><span>Activo {uptimeLabel(bot.uptime_seconds)}</span><span>{bot.poll_failures ? `${bot.poll_failures} fallos polling` : 'polling correcto'}</span></div></div>)}{!data.instances?.length && <p className="text-sm text-muted-foreground">No hay instancias conectadas.</p>}</div></section>
           </div>
           <section className="rounded-xl border p-4"><h3 className="mb-3 font-semibold">Actividad administrativa reciente</h3><div className="space-y-3">{data.timeline?.slice(0, 8).map((item, index) => <div key={`${item.time}-${index}`} className="flex gap-3 text-sm"><span className="min-w-36 text-muted-foreground">{item.time}</span><span>{item.action}</span></div>)}{!data.timeline?.length && <p className="text-sm text-muted-foreground">TodavÃ­a no hay actividad registrada.</p>}</div></section>
         </>}
       </CardContent>
     </Card>
+    {isMaster && explorerBot !== null && <div id="moon-bot-explorer" className="scroll-mt-24"><Button variant="ghost" onClick={() => setExplorerBot(null)}>Cerrar ficha del bot</Button><Suspense fallback={<p>Cargando ficha…</p>}><MoonbotBotExplorer initialUsername={explorerBot} performance={data?.instances || []} /></Suspense></div>}
     {activePanel && <section id="moon-active-panel" className="scroll-mt-24"><div className="mt-6 flex items-center justify-between rounded-xl border bg-background p-3"><Button variant="ghost" onClick={() => setActiveSection('')}><ArrowLeft className="mr-2 h-4 w-4" />Volver al índice</Button><Badge variant="secondary">{activeLabel}</Badge></div><Suspense fallback={<div className="mt-4 h-40 animate-pulse rounded-2xl border bg-muted/20" />}>{activePanel}</Suspense></section>}
     </>
   );
