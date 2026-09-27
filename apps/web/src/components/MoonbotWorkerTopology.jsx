@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Send, Radio, Database, Cpu, GitBranch } from 'lucide-react';
 
 const count = value => value == null ? '—' : Number(value).toLocaleString('es-ES');
+function FlowLink({ activity, running, color = '#06b6d4' }) {
+  return <svg className="w-7 shrink-0 self-center" height="48" viewBox="0 0 28 48" aria-hidden="true"><path d="M0 24H28" stroke={color} strokeWidth="2" opacity="0.35" /><path d="M23 20L27 24L23 28" fill="none" stroke={color} />{running && activity > 0 && [0, 1].map(i => <circle key={i} r="2.5" fill={color}><animateMotion path="M0 24H28" dur={`${Math.max(0.7, 4 / (1 + Math.log10(1 + activity)))}s`} begin={`${-i * 1.2}s`} repeatCount="indefinite" /></circle>)}</svg>;
+}
+
 export default function MoonbotWorkerTopology({ data, running }) {
+  const [selected, setSelected] = useState(null);
   const nodes = data?.nodes || [];
   const workers = nodes.map((node, index) => {
     const operations = data?.workers?.find(row => row.node === node.id)?.operations ?? (node.id === data?.active ? data?.operations : null);
@@ -22,27 +28,25 @@ export default function MoonbotWorkerTopology({ data, running }) {
   const workerName = id => { const worker = workers.find(row => row.id === id); return worker ? `Worker ${worker.number}` : id; };
   return <section className="my-5 space-y-4 rounded-2xl border bg-background p-4" aria-label="Mapa de workers Docker y sus bots">
     <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-widest text-violet-600">Moonbot · capacidad distribuida</p><h4 className="mt-1 text-xl font-semibold">Telegram → gobernador → workers por bot</h4></div><span className="rounded-full bg-muted px-3 py-2 text-sm">{live.length} Docker en ejecución · {nodes.length - live.length} detenidos o sin conexión</span></div>
-    <p className="text-sm text-muted-foreground">Arquitectura por capas. Las tarjetas continuas muestran servicios observados; los bloques discontinuos muestran la integración pendiente. Los porcentajes y puntos animados corresponden al tráfico medido.</p>
-    <div className="grid gap-4 lg:grid-cols-[1fr_2fr]">
-      <aside className={`rounded-2xl border-2 p-4 ${enabled ? "border-emerald-500/40 bg-emerald-500/5" : "border-dashed border-amber-500/50 bg-amber-500/5"}`} aria-label="Estado del gobernador">
-        <p className="text-xs font-semibold uppercase tracking-widest text-amber-700">Plano de control</p>
-        <h5 className="mt-2 text-lg font-bold">Gobernador de bots y workers</h5>
-        <span className="my-3 inline-block rounded-full border border-amber-500/40 px-2 py-1 text-xs">{enabled ? 'Activo · cola persistente por bot' : installed ? 'Instalado en el servidor · desactivado' : 'Integración PR #21 · instalación sin confirmar'}</span>
-        <div className="my-3 space-y-2 rounded-xl border bg-background p-3"><b>Bot principal · gestor de bots</b><p className="text-xs text-muted-foreground">Crea y administra sus bots de respaldo mediante Telegram.</p><p aria-hidden="true" className="text-center">↓</p><b>Bots de respaldo · hijos del principal</b><p className="text-xs text-muted-foreground">Cada hijo tiene su identidad y token. Sus workers procesan las tareas asignadas.</p><p aria-hidden="true" className="text-center">↓</p><b>Receptor → cola → workers de cada bot</b><p className="text-xs text-amber-700">Relaciones principal–hijo: inventario aún no conectado al diagrama.</p></div>
-        <ul className="mt-3 space-y-2 text-sm"><li>Un ejecutor ordenado por bot en la primera integración.</li><li>Supervisión de colas, pendientes y resultados inciertos.</li><li>Tokens protegidos en el servidor; nunca en el diagrama.</li></ul>
-        <div className="mt-4 rounded-xl border border-dashed p-3 text-sm"><b>Supervisor de reserva</b><p className="text-muted-foreground">Por desarrollar: elección y relevo entre Docker.</p></div>
-        <p className="mt-3 text-xs text-muted-foreground">Bots de respaldo = bots hijos creados por el principal. Workers = ejecutores de trabajo. El supervisor de reserva es otro componente; no es un bot hijo. La asignación automática de hijos y workers sigue pendiente.</p>
-      </aside>
-      <div className="space-y-3" aria-label="Recorrido de los mensajes">
-        <div className="rounded-2xl border border-cyan-500/40 bg-cyan-500/10 p-4"><p className="text-xs font-semibold uppercase tracking-widest">01 · Telegram</p><h5 className="mt-1 text-lg font-bold">Bot API / transporte TDLib</h5><p className="text-sm text-muted-foreground">{(data?.tdlib || []).some(node => node.bots?.some(bot => bot.incoming === 'local_bot_api_tdlib')) ? 'Hay bots configurados con la pasarela local basada en TDLib.' : 'Sin pasarela TDLib activa confirmada por la telemetría.'} Cada bot mantiene su identidad y conexión.</p></div>
-        <div className="text-center text-cyan-600" aria-hidden="true">↓</div>
-        <div className="rounded-2xl border p-4"><p className="text-xs font-semibold uppercase tracking-widest">02 · Recepción por token</p><h5 className="mt-1 text-lg font-bold">Receptores de cada bot</h5><p className="text-sm text-muted-foreground">Hoy residen dentro de los Docker de abajo. Reciben actualizaciones de Telegram; no son bots nuevos ni receptores duplicados para el mismo token.</p><p className="mt-2 text-sm">{workers.reduce((sum, worker) => sum + worker.bots.length, 0)} bots observados · {live.length} Docker en ejecución</p></div>
-        <div className="text-center text-amber-600" aria-hidden="true">{enabled ? '↓ · recepción persistente activa' : '↓ · integración pendiente'}</div>
-        <div className={`rounded-2xl border-2 p-4 ${enabled ? "border-emerald-500/40 bg-emerald-500/5" : "border-dashed border-amber-500/40 bg-amber-500/5"}`}><p className="text-xs font-semibold uppercase tracking-widest">03 · Cola persistente por bot</p><h5 className="mt-1 text-lg font-bold">Guardar → asignar → procesar → confirmar</h5><p className="text-sm text-muted-foreground">Conserva el orden y evita repetir entregas; las operaciones inciertas requieren revisión. Su activación se controla por nodo; instalar el código no activa el procesamiento.</p><p className="mt-2 text-xs">{enabled ? `${queues.length} ejecutores · Pendientes: ${queueTotal('pending')} · En proceso: ${queueTotal('running')} · Completados: ${queueTotal('done')} · Inciertos: ${queueTotal('uncertain')}` : 'Pendientes: sin medición · En proceso: sin medición'}</p></div>
-        <div className="text-center text-amber-600" aria-hidden="true">{enabled ? '↓ · asignación al ejecutor del bot' : '↓ · conexión pendiente'}</div>
-      </div>
+    <div className="rounded-2xl border bg-muted/20 p-3" aria-label="Diagrama compacto de Moonbot">
+      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border bg-background px-3 py-2 text-xs"><GitBranch className="h-4 w-4 text-violet-500" /><b>Gobernador</b><span className={enabled ? 'text-emerald-600' : 'text-amber-600'}>{enabled ? 'Activo' : installed ? 'Instalado · desactivado' : 'Sin confirmar'}</span><span className="text-muted-foreground">· {queues.length} ejecutores registrados</span><span className="ml-auto rounded-full border border-dashed px-2 py-1">Bots gestores → hijos: vínculo pendiente</span><span className="rounded-full border border-dashed px-2 py-1">Supervisor de reserva: pendiente</span></div>
+      <div className="overflow-x-auto pb-1"><div className="flex min-w-[720px] items-stretch" aria-label="Recorrido de los mensajes">
+        {[
+          { id: 'telegram', title: 'Telegram', Icon: Send, color: 'text-cyan-600', value: `${complete ? count(total) : '—'} peticiones / 60 s`, items: ['Bot API', (data?.tdlib || []).some(node => node.bots?.some(bot => bot.incoming === 'local_bot_api_tdlib')) ? 'Pasarela TDLib configurada' : 'TDLib sin conexión confirmada'], detail: 'Conexiones de los bots con Telegram. Las peticiones incluyen consultas de recepción y reintentos; los puntos representan actividad agregada, no mensajes individuales.' },
+          { id: 'receivers', title: 'Receptores', Icon: Radio, color: 'text-cyan-600', value: `${workers.reduce((sum, worker) => sum + worker.bots.length, 0)} bots observados`, items: workers.flatMap(worker => worker.names), detail: 'Un receptor por token dentro de su Docker. Recibe actualizaciones y las guarda antes de avanzar el checkpoint. Los tokens permanecen protegidos en el servidor.' },
+          { id: 'queues', title: 'Colas persistentes', Icon: Database, color: 'text-emerald-600', value: enabled ? `${queueTotal('pending')} pendientes · ${queueTotal('running')} en proceso` : 'Desactivadas / sin confirmar', items: enabled ? [`${queueTotal('done')} completados`, `${queueTotal('uncertain')} inciertos`] : ['Activación por nodo'], detail: 'Una cola por bot guarda las actualizaciones, conserva el orden y deduplica entregas. Los trabajos inciertos requieren revisión antes de continuar.' },
+          { id: 'plugins', title: 'Workers de plugins', Icon: Cpu, color: 'text-violet-600', value: `${queues.filter(queue => queue.running).length} ejecutores activos`, items: workers.map(worker => `${worker.container} · ${worker.bots.length} bots`), detail: 'Cada bot tiene un ejecutor ordenado para sus plugins. Los Docker contienen estos procesos. Los bots hijos son identidades creadas por el bot principal, no workers; su relación parental aún no está conectada a este inventario.' },
+        ].map((part, index) => <React.Fragment key={part.id}>
+          {index > 0 && <FlowLink activity={index === 1 ? (complete ? total : 0) : index === 2 ? live.reduce((n, worker) => n + (worker.operations?.last60s?.updates || 0), 0) : queueTotal('running')} running={running && (index === 1 || enabled)} color={index === 3 ? '#8b5cf6' : '#06b6d4'} />}
+          <button type="button" className={`min-w-0 flex-1 rounded-xl border bg-background p-3 text-left transition-colors hover:bg-muted/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-500 ${selected === part.id ? 'border-cyan-500' : ''}`} onClick={() => setSelected(selected === part.id ? null : part.id)} aria-expanded={selected === part.id} aria-label={`Ver componente ${part.title}`}>
+            <div className="flex items-center gap-2"><part.Icon className={`h-4 w-4 shrink-0 ${part.color}`} /><h5 className="text-sm font-semibold">{part.title}</h5></div><p className="mt-3 text-sm font-semibold tabular-nums">{part.value}</p><div className="mt-2 space-y-1">{part.items.slice(0, 4).map(item => <p key={item} className="break-words text-xs text-muted-foreground">{item}</p>)}{part.items.length > 4 && <p className="text-xs">+{part.items.length - 4} más en el detalle</p>}</div>
+            {selected === part.id && <p className="mt-3 border-t pt-2 text-xs leading-relaxed text-muted-foreground">{part.detail}</p>}
+          </button>
+        </React.Fragment>)}
+      </div></div>
+      <p className="mt-2 text-xs text-muted-foreground">Pulsa un componente para ver su función. Puntos = actividad medida; su velocidad no indica saturación. Sin actividad o datos recientes, se detienen.</p>
     </div>
-    <div className="border-t pt-4"><p className="text-xs font-semibold uppercase tracking-widest text-violet-600">04 · Procesamiento y respuesta</p><h5 className="mt-1 text-lg font-bold">Docker actuales · bots y ejecución de plugins</h5><p className="text-sm text-muted-foreground">{enabled ? 'La recepción guarda las actualizaciones en la cola y cada bot tiene un ejecutor de plugins ordenado.' : 'Cada bot recibe y procesa en su bucle hasta activar su cola.'} Un Docker puede contener varios bots; no equivale a un worker de plugins.</p></div>
+    <details className="rounded-xl border p-3"><summary className="cursor-pointer text-sm font-semibold">Ver estadísticas por Docker y bot</summary>
     {!workers.length && <p className="text-sm">Todavía no hay Docker configurados.</p>}
     <div className="grid gap-4 border-t border-cyan-500/30 pt-5 lg:grid-cols-2 xl:grid-cols-3">{workers.map(worker => {
       const primary = worker.id === data.active;
@@ -67,5 +71,6 @@ export default function MoonbotWorkerTopology({ data, running }) {
     })}</div>
     <div className="rounded-xl border border-dashed p-3 text-sm"><b>Cómo un worker ayuda a otro</b><p className="mt-1 text-muted-foreground">Preparar el destino → pausar y vaciar las operaciones del bot de origen → activar ese bot en el worker de apoyo. Se controla desde «Bots individuales».</p>{job?.action === 'transfer-bot' && <p className="mt-2 font-medium">{workerName(job.node)} → {workerName(job.to)} · {job.status === 'completed' ? 'Último traslado manual confirmado' : job.status === 'running' ? 'Traslado en curso' : 'Traslado no confirmado; revisar ambos nodos'}</p>}</div>
     <p className="text-xs text-muted-foreground">Porcentaje = llamadas del Docker / llamadas de todos los Docker en ejecución, en ventanas recientes de 60 s tomadas por cada nodo. {complete ? total ? '' : 'Sin peticiones: porcentaje no aplicable.' : 'Faltan mediciones: no se calculan porcentajes del clúster.'} No mide saturación de CPU ni capacidad libre. El inventario procede del control de bots y de la telemetría disponible.</p>
+    </details>
   </section>;
 }
