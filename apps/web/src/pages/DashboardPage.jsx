@@ -456,6 +456,9 @@ const DashboardPage = () => {
                       </Link>
                     </Button>
                     <Button variant="outline" className="w-full justify-start" asChild>
+                      <a href="/dashboard?moon=moon-balancer#moon-infrastructure">Bots y workers en directo</a>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" asChild>
                       <a href="https://cintiabot.todosobreall.tech/hub.html" target="_blank" rel="noreferrer">
                         <UsersRound className="w-4 h-4 mr-2" />
                         Administrar grupos Moonbot
@@ -476,7 +479,7 @@ const DashboardPage = () => {
           </div>
 
           {(userData?.role === 'admin' || userData?.role === 'creator') && renderAdminContent()}
-          {(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={240}><MoonbotAdminOverview /></DeferredPanel>}
+          {(userData?.role === 'admin' || userData?.role === 'creator') && <div id="moon-infrastructure" className="scroll-mt-24"><DeferredPanel minHeight={240}><MoonbotAdminOverview /></DeferredPanel></div>}
           {!(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={320}><MoonbotFeatureCenter /></DeferredPanel>}
           {(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={420}><TelegramLanguageMap /></DeferredPanel>}
           {(userData?.role === 'admin' || userData?.role === 'creator') && (
