@@ -1388,6 +1388,13 @@ router.post('/quick-actions', async (req, res) => {
   }
 });
 
+router.get('/development-access', async (req, res) => {
+  res.set('Cache-Control', 'private, no-store');
+  if (!await requireAdmin(req, res)) return;
+  if (req.adminUser.role !== 'creator') return res.status(403).json({ ok: false });
+  return res.json({ ok: true, master: true });
+});
+
 router.all('/bot-conversations', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (req.adminUser.role !== 'creator') return res.status(403).json({ ok: false, error: 'Conversaciones reservadas al master' });

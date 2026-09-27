@@ -1,3 +1,4 @@
+import FeatureStageBadge from '@/components/FeatureStageBadge.jsx';
 import React, { useEffect, useState } from 'react';
 import api from '@/lib/apiServerClient';
 import { Button } from '@/components/ui/button';
@@ -79,7 +80,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
   const bot = bots.find(item => item.id === botId);
   const metrics = performance.find(item => item.username === bot?.username);
   return <section className="mt-6 space-y-4 rounded-xl border p-4" aria-label="Información y chats por bot">
-    <h3 className="text-lg font-semibold">Información y chats por bot</h3>
+    <h3 className="text-lg font-semibold">Información y chats por bot <FeatureStageBadge stage="beta" /></h3>
     <p className="text-sm text-muted-foreground">Panel master de conversaciones. Las acciones usan el bot seleccionado y están sujetas a los permisos y límites de Telegram. El historial antiguo sin identificador verificable es de solo lectura.</p>
     <label className="block text-sm">Seleccionar bot<select className="ml-3 rounded border bg-background p-2" value={botId} onChange={event => { setBotId(event.target.value); setPage(1); }}>
       {!bots.length && <option value="">Sin bots disponibles</option>}
@@ -104,7 +105,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
           {detail && <p className="my-3 rounded border border-amber-500/30 p-3 text-sm">{detail.notice}</p>}
           {!detail && !error && <p>Cargando historial…</p>}
           {detail?.history.map((message, index) => <article key={index} className="my-2 rounded border bg-muted/20 p-3"><p className="text-xs text-muted-foreground">{message.sender || 'Usuario'} · {message.time}{message.message_id ? ` · #${message.message_id}` : ''}</p><p className="whitespace-pre-wrap break-words">{message.deleted ? 'Mensaje borrado desde este panel' : message.text || 'Mensaje sin texto registrado'}</p>
-            <div className="mt-2 flex flex-wrap gap-2">{(message.actions || []).map(action => <Button key={action} size="sm" variant={action === 'delete' ? 'destructive' : 'outline'} disabled={busy} onClick={() => { setOperation({ action, message, bot: botId, chat: chat.id, requestId: crypto.randomUUID() }); setActionText(action === 'edit' ? message.text || '' : ''); setTargetChat(''); setNotice(''); }}>{labels[action]}</Button>)}</div>
+            <div className="mt-2 flex flex-wrap gap-2">{(message.actions || []).map(action => <Button key={action} size="sm" variant={action === 'delete' ? 'destructive' : 'outline'} disabled={busy} onClick={() => { setOperation({ action, message, bot: botId, chat: chat.id, requestId: crypto.randomUUID() }); setActionText(action === 'edit' ? message.text || '' : ''); setTargetChat(''); setNotice(''); }}>{labels[action]} <FeatureStageBadge stage="beta" /></Button>)}</div>
             {!message.deleted && !message.actions?.length && <p className="mt-2 text-xs text-muted-foreground">Sin acciones: falta el identificador o el mensaje pertenece a otro bot.</p>}
           </article>)}
           {operation && operation.bot === botId && operation.chat === chat.id && <form className="my-4 space-y-3 rounded border border-cyan-500 p-4" onSubmit={event => { event.preventDefault(); submitAction(); }}>

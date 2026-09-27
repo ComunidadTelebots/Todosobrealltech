@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext.jsx';
+import api from '@/lib/apiServerClient';
 import { releaseChannel, releaseVersion } from '@/lib/releaseChannel.js';
 
 const channels = [
@@ -11,6 +13,19 @@ const channels = [
 const valid = value => channels.some(([key]) => key === value);
 
 export default function WebReleaseSwitcher() {
+  const { currentUser } = useAuth();
+  const [verifiedUser, setVerifiedUser] = useState(null);
+  useEffect(() => {
+    setVerifiedUser(null);
+    if (!currentUser?.id || currentUser.role !== 'creator') return undefined;
+    const controller = new AbortController();
+    api.fetch('/moonbot-admin/development-access', { signal: controller.signal })
+      .then(async response => {
+        const data = response.ok ? await api.readJson(response) : null;
+        if (!controller.signal.aborted && data?.ok && data.master) setVerifiedUser(currentUser.id);
+      }).catch(() => {});
+    return () => controller.abort();
+  }, [currentUser?.id, currentUser?.role]);
   const [selected, setSelected] = useState(() => {
     let saved = '';
     try { saved = window.sessionStorage.getItem('web_selected_channel') || ''; } catch {}
@@ -18,6 +33,7 @@ export default function WebReleaseSwitcher() {
   });
   const current = channels.find(([id]) => id === releaseChannel) || channels[0];
   const viewed = channels.find(([id]) => id === selected) || current;
+  if (!currentUser?.id || currentUser.role !== 'creator' || verifiedUser !== currentUser.id) return null;
   return <aside className={`border-b px-4 py-2 text-xs ${releaseChannel === 'stable' ? 'bg-emerald-500/10' : 'bg-amber-500/15'}`} aria-label="Versión de la web">
     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2">
       <p><b>Web publicada: {current[1]} · {releaseVersion}</b> — {current[2]}</p>
