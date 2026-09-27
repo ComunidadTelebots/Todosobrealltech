@@ -22,10 +22,11 @@ export function projectTdlibMigration(data) {
       states: Object.fromEntries(['pending', 'claimed', 'running', 'uncertain', 'done'].map(key => [key, number(data.inbox.states?.[key] ?? 0)])),
       workers: Array.isArray(data.inbox.workers) ? data.inbox.workers.slice(0, 200).map(worker => ({ id: text(worker.id), paused: Boolean(worker.paused), running: number(worker.running), completed: number(worker.completed) })) : [],
     }) : { enabled: false },
-    audit: data.audit ? Object.fromEntries(['methods', 'call_sites', 'dynamic_calls', 'parse_errors'].map(key => [key, number(data.audit[key])])) : null,
+    audit: data.audit ? Object.fromEntries(['methods', 'call_sites', 'dynamic_calls', 'parse_errors', 'direct_http_calls'].map(key => [key, number(data.audit[key])])) : null,
     botsTruncated: data.bots_truncated === true,
     bots: data.bots.slice(0, 200).filter(row => /^[a-f0-9]{12}$/.test(row?.id)).map(row => ({
       id: row.id, loaded: row.loaded === true, ready: row.ready === true, running: row.running === true,
+      issue: ['invalid_gateway_configuration', 'session_status_unavailable'].includes(row.issue) ? row.issue : null,
       authState: text(row.auth_state), incoming: ['bot_api', 'local_bot_api_tdlib'].includes(row.incoming) ? row.incoming : 'unknown',
       receiver: row.receiver ? { events: number(row.receiver.events), queued: number(row.receiver.queued), capacity: number(row.receiver.capacity),
         overflows: number(row.receiver.overflows), manualStop: row.receiver.manual_stop === true } : null,
