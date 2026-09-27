@@ -210,3 +210,9 @@ test('shared monitoring coalesces readers and invalidates after a switch', async
   await cluster.switchTo({ from: 'primary', to: 'backup', actor: 'creator' });
   assert.equal((await cluster.sharedSnapshot()).active, 'backup');
 });
+
+test('managed family exposes only safe inventory fields and never claims failover', async t => {
+ const {cluster}=await setup(t,{overrides:{adminKey:'test',fetcher:async(url)=>({ok:true,json:async()=>({ok:true,family:{checked_at:123,children:[{parent:'CintiaBot',username:'CintiaGroupBackup01Bot',task:'groups',status:'permissions_verified',verified_groups:2,checked_groups:3,total_groups:4,token:'secret-child-token',automatic_failover:true}]}})})}});
+ const result=await cluster.snapshot();const child=result.governors[0].family.children[0];
+ assert.equal(child.verified_groups,2);assert.equal(child.automatic_failover,false);assert.equal(child.token,undefined);assert.ok(!JSON.stringify(result).includes('secret-child-token'));
+});
