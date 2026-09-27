@@ -7,6 +7,22 @@ import { createMoonbotCluster, parseNodes } from '../src/utils/moonbotCluster.js
 
 const nodes = [{ id: 'primary', container: 'moon-primary', url: 'http://primary:5000' }, { id: 'backup', container: 'moon-backup', url: 'http://backup:5000' }];
 
+test('TDLib telemetry uses the service key without a temporary dashboard JWT', async t => {
+  let headers;
+  const { cluster } = await setup(t, { overrides: { adminKey: 'service-secret', fetcher: async (url, options) => {
+    if (url.endsWith('/api/telemetry/tdlib-migration')) {
+      headers = options.headers;
+      return { ok: true, json: async () => ({ ok: true, schema: 1, bots: [] }) };
+    }
+    return { ok: true, json: async () => ({ ok: true }) };
+  } } });
+  const result = await cluster.snapshot();
+  assert.equal(headers['X-Moon-Admin-Key'], 'service-secret');
+  assert.equal(headers.Authorization, undefined);
+  assert.equal(result.tdlib[0].error, undefined);
+  assert.ok(!JSON.stringify(result).includes('service-secret'));
+});
+
 test('starts balance telemetry while resource requests are still pending', async (t) => {
   const started = [];
   let release;

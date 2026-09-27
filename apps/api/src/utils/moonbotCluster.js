@@ -170,9 +170,9 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     }));
     const tdlibTask = Promise.all(rows.filter(row => row.running).map(async row => {
       try {
-        if (!token) throw new Error();
+        if (!token && !adminKey) throw new Error();
         const node = nodes.find(item => item.id === row.id);
-        const response = await fetcher(`${node.url}/api/telemetry/tdlib-migration`, { headers: { Authorization: `Bearer ${token}` }, redirect: 'error', signal: AbortSignal.timeout(3000) });
+        const response = await fetcher(`${node.url}/api/telemetry/tdlib-migration`, { headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(adminKey ? { 'X-Moon-Admin-Key': adminKey } : {}) }, redirect: 'error', signal: AbortSignal.timeout(3000) });
         if (!response.ok) throw new Error();
         return { node: row.id, ...projectTdlibMigration(await response.json()) };
       } catch { return { node: row.id, error: 'Estado TDLib no disponible; comprueba versión y conexión.' }; }
