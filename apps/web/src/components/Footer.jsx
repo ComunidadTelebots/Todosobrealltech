@@ -1,4 +1,5 @@
 import React from 'react';
+import { releaseLabel } from '@/lib/releaseChannel.js';
 import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import SocialWidgets from '@/components/SocialWidgets.jsx';
@@ -9,6 +10,7 @@ const Footer = () => {
 
   return (
     <footer className="border-t bg-muted/50">
+      <p className="px-4 pt-4 text-center text-xs text-muted-foreground">Versión de esta web: {releaseLabel}</p>
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
