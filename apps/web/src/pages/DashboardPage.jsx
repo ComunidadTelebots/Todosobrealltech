@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import apiServerClient from '@/lib/apiServerClient';
 const CreatorNewsManager = lazy(() => import('@/components/CreatorNewsManager.jsx'));
 const CreatorAccountProxyManager = lazy(() => import('@/components/CreatorAccountProxyManager.jsx'));
 const TelegramLanguageMap = lazy(() => import('@/components/TelegramLanguageMap.jsx'));
+const MoonbotLoadBalancer = lazy(() => import('@/components/MoonbotLoadBalancer.jsx'));
 const MoonbotAdminOverview = lazy(() => import('@/components/MoonbotAdminOverview.jsx'));
 const MoonbotFeatureCenter = lazy(() => import('@/components/MoonbotFeatureCenter.jsx'));
 
@@ -33,6 +34,7 @@ const DeferredPanel = ({ children, minHeight = 180 }) => {
 const DashboardPage = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [userData, setUserData] = useState(null);
   const [botStats, setBotStats] = useState({ total: 0, active: 0 });
   const [systemStats, setSystemStats] = useState({
@@ -355,6 +357,14 @@ const DashboardPage = () => {
       </Card>
     </div>
   );
+
+  if (new URLSearchParams(location.search).get('moon') === 'moon-balancer' && ['admin', 'creator'].includes(userData?.role)) {
+    return <main className="container max-w-7xl py-6" id="moon-infrastructure">
+      <Helmet><title>Workers Moonbot · Todo sobre alltech</title></Helmet>
+      <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-bold">Bots y workers en directo</h1><Button variant="outline" asChild><Link to="/dashboard">Volver al dashboard</Link></Button></div>
+      <Suspense fallback={<p role="status" className="py-8">Cargando workers…</p>}><MoonbotLoadBalancer /></Suspense>
+    </main>;
+  }
 
   return (
     <>
