@@ -1,3 +1,4 @@
+import { moonbotHttp } from './moonbotHttp.js';
 import { moonbotCluster } from './moonbotCluster.js';
 
 const trimUrl = (value = '') => String(value).trim().replace(/\/+$/, '');
@@ -24,7 +25,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // Las lecturas pueden reintentarse con seguridad durante esa ventana; las
 // escrituras se ejecutan una sola vez para no duplicar acciones administrativas.
 export async function requestMoonbot(path, {
-  fetchImpl = fetch,
+  fetchImpl = moonbotHttp,
   resolveOrigin = () => moonbotCluster().activeUrl(MOONBOT_INTERNAL_URL),
   timeoutMs = 6000,
   attempts,

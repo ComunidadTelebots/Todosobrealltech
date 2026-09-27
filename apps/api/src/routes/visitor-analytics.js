@@ -5,9 +5,12 @@ import pb from '../utils/pocketbaseClient.js';
 import { authorizeAdminOrCreator } from './stats.js';
 import { visitorEvent, aggregateVisitors } from '../utils/visitorAnalytics.js';
 
+import { createJsonTransport } from '../utils/moonbotHttp.js';
+import logger from '../utils/logger.js';
 import { sharedSnapshot } from '../utils/sharedSnapshot.js';
 
 const router = Router();
+const analyticsHttp = createJsonTransport();
 const reports = new Map();
 const ranges = { '24h': 1, '7d': 7, '30d': 30, '90d': 90 };
 router.post('/pageview', rateLimit({ windowMs: 60000, limit: 60, standardHeaders: 'draft-7', legacyHeaders: false }), async (req, res) => {
@@ -16,7 +19,7 @@ router.post('/pageview', rateLimit({ windowMs: 60000, limit: 60, standardHeaders
   try { event = visitorEvent(req.body, req.ip, ip => geoip.lookup(ip)); }
   catch { return res.status(400).json({ error: 'Evento no válido' }); }
   try {
-    await pb.collection('web_pageviews').create(event, { requestKey: null });
+    await pb.collection('web_pageviews').create(event, { requestKey: null, fetch: (url, options) => analyticsHttp(url, { ...options, signal: AbortSignal.timeout(10000) }) });
     return res.sendStatus(204);
   } catch (error) {
     if (error?.response?.data?.event_id?.code === 'validation_not_unique') return res.sendStatus(204);
@@ -37,6 +40,7 @@ router.get('/', async (req, res) => {
     const options = {
       filter: pb.filter('source = {:source} && created >= {:since} && created <= {:until}', { source, since, until: new Date(now).toISOString() }), sort: '-created,-id',
       fields: 'created,page,language,country,city,mapped,lat,lon,device', requestKey: null,
+      fetch: (url, options) => analyticsHttp(url, { ...options, signal: AbortSignal.timeout(10000) }),
     };
     const result = await pb.collection('web_pageviews').getList(1, 500, options);
     const items = [...result.items];
@@ -47,6 +51,9 @@ router.get('/', async (req, res) => {
       truncated: result.totalItems > items.length, ...aggregateVisitors(items, now), collectedAt: new Date(now).toISOString() };
   }, { ttlMs: 5000 }));
   try { return res.json(await reports.get(key).read());
-  } catch { return res.status(503).json({ error: 'No se puede consultar la analítica. Comprueba la migración de PocketBase.' }); }
+  } catch (error) {
+    logger.warn(`[visitor-analytics] query failed: status=${error?.status || 0} cause=${error?.originalError?.code || error?.code || error?.name || 'unknown'}`);
+    return res.status(503).json({ error: 'No se puede consultar la analítica en este momento.' });
+  }
 });
 export default router;

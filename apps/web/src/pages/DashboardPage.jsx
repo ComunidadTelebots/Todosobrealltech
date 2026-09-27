@@ -456,7 +456,7 @@ const DashboardPage = () => {
                       </Link>
                     </Button>
                     <Button variant="outline" className="w-full justify-start" asChild>
-                      <a href="https://cintiabot.todosobrealltech/hub.html" target="_blank" rel="noreferrer">
+                      <a href="https://cintiabot.todosobreall.tech/hub.html" target="_blank" rel="noreferrer">
                         <UsersRound className="w-4 h-4 mr-2" />
                         Administrar grupos Moonbot
                       </a>
