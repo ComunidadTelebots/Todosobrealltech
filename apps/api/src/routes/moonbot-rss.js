@@ -19,6 +19,16 @@ export function createRssRouter({ authorize = authorizeAuthenticatedUser, upstre
       return res.status(503).json({ ok: false, error: 'RSS de Moonbot temporalmente no disponible' });
     }
   }
+  router.post('/reader', (req, res) => {
+    const uid = String(req.rssUser.telegram_id || '0');
+    if (!/^\d{1,20}$/.test(uid)) return res.status(400).json({ ok: false });
+    const raw = req.body || {};
+    if (!['read', 'share'].includes(raw.action || 'read')) return res.status(400).json({ ok: false });
+    if (raw.action === 'share' && uid === '0') return res.status(409).json({ ok: false, error: 'Vincula tu Telegram para publicar en canales.' });
+    const body = Object.fromEntries(['action', 'source_id', 'entry_id', 'channel_id'].filter((key) => Object.hasOwn(raw, key)).map((key) => [key, raw[key]]));
+    if (Object.values(body).some((value) => typeof value !== 'string' || value.length > 160)) return res.status(400).json({ ok: false });
+    return proxy(req, res, `/api/internal/rss/reader/${uid}`, { method: 'POST', body: JSON.stringify(body), timeoutMs: 20000 });
+  });
   router.get('/catalog', (req, res) => proxy(req, res, '/api/internal/rss/catalog'));
   router.get('/activity', (req, res) => {
     if (req.rssUser.role !== 'creator') return res.status(403).json({ ok: false, error: 'Solo master' });
