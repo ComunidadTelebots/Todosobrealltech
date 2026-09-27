@@ -19,6 +19,7 @@ import previewRouter from './preview.js';
 import statsRouter from './stats.js';
 import telegramLanguageMapRouter from './telegram-language-map.js';
 import moonbotAdminRouter from './moonbot-admin.js';
+import moonbotRssRouter from './moonbot-rss.js';
 import moonbotClusterRouter from './moonbot-cluster.js';
 import houseAdsRouter from './house-ads.js';
 import contentAnalyticsRouter from './content-analytics.js';
@@ -65,6 +66,7 @@ export default () => {
     router.use('/moonbot-admin/cluster', moonbotClusterRouter);
     router.use('/moonbot-environments', createEnvironmentRouter({ service: environmentService, authenticate: authorizeAdminOrCreator }));
     router.use('/moonbot-admin', moonbotAdminRouter);
+    router.use('/moonbot-rss', moonbotRssRouter);
     router.use('/house-ads', houseAdsRouter);
     // Alias neutral: algunos bloqueadores interceptan cualquier URL que incluya
     // "ads", incluso cuando son recomendaciones propias sin seguimiento externo.

@@ -30,7 +30,7 @@ test('starts balance telemetry while resource requests are still pending', async
   const { cluster } = await setup(t, { overrides: { token: 'test', adminKey: 'test-admin', fetcher: async (url) => {
     if (url.endsWith('/health')) return { ok: true, json: async () => ({ ok: true }) };
     started.push(new URL(url).pathname);
-    if (started.length === 6) release();
+    if (started.length === 8) release();
     await barrier;
     return { ok: true, json: async () => ({ ok: true, state: {}, stats: {} }) };
   } } });
@@ -38,7 +38,7 @@ test('starts balance telemetry while resource requests are still pending', async
   try {
     const pending = cluster.snapshot();
     await barrier;
-    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/status', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency'].sort(), 'all independent telemetry requests must start before any completes');
+    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/telemetry/resources', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency', '/api/internal/bot-conversations', '/api/internal/governor'].sort(), 'all independent telemetry requests must start before any completes');
     await pending;
   } finally { clearTimeout(timeout); release(); }
 });
@@ -209,4 +209,10 @@ test('shared monitoring coalesces readers and invalidates after a switch', async
   assert.equal(calls.filter(call => call.endsWith('/json')).length, 2);
   await cluster.switchTo({ from: 'primary', to: 'backup', actor: 'creator' });
   assert.equal((await cluster.sharedSnapshot()).active, 'backup');
+});
+
+test('managed family exposes only safe inventory fields and never claims failover', async t => {
+ const {cluster}=await setup(t,{overrides:{adminKey:'test',fetcher:async(url)=>({ok:true,json:async()=>({ok:true,family:{checked_at:123,children:[{parent:'CintiaBot',username:'CintiaGroupBackup01Bot',task:'groups',status:'permissions_verified',verified_groups:2,checked_groups:3,total_groups:4,token:'secret-child-token',automatic_failover:true}]}})})}});
+ const result=await cluster.snapshot();const child=result.governors[0].family.children[0];
+ assert.equal(child.verified_groups,2);assert.equal(child.automatic_failover,false);assert.equal(child.token,undefined);assert.ok(!JSON.stringify(result).includes('secret-child-token'));
 });

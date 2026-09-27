@@ -18,6 +18,7 @@ import {
 import pb from '@/lib/pocketbaseClient.js';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { releaseChannel, releaseLabel } from '@/lib/releaseChannel.js';
+import WebReleaseSwitcher from '@/components/WebReleaseSwitcher.jsx';
 
 const LANGUAGES = [
   { code: 'es', name: 'Español' },
@@ -194,6 +195,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+      <WebReleaseSwitcher />
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">

@@ -73,6 +73,7 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
     {data?.collection && <p className="text-xs text-muted-foreground">Lectura compartida durante {data.collection.ttlMs / 1000} s · {data.collection.loads} consultas al clúster · {data.collection.hits + data.collection.joined} lecturas reutilizadas en esta API</p>}
     {notice && <p role="status" className="rounded-xl border p-4 text-sm">{notice}</p>}
     {data && !data.configured && <div className="rounded-xl border border-dashed p-6"><h3 className="font-semibold">Todavía no hay contenedores configurados</h3><p className="mt-2 text-sm text-muted-foreground">Configura los nodos de Moonbot en la API para consultar su estado y habilitar la conmutación. Aquí aparecerán únicamente contenedores reales.</p></div>}
+    <MoonbotTelegramFlow data={data} stale={stale} />
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[
       ['Nodo activo', data?.active], ['Workers asignados', balancer?.workers], ['Fuentes procesadas', balancer?.processed_sources], ['Ritmo de aprendizaje', balancer?.rate],
     ].map(([label, value]) => <div key={label} className="rounded-xl border bg-muted/20 p-4"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-2 break-words text-2xl font-semibold">{metric(value)}</p></div>)}</div>
@@ -88,7 +89,6 @@ export default function MoonbotLoadBalancer({ client = apiServerClient, readOnly
       </section>
     </div>
     <MoonbotDeploymentControl data={data} client={client} readOnly={readOnly} stale={stale} refresh={load} />
-    <MoonbotTelegramFlow data={data} stale={stale} />
     <MoonbotTrafficPanel data={data} />
     <TelegramNetworkPanel client={client} />
     <section><h3 className="mb-3 font-semibold">Historial de conmutaciones</h3><div className="space-y-2">{data?.events.slice(0, 10).map((event, index) => <div key={`${event.at}-${index}`} className="flex flex-wrap justify-between gap-2 rounded-lg border px-3 py-2 text-sm"><span>{events[event.status] || event.status} · {event.from} → {event.to}</span><time className="text-xs text-muted-foreground">{new Date(event.at).toLocaleString()}</time></div>)}{!data?.events.length && <p className="text-sm text-muted-foreground">Sin conmutaciones registradas.</p>}</div></section>

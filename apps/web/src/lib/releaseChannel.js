@@ -1,4 +1,4 @@
-export const RELEASE_CHANNELS = Object.freeze(['stable', 'rc', 'beta', 'alpha']);
+export const RELEASE_CHANNELS = Object.freeze(['stable', 'rc', 'beta', 'alpha', 'prealpha']);
 
 export const normalizeReleaseChannel = (value) => {
   const channel = String(value || '').trim().toLowerCase();
