@@ -13,6 +13,29 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
   const [detail, setDetail] = useState(null);
   const [error, setError] = useState('');
   const [refresh, setRefresh] = useState(0);
+  const [operation, setOperation] = useState(null);
+  const [actionText, setActionText] = useState('');
+  const [targetChat, setTargetChat] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState('');
+  useEffect(() => { setOperation(null); setNotice(''); }, [botId, chat?.id]);
+  const labels = { reply: 'Responder', edit: 'Editar', delete: 'Borrar', forward: 'Reenviar', react: 'Reaccionar 👍' };
+  const submitAction = async () => {
+    if (busy || !operation || operation.bot !== botId || operation.chat !== chat?.id) return;
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const response = await api.fetch('/moonbot-admin/bot-conversations', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: operation.action, bot_id: botId, chat_id: chat.id,
+          message_id: operation.message.message_id, text: actionText, target_chat_id: targetChat,
+          request_id: operation.requestId }),
+      });
+      const data = await api.readJson(response);
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Acción no confirmada');
+      setNotice('Acción confirmada por Telegram.'); setOperation(null); setChat({ ...chat });
+    } catch (reason) { setError(reason.message); }
+    finally { setBusy(false); }
+  };
   useEffect(() => {
     const controller = new AbortController();
     api.fetch('/moonbot-admin/bot-conversations', { signal: controller.signal })
@@ -57,7 +80,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
   const metrics = performance.find(item => item.username === bot?.username);
   return <section className="mt-6 space-y-4 rounded-xl border p-4" aria-label="Información y chats por bot">
     <h3 className="text-lg font-semibold">Información y chats por bot</h3>
-    <p className="text-sm text-muted-foreground">Consulta master de solo lectura. Muestra los chats conocidos por este Moonbot y el historial que conserva, no todas las conversaciones de Telegram.</p>
+    <p className="text-sm text-muted-foreground">Panel master de conversaciones. Las acciones usan el bot seleccionado y están sujetas a los permisos y límites de Telegram. El historial antiguo sin identificador verificable es de solo lectura.</p>
     <label className="block text-sm">Seleccionar bot<select className="ml-3 rounded border bg-background p-2" value={botId} onChange={event => { setBotId(event.target.value); setPage(1); }}>
       {!bots.length && <option value="">Sin bots disponibles</option>}
       {bots.map(item => <option key={item.id} value={item.id}>@{item.username}</option>)}
@@ -70,6 +93,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
       <Button variant="outline" onClick={() => setRefresh(value => value + 1)}>Actualizar chats</Button>
     </div>
     {error && <p role="alert" className="text-amber-700">{error}</p>}
+    {notice && <p role="status">{notice}</p>}
     <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
       <div className="space-y-2"><p className="text-sm">{listing ? `${listing.total} conversaciones` : botId ? 'Cargando chats…' : 'Selecciona un bot'}</p>
         {listing?.chats.map(item => <button key={item.id} className={`block w-full rounded border p-3 text-left ${chat?.id === item.id ? 'border-cyan-500 bg-cyan-500/10' : ''}`} onClick={() => setChat(item)}><b className="block break-words">{item.name}</b><small>{item.type === 'private' ? 'Chat privado' : 'Grupo / canal'} · {item.id}</small></button>)}
@@ -79,7 +103,17 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
         {chat ? <><h4 className="font-semibold">{chat.name}</h4><p className="text-sm">{chat.id}</p>
           {detail && <p className="my-3 rounded border border-amber-500/30 p-3 text-sm">{detail.notice}</p>}
           {!detail && !error && <p>Cargando historial…</p>}
-          {detail?.history.map((message, index) => <article key={index} className="my-2 rounded border bg-muted/20 p-3"><p className="text-xs text-muted-foreground">{message.sender || 'Usuario'} · {message.time}</p><p className="whitespace-pre-wrap break-words">{message.text || 'Mensaje sin texto registrado'}</p></article>)}
+          {detail?.history.map((message, index) => <article key={index} className="my-2 rounded border bg-muted/20 p-3"><p className="text-xs text-muted-foreground">{message.sender || 'Usuario'} · {message.time}{message.message_id ? ` · #${message.message_id}` : ''}</p><p className="whitespace-pre-wrap break-words">{message.deleted ? 'Mensaje borrado desde este panel' : message.text || 'Mensaje sin texto registrado'}</p>
+            <div className="mt-2 flex flex-wrap gap-2">{(message.actions || []).map(action => <Button key={action} size="sm" variant={action === 'delete' ? 'destructive' : 'outline'} disabled={busy} onClick={() => { setOperation({ action, message, bot: botId, chat: chat.id, requestId: crypto.randomUUID() }); setActionText(action === 'edit' ? message.text || '' : ''); setTargetChat(''); setNotice(''); }}>{labels[action]}</Button>)}</div>
+            {!message.deleted && !message.actions?.length && <p className="mt-2 text-xs text-muted-foreground">Sin acciones: falta el identificador o el mensaje pertenece a otro bot.</p>}
+          </article>)}
+          {operation && operation.bot === botId && operation.chat === chat.id && <form className="my-4 space-y-3 rounded border border-cyan-500 p-4" onSubmit={event => { event.preventDefault(); submitAction(); }}>
+            <h5 className="font-semibold">{labels[operation.action]} · mensaje #{operation.message.message_id}</h5><p className="text-sm">Bot: @{bot?.username} · Chat: {chat.name} ({chat.id})</p>
+            {['reply', 'edit'].includes(operation.action) && <textarea aria-label="Texto de la acción" className="min-h-24 w-full rounded border bg-background p-2" value={actionText} maxLength={4096} required onChange={event => setActionText(event.target.value)} />}
+            {operation.action === 'forward' && <label className="block">ID del chat de destino conocido por este bot<input required aria-label="Chat de destino" className="block rounded border bg-background p-2" value={targetChat} onChange={event => setTargetChat(event.target.value)} /></label>}
+            {operation.action === 'delete' && <p>Se borrará este mensaje en Telegram. Esta acción no se puede deshacer.</p>}
+            <Button type="submit" disabled={busy}>{busy ? 'Esperando a Telegram…' : 'Confirmar acción'}</Button><Button type="button" variant="ghost" disabled={busy} onClick={() => setOperation(null)}>Cancelar</Button>
+          </form>}
           {detail && !detail.history.length && <p>No hay mensajes conservados para este chat.</p>}
         </> : <p>Selecciona una conversación para consultar su historial.</p>}
       </div>

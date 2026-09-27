@@ -1388,9 +1388,10 @@ router.post('/quick-actions', async (req, res) => {
   }
 });
 
-router.get('/bot-conversations', async (req, res) => {
+router.all('/bot-conversations', async (req, res) => {
   if (!await requireAdmin(req, res)) return;
   if (req.adminUser.role !== 'creator') return res.status(403).json({ ok: false, error: 'Conversaciones reservadas al master' });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ok:false});
   if (!serviceConfig(res)) return;
   res.set('Cache-Control', 'private, no-store');
   const params = new URLSearchParams();
@@ -1401,7 +1402,7 @@ router.get('/bot-conversations', async (req, res) => {
     }
   }
   try {
-    const response = await moonRequest(`/api/internal/bot-conversations?${params}`);
+    const response = await moonRequest(`/api/internal/bot-conversations?${params}`, { timeoutMs: 30000, method: req.method, ...(req.method === 'POST' ? { body: JSON.stringify({ ...req.body, actor_id: req.adminUser.id }) } : {}) });
     const payload = await response.json();
     return res.status(response.status).json(payload);
   } catch {
