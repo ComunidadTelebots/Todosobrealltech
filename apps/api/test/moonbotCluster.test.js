@@ -30,7 +30,7 @@ test('starts balance telemetry while resource requests are still pending', async
   const { cluster } = await setup(t, { overrides: { token: 'test', adminKey: 'test-admin', fetcher: async (url) => {
     if (url.endsWith('/health')) return { ok: true, json: async () => ({ ok: true }) };
     started.push(new URL(url).pathname);
-    if (started.length === 6) release();
+    if (started.length === 7) release();
     await barrier;
     return { ok: true, json: async () => ({ ok: true, state: {}, stats: {} }) };
   } } });
@@ -38,7 +38,7 @@ test('starts balance telemetry while resource requests are still pending', async
   try {
     const pending = cluster.snapshot();
     await barrier;
-    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/telemetry/resources', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency'].sort(), 'all independent telemetry requests must start before any completes');
+    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/telemetry/resources', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency', '/api/internal/bot-conversations'].sort(), 'all independent telemetry requests must start before any completes');
     await pending;
   } finally { clearTimeout(timeout); release(); }
 });

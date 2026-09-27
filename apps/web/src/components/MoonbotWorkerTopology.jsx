@@ -8,7 +8,8 @@ export default function MoonbotWorkerTopology({ data, running }) {
     const inventory = data?.traffic?.find(row => row.node === node.id);
     const measured = operations?.bots || [];
     const ids = [...new Set([...(inventory?.bots || []).map(bot => bot.id), ...measured.map(bot => bot.id)])];
-    return { ...node, number: index + 1, operations, inventory, bots: ids.map(id => ({ ...measured.find(bot => bot.id === id), ...inventory?.bots?.find(bot => bot.id === id), id })) };
+    const names = [...new Set([...(data?.botNames?.find(row => row.node === node.id)?.names || []), ...(inventory?.bots || []).map(bot => bot.name).filter(Boolean)])];
+    return { ...node, names, number: index + 1, operations, inventory, bots: ids.map(id => ({ ...measured.find(bot => bot.id === id), ...inventory?.bots?.find(bot => bot.id === id), id })) };
   });
   const live = workers.filter(worker => worker.running);
   const complete = live.length > 0 && live.every(worker => typeof worker.operations?.last60s?.calls === 'number');
