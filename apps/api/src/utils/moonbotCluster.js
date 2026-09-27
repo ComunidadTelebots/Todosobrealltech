@@ -1,4 +1,5 @@
 import { sharedSnapshot } from './sharedSnapshot.js';
+import { moonbotHttp } from './moonbotHttp.js';
 import crypto from 'node:crypto';
 import { parseReleases, replaceStoppedContainer } from './moonbotUpdater.js';
 import http from 'node:http';
@@ -47,7 +48,7 @@ export function dockerRequest(container, action = 'json', method = 'GET') {
   });
 }
 
-export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = fetch, stateFile, token = '', wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), attempts = 15, adminKey = '', releases = [], replaceContainer = replaceStoppedContainer }) {
+export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = moonbotHttp, stateFile, token = '', wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), attempts = 15, adminKey = '', releases = [], replaceContainer = replaceStoppedContainer }) {
   const monitor = sharedSnapshot(snapshot);
   let busy = false;
   let state = null;
@@ -114,13 +115,14 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     let resources = null;
     const telemetryErrors = [];
     const telemetryTask = (async () => {
-    if (token && node) {
+    if ((token || adminKey) && node) {
       await Promise.all([
         ['/api/telemetry/operations', projectOperations, (value) => { operations = value; }, 'Telegram: instala la instrumentación de telemetría en Moonbot o comprueba su JWT.'],
-        ['/api/status', projectResources, (value) => { resources = value; }, 'No se han podido consultar los recursos de Moonbot.'],
+        ['/api/telemetry/resources', projectResources, (value) => { resources = value; }, 'No se han podido consultar los recursos de Moonbot.'],
       ].map(async ([endpoint, project, assign, message]) => {
         try {
-          const response = await fetcher(`${node.url}${endpoint}`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3000), redirect: 'error' });
+          let response = await fetcher(`${node.url}${endpoint}`, { headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(adminKey ? { 'X-Moon-Admin-Key': adminKey } : {}) }, signal: AbortSignal.timeout(3000), redirect: 'error' });
+          if (response.status === 404 && endpoint === '/api/telemetry/resources') response = await fetcher(`${node.url}/api/status`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3000), redirect: 'error' });
           if (!response.ok) throw new Error();
           assign(project(await response.json()));
         } catch { telemetryErrors.push(message); }
@@ -131,7 +133,7 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
     if (!token) balancerError = 'Falta MOON_BALANCER_TOKEN para consultar el balanceador de aprendizaje.';
     else if (node) {
       try {
-        const response = await fetcher(`${node.url}/api/ia/load_balancer`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(4000), redirect: 'error' });
+        const response = await fetcher(`${node.url}/api/ia/load_balancer`, { headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(adminKey ? { 'X-Moon-Admin-Key': adminKey } : {}) }, signal: AbortSignal.timeout(4000), redirect: 'error' });
         const data = await response.json();
         if (!response.ok || data.ok !== true || !data.state || !data.stats) throw new Error();
         // Project only the fields consumed by the web, never forward arbitrary upstream data.
@@ -148,9 +150,9 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
       if (!row.running) return { node: row.id, operations: null };
       if (row.id === active) { await telemetryTask; return { node: row.id, operations, error: operations ? null : 'Telemetría no disponible' }; }
       try {
-        if (!token) throw new Error();
+        if (!token && !adminKey) throw new Error();
         const node = nodes.find(item => item.id === row.id);
-        const response = await fetcher(`${node.url}/api/telemetry/operations`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3000), redirect: 'error' });
+        const response = await fetcher(`${node.url}/api/telemetry/operations`, { headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(adminKey ? { 'X-Moon-Admin-Key': adminKey } : {}) }, signal: AbortSignal.timeout(3000), redirect: 'error' });
         if (!response.ok) throw new Error();
         return { node: row.id, operations: projectOperations(await response.json()) };
       } catch { return { node: row.id, operations: null, error: 'Telemetría no disponible' }; }

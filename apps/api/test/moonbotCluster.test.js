@@ -38,7 +38,7 @@ test('starts balance telemetry while resource requests are still pending', async
   try {
     const pending = cluster.snapshot();
     await barrier;
-    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/status', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency'].sort(), 'all independent telemetry requests must start before any completes');
+    assert.deepEqual(started.sort(), ['/api/ia/load_balancer', '/api/telemetry/resources', '/api/telemetry/operations', '/api/telemetry/tdlib-migration', '/api/internal/traffic', '/api/internal/peer-latency'].sort(), 'all independent telemetry requests must start before any completes');
     await pending;
   } finally { clearTimeout(timeout); release(); }
 });
