@@ -196,7 +196,8 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         const response = await fetcher(`${node.url}/api/internal/governor`, { headers: { 'X-Moon-Admin-Key': adminKey }, signal: AbortSignal.timeout(3000), redirect: 'error' });
         const body = await response.json();
         if (!response.ok || body.ok !== true) throw new Error();
-        return { node: row.id, installed: true, enabled: body.enabled === true, scope: body.scope === 'single_process' ? body.scope : 'unknown', workers: Array.isArray(body.workers) ? body.workers.length : null };
+        return { node: row.id, installed: true, enabled: body.enabled === true, scope: body.scope === 'single_process' ? body.scope : 'unknown', workers: Array.isArray(body.workers) ? body.workers.length : null,
+          queues: Array.isArray(body.workers) ? body.workers.slice(0, 200).filter(worker => /^[a-f0-9]{12}$/.test(worker.id)).map(worker => ({ id: worker.id, running: worker.running === true, states: Object.fromEntries(['pending', 'claimed', 'running', 'done', 'uncertain'].map(key => [key, Number.isSafeInteger(worker.states?.[key]) && worker.states[key] >= 0 ? worker.states[key] : 0])) })) : [] };
       } catch { return { node: row.id, installed: false }; }
     }));
     const [traffic, workers, peerLatency, tdlib, botNames, governors] = await Promise.all([trafficTask, workersTask, peerLatencyTask, tdlibTask, botNamesTask, governorsTask, telemetryTask, balancerTask]);
