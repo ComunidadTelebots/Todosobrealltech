@@ -13,6 +13,7 @@ const CreatorAccountProxyManager = lazy(() => import('@/components/CreatorAccoun
 const TelegramLanguageMap = lazy(() => import('@/components/TelegramLanguageMap.jsx'));
 const MoonbotLoadBalancer = lazy(() => import('@/components/MoonbotLoadBalancer.jsx'));
 const MoonbotAdminOverview = lazy(() => import('@/components/MoonbotAdminOverview.jsx'));
+const MoonbotPersonalRss = lazy(() => import('@/components/MoonbotPersonalRss.jsx'));
 const MoonbotFeatureCenter = lazy(() => import('@/components/MoonbotFeatureCenter.jsx'));
 
 const DeferredPanel = ({ children, minHeight = 180 }) => {
@@ -489,6 +490,8 @@ const DashboardPage = () => {
           </div>
 
           {(userData?.role === 'admin' || userData?.role === 'creator') && renderAdminContent()}
+          <div id="rss-catalog" className="scroll-mt-24"><DeferredPanel><MoonbotPersonalRss /></DeferredPanel></div>
+          {userData?.role === 'creator' && <DeferredPanel><MoonbotPersonalRss master /></DeferredPanel>}
           {(userData?.role === 'admin' || userData?.role === 'creator') && <div id="moon-infrastructure" className="scroll-mt-24"><DeferredPanel minHeight={240}><MoonbotAdminOverview /></DeferredPanel></div>}
           {!(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={320}><MoonbotFeatureCenter /></DeferredPanel>}
           {(userData?.role === 'admin' || userData?.role === 'creator') && <DeferredPanel minHeight={420}><TelegramLanguageMap /></DeferredPanel>}
