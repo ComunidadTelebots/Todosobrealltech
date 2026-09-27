@@ -197,7 +197,9 @@ export function createMoonbotCluster({ nodes, docker = dockerRequest, fetcher = 
         const body = await response.json();
         if (!response.ok || body.ok !== true) throw new Error();
         return { node: row.id, installed: true, enabled: body.enabled === true, scope: body.scope === 'single_process' ? body.scope : 'unknown', workers: Array.isArray(body.workers) ? body.workers.length : null,
-          queues: Array.isArray(body.workers) ? body.workers.slice(0, 200).filter(worker => /^[a-f0-9]{12}$/.test(worker.id)).map(worker => ({ id: worker.id, running: worker.running === true, states: Object.fromEntries(['pending', 'claimed', 'running', 'done', 'uncertain'].map(key => [key, Number.isSafeInteger(worker.states?.[key]) && worker.states[key] >= 0 ? worker.states[key] : 0])) })) : [] };
+          queues: Array.isArray(body.workers) ? body.workers.slice(0, 200).filter(worker => /^[a-f0-9]{12}$/.test(worker.id)).map(worker => ({ id: worker.id, name: typeof worker.name === 'string' && /^[a-zA-Z0-9_]{1,64}$/.test(worker.name) ? worker.name : null,
+            network: worker.network?.kind === 'tcp_dns' && ['ok', 'unreachable'].includes(worker.network.status) ? { status: worker.network.status, ms: Number.isFinite(worker.network.ms) && worker.network.ms >= 0 ? worker.network.ms : null, at: typeof worker.network.at === 'string' ? worker.network.at.slice(0, 40) : null } : null,
+            running: worker.running === true, states: Object.fromEntries(['pending', 'claimed', 'running', 'done', 'uncertain'].map(key => [key, Number.isSafeInteger(worker.states?.[key]) && worker.states[key] >= 0 ? worker.states[key] : 0])) })) : [] };
       } catch { return { node: row.id, installed: false }; }
     }));
     const [traffic, workers, peerLatency, tdlib, botNames, governors] = await Promise.all([trafficTask, workersTask, peerLatencyTask, tdlibTask, botNamesTask, governorsTask, telemetryTask, balancerTask]);
