@@ -404,3 +404,5 @@ h3 {
 .project-search input::placeholder { color: #c9c2dc; }
 .project-search input:focus-visible, .project-search button:focus-visible { outline: 3px solid #c7b4ff; outline-offset: 3px; }
 .project-search p, .project-search-empty { color: #d9e1f5; line-height: 1.6; }
+
+.project-image { user-select:none; -webkit-user-drag:none; }

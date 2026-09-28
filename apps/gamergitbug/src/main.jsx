@@ -92,6 +92,8 @@ const projects = [
     text: 'Web dedicada a Morla de la Valdería, con información sobre el pueblo, su geografía, patrimonio y arquitectura tradicional, además de enlaces a sus servicios y contacto para colaborar.',
     tags: ['HTML5', 'CSS3', 'JavaScript', 'Nginx', 'Docker', 'Traefik'],
     url: 'https://morladelavalderia.es',
+    image: '/morla-project.svg',
+    imageAlt: 'Carátula de Morla de la Valdería',
   },
   {
     title: 'Tot Roba · Terrassa',
@@ -107,30 +109,40 @@ const projects = [
     text: 'Hub principal con blog, panel de administración, sistema de autenticación y gestión de contenido por colecciones.',
     tags: ['React', 'shadcn/ui', 'PocketBase', 'Tailwind'],
     url: 'https://todosobreall.tech',
+    image: '/alltech-project.svg',
+    imageAlt: 'Carátula de TodoSobreAllTech',
   },
   {
     title: 'NoticiasWeb3',
     text: 'Sitio de noticias con secciones de juegos PC, extensiones de navegador, PlayStation, foro y modo noche automático.',
     tags: ['React', 'React Router', 'AdSense', 'Docker'],
     url: 'https://noticiasweb3.todosobreall.tech',
+    image: '/noticias-project.svg',
+    imageAlt: 'Carátula de NoticiasWeb3',
   },
   {
     title: 'Resistencia a la Censura',
     text: 'Visor web del canal de Telegram con búsqueda, filtros por fecha y estadísticas de publicaciones en tiempo real.',
     tags: ['React', 'Telegram API', 'Lucide', 'Docker'],
     url: 'https://resistenciaalacensura.todosobreall.tech',
+    image: '/resistencia-project.svg',
+    imageAlt: 'Carátula de Resistencia a la Censura',
   },
   {
     title: 'Comunidad Telebots',
     text: 'Sitio web para la comunidad de bots de Telegram, con visor de canal integrado, búsqueda y galería de imágenes.',
     tags: ['React', 'Telegram API', 'Lucide', 'Docker'],
     url: 'https://comunidadtelebots.todosobreall.tech',
+    image: '/telebots-project.svg',
+    imageAlt: 'Carátula de Comunidad Telebots',
   },
   {
     title: 'Todo Sobre Gameplays',
     text: 'Canal de contenido sobre gameplays presentado como web: visor de posts, filtros y navegación por publicaciones.',
     tags: ['React', 'Telegram API', 'Vite', 'Docker'],
     url: 'https://todosobregameplays.todosobreall.tech',
+    image: '/gameplays-project.svg',
+    imageAlt: 'Carátula de Todo Sobre Gameplays',
   },
 ];
 
@@ -219,7 +231,7 @@ export default function App() {
           <div className="project-grid" id="project-results">
             {visibleProjects.map((project) => (
               <article className="project-card" key={project.title}>
-                {project.image && <img className="project-image" src={project.image} alt={project.imageAlt} width="640" height="360" loading="lazy" />}
+                {project.image && <img className="project-image" src={project.image} alt={project.imageAlt} width="640" height="360" loading="lazy" draggable={false} onDragStart={(event) => event.preventDefault()} onContextMenu={(event) => event.preventDefault()} />}
                 <h3>
                   {project.url
                     ? <a href={project.url} target="_blank" rel="noopener noreferrer">{project.title} ↗</a>

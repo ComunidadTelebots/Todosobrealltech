@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+<title id="title">Morla de la Valdería · Carátula de proyecto</title>
+<rect width="640" height="360" fill="#143b34"/>
+<circle cx="485" cy="95" r="170" fill="#8de0ba" opacity=".06"/>
+<g fill="none" stroke="#8de0ba" color="#8de0ba" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 210L130 70L235 178L335 54L520 210" fill="none" stroke="currentColor" stroke-width="3"/><path d="M410 165V95L449 62L488 95V165M437 165V128H462V165" fill="none" stroke="currentColor" stroke-width="5"/></g>
+<text x="32" y="47" fill="#8de0ba" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">GAMERGITBUG / PROYECTOS</text>
+<text x="32" y="244" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="700">Morla de la Valdería</text>
+<text x="32" y="277" fill="#8de0ba" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">PATRIMONIO · NATURALEZA</text>
+<path d="M32 307H608" stroke="#8de0ba" opacity=".3"/>
+<text x="32" y="336" fill="#8de0ba" opacity=".8" font-family="Arial,sans-serif" font-size="12">GamerGitBug · Portfolio</text>
+</svg>

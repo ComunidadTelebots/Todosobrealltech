@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+<title id="title">NoticiasWeb3 · Carátula de proyecto</title>
+<rect width="640" height="360" fill="#352051"/>
+<circle cx="485" cy="95" r="170" fill="#dfa0ff" opacity=".06"/>
+<g fill="none" stroke="#dfa0ff" color="#dfa0ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="382" y="42" width="154" height="152" rx="12"/><path d="M403 67H515M403 87H468M403 153H515M403 173H503"/><rect x="403" y="104" width="112" height="30" rx="4"/></g>
+<text x="32" y="47" fill="#dfa0ff" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">GAMERGITBUG / PROYECTOS</text>
+<text x="32" y="244" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="700">NoticiasWeb3</text>
+<text x="32" y="277" fill="#dfa0ff" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">ACTUALIDAD · GAMING</text>
+<path d="M32 307H608" stroke="#dfa0ff" opacity=".3"/>
+<text x="32" y="336" fill="#dfa0ff" opacity=".8" font-family="Arial,sans-serif" font-size="12">GamerGitBug · Portfolio</text>
+</svg>

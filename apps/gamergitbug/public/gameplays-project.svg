@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+<title id="title">Todo Sobre Gameplays · Carátula de proyecto</title>
+<rect width="640" height="360" fill="#292444"/>
+<circle cx="485" cy="95" r="170" fill="#bcffa1" opacity=".06"/>
+<g fill="none" stroke="#bcffa1" color="#bcffa1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M423 79H508Q526 79 536 112L554 162Q557 185 537 180L500 156H430L393 180Q373 185 379 162L397 112Q405 79 423 79ZM424 107V139M408 123H440"/><circle cx="504" cy="111" r="6"/><circle cx="524" cy="130" r="6"/></g>
+<text x="32" y="47" fill="#bcffa1" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">GAMERGITBUG / PROYECTOS</text>
+<text x="32" y="244" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="700">Todo Sobre Gameplays</text>
+<text x="32" y="277" fill="#bcffa1" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">PARTIDAS · DESCUBRIMIENTOS</text>
+<path d="M32 307H608" stroke="#bcffa1" opacity=".3"/>
+<text x="32" y="336" fill="#bcffa1" opacity=".8" font-family="Arial,sans-serif" font-size="12">GamerGitBug · Portfolio</text>
+</svg>
