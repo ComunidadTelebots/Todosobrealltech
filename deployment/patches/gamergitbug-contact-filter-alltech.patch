@@ -1,0 +1,78 @@
+diff --git a/apps/api/src/routes/moonbot-admin.js b/apps/api/src/routes/moonbot-admin.js
+index 9e49a2e..424f8ed 100644
+--- a/apps/api/src/routes/moonbot-admin.js
++++ b/apps/api/src/routes/moonbot-admin.js
+@@ -1402,7 +1402,7 @@ router.all('/bot-conversations', async (req, res) => {
+   if (!serviceConfig(res)) return;
+   res.set('Cache-Control', 'private, no-store');
+   const params = new URLSearchParams();
+-  for (const key of ['bot_id', 'chat_id', 'q', 'type', 'page']) {
++  for (const key of ['bot_id', 'chat_id', 'q', 'type', 'page', 'source']) {
+     if (req.query[key] !== undefined) {
+       if (typeof req.query[key] !== 'string' || req.query[key].length > 100) return res.status(400).json({ ok: false, error: 'Filtro inválido' });
+       params.set(key, req.query[key]);
+diff --git a/apps/web/src/components/MoonbotBotExplorer.jsx b/apps/web/src/components/MoonbotBotExplorer.jsx
+index 23e35a3..1028c77 100644
+--- a/apps/web/src/components/MoonbotBotExplorer.jsx
++++ b/apps/web/src/components/MoonbotBotExplorer.jsx
+@@ -8,6 +8,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
+   const [botId, setBotId] = useState('');
+   const [query, setQuery] = useState('');
+   const [kind, setKind] = useState('all');
++  const [source, setSource] = useState('all');
+   const [page, setPage] = useState(1);
+   const [listing, setListing] = useState(null);
+   const [chat, setChat] = useState(null);
+@@ -55,7 +56,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
+     const controller = new AbortController();
+     const timer = setTimeout(async () => {
+       try {
+-        const params = new URLSearchParams({ bot_id: botId, q: query, type: kind, page: String(page) });
++        const params = new URLSearchParams({ bot_id: botId, q: query, type: kind, page: String(page), source });
+         const response = await api.fetch(`/moonbot-admin/bot-conversations?${params}`, { signal: controller.signal });
+         const data = await api.readJson(response);
+         if (!response.ok || !data.ok) throw new Error(data.error || 'No se pueden consultar los chats');
+@@ -63,12 +64,12 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
+       } catch (reason) { if (!controller.signal.aborted) setError(reason.message); }
+     }, 250);
+     return () => { clearTimeout(timer); controller.abort(); };
+-  }, [botId, query, kind, page, refresh]);
++  }, [botId, query, kind, page, refresh, source]);
+   useEffect(() => {
+     setDetail(null); setError('');
+     if (!chat) return undefined;
+     const controller = new AbortController();
+-    const params = new URLSearchParams({ bot_id: botId, chat_id: chat.id });
++    const params = new URLSearchParams({ bot_id: botId, chat_id: chat.id, source });
+     api.fetch(`/moonbot-admin/bot-conversations?${params}`, { signal: controller.signal })
+       .then(async response => {
+         const data = await api.readJson(response);
+@@ -76,7 +77,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
+         if (!controller.signal.aborted) setDetail(data);
+       }).catch(reason => { if (!controller.signal.aborted) setError(reason.message); });
+     return () => controller.abort();
+-  }, [botId, chat]);
++  }, [botId, chat, source]);
+   const bot = bots.find(item => item.id === botId);
+   const metrics = performance.find(item => item.username === bot?.username);
+   return <section className="mt-6 space-y-4 rounded-xl border p-4" aria-label="Información y chats por bot">
+@@ -88,6 +89,10 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
+     </select></label>
+     {bot && <div className="rounded-lg bg-muted/30 p-3 text-sm"><b>@{bot.username}</b> · ID {bot.id} · {bot.chats} chats conocidos
+       <p>Estado: {metrics?.status || 'No medido'} · Latencia: {metrics?.latency_ms == null ? 'Sin medición' : `${metrics.latency_ms} ms`} · Errores API: {metrics?.api_errors ?? 'Sin medición'}</p></div>}
++    <div className="flex flex-wrap gap-2" role="group" aria-label="Origen de las conversaciones">
++      {[['all', 'Todas'], ['gamergitbug', 'Contacto GamerGitBug'], ['general', 'Resto de conversaciones']].map(([value, label]) => <Button key={value} variant={source === value ? 'default' : 'outline'} aria-pressed={source === value} onClick={() => { setSource(value); setPage(1); setChat(null); setDetail(null); }}>{label}</Button>)}
++    </div>
++    <p className="text-sm text-muted-foreground">GamerGitBug agrupa los chats privados que activaron el comando de contacto. Dentro se conserva el historial del chat, incluidas otras funciones del bot.</p>
+     <div className="flex flex-wrap gap-2">
+       <input aria-label="Buscar chat del bot" className="rounded border bg-background p-2" placeholder="Nombre o ID del chat" value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} />
+       <select aria-label="Tipo de conversación" className="rounded border bg-background p-2" value={kind} onChange={event => { setKind(event.target.value); setPage(1); }}><option value="all">Todos los chats</option><option value="private">Usuarios · chats privados</option><option value="community">Grupos y canales</option></select>
+@@ -97,7 +102,7 @@ export default function MoonbotBotExplorer({ initialUsername = '', performance =
+     {notice && <p role="status">{notice}</p>}
+     <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
+       <div className="space-y-2"><p className="text-sm">{listing ? `${listing.total} conversaciones` : botId ? 'Cargando chats…' : 'Selecciona un bot'}</p>
+-        {listing?.chats.map(item => <button key={item.id} className={`block w-full rounded border p-3 text-left ${chat?.id === item.id ? 'border-cyan-500 bg-cyan-500/10' : ''}`} onClick={() => setChat(item)}><b className="block break-words">{item.name}</b><small>{item.type === 'private' ? 'Chat privado' : 'Grupo / canal'} · {item.id}</small></button>)}
++        {listing?.chats.map(item => <button key={item.id} className={`block w-full rounded border p-3 text-left ${chat?.id === item.id ? 'border-cyan-500 bg-cyan-500/10' : ''}`} onClick={() => setChat(item)}><b className="block break-words">{item.name}</b><small>{item.source === 'gamergitbug' ? 'Contacto GamerGitBug · ' : ''}{item.type === 'private' ? 'Chat privado' : 'Grupo / canal'} · {item.id}</small></button>)}
+         {listing && <div className="flex items-center gap-2"><Button variant="outline" disabled={listing.page <= 1} onClick={() => setPage(listing.page - 1)}>Anterior</Button><span>{listing.page}/{listing.pages}</span><Button variant="outline" disabled={listing.page >= listing.pages} onClick={() => setPage(listing.page + 1)}>Siguiente</Button></div>}
+       </div>
+       <div className="rounded-lg border p-4" aria-label="Historial del chat seleccionado">

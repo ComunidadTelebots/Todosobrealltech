@@ -1,0 +1,115 @@
+diff --git a/core/bot_conversations.py b/core/bot_conversations.py
+index cb4d70c..c2432f1 100644
+--- a/core/bot_conversations.py
++++ b/core/bot_conversations.py
+@@ -101,7 +101,32 @@ def apply_message_action(bots, db, body, transport=None):
+         ACTION_LOCK.release()
+ 
+ 
+-def conversation_snapshot(bots, db, bot_id=None, chat_id=None, query='', kind='all', page=1):
++def contact_source(bot, db, cid):
++    """Attribute only explicit contact starts, scoped to the selected bot/private chat."""
++    if str(getattr(bot, 'bot_username', '')).lstrip('@').lower() != 'cintiabot' or not str(cid).isdigit():
++        return 'general'
++    state = db.get(f'GAMERGITBUG_CONTACT_{bot.bot_id}_{cid}', {})
++    if isinstance(state, dict) and (state.get('source') == 'gamergitbug_contact' or state.get('status') in ('awaiting_message', 'received', 'cancelled', 'expired')):
++        return 'gamergitbug'
++    # Recover prior starts from retained history; never infer from ordinary text.
++    for row in db.get(f'CHAT_HIST_{cid}', [])[-200:]:
++        if not isinstance(row, dict) or str(row.get('bot_id', '')) != str(bot.bot_id) or row.get('outgoing'):
++            continue
++        parts = str(row.get('text', '')).strip().split(maxsplit=1)
++        if not parts:
++            continue
++        command = parts[0].lower()
++        if '@' in command and command.split('@', 1)[1] != 'cintiabot':
++            continue
++        command = command.split('@', 1)[0]
++        if command == '/contacto_gamergitbug' or (command == '/start' and len(parts) == 2 and parts[1] == 'gamergitbug_contact'):
++            return 'gamergitbug'
++    return 'general'
++
++
++def conversation_snapshot(bots, db, bot_id=None, chat_id=None, query='', kind='all', page=1, source='all'):
++    if source not in ('all', 'gamergitbug', 'general'):
++        return {'ok': False, 'error': 'Origen inválido'}, 400
+     bots = list(bots)
+     if bot_id is None:
+         return {'ok': True, 'bots': [
+@@ -115,12 +140,15 @@ def conversation_snapshot(bots, db, bot_id=None, chat_id=None, query='', kind='a
+     if chat_id is not None:
+         if chat_id not in ids:
+             return {'ok': False, 'error': 'Chat no asociado al bot'}, 404
++        origin = contact_source(bot, db, chat_id)
++        if source != 'all' and origin != source:
++            return {'ok': False, 'error': 'Chat no incluido en este origen'}, 404
+         history = db.get(f'CHAT_HIST_{chat_id}', [])
+         safe = [{**{key: str(row[key])[:8000] for key in ('time', 'sender', 'text') if key in row},
+                  'message_id': row.get('message_id'), 'actions': message_actions(row, bot_id),
+                  'deleted': bool(row.get('deleted'))}
+                 for row in history[-100:] if isinstance(row, dict)]
+-        return {'ok': True, 'history': safe, 'history_scope': 'shared_chat',
++        return {'ok': True, 'history': safe, 'history_scope': 'shared_chat', 'source': origin,
+                 'notice': 'Historial registrado por chat, compartido entre los bots presentes. No permite atribuir cada mensaje a este bot ni recuperar mensajes anteriores no guardados.'}, 200
+     names = db.get('CHAT_NAMES', {})
+     seen = db.get('U_FILE', {})
+@@ -136,7 +164,10 @@ def conversation_snapshot(bots, db, bot_id=None, chat_id=None, query='', kind='a
+             continue
+         if query.lower() not in (name + ' ' + cid).lower():
+             continue
+-        rows.append({'id': cid, 'name': name, 'type': ctype, 'last_seen': value.get('last_seen')})
++        origin = contact_source(bot, db, cid)
++        if source != 'all' and origin != source:
++            continue
++        rows.append({'source': origin, 'id': cid, 'name': name, 'type': ctype, 'last_seen': value.get('last_seen')})
+     pages = max(1, (len(rows) + 39) // 40)
+     page = min(max(1, page), pages)
+     return {'ok': True, 'chats': rows[(page-1)*40:page*40], 'page': page, 'pages': pages, 'total': len(rows)}, 200
+@@ -161,16 +192,17 @@ def register_bot_conversations(app, get_bots, db, history_cache=None):
+         bot_id = request.args.get('bot_id') or None
+         chat_id = request.args.get('chat_id') or None
+         kind = request.args.get('type', 'all')
++        source = request.args.get('source', 'all')
+         if ((bot_id and not re.fullmatch(r'[1-9]\d{0,19}', bot_id)) or
+                 (chat_id and (not bot_id or not re.fullmatch(r'-?[1-9]\d{0,19}', chat_id))) or
+-                kind not in ('all', 'private', 'community')):
++                kind not in ('all', 'private', 'community') or source not in ('all', 'gamergitbug', 'general')):
+             return jsonify({'ok': False, 'error': 'Filtro inválido'}), 400
+         try:
+             page = max(1, int(request.args.get('page', '1')))
+         except ValueError:
+             return jsonify({'ok': False}), 400
+         payload, status = conversation_snapshot(get_bots(), db, bot_id, chat_id,
+-                                                request.args.get('q', '')[:100], kind, page)
++                                                request.args.get('q', '')[:100], kind, page, source)
+         response = jsonify(payload)
+         response.headers['Cache-Control'] = 'private, no-store'
+         return response, status
+diff --git a/tests/test_bot_conversations.py b/tests/test_bot_conversations.py
+index 3ff67d5..c46cdc3 100644
+--- a/tests/test_bot_conversations.py
++++ b/tests/test_bot_conversations.py
+@@ -19,6 +19,23 @@ class ConversationsTest(unittest.TestCase):
+         self.db = {'CHATS_secret-one': ['10', '-20'], 'CHATS_secret-two': ['30'],
+                    'CHAT_HIST_10': [{'text': 'hello', 'token': 'must-not-leak', 'media': {'file_id': 'private'}}]}
+ 
++    def test_source_filter_is_scoped_and_applied_before_pagination(self):
++        self.bots[0].bot_username = 'CintiaBot'
++        self.db['CHATS_secret-one'] = [str(n) for n in range(10,65)]
++        self.db['GAMERGITBUG_CONTACT_1_63'] = {'status':'awaiting_message'}
++        self.db['CHAT_HIST_64'] = [{'bot_id':'1','text':'/start gamergitbug_contact'}]
++        self.db['CHAT_HIST_10'] = [{'bot_id':'2','text':'/start gamergitbug_contact'}]
++        self.db['CHAT_HIST_11'] = [{'bot_id':'1','text':'hola gamergitbug_contact'}]
++        data, status = conversation_snapshot(self.bots,self.db,'1',source='gamergitbug',page=99)
++        self.assertEqual(status,200)
++        self.assertEqual(data['total'],2)
++        self.assertEqual(data['pages'],1)
++        self.assertEqual({r['id'] for r in data['chats']},{'63','64'})
++        self.assertEqual(conversation_snapshot(self.bots,self.db,'1',source='general')[0]['total'],53)
++        self.assertEqual(conversation_snapshot(self.bots,self.db,'1','10',source='gamergitbug')[1],404)
++        self.assertEqual(conversation_snapshot(self.bots,self.db,'1',source='invalid')[1],400)
++        self.assertEqual(conversation_snapshot(self.bots,self.db,'2',source='gamergitbug')[0]['total'],0)
++
+     def test_membership_enforced(self):
+         self.assertEqual(conversation_snapshot(self.bots, self.db, '2', '10')[1], 404)
+         self.assertEqual(conversation_snapshot(self.bots, self.db, '99')[1], 404)
