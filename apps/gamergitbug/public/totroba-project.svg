@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+<title id="title">Tot Roba · Teixits per a la llar · Terrassa</title>
+<rect width="640" height="360" fill="#f3b928"/><path d="M0 300H640V360H0Z" fill="#171619"/>
+<path d="M42 48H598M42 265H598" stroke="#171619" stroke-width="3"/>
+<text x="320" y="158" text-anchor="middle" fill="#171619" font-family="Arial, sans-serif" font-weight="900" font-style="italic" font-size="72">TOT ROBA</text>
+<text x="320" y="204" text-anchor="middle" fill="#171619" font-family="Arial, sans-serif" font-weight="700" font-size="22" letter-spacing="3">TEIXITS PER A LA LLAR</text>
+<text x="320" y="337" text-anchor="middle" fill="#f3b928" font-family="Arial, sans-serif" font-size="18" letter-spacing="4">TERRASSA · COMERCIO LOCAL</text>
+</svg>
