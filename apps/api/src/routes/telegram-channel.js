@@ -4,7 +4,7 @@ import { MOONBOT_INTERNAL_URL, moonbotAdminHeaders } from '../utils/moonbotConne
 
 const router = Router();
 
-const ALLOWED_CHANNELS = new Set(['resistencia_censura', 'comunidadtelebots', 'TodoSobreGameplaysCanal']);
+const ALLOWED_CHANNELS = new Set(['resistencia_censura', 'comunidadtelebots', 'TodoSobreGameplaysCanal', 'TodoSobreAllTech']);
 const CACHE_TTL_MS = 3 * 60 * 1000;
 const CACHE_FILE = process.env.TELEGRAM_CHANNEL_CACHE_FILE || '/data/telegram-channel-cache.json';
 const FETCH_TIMEOUT_MS = Math.max(3000, Number(process.env.TELEGRAM_CHANNEL_TIMEOUT_MS || 9000));
