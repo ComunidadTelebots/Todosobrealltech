@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+<title id="title">Comunidad Telebots · Carátula de proyecto</title>
+<rect width="640" height="360" fill="#17384c"/>
+<circle cx="485" cy="95" r="170" fill="#7de5ec" opacity=".06"/>
+<g fill="none" stroke="#7de5ec" color="#7de5ec" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="395" y="72" width="142" height="107" rx="25"/><path d="M466 72V45M433 149H499M395 115H377M537 115H555"/><circle cx="433" cy="111" r="8"/><circle cx="499" cy="111" r="8"/><circle cx="466" cy="40" r="5"/></g>
+<text x="32" y="47" fill="#7de5ec" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">GAMERGITBUG / PROYECTOS</text>
+<text x="32" y="244" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="700">Comunidad Telebots</text>
+<text x="32" y="277" fill="#7de5ec" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">BOTS · AUTOMATIZACIÓN</text>
+<path d="M32 307H608" stroke="#7de5ec" opacity=".3"/>
+<text x="32" y="336" fill="#7de5ec" opacity=".8" font-family="Arial,sans-serif" font-size="12">GamerGitBug · Portfolio</text>
+</svg>

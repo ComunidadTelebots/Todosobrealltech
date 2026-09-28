@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+<title id="title">Resistencia a la Censura · Carátula de proyecto</title>
+<rect width="640" height="360" fill="#432539"/>
+<circle cx="485" cy="95" r="170" fill="#ffad99" opacity=".06"/>
+<g fill="none" stroke="#ffad99" color="#ffad99" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M423 133L391 125V92L423 84L503 49V168L423 133ZM419 135L437 183H455L441 143M523 86L559 72M527 108H571M523 132L559 149"/></g>
+<text x="32" y="47" fill="#ffad99" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">GAMERGITBUG / PROYECTOS</text>
+<text x="32" y="244" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="700">Resistencia a la Censura</text>
+<text x="32" y="277" fill="#ffad99" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">INFORMACIÓN · VOZ PROPIA</text>
+<path d="M32 307H608" stroke="#ffad99" opacity=".3"/>
+<text x="32" y="336" fill="#ffad99" opacity=".8" font-family="Arial,sans-serif" font-size="12">GamerGitBug · Portfolio</text>
+</svg>
