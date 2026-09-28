@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createNewsResolver } from '../utils/newsArchiveResolver.js';
+import { createNewsResolver, archiveFetch, instantNewsId } from '../utils/newsArchiveResolver.js';
 import staticArticles from '../data/staticArticles.js';
 
 const router = Router();
@@ -7,13 +7,27 @@ const router = Router();
 const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech';
 const PB_HOST = process.env.POCKETBASE_HOST || 'http://localhost:8090';
 const resolveNews = createNewsResolver({ pbHost: PB_HOST, siteUrl: SITE_URL, staticArticles, cacheFile: '/data/news-archive-index.json' });
+let readerCache = null, readerAt = 0;
+router.get('/reader', async (_req, res) => {
+  try {
+    if (!readerCache || Date.now() - readerAt > 60000) {
+      const params = new URLSearchParams({ perPage: '60', sort: '-created', filter: 'oculto=false', fields: 'slug,titulo,fecha,created' });
+      const response = await archiveFetch(`${PB_HOST}/api/collections/nw3_noticias/records?${params}`);
+      if (!response.ok) throw new Error('Archive unavailable');
+      const data = await response.json();
+      readerCache = (data.items || []).map(r => ({ id: 'news_' + instantNewsId(`${SITE_URL}/noticias/${r.slug}`), title: r.titulo, text: r.titulo, date: r.created, url: `${SITE_URL}/noticias/${r.slug}` }));
+      readerAt = Date.now();
+    }
+    return res.json({ ok: true, posts: readerCache });
+  } catch { return readerCache ? res.json({ ok: true, posts: readerCache, stale: true }) : res.status(503).json({ ok: false, error: 'El archivo no responde.' }); }
+});
 router.get('/resolve/:id', async (req, res) => {
   if (!/^[a-f0-9]{16}$/.test(req.params.id)) return res.status(400).json({ ok: false });
   try {
     const article = await resolveNews(req.params.id);
     res.set('Cache-Control', 'no-store');
     return article ? res.json(article) : res.status(404).json({ ok: false, error: 'La noticia no está disponible en el archivo público.' });
-  } catch (error) { console.warn('[news-archive]', error.name, error.message); return res.status(503).json({ ok: false, error: 'El archivo no responde. Reintenta en unos segundos.' }); }
+  } catch (error) { console.warn('[news-archive]', error.name, error.message, error.cause?.code || ''); return res.status(503).json({ ok: false, error: 'El archivo no responde. Reintenta en unos segundos.' }); }
 });
 
 
