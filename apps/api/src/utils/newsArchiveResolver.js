@@ -13,7 +13,7 @@ export function archiveFetch(url) {
       response.on('error', reject);
       response.on('end', () => resolve({ ok: response.statusCode === 200, status: response.statusCode, json: async () => JSON.parse(Buffer.concat(chunks).toString('utf8')) }));
     });
-    request.on('timeout', () => request.destroy(new Error('Archive request timed out')));
+    request.on('timeout', () => request.destroy(new Error('Archive request timed out: '+target.hostname+':'+target.port)));
     request.on('error', reject);
   });
 }
