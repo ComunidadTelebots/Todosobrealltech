@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './styles.css';
+import ContactWidget from './ContactWidget.jsx';
+import { CONTACT_BOT, TELEGRAM_CONTACT_URL } from './contact.js';
 
 const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 const CONSENT_STORAGE_KEY = 'gamergitbug_analytics_consent';
@@ -265,8 +267,12 @@ export default function App() {
           <h2>Contacto</h2>
           <p>Abierto a colaboraciones, encargos y nuevos proyectos.</p>
           <a href="mailto:hello@gamergitbug.com">hello@gamergitbug.com</a>
+          <div className="contact-tools"><a className="button primary" href={TELEGRAM_CONTACT_URL} target="_blank" rel="noopener noreferrer">Contactar por Telegram · @{CONTACT_BOT} ↗</a></div>
+          <p>El botón abre el comando especial de contacto. Pulsa Iniciar en Telegram y escribe tu consulta; la respuesta llegará al mismo chat. Las demás funciones de CintiaBot siguen disponibles.</p>
+          <a className="contact-admin-link" href="/contacto-admin/">Acceso privado · Gestión de consultas</a>
         </section>
       </main>
+      <ContactWidget />
 
       {showCookieBanner ? (
         <aside className="cookie-banner" aria-label="Preferencias de cookies">
