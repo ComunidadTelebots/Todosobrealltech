@@ -88,6 +88,21 @@ const services = [
 
 const projects = [
   {
+    title: 'Morla de la Valdería',
+    text: 'Web dedicada a Morla de la Valdería, con información sobre el pueblo, su geografía, patrimonio y arquitectura tradicional, además de enlaces a sus servicios y contacto para colaborar.',
+    tags: ['HTML5', 'CSS3', 'JavaScript', 'Nginx', 'Docker', 'Traefik'],
+    url: 'https://morladelavalderia.es',
+  },
+  {
+    title: 'Tot Roba · Terrassa',
+    text: 'Web para una tienda de textiles del hogar. Rediseño inspirado en su rótulo, catálogo por familias, guías de cuidado y contenido en castellano, catalán e inglés. Nueva versión en preparación.',
+    tags: ['HTML5', 'CSS3', 'JavaScript', 'Nginx', 'Docker', 'Traefik'],
+    url: 'https://totrobaterrassa.cat',
+    image: '/totroba-project.svg',
+    imageAlt: 'Tot Roba: identidad amarilla y negra inspirada en el rótulo de la tienda',
+    development: 'En desarrollo: administración e inventario con Python, Flask y SQLite; reservas y seguimiento con Telegram Bot API y Mini App. Todavía no disponibles en la web pública.',
+  },
+  {
     title: 'TodoSobreAllTech',
     text: 'Hub principal con blog, panel de administración, sistema de autenticación y gestión de contenido por colecciones.',
     tags: ['React', 'shadcn/ui', 'PocketBase', 'Tailwind'],
@@ -122,6 +137,13 @@ const projects = [
 const skills = ['React', 'Vite', 'Docker', 'Traefik', 'HTML/CSS', 'SEO', 'Responsive Design', 'UI Systems'];
 
 export default function App() {
+  const [projectSearch, setProjectSearch] = useState('');
+  const normalizeSearch = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const searchTerms = normalizeSearch(projectSearch).trim().split(/\s+/).filter(Boolean);
+  const visibleProjects = projects.filter((project) => {
+    const content = normalizeSearch([project.title, project.text, ...project.tags].join(' '));
+    return searchTerms.every((term) => content.includes(term));
+  });
   const [showCookieBanner, setShowCookieBanner] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
@@ -183,15 +205,28 @@ export default function App() {
             <h2>Proyectos</h2>
             <p>Sitios en producción construidos y mantenidos por mí.</p>
           </div>
-          <div className="project-grid">
-            {projects.map((project) => (
+          <div className="project-search" role="search" aria-label="Buscar proyectos">
+            <label htmlFor="project-search">Buscar proyectos</label>
+            <div className="project-search-controls">
+              <input id="project-search" type="search" placeholder="Nombre, descripción o tecnología…"
+                value={projectSearch} onChange={(event) => setProjectSearch(event.target.value)}
+                aria-controls="project-results" onKeyDown={(event) => { if (event.key === 'Escape') setProjectSearch(''); }} />
+              {projectSearch && <button type="button" className="button secondary" onClick={() => setProjectSearch('')}>Limpiar</button>}
+            </div>
+            <p role="status" aria-live="polite">{visibleProjects.length} de {projects.length} proyectos</p>
+          </div>
+          {!visibleProjects.length && <p className="project-search-empty">No hay proyectos que coincidan. Prueba con otro nombre o tecnología.</p>}
+          <div className="project-grid" id="project-results">
+            {visibleProjects.map((project) => (
               <article className="project-card" key={project.title}>
+                {project.image && <img className="project-image" src={project.image} alt={project.imageAlt} width="640" height="360" loading="lazy" />}
                 <h3>
                   {project.url
                     ? <a href={project.url} target="_blank" rel="noopener noreferrer">{project.title} ↗</a>
                     : project.title}
                 </h3>
                 <p>{project.text}</p>
+                {project.development && <p className="project-development">{project.development}</p>}
                 <div className="tags">
                   {project.tags.map((tag) => (
                     <span key={tag}>{tag}</span>
