@@ -211,6 +211,9 @@ h3 {
   padding: 28px 26px 24px;
 }
 
+.project-image { display:block; width:100%; height:auto; aspect-ratio:16/9; object-fit:contain; border-radius:12px; margin-bottom:22px; }
+.project-card .project-development { min-height:0; font-size:.82rem; line-height:1.6; border-left:3px solid #f3b928; padding-left:12px; }
+
 .project-card p {
   min-height: 80px;
   margin-bottom: 20px;
@@ -392,3 +395,12 @@ h3 {
     flex-direction: column;
   }
 }
+
+/* Project search stays local and follows the portfolio palette. */
+.project-search { margin-bottom: 22px; }
+.project-search label { display: block; margin-bottom: 10px; font-weight: 700; }
+.project-search-controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.project-search input { flex: 1 1 220px; min-width: 0; padding: 13px 16px; border: 1px solid #9977ff; border-radius: 12px; background: #19132c; color: #fff; font: inherit; }
+.project-search input::placeholder { color: #c9c2dc; }
+.project-search input:focus-visible, .project-search button:focus-visible { outline: 3px solid #c7b4ff; outline-offset: 3px; }
+.project-search p, .project-search-empty { color: #d9e1f5; line-height: 1.6; }
