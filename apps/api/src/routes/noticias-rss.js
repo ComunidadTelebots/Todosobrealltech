@@ -6,14 +6,14 @@ const router = Router();
 
 const SITE_URL = process.env.SITE_URL || 'https://noticiasweb3.todosobreall.tech';
 const PB_HOST = process.env.POCKETBASE_HOST || 'http://localhost:8090';
-const resolveNews = createNewsResolver({ pbHost: PB_HOST, siteUrl: SITE_URL, staticArticles });
+const resolveNews = createNewsResolver({ pbHost: PB_HOST, siteUrl: SITE_URL, staticArticles, cacheFile: '/data/news-archive-index.json' });
 router.get('/resolve/:id', async (req, res) => {
   if (!/^[a-f0-9]{16}$/.test(req.params.id)) return res.status(400).json({ ok: false });
   try {
     const article = await resolveNews(req.params.id);
     res.set('Cache-Control', 'no-store');
     return article ? res.json(article) : res.status(404).json({ ok: false, error: 'La noticia no está disponible en el archivo público.' });
-  } catch { return res.status(503).json({ ok: false, error: 'El archivo no responde. Reintenta en unos segundos.' }); }
+  } catch (error) { console.warn('[news-archive]', error.name, error.message); return res.status(503).json({ ok: false, error: 'El archivo no responde. Reintenta en unos segundos.' }); }
 });
 
 
