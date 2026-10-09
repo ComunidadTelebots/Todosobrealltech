@@ -1,0 +1,1526 @@
+/*
+ *  Copyright (c) 2018-present, Evgeny Nadymov
+ *
+ * This source code is licensed under the GPL v.3.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+import React from 'react';
+import * as ReactDOM from 'react-dom';
+import classNames from 'classnames';
+import withStyles from '@material-ui/core/styles/withStyles';
+import DayMeta from '../Message/DayMeta';
+import FilesDropTarget from './FilesDropTarget';
+import Album from '../Message/Album';
+import Message from '../Message/Message';
+import PinnedMessage from './PinnedMessage';
+import Placeholder from './Placeholder';
+import ScrollDownButton from './ScrollDownButton';
+import JumpToUnreadButton from './JumpToUnreadButton';
+import ServiceMessage from '../Message/ServiceMessage';
+import StickersHint from './StickersHint';
+import CommunityChannelAd from './CommunityChannelAd';
+import OfficialSponsoredMessage from './OfficialSponsoredMessage';
+import { throttle, getPhotoSize, itemsInView, historyEquals } from '../../Utils/Common';
+import { loadChatsContent, loadDraftContent, loadMessageContents } from '../../Utils/File';
+import { canMessageBeEdited, filterDuplicateMessages, filterMessages } from '../../Utils/Message';
+import { isServiceMessage } from '../../Utils/ServiceMessage';
+import { canSendFiles, getChatFullInfo, getSupergroupId, isChannelChat, isGroupChat } from '../../Utils/Chat';
+import { highlightMessage, openChat } from '../../Actions/Client';
+import { MESSAGE_SLICE_LIMIT, MESSAGE_SPLIT_MAX_TIME_S, SCROLL_PRECISION } from '../../Constants';
+import AppStore from '../../Stores/ApplicationStore';
+import ChatStore from '../../Stores/ChatStore';
+import FileStore from '../../Stores/FileStore';
+import MessageStore from '../../Stores/MessageStore';
+import PlayerStore from '../../Stores/PlayerStore';
+import SupergroupStore from '../../Stores/SupergroupStore';
+import UserStore from '../../Stores/UserStore';
+import TdLibController from '../../Controllers/TdLibController';
+import { COMMUNITY_AD_PLACEMENT, getCommunityAdsEndpoint, normalizeCommunityAd } from '../../Utils/CommunityAds';
+import './MessagesList.css';
+
+const ScrollBehaviorEnum = Object.freeze({
+    SCROLL_TO_BOTTOM: 'SCROLL_TO_BOTTOM',
+    SCROLL_TO_UNREAD: 'SCROLL_TO_UNREAD',
+    SCROLL_TO_MESSAGE: 'SCROLL_TO_MESSAGE',
+    KEEP_SCROLL_POSITION: 'KEEP_SCROLL_POSITION',
+    NONE: 'NONE',
+});
+
+const styles = theme => ({
+    background: {
+        background: theme.palette.type === 'dark' ? theme.palette.grey[900] : '#e6ebee',
+    },
+});
+
+class MessagesList extends React.Component {
+    constructor(props) {
+        super(props);
+
+        // console.log(`MessagesList.ctor chat_id=${props.chatId} message_id=${props.messageId}`);
+
+        // console.log('MessagesList.newSessionId ctor');
+        this.sessionId = Date.now();
+        this.state = {
+            prevChatId: 0,
+            prevMessageId: null,
+            playerOpened: false,
+            history: [],
+            clearHistory: false,
+            selectionActive: false,
+            separatorMessageId: 0,
+            scrollDownVisible: false,
+            replyHistory: [],
+            sponsoredMessages: [],
+            sponsoredPostsBetween: 0,
+            communityAds: [],
+        };
+
+        this.listRef = React.createRef();
+        this.itemsRef = React.createRef();
+
+        this.defferedActions = [];
+        this.itemsMap = new Map();
+
+        this.updateItemsInView = throttle(this.updateItemsInView, 500);
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.chatId !== state.prevChatId || props.messageId !== state.prevMessageId) {
+            return {
+                prevChatId: props.chatId,
+                prevMessageId: props.messageId,
+                clearHistory: false,
+                selectionActive: false,
+                separatorMessageId: props.chatId !== state.prevChatId ? 0 : state.separatorMessageId,
+                scrollDownVisible:
+                    props.chatId === state.prevChatId && (state.scrollDownVisible || state.replyHistory.length > 0),
+                replyHistory: props.chatId !== state.prevChatId ? [] : state.replyHistory,
+            };
+        }
+
+        return null;
+    }
+
+    getSnapshotBeforeUpdate(prevProps, prevState) {
+        const list = this.listRef.current;
+        const { scrollTop, scrollHeight, offsetHeight } = list;
+
+        const snapshot = {
+            scrollTop,
+            scrollHeight,
+            offsetHeight,
+        };
+
+        // console.log('[ml] getSnapshotBeforeUpdate', snapshot);
+        this.snapshot = snapshot;
+        return snapshot;
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { chatId, messageId } = this.props;
+        const { scrollDownVisible } = this.state;
+
+        const list = this.listRef.current;
+
+        // console.log(
+        //     `[ml] componentDidUpdate
+        //     scrollBehaviorNone=${this.scrollBehaviorNone}
+        //     scrollDownVisible=${scrollDownVisible}
+        //     list.scrollTop=${list.scrollTop}
+        //     list.scrollHeight=${list.scrollHeight}
+        //     list.offsetHeight=${list.offsetHeight}`
+        // );
+
+        if (prevProps.chatId !== chatId || prevProps.messageId !== messageId) {
+            this.handleSelectChat(chatId, prevProps.chatId, messageId, prevProps.messageId);
+        } else {
+            if (!this.scrollBehaviorNone) {
+                this.handleScrollBehavior(ScrollBehaviorEnum.KEEP_SCROLL_POSITION, snapshot);
+            }
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        const { chatId, messageId, theme } = this.props;
+        const {
+            playerOpened,
+            history,
+            dragging,
+            clearHistory,
+            selectionActive,
+            scrollDownVisible,
+            sponsoredMessages,
+            communityAds,
+        } = this.state;
+
+        if (nextProps.theme !== theme) {
+            // console.log('[ml] shouldComponentUpdate theme');
+            return true;
+        }
+
+        if (nextProps.chatId !== chatId) {
+            // console.log('[ml] shouldComponentUpdate chatId');
+            return true;
+        }
+
+        if (nextProps.messageId !== messageId) {
+            // console.log('[ml] shouldComponentUpdate messageId');
+            return true;
+        }
+
+        if (nextState.scrollDownVisible !== scrollDownVisible) {
+            // console.log('[ml] shouldComponentUpdate scrollDownVisible');
+            return true;
+        }
+
+        if (nextState.playerOpened !== playerOpened) {
+            // console.log('[ml] shouldComponentUpdate playerOpened');
+            return true;
+        }
+
+        if (!historyEquals(nextState.history, history)) {
+            // console.trace('[ml] shouldComponentUpdate history', nextState.history, history);
+            return true;
+        }
+
+        if (nextState.dragging !== dragging) {
+            // console.log('[ml] shouldComponentUpdate dragging');
+            return true;
+        }
+
+        if (nextState.clearHistory !== clearHistory) {
+            // console.log('[ml] shouldComponentUpdate clearHistory');
+            return true;
+        }
+
+        if (nextState.selectionActive !== selectionActive) {
+            // console.log('[ml] shouldComponentUpdate selectionActive');
+            return true;
+        }
+
+        if (nextState.sponsoredMessages !== sponsoredMessages || nextState.communityAds !== communityAds) return true;
+
+        // console.log('[ml] shouldComponentUpdate false');
+        return false;
+    }
+
+    componentDidMount() {
+        // document.addEventListener('keydown', this.onKeyDown, false);
+
+        AppStore.on('clientUpdateFocusWindow', this.onClientUpdateFocusWindow);
+        AppStore.on('clientUpdateDialogsReady', this.onClientUpdateDialogsReady);
+        ChatStore.on('clientUpdateClearHistory', this.onClientUpdateClearHistory);
+        ChatStore.on('updateChatLastMessage', this.onUpdateChatLastMessage);
+        MessageStore.on('clientUpdateClearSelection', this.onClientUpdateSelection);
+        MessageStore.on('clientUpdateMessageSelected', this.onClientUpdateSelection);
+        MessageStore.on('clientUpdateOpenReply', this.onClientUpdateOpenReply);
+        MessageStore.on('clientUpdateTryEditMessage', this.onClientUpdateTryEditMessage);
+        MessageStore.on('updateNewMessage', this.onUpdateNewMessage);
+        MessageStore.on('updateDeleteMessages', this.onUpdateDeleteMessages);
+        MessageStore.on('updateMessageContent', this.onUpdateMessageContent);
+        MessageStore.on('updateMessageSendSucceeded', this.onUpdateMessageSendSucceeded);
+        PlayerStore.on('clientUpdateMediaActive', this.onClientUpdateMediaActive);
+        PlayerStore.on('clientUpdateMediaEnding', this.onClientUpdateMediaEnding);
+        PlayerStore.on('clientUpdateMediaEnd', this.onClientUpdateMediaEnd);
+    }
+
+    componentWillUnmount() {
+        // document.removeEventListener('keydown', this.onKeyDown, false);
+
+        AppStore.off('clientUpdateFocusWindow', this.onClientUpdateFocusWindow);
+        AppStore.off('clientUpdateDialogsReady', this.onClientUpdateDialogsReady);
+        ChatStore.off('clientUpdateClearHistory', this.onClientUpdateClearHistory);
+        ChatStore.off('updateChatLastMessage', this.onUpdateChatLastMessage);
+        MessageStore.off('clientUpdateClearSelection', this.onClientUpdateSelection);
+        MessageStore.off('clientUpdateMessageSelected', this.onClientUpdateSelection);
+        MessageStore.off('clientUpdateOpenReply', this.onClientUpdateOpenReply);
+        MessageStore.off('clientUpdateTryEditMessage', this.onClientUpdateTryEditMessage);
+        MessageStore.off('updateNewMessage', this.onUpdateNewMessage);
+        MessageStore.off('updateDeleteMessages', this.onUpdateDeleteMessages);
+        MessageStore.off('updateMessageContent', this.onUpdateMessageContent);
+        MessageStore.off('updateMessageSendSucceeded', this.onUpdateMessageSendSucceeded);
+        PlayerStore.off('clientUpdateMediaActive', this.onClientUpdateMediaActive);
+        PlayerStore.off('clientUpdateMediaEnding', this.onClientUpdateMediaEnding);
+        PlayerStore.off('clientUpdateMediaEnd', this.onClientUpdateMediaEnd);
+    }
+
+    onKeyDown = event => {
+        // if (event.keyCode === 27) {
+        //     if (MessageStore.selectedItems.size > 0) {
+        //         console.log('[k] messagesList onKeyDown');
+        //         clearSelection();
+        //         event.stopPropagation();
+        //         event.preventDefault();
+        //     }
+        // }
+    };
+
+    onClientUpdateTryEditMessage = async update => {
+        if (this.completed) {
+            const { history } = this.state;
+
+            for (let i = history.length - 1; i >= 0; i--) {
+                const message = history[i];
+                if (canMessageBeEdited(message.chat_id, message.id)) {
+                    TdLibController.clientUpdate({
+                        '@type': 'clientUpdateEditMessage',
+                        chatId: message.chat_id,
+                        messageId: message.id,
+                    });
+
+                    return;
+                }
+            }
+        }
+
+        const result = await TdLibController.send({
+            '@type': 'searchChatMessages',
+            chat_id: this.props.chatId,
+            query: '',
+            sender_user_id: UserStore.getMyId(),
+            from_message_id: 0,
+            offset: 0,
+            limit: 100,
+            filter: { '@type': 'searchMessagesFilterEmpty' },
+        });
+
+        for (let i = 0; i < result.messages.length; i++) {
+            const message = result.messages[i];
+            if (canMessageBeEdited(message.chat_id, message.id)) {
+                TdLibController.clientUpdate({
+                    '@type': 'clientUpdateEditMessage',
+                    chatId: message.chat_id,
+                    messageId: message.id,
+                });
+
+                return;
+            }
+        }
+    };
+
+    onClientUpdateDialogsReady = async update => {
+        await FileStore.initDB(async () => {
+            const { chatId, messageId } = this.props;
+            if (chatId) {
+                const chat = ChatStore.get(chatId);
+                if (chat && chat.type) {
+                    const { type } = chat;
+                    switch (type['@type']) {
+                        case 'chatTypePrivate':
+                        case 'chatTypeSecret': {
+                            await TdLibController.send({
+                                '@type': 'createPrivateChat',
+                                user_id: type.user_id,
+                                force: false,
+                            });
+                            break;
+                        }
+                        case 'chatTypeBasicGroup': {
+                            await TdLibController.send({
+                                '@type': 'createBasicGroupChat',
+                                basic_group_id: type.basic_group_id,
+                                force: false,
+                            });
+                            break;
+                        }
+                        case 'chatTypeSupergroup': {
+                            await TdLibController.send({
+                                '@type': 'createSupergroupChat',
+                                supergroup_id: type.supergroup_id,
+                                force: false,
+                            });
+                            break;
+                        }
+                    }
+                    this.handleSelectChat(chatId, 0, messageId, 0);
+                }
+            }
+        });
+    };
+
+    onClientUpdateFocusWindow = update => {
+        const { focused } = update;
+        if (focused) {
+            this.defferedActions.forEach(x => x());
+            this.defferedActions = [];
+        }
+    };
+
+    onClientUpdateOpenReply = update => {
+        const { chatId, messageId } = update;
+        const { replyHistory } = this.state;
+
+        if (this.props.chatId !== chatId) {
+            return;
+        }
+
+        const lastItem = replyHistory.length > 0 ? replyHistory[replyHistory.length - 1] : null;
+        if (lastItem && lastItem.chatId === chatId && lastItem.messageId === messageId) {
+            return;
+        }
+
+        replyHistory.push({ chatId, messageId });
+    };
+
+    onClientUpdateMediaActive = update => {
+        const list = this.listRef.current;
+
+        const prevOffsetHeight = list.offsetHeight;
+        const prevScrollTop = list.scrollTop;
+        this.setState({ playerOpened: true }, () => {
+            if (list.scrollTop === prevScrollTop) {
+                list.scrollTop += Math.abs(prevOffsetHeight - list.offsetHeight);
+            }
+        });
+    };
+
+    onClientUpdateMediaEnding = udpate => {
+        const list = this.listRef.current;
+
+        this.prevOffsetHeight = list.offsetHeight;
+        this.prevScrollTop = list.scrollTop;
+    };
+
+    onClientUpdateMediaEnd = udpate => {
+        const list = this.listRef.current;
+
+        //const prevOffsetHeight = list.offsetHeight;
+        //const prevScrollTop = list.scrollTop;
+
+        this.setState({ playerOpened: false }, () => {
+            if (list.scrollTop === this.prevScrollTop) {
+                list.scrollTop -= Math.abs(this.prevOffsetHeight - list.offsetHeight);
+            }
+        });
+    };
+
+    onClientUpdateSelection = update => {
+        this.setState({
+            selectionActive: MessageStore.selectedItems.size > 0,
+        });
+    };
+
+    onClientUpdateClearHistory = update => {
+        const { chatId } = this.props;
+
+        if (chatId === update.chatId) {
+            this.setState({ clearHistory: update.inProgress });
+        }
+    };
+
+    onUpdateMessageContent = update => {
+        const { chatId } = this.props;
+        const { history } = this.state;
+        const { chat_id, message_id } = update;
+
+        if (chatId !== chat_id) return;
+
+        if (history.findIndex(x => x.id === message_id) !== -1) {
+            const message = MessageStore.get(chat_id, message_id);
+            if (!message) return;
+
+            const store = FileStore.getStore();
+            loadMessageContents(store, [message]);
+        }
+    };
+
+    onUpdateChatLastMessage = update => {
+        const { chatId } = this.props;
+        if (chatId !== update.chat_id) return;
+    };
+
+    onUpdateMessageSendSucceeded = update => {
+        if (!this.completed) return;
+
+        const { message, old_message_id } = update;
+        const { chatId } = this.props;
+        if (chatId !== message.chat_id) return;
+
+        // let handleSendSucceeded = false;
+        // const { content } = message;
+        // switch (content['@type']) {
+        //     case 'messagePoll': {
+        //         handleSendSucceeded = true;
+        //         break;
+        //     }
+        // }
+        //
+        // if (!handleSendSucceeded) return;
+
+        const scrollBehavior = message.is_outgoing
+            ? ScrollBehaviorEnum.SCROLL_TO_BOTTOM
+            : ScrollBehaviorEnum.KEEP_SCROLL_POSITION;
+
+        this.replaceMessage(old_message_id, message, () => {
+            if (scrollBehavior !== ScrollBehaviorEnum.KEEP_SCROLL_POSITION) {
+                this.handleScrollBehavior(scrollBehavior, this.snapshot);
+            }
+        });
+
+        const store = FileStore.getStore();
+        loadMessageContents(store, [message]);
+        this.viewMessages([message]);
+    };
+
+    onUpdateNewMessage = update => {
+        if (!this.completed) return;
+
+        const { message } = update;
+        const { chatId } = this.props;
+        if (chatId !== message.chat_id) return;
+
+        const list = this.listRef.current;
+
+        let scrollBehavior = message.is_outgoing ? ScrollBehaviorEnum.SCROLL_TO_BOTTOM : ScrollBehaviorEnum.NONE;
+        if (list.scrollTop + list.offsetHeight >= list.scrollHeight) {
+            scrollBehavior = ScrollBehaviorEnum.SCROLL_TO_BOTTOM;
+        }
+
+        const newState = message.is_outgoing ? { scrollDownVisible: false } : {};
+
+        const history = [message];
+        this.scrollBehaviorNone = true;
+        this.insertPrevious(filterMessages(history), newState, () => {
+            this.scrollBehaviorNone = false;
+            this.handleScrollBehavior(scrollBehavior, this.snapshot);
+        });
+
+        const store = FileStore.getStore();
+        loadMessageContents(store, history);
+        this.viewMessages(history);
+    };
+
+    onUpdateDeleteMessages = update => {
+        const { chatId } = this.props;
+        const { chat_id, is_permanent, message_ids } = update;
+        if (chatId !== chat_id) return;
+
+        if (!is_permanent) return;
+
+        this.deleteHistory(message_ids);
+    };
+
+    updateItemsInView = () => {
+        if (!this.messages) return;
+
+        const messages = new Map();
+        const items = itemsInView(this.listRef, this.itemsRef);
+        for (let i = 0; i < items.length; i++) {
+            const messageWrapper = this.messages[items[i]];
+            if (messageWrapper) {
+                const message = messageWrapper.props.children[1];
+                const { chatId, messageId } = message.props;
+                const key = `${chatId}_${messageId}`;
+                messages.set(key, key);
+            }
+        }
+
+        TdLibController.clientUpdate({
+            '@type': 'clientUpdateMessagesInView',
+            messages: messages,
+        });
+        return;
+
+        if (!messages.length) return;
+
+        /*let ids = messages.map(x => x.id);
+        console.log('[perf] load_messages_contents ids=[' + ids + ']');
+
+                let messagesMap = new Map(messages.map((i) => [i.id, i]));
+
+                if (this.previousMessages){
+                    let cancelMessages = [];
+                    for (let i = 0; i < this.previousMessages.length; i++){
+                        if (!messagesMap.has(this.previousMessages[i].id)){
+                            cancelMessages.push(this.previousMessages[i]);
+                        }
+                    }
+                    if (cancelMessages.length > 0) {
+                        this.cancelLoadMessageContents(cancelMessages);
+                    }
+                }
+                this.previousMessages = messages;*/
+
+        const store = FileStore.getStore();
+        loadMessageContents(store, messages);
+    };
+
+    async handleSelectChat(chatId, previousChatId, messageId, previousMessageId) {
+        const chat = ChatStore.get(chatId);
+        const previousChat = ChatStore.get(previousChatId);
+
+        //console.log('MessagesList.newSessionId handleSelectChat');
+        this.sessionId = Date.now();
+        this.loading = false;
+        this.completed = false;
+        this.loadMigratedHistory = false;
+        this.defferedActions = [];
+
+        if (chat) {
+            TdLibController.send({
+                '@type': 'openChat',
+                chat_id: chat.id,
+            });
+
+            const unread = !messageId && chat.unread_count > 0;
+            const fromMessageId =
+                unread && chat.unread_count > 1 ? chat.last_read_inbox_message_id : messageId ? messageId : 0;
+            const offset = (unread && chat.unread_count > 1) || messageId ? -1 - MESSAGE_SLICE_LIMIT : 0;
+            const limit =
+                (unread && chat.unread_count > 1) || messageId ? 2 * MESSAGE_SLICE_LIMIT : MESSAGE_SLICE_LIMIT;
+
+            this.loading = true;
+            const sessionId = this.sessionId;
+            const result = await TdLibController.send({
+                '@type': 'getChatHistory',
+                chat_id: chat.id,
+                from_message_id: fromMessageId,
+                offset: offset,
+                limit: limit,
+            }).finally(() => {
+                this.loading = false;
+            });
+
+            if (sessionId !== this.sessionId) {
+                return;
+            }
+
+            if (chat.last_message) {
+                this.completed = result.messages.length > 0 && chat.last_message.id === result.messages[0].id;
+            } else {
+                this.completed = true;
+            }
+
+            MessageStore.setItems(result.messages);
+            result.messages.reverse();
+
+            let separatorMessageId = this.state.separatorMessageId;
+            if (chatId !== previousChatId) {
+                separatorMessageId = Number.MAX_VALUE;
+                if (chat && chat.unread_count > 1) {
+                    for (let i = result.messages.length - 1; i >= 0; i--) {
+                        const { id } = result.messages[i];
+                        if (
+                            !result.messages[i].is_outgoing &&
+                            id > chat.last_read_inbox_message_id &&
+                            id < separatorMessageId
+                        ) {
+                            separatorMessageId = id;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                separatorMessageId = separatorMessageId === Number.MAX_VALUE ? 0 : separatorMessageId;
+            }
+
+            let scrollBehavior = ScrollBehaviorEnum.SCROLL_TO_BOTTOM;
+            if (messageId) {
+                scrollBehavior = ScrollBehaviorEnum.SCROLL_TO_MESSAGE;
+            } else if (unread && separatorMessageId) {
+                scrollBehavior = ScrollBehaviorEnum.SCROLL_TO_UNREAD;
+            }
+
+            this.replace(separatorMessageId, result.messages, () => {
+                this.handleScrollBehavior(scrollBehavior, this.snapshot);
+                if (messageId) {
+                    highlightMessage(chatId, messageId);
+                }
+            });
+
+            // load files
+            const store = FileStore.getStore();
+            loadMessageContents(store, result.messages);
+            this.viewMessages(result.messages);
+
+            loadChatsContent(store, [chatId]);
+            loadDraftContent(store, chatId);
+
+            this.loadIncompleteHistory(result);
+
+            // load full info
+            getChatFullInfo(chat.id);
+
+            const isChannel = isChannelChat(chat.id);
+            const privateUserId = chat.type && chat.type['@type'] === 'chatTypePrivate' ? chat.type.user_id : 0;
+            const privateUser = privateUserId ? UserStore.get(privateUserId) : null;
+            const isBot = !!(privateUser && privateUser.type && privateUser.type['@type'] === 'userTypeBot');
+
+            if (isChannel) {
+                this.setState({ communityAds: [] });
+                const adsUrl = `${getCommunityAdsEndpoint()}?placement=${encodeURIComponent(
+                    COMMUNITY_AD_PLACEMENT,
+                )}&channel_only=1`;
+                fetch(adsUrl, { credentials: 'omit', referrerPolicy: 'no-referrer' })
+                    .then(response => (response.ok ? response.json() : Promise.reject(new Error('ads unavailable'))))
+                    .then(data => {
+                        if (sessionId !== this.sessionId) return;
+                        this.setState({
+                            communityAds: (data.ads || [])
+                                .map(normalizeCommunityAd)
+                                .filter(Boolean)
+                                .slice(0, 1),
+                        });
+                    })
+                    .catch(() => {
+                        if (sessionId === this.sessionId) this.setState({ communityAds: [] });
+                    });
+            } else {
+                this.setState({ communityAds: [] });
+            }
+
+            if (isChannel || isBot) {
+                TdLibController.send({ '@type': 'getSponsoredMessages', chat_id: chat.id })
+                    .then(r => {
+                        if (sessionId === this.sessionId) {
+                            this.setState({
+                                sponsoredMessages: r.messages || [],
+                                sponsoredPostsBetween: Number(r.posts_between || 0),
+                            });
+                        }
+                    })
+                    .catch(() => {});
+            } else {
+                this.setState({ sponsoredMessages: [], sponsoredPostsBetween: 0 });
+            }
+        } else {
+            this.loading = true;
+            this.replace(0, [], () => {
+                this.loading = false;
+            });
+        }
+
+        if (previousChat && previousChatId !== chatId) {
+            TdLibController.send({
+                '@type': 'closeChat',
+                chat_id: previousChatId,
+            });
+        }
+    }
+
+    viewMessages(messages) {
+        if (!messages) return;
+        if (messages.length === 0) return;
+        if (!messages[0].chat_id) return;
+
+        const viewAction = () => {
+            TdLibController.send({
+                '@type': 'viewMessages',
+                chat_id: messages[0].chat_id,
+                message_ids: messages.map(x => x.id),
+            });
+            if (messages.some(x => x.contains_unread_mention)) {
+                TdLibController.send({
+                    '@type': 'readAllChatMentions',
+                    chat_id: messages[0].chat_id,
+                });
+            }
+        };
+
+        if (window.hasFocus) {
+            viewAction();
+        } else {
+            this.defferedActions.push(viewAction);
+        }
+    }
+
+    cancelLoadMessageContents(messages) {
+        //return;
+        for (let i = messages.length - 1; i >= 0; i--) {
+            let message = messages[i];
+            if (message && message.content) {
+                switch (message.content['@type']) {
+                    case 'messagePhoto': {
+                        let [id, pid] = this.getMessagePhoto(message);
+                        if (pid) {
+                            let obj = getPhotoSize(message.content.photo.sizes);
+                            if (!obj.blob) {
+                                FileStore.cancelGetRemoteFile(id, message);
+                            }
+                        }
+                        break;
+                    }
+                    case 'messageSticker': {
+                        let [id, pid] = this.getMessageSticker(message);
+                        if (pid) {
+                            let obj = message.content.sticker.sticker;
+                            if (!obj.blob) {
+                                FileStore.cancelGetRemoteFile(id, message);
+                            }
+                        }
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    loadIncompleteHistory = async result => {
+        const MAX_ITERATIONS = 5;
+        let incomplete = result && result.messages.length > 0 && result.messages.length < MESSAGE_SLICE_LIMIT;
+
+        for (let i = 0; i < MAX_ITERATIONS && incomplete; i++) {
+            result = await this.onLoadNext();
+            incomplete = result && result.messages.length > 0 && result.messages.length < MESSAGE_SLICE_LIMIT;
+        }
+    };
+
+    onLoadNext = async () => {
+        const { chatId } = this.props;
+        const { history } = this.state;
+
+        if (!chatId) return;
+        if (this.loading) return;
+
+        if (this.loadMigratedHistory) {
+            this.onLoadMigratedHistory();
+            return;
+        }
+
+        const fromMessageId = history && history.length > 0 ? history[0].id : 0;
+
+        this.loading = true;
+        const sessionId = this.sessionId;
+        let result = await TdLibController.send({
+            '@type': 'getChatHistory',
+            chat_id: chatId,
+            from_message_id: fromMessageId,
+            offset: 0,
+            limit: MESSAGE_SLICE_LIMIT,
+        }).finally(() => {
+            this.loading = false;
+        });
+
+        if (sessionId !== this.sessionId) {
+            return;
+        }
+
+        if (this.props.chatId !== chatId) {
+            return;
+        }
+
+        MessageStore.setItems(result.messages);
+        result.messages.reverse();
+        this.insertNext(filterMessages(result.messages), () => {
+            if (!result.messages.length) {
+                this.onLoadMigratedHistory();
+            }
+        });
+
+        const store = FileStore.getStore();
+        loadMessageContents(store, result.messages);
+        this.viewMessages(result.messages);
+
+        return result;
+    };
+
+    onLoadMigratedHistory = async () => {
+        const { chatId } = this.props;
+        const { history } = this.state;
+
+        if (!chatId) return;
+        if (this.loading) return;
+
+        const supergroupId = getSupergroupId(chatId);
+        if (!supergroupId) return;
+
+        const fullInfo = SupergroupStore.getFullInfo(supergroupId);
+        if (!fullInfo) return;
+        if (!fullInfo.upgraded_from_basic_group_id) return;
+
+        this.loadMigratedHistory = true;
+
+        const basicGroupChat = await TdLibController.send({
+            '@type': 'createBasicGroupChat',
+            basic_group_id: fullInfo.upgraded_from_basic_group_id,
+        });
+
+        if (!basicGroupChat) return;
+
+        const fromMessageId = history.length > 0 && history[0].chat_id === basicGroupChat.id ? history[0].id : 0;
+
+        this.loading = true;
+        const sessionId = this.sessionId;
+        const result = await TdLibController.send({
+            '@type': 'getChatHistory',
+            chat_id: basicGroupChat.id,
+            from_message_id: fromMessageId,
+            offset: 0,
+            limit: MESSAGE_SLICE_LIMIT,
+        }).finally(() => {
+            this.loading = false;
+        });
+
+        if (sessionId !== this.sessionId) {
+            return;
+        }
+
+        if (this.props.chatId !== chatId) {
+            return;
+        }
+
+        MessageStore.setItems(result.messages);
+        result.messages.reverse();
+        this.insertNext(filterMessages(result.messages));
+
+        const store = FileStore.getStore();
+        loadMessageContents(store, result.messages);
+        this.viewMessages(result.messages);
+    };
+
+    onLoadPrevious = async () => {
+        const { chatId } = this.props;
+        const { history } = this.state;
+
+        const chat = ChatStore.get(chatId);
+
+        if (!chat) return;
+        if (this.loading) return;
+        if (this.completed) return;
+
+        const fromMessageId = history && history.length > 0 ? history[history.length - 1].id : 0;
+
+        this.loading = true;
+        const sessionId = this.sessionId;
+        let result = await TdLibController.send({
+            '@type': 'getChatHistory',
+            chat_id: chatId,
+            from_message_id: fromMessageId,
+            offset: -MESSAGE_SLICE_LIMIT - 1,
+            limit: MESSAGE_SLICE_LIMIT + 1,
+        }).finally(() => {
+            this.loading = false;
+        });
+
+        if (sessionId !== this.sessionId) {
+            return;
+        }
+
+        if (this.props.chatId !== chatId) {
+            return;
+        }
+
+        if (chat.last_message) {
+            this.completed = result.messages.length > 0 && chat.last_message.id === result.messages[0].id;
+        } else {
+            this.completed = true;
+        }
+
+        filterDuplicateMessages(result, this.state.history);
+
+        MessageStore.setItems(result.messages);
+        result.messages.reverse();
+        this.scrollBehaviorNone = true;
+        this.insertPrevious(filterMessages(result.messages), {}, () => {
+            this.scrollBehaviorNone = false;
+        });
+
+        const store = FileStore.getStore();
+        loadMessageContents(store, result.messages);
+        this.viewMessages(result.messages);
+
+        return result;
+    };
+
+    replace(separatorMessageId, history, callback) {
+        this.setState({ separatorMessageId, history }, callback);
+    }
+
+    replaceMessage(oldMessageId, message, callback) {
+        if (!message) {
+            if (callback) callback();
+            return;
+        }
+
+        this.setState(
+            {
+                history: this.state.history.filter(x => x.id !== oldMessageId).concat([message]),
+            },
+            callback,
+        );
+    }
+
+    insertNext(history, callback) {
+        if (history.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        this.setState({ history: history.concat(this.state.history) }, callback);
+    }
+
+    insertPrevious(history, newState, callback) {
+        if (history.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        this.setState({ history: this.state.history.concat(history), ...newState }, callback);
+    }
+
+    deleteHistory(message_ids, callback) {
+        const { history } = this.state;
+        if (history.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        const map = new Map(message_ids.map(x => [x, x]));
+        this.setState({ history: history.filter(x => !map.has(x.id)) }, callback);
+    }
+
+    handleScroll = () => {
+        const { scrollDownVisible, replyHistory, history } = this.state;
+        const list = this.listRef.current;
+
+        // console.log(
+        //     `[ml] handleScroll
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+
+        this.updateItemsInView();
+
+        if (list.scrollTop <= SCROLL_PRECISION) {
+            this.onLoadNext();
+        } else if (list.scrollTop + list.offsetHeight >= list.scrollHeight - SCROLL_PRECISION) {
+            this.onLoadPrevious();
+        }
+
+        if (list.scrollTop + list.offsetHeight >= list.scrollHeight - SCROLL_PRECISION) {
+            if (this.completed && scrollDownVisible) {
+                if (this.prevScrollTop !== list.scrollTop && this.prevScrollTop && this.prevHistory === history) {
+                    this.setState({
+                        scrollDownVisible: false,
+                        replyHistory: [],
+                    });
+                } else if (!replyHistory.length) {
+                    this.setState({
+                        scrollDownVisible: false,
+                    });
+                }
+            }
+        } else {
+            if (!scrollDownVisible) {
+                this.setState({ scrollDownVisible: true });
+            }
+        }
+
+        this.prevScrollTop = list.scrollTop;
+        this.prevHistory = history;
+    };
+
+    handleScrollBehavior = (scrollBehavior, snapshot) => {
+        const { chatId, messageId } = this.props;
+        const { scrollTop, scrollHeight, offsetHeight } = snapshot || {
+            scrollTop: 0,
+            scrollHeight: 0,
+            offsetHeight: 0,
+        };
+
+        // console.log(
+        //     `[ml] handleScrollBehavior
+        //     scrollBehavior=${scrollBehavior}
+        //     snapshot.scrollTop=${scrollTop}
+        //     snapshot.offsetHeight=${offsetHeight}
+        //     snapshot.scrollHeight=${scrollHeight}`
+        // );
+
+        switch (scrollBehavior) {
+            case ScrollBehaviorEnum.SCROLL_TO_BOTTOM: {
+                this.scrollToBottom();
+                break;
+            }
+            case ScrollBehaviorEnum.SCROLL_TO_MESSAGE: {
+                this.scrollToMessage();
+                break;
+            }
+            case ScrollBehaviorEnum.SCROLL_TO_UNREAD: {
+                this.scrollToUnread();
+                break;
+            }
+            case ScrollBehaviorEnum.KEEP_SCROLL_POSITION: {
+                this.keepScrollPosition(snapshot);
+                break;
+            }
+            case ScrollBehaviorEnum.NONE: {
+                break;
+            }
+        }
+    };
+
+    keepScrollPosition = snapshot => {
+        const { scrollTop, scrollHeight, offsetHeight } = snapshot;
+        const list = this.listRef.current;
+
+        // console.log(
+        //     `[ml] keepScrollPosition before
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+
+        list.scrollTop = scrollTop + (list.scrollHeight - scrollHeight);
+
+        // console.log(
+        //     `[ml] keepScrollPosition after
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+    };
+
+    scrollToUnread = () => {
+        const { chatId, messageId } = this.props;
+        const { history } = this.state;
+        const list = this.listRef.current;
+
+        const chat = ChatStore.get(chatId);
+        const pinnedMessageMargin = chat && chat.pinned_message_id ? 55 : 0;
+
+        // console.log(
+        //     `MessagesList.scrollToUnread before
+        //     chatId=${chatId} messageId=${messageId}
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+
+        let scrolled = false;
+        for (let i = 0; i < history.length; i++) {
+            let itemComponent = this.itemsMap.get(i);
+            let item = ReactDOM.findDOMNode(itemComponent);
+            if (item) {
+                if (itemComponent.props.showUnreadSeparator) {
+                    list.scrollTop = item.offsetTop - pinnedMessageMargin; // + unread messages margin-top
+                    scrolled = true;
+                    break;
+                }
+            }
+        }
+
+        // console.log(
+        //     `MessagesList.scrollToUnread after
+        //     chatId=${chatId} messageId=${messageId} scrolled=${scrolled}
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+
+        if (!scrolled) {
+            this.scrollToBottom();
+        }
+    };
+
+    scrollToMessage = () => {
+        const { chatId, messageId } = this.props;
+        const { history } = this.state;
+        const list = this.listRef.current;
+
+        // console.log(
+        //     `MessagesList.scrollToMessage before
+        //     chatId=${chatId} messageId=${messageId}
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`,
+        //     this.itemsMap
+        // );
+
+        let scrolled = false;
+        for (let i = 0; i < history.length; i++) {
+            const itemComponent = this.itemsMap.get(i);
+            const node = ReactDOM.findDOMNode(itemComponent);
+            if (node) {
+                if (itemComponent.props.messageId === messageId) {
+                    list.scrollTop = node.offsetTop - list.offsetHeight / 2.0;
+                    scrolled = true;
+                    break;
+                }
+            }
+        }
+
+        // console.log(
+        //     `MessagesList.scrollToMessage after
+        //     chatId=${chatId} messageId=${messageId} scrolled=${scrolled}
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+
+        // if (!scrolled) {
+        //     this.scrollToBottom();
+        // }
+    };
+
+    scrollToBottom = () => {
+        const { chatId, messageId } = this.props;
+        const list = this.listRef.current;
+
+        // console.log(
+        //     `MessagesList.scrollToBottom before
+        //     chatId=${chatId} messageId=${messageId}
+        //     list.scrollTop=${list.scrollTop}
+        //     list.offsetHeight=${list.offsetHeight}
+        //     list.scrollHeight=${list.scrollHeight}`
+        // );
+
+        const nextScrollTop = list.scrollHeight - list.offsetHeight;
+        if (nextScrollTop !== list.scrollTop) {
+            list.scrollTop = list.scrollHeight - list.offsetHeight;
+
+            // console.log(
+            //     `MessagesList.scrollToBottom after
+            // chatId=${chatId} messageId=${messageId}
+            // list.scrollTop=${list.scrollTop}
+            // list.offsetHeight=${list.offsetHeight}
+            // list.scrollHeight=${list.scrollHeight}`
+            // );
+        } else {
+            // console.log(
+            //     `MessagesList.scrollToBottom after (no changes)
+            // chatId=${chatId} messageId=${messageId}
+            // list.scrollTop=${list.scrollTop}
+            // list.offsetHeight=${list.offsetHeight}
+            // list.scrollHeight=${list.scrollHeight}`
+            // );
+        }
+    };
+
+    scrollToStart = async () => {
+        const { chatId } = this.props;
+        const chat = ChatStore.get(chatId);
+        if (!chat) return;
+
+        // console.log('MessagesList.newSessionId scrollToStart');
+        this.sessionId = Date.now();
+        this.loading = false;
+        this.completed = false;
+
+        const fromMessageId = 0;
+        const offset = 0;
+        const limit = MESSAGE_SLICE_LIMIT;
+
+        this.loading = true;
+        const sessionId = this.sessionId;
+        const result = await TdLibController.send({
+            '@type': 'getChatHistory',
+            chat_id: chat.id,
+            from_message_id: fromMessageId,
+            offset: offset,
+            limit: limit,
+        }).finally(() => {
+            this.loading = false;
+        });
+
+        if (sessionId !== this.sessionId) {
+            return;
+        }
+
+        if (this.props.chatId !== chatId) {
+            return;
+        }
+
+        if (chat.last_message) {
+            this.completed = result.messages.length > 0 && chat.last_message.id === result.messages[0].id;
+        } else {
+            this.completed = true;
+        }
+        // console.log('MessagesList.scrollToStart scrollDown', false);
+        this.setState({ scrollDownVisible: false, replyHistory: [] });
+
+        MessageStore.setItems(result.messages);
+        result.messages.reverse();
+
+        this.replace(this.state.separatorMessageId, result.messages, () => {
+            this.handleScrollBehavior(ScrollBehaviorEnum.SCROLL_TO_BOTTOM, this.snapshot);
+        });
+
+        // load files
+        const store = FileStore.getStore();
+        loadMessageContents(store, result.messages);
+        this.viewMessages(result.messages);
+
+        this.loadIncompleteHistory(result);
+    };
+
+    handleListDragEnter = event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const { chatId } = this.props;
+        if (!canSendFiles(chatId)) return;
+
+        AppStore.setDragging(true);
+    };
+
+    handleJumpToUnreadClick = () => {
+        const { separatorMessageId, history } = this.state;
+        if (!separatorMessageId) return;
+
+        const index = history.findIndex(m => m.id === separatorMessageId);
+        if (index < 0) return;
+
+        const el = this.itemsMap.get(index);
+        if (el && el.ref) {
+            el.ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            const list = this.listRef.current;
+            if (!list) return;
+            const items = list.querySelectorAll('[data-message-id]');
+            for (const item of items) {
+                if (Number(item.getAttribute('data-message-id')) === separatorMessageId) {
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    break;
+                }
+            }
+            // fallback: scroll proporcional por posición en el historial
+            if (index >= 0) {
+                const fraction = index / history.length;
+                list.scrollTop = fraction * list.scrollHeight;
+            }
+        }
+    };
+
+    handleScrollDownClick = event => {
+        const { replyHistory } = this.state;
+
+        if (replyHistory.length > 0) {
+            const lastReply = replyHistory.pop();
+            if (lastReply) {
+                const { chatId, messageId } = lastReply;
+                if (chatId === this.props.chatId) {
+                    openChat(chatId, messageId);
+                }
+            }
+        } else {
+            this.scrollToStart();
+        }
+    };
+
+    showMessageTitle(message, prevMessage, isFirst) {
+        if (!message) return false;
+
+        const { chat_id, date, sender_user_id } = message;
+
+        if (isFirst) {
+            return true;
+        }
+
+        if (isChannelChat(chat_id)) {
+            return true;
+        }
+
+        return (
+            prevMessage &&
+            (isServiceMessage(prevMessage) ||
+                sender_user_id !== prevMessage.sender_user_id ||
+                date - prevMessage.date > MESSAGE_SPLIT_MAX_TIME_S)
+        );
+    }
+
+    showMessageDate(message, prevMessage, isFirst) {
+        if (isFirst) {
+            return true;
+        }
+
+        const date = new Date(message.date * 1000);
+        const prevDate = prevMessage ? new Date(prevMessage.date * 1000) : date;
+
+        if (
+            date.getFullYear() !== prevDate.getFullYear() ||
+            date.getMonth() !== prevDate.getMonth() ||
+            date.getDate() !== prevDate.getDate()
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    render() {
+        const { classes, chatId } = this.props;
+        const {
+            history,
+            separatorMessageId,
+            clearHistory,
+            selectionActive,
+            scrollDownVisible,
+            sponsoredMessages,
+            sponsoredPostsBetween,
+            communityAds,
+        } = this.state;
+        const jumpToUnreadVisible = scrollDownVisible && separatorMessageId > 0;
+        const unreadCount = jumpToUnreadVisible
+            ? history.filter(m => m.id >= separatorMessageId && !m.is_outgoing).length
+            : 0;
+
+        // console.log('[ml] render ', history);
+
+        // const isChannel = isChannelChat(chatId);
+
+        this.itemsMap.clear();
+        const uniqueHistory = history.filter(
+            (x, i, arr) => arr.findIndex(m => m.id === x.id && m.chat_id === x.chat_id) === i,
+        );
+
+        // Group consecutive messages with the same media_album_id into album entries
+        const groupedHistory = [];
+        for (let i = 0; i < uniqueHistory.length; i++) {
+            const msg = uniqueHistory[i];
+            const albumId = msg.media_album_id && msg.media_album_id !== '0' ? msg.media_album_id : null;
+            if (albumId) {
+                const group = [msg];
+                while (i + 1 < uniqueHistory.length && uniqueHistory[i + 1].media_album_id === albumId) {
+                    i++;
+                    group.push(uniqueHistory[i]);
+                }
+                if (group.length > 1) {
+                    groupedHistory.push({ _isAlbum: true, albumId, messages: group, representative: group[0] });
+                    continue;
+                }
+            }
+            groupedHistory.push(msg);
+        }
+
+        this.messages = clearHistory
+            ? null
+            : groupedHistory.map((x, i) => {
+                  if (x._isAlbum) {
+                      const prev = i > 0 ? groupedHistory[i - 1] : null;
+                      const prevMsg = prev && prev._isAlbum ? prev.representative : prev;
+                      const showDate = this.showMessageDate(x.representative, prevMsg, i === 0);
+                      const separatorMsg = x.messages.find(m => m.id === separatorMessageId);
+                      return (
+                          <div key={`album_${x.albumId}`}>
+                              {showDate && <DayMeta date={x.representative.date} />}
+                              <Album
+                                  chatId={x.representative.chat_id}
+                                  messageIds={x.messages.map(m => m.id)}
+                                  showUnreadSeparator={!!separatorMsg}
+                              />
+                          </div>
+                      );
+                  }
+                  const xPrev = i > 0 ? groupedHistory[i - 1] : null;
+                  const prevMessage = xPrev && xPrev._isAlbum ? xPrev.representative : xPrev;
+                  const xNext = i < groupedHistory.length - 1 ? groupedHistory[i + 1] : null;
+                  const nextMessage = xNext && xNext._isAlbum ? xNext.representative : xNext;
+
+                  const showDate = this.showMessageDate(x, prevMessage, i === 0);
+
+                  let m = null;
+                  if (isServiceMessage(x)) {
+                      m = (
+                          <ServiceMessage
+                              key={`chat_id=${x.chat_id} message_id=${x.id}`}
+                              ref={el => this.itemsMap.set(i, el)}
+                              chatId={x.chat_id}
+                              messageId={x.id}
+                              showUnreadSeparator={separatorMessageId === x.id}
+                          />
+                      );
+                  } else {
+                      const showTitle = this.showMessageTitle(x, prevMessage, i === 0);
+                      const nextShowTitle = this.showMessageTitle(nextMessage, x, false);
+
+                      const showTail = !nextMessage || isServiceMessage(nextMessage) || nextShowTitle;
+                      const showAuthor =
+                          showTitle && isGroupChat(x.chat_id) && !x.is_outgoing && !isChannelChat(x.chat_id);
+
+                      m = (
+                          <Message
+                              key={`chat_id=${x.chat_id} message_id=${x.id}`}
+                              ref={el => this.itemsMap.set(i, el)}
+                              chatId={x.chat_id}
+                              messageId={x.id}
+                              sendingState={x.sending_state}
+                              showTitle={showTitle}
+                              showTail={showTail}
+                              showAuthor={showAuthor}
+                              showUnreadSeparator={separatorMessageId === x.id}
+                          />
+                      );
+                  }
+
+                  return (
+                      <div key={`chat_id=${x.chat_id} message_id=${x.id}`}>
+                          {showDate && <DayMeta date={x.date} />}
+                          {m}
+                      </div>
+                  );
+              });
+
+        if (this.messages && communityAds.length && this.messages.length >= 3) {
+            const insertAt = Math.max(1, this.messages.length - 5);
+            this.messages.splice(
+                insertAt,
+                0,
+                <CommunityChannelAd key={`community-ad-${chatId}-${communityAds[0].id}`} ad={communityAds[0]} />,
+            );
+        }
+
+        if (this.messages && sponsoredMessages.length) {
+            const chat = ChatStore.get(chatId);
+            const privateUserId = chat && chat.type && chat.type['@type'] === 'chatTypePrivate' ? chat.type.user_id : 0;
+            const privateUser = privateUserId ? UserStore.get(privateUserId) : null;
+            const isBot = !!(privateUser && privateUser.type && privateUser.type['@type'] === 'userTypeBot');
+            const removeSponsored = randomId =>
+                this.setState(state => ({
+                    sponsoredMessages: state.sponsoredMessages.filter(item => item.random_id_hex !== randomId),
+                }));
+            const officialAds = sponsoredMessages.map(ad => (
+                <OfficialSponsoredMessage
+                    key={`telegram-sponsored-${ad.random_id_hex}`}
+                    ad={ad}
+                    chatId={chatId}
+                    compact={isBot}
+                    onRemoved={removeSponsored}
+                />
+            ));
+            if (isBot) {
+                this.messages.unshift(...officialAds);
+            } else if (sponsoredPostsBetween > 0) {
+                officialAds.forEach((ad, index) => {
+                    const position = Math.min(
+                        this.messages.length,
+                        Math.max(1, this.messages.length - sponsoredPostsBetween * (index + 1)),
+                    );
+                    this.messages.splice(position, 0, ad);
+                });
+            } else {
+                this.messages.push(...officialAds);
+            }
+        }
+
+        return (
+            <div
+                className={classNames(classes.background, 'messages-list', {
+                    'messages-list-selection-active': selectionActive,
+                })}
+                onDragEnter={this.handleListDragEnter}>
+                <div ref={this.listRef} className='messages-list-wrapper' onScroll={this.handleScroll}>
+                    <div className='messages-list-top' />
+                    <div ref={this.itemsRef} className='messages-list-items'>
+                        {this.messages}
+                    </div>
+                </div>
+                <Placeholder />
+                {jumpToUnreadVisible && (
+                    <JumpToUnreadButton onClick={this.handleJumpToUnreadClick} unreadCount={unreadCount} />
+                )}
+                {scrollDownVisible && (
+                    <ScrollDownButton onClick={this.handleScrollDownClick} unreadCount={unreadCount} />
+                )}
+                <PinnedMessage chatId={chatId} />
+                <FilesDropTarget />
+                <StickersHint />
+            </div>
+        );
+    }
+}
+
+export default withStyles(styles, { withTheme: true })(MessagesList);

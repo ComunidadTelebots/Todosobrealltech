@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Verificación · ComunidadTelebots</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-F5P08EW3SV');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#070b14;--ink:#e9f0fb;--muted:#8794ad;--teal:#5DCAA5;--cyan:#22D3EE;--red:#f87171;
+    --line:rgba(255,255,255,.08);--card:rgba(255,255,255,.04);--grad:linear-gradient(120deg,#5DCAA5,#22D3EE);
+    --display:'Bricolage Grotesque',sans-serif;--body:'Hanken Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.5;
+    -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;
+    padding:26px 16px calc(26px + env(safe-area-inset-bottom));}
+  svg{width:1em;height:1em;display:inline-block;vertical-align:-.125em;}
+  .wrap{width:100%;max-width:420px;}
+  .head{text-align:center;margin-bottom:6px;}
+  .title{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;}
+  .sub{font-size:13.5px;color:var(--muted);margin-top:4px;}
+  .toprow{display:flex;align-items:center;justify-content:center;gap:16px;margin:20px 0;}
+  .target{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;color:#04121f;
+    background:var(--grad);font-size:32px;box-shadow:0 10px 26px -12px var(--cyan);}
+  .timer{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .timer.low{color:var(--red);}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+  .cell{aspect-ratio:1;border:1.5px solid var(--line);border-radius:16px;background:var(--card);
+    display:grid;place-items:center;font-size:30px;color:var(--ink);cursor:pointer;transition:.12s;}
+  .cell:active{transform:scale(.95);}
+  .cell.sel{border-color:var(--teal);background:rgba(93,202,165,.12);color:var(--teal);}
+  .btn{width:100%;border:1px solid var(--line);font-family:var(--body);font-weight:600;font-size:15px;
+    padding:14px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:9px;
+    background:var(--card);color:var(--muted);cursor:default;transition:.15s;}
+  .btn.active{background:var(--grad);color:#04121f;border-color:transparent;box-shadow:0 10px 26px -12px var(--cyan);cursor:pointer;}
+  .msg{text-align:center;font-size:13.5px;margin-top:14px;min-height:20px;}
+  .msg.err{color:var(--red);}
+  .state{text-align:center;padding:48px 10px;}
+  .state .ic{width:74px;height:74px;margin:0 auto 20px;border-radius:22px;display:grid;place-items:center;font-size:38px;}
+  .state .ic.ok{color:var(--teal);background:rgba(93,202,165,.1);border:1px solid rgba(93,202,165,.25);}
+  .state .ic.bad{color:var(--red);background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);}
+  .state h2{font-family:var(--display);font-weight:700;font-size:21px;margin-bottom:8px;}
+  .state p{font-size:14px;color:var(--muted);max-width:20rem;margin:0 auto;}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .shake{animation:shake .35s;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+  const tg=(window.Telegram&&window.Telegram.WebApp)?window.Telegram.WebApp:null;
+  if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor("#070b14");tg.setBackgroundColor&&tg.setBackgroundColor("#070b14");}catch(e){}}
+  const API="/api/public";
+  const chat=new URLSearchParams(location.search).get("chat")||"";
+  const app=document.getElementById("app");
+  const IC={
+    star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+    bolt:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+    cloud:'<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+    leaf:'<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/>',
+    check:'<path d="M20 6 9 17l-5-5"/>',
+  };
+  const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
+  async function post(p,b){try{const r=await fetch(API+p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});return{status:r.status,data:await r.json()};}catch(e){return{status:0,data:null};}}
+
+  let selected=new Set(), timerId=null, deadline=0;
+  function tick(){
+    const left=Math.max(0,Math.round((deadline-Date.now())/1000));
+    const t=document.getElementById("timer");
+    if(t){t.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}`;t.classList.toggle("low",left<=20);}
+    if(left<=0){clearInterval(timerId);timerId=null;if(window.gtag)gtag("event","captcha_expired",{reason:"timeout"});stateScreen('bad','Tiempo agotado','Vuelve a solicitar unirte al grupo para intentarlo de nuevo.');}
+  }
+  function ensureTimer(){ if(!deadline)deadline=Date.now()+120000; if(timerId)clearInterval(timerId); timerId=setInterval(tick,250); tick(); }
+  function stateScreen(kind,title,text){
+    if(timerId){clearInterval(timerId);timerId=null;}
+    app.innerHTML=`<div class="state"><div class="ic ${kind==='ok'?'ok':'bad'}">${kind==='ok'?svg('check'):'✕'}</div><h2>${title}</h2><p>${text}</p></div>`;
+  }
+  function renderChallenge(c){
+    selected=new Set();
+    app.innerHTML=`
+      <div class="head"><div class="title">Verificación</div><div class="sub">Confirma que no eres un bot para entrar al grupo.</div></div>
+      <div class="toprow"><div class="target">${svg(c.target)}</div><div class="timer" id="timer">2:00</div></div>
+      <div class="sub" style="text-align:center;margin-bottom:14px">Toca los <b style="color:var(--ink)">3</b> iconos iguales al de arriba.</div>
+      <div class="grid" id="grid">${c.grid.map((n,i)=>`<div class="cell" data-i="${i}">${svg(n)}</div>`).join("")}</div>
+      <button class="btn" id="go" disabled>Verificar</button>
+      <div class="msg" id="msg"></div>`;
+    const grid=document.getElementById("grid"), go=document.getElementById("go");
+    grid.querySelectorAll(".cell").forEach(cell=>cell.onclick=()=>{
+      const i=+cell.dataset.i;
+      if(selected.has(i)){selected.delete(i);cell.classList.remove("sel");}
+      else{ if(selected.size>=3)return; selected.add(i);cell.classList.add("sel"); }
+      const ready=selected.size===3; go.disabled=!ready; go.classList.toggle("active",ready);
+    });
+    go.onclick=submit; ensureTimer();
+    if(window.gtag)gtag("event","captcha_view");
+  }
+  async function submit(){
+    const go=document.getElementById("go"); if(go.disabled)return;
+    go.disabled=true; go.classList.remove("active"); go.textContent="Comprobando…";
+    const {data}=await post("/join/verify",{initData:tg&&tg.initData,chat,selected:[...selected]});
+    if(data&&data.approved){if(window.gtag)gtag("event","captcha_passed");stateScreen('ok','¡Verificado!','Ya puedes entrar al grupo. Puedes cerrar esta ventana.');if(tg&&tg.close)setTimeout(()=>tg.close(),2200);return;}
+    if(data&&data.declined){if(window.gtag)gtag("event","captcha_failed",{reason:"attempts"});stateScreen('bad','Verificación fallida','Has agotado los intentos. Vuelve a solicitar unirte más tarde.');return;}
+    if(data&&data.expired){if(window.gtag)gtag("event","captcha_expired",{reason:"challenge"});stateScreen('bad','Caducado','El reto expiró. Vuelve a solicitar unirte al grupo.');return;}
+    const left=(data&&data.attempts_left)||0;
+    const grid=document.getElementById("grid"); if(grid)grid.classList.add("shake");
+    const m=document.getElementById("msg"); if(m){m.className="msg err";m.textContent=`Incorrecto. Te queda${left===1?'':'n'} ${left} intento${left===1?'':'s'}.`;}
+    setTimeout(()=>loadChallenge(`Incorrecto. Te queda${left===1?'':'n'} ${left} intento${left===1?'':'s'}.`),850);
+  }
+  async function loadChallenge(errMsg){
+    if(!tg||!tg.initData){stateScreen('bad','Abre desde Telegram','Esta verificación solo funciona desde el botón del grupo en Telegram.');return;}
+    if(!errMsg)app.innerHTML=`<div class="head"><div class="title">Verificación</div><div class="sub">Cargando…</div></div>`;
+    const {status,data}=await post("/join/challenge",{initData:tg.initData,chat});
+    if(status===410){stateScreen('bad','Sin solicitud pendiente','No encontramos una solicitud de entrada tuya. Solicita unirte al grupo primero.');return;}
+    if(!data||!data.ok){stateScreen('bad','Error','No se pudo cargar la verificación. Inténtalo más tarde.');return;}
+    renderChallenge(data);
+    if(errMsg){const m=document.getElementById("msg"); if(m){m.textContent=errMsg;m.className="msg err";}}
+  }
+  loadChallenge();
+</script>
+</body>
+</html>

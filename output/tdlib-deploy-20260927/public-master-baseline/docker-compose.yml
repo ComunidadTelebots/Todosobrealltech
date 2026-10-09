@@ -1,0 +1,36 @@
+services:
+  moonbot:
+    build: .
+    container_name: moonbot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+    environment:
+      - MOON_ENV=prod
+      - AUTO_DOCKER_UPDATE=true
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.moonbot.rule=Host(`cintiabot.todosobreall.tech`)"
+      - "traefik.http.routers.moonbot.entrypoints=websecure"
+      - "traefik.http.routers.moonbot.tls=true"
+      - "traefik.http.routers.moonbot.tls.certresolver=letsencrypt"
+      - "traefik.http.services.moonbot.loadbalancer.server.port=5000"
+  moon_ollama:
+    image: ollama/ollama:latest
+    container_name: moon_ollama
+    restart: unless-stopped
+    volumes:
+      - ./ollama_data:/root/.ollama
+    entrypoint: /bin/sh -c "/bin/ollama serve & sleep 10 && ollama pull qwen2:0.5b && wait"
+    networks:
+      - traefik
+networks:
+  traefik:
+    external: true

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Panel · ComunidadTelebots</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-F5P08EW3SV');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#070b14; --ink:#e9f0fb; --muted:#8794ad;
+    --teal:#5DCAA5; --cyan:#22D3EE; --amber:#ffb43c; --red:#f87171;
+    --line:rgba(255,255,255,.08); --card:rgba(255,255,255,.04); --card2:rgba(255,255,255,.02);
+    --grad:linear-gradient(120deg,#5DCAA5,#22D3EE);
+    --display:'Bricolage Grotesque',sans-serif; --body:'Hanken Grotesk',sans-serif; --mono:'JetBrains Mono',monospace;
+    --tabh:64px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.5;
+    overflow-x:hidden;position:relative;-webkit-font-smoothing:antialiased;}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+  .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;}
+  .aurora::before{content:'';position:absolute;width:80vw;height:80vw;top:-40vw;left:-25vw;border-radius:50%;
+    filter:blur(90px);opacity:.28;background:radial-gradient(circle,var(--teal),transparent 62%);}
+  svg{width:1em;height:1em;display:inline-block;vertical-align:-.125em;flex-shrink:0;}
+
+  /* ── Cabecera ── */
+  .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:11px;
+    padding:14px 16px calc(14px);background:rgba(7,11,20,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;color:#04121f;
+    background:var(--grad);box-shadow:0 6px 20px -8px var(--cyan);font-size:20px;}
+  .who{min-width:0;flex:1;}
+  .hi{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .hi b{font-weight:700;}
+  .badge{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    padding:2px 7px;border-radius:999px;color:var(--teal);border:1px solid rgba(93,202,165,.4);background:rgba(93,202,165,.08);}
+  .who .sub{font-size:11.5px;color:var(--muted);}
+  .gear{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--muted);
+    font-size:19px;display:grid;place-items:center;cursor:pointer;transition:.2s;}
+  .gear:active{color:var(--ink);}
+
+  /* ── Vistas ── */
+  main{padding:18px 16px calc(var(--tabh) + env(safe-area-inset-bottom) + 24px);max-width:640px;margin:0 auto;}
+  .view[hidden]{display:none;}
+  .vtitle{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;margin-bottom:3px;}
+  .vsub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+
+  /* ── Tarjetas ── */
+  .card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card);margin-bottom:12px;}
+  .card h3{font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:3px;}
+  .card p{font-size:13px;color:var(--muted);}
+
+  /* ── Botones ── */
+  .btn{width:100%;border:none;cursor:pointer;font-family:var(--body);font-weight:600;font-size:14.5px;
+    padding:13px 16px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:9px;transition:.15s;}
+  .btn svg{font-size:18px;}
+  .btn.cta{color:#04121f;background:var(--grad);box-shadow:0 10px 26px -12px var(--cyan);}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);}
+  .btn.ghost:active,.btn.cta:active{transform:translateY(1px);}
+  .btn.teal{background:transparent;color:var(--teal);border:1px solid rgba(93,202,165,.45);}
+  .btn+.btn{margin-top:9px;}
+
+  /* ── Estado vacío ── */
+  .empty{text-align:center;padding:34px 14px 10px;}
+  .empty .big{width:64px;height:64px;margin:0 auto 18px;border-radius:20px;display:grid;place-items:center;
+    color:var(--teal);font-size:30px;background:rgba(93,202,165,.08);border:1px solid rgba(93,202,165,.2);}
+  .empty h2{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;margin-bottom:8px;}
+  .empty p{font-size:14px;color:var(--muted);max-width:19rem;margin:0 auto 22px;}
+  .empty .btn{max-width:20rem;margin:0 auto;}
+  .steps{list-style:none;text-align:left;max-width:20rem;margin:22px auto 0;display:flex;flex-direction:column;gap:11px;}
+  .steps li{display:flex;gap:12px;font-size:13px;color:var(--muted);align-items:flex-start;}
+  .steps .n{flex-shrink:0;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-family:var(--mono);
+    font-size:11px;font-weight:600;color:var(--teal);background:rgba(93,202,165,.1);border:1px solid rgba(93,202,165,.2);}
+  .steps b{color:var(--ink);font-weight:600;}
+  .steps code{font-family:var(--mono);color:var(--teal);}
+
+  /* ── Filas de canal / stats ── */
+  .statbar{display:flex;gap:10px;margin-bottom:16px;}
+  .stat{flex:1;border:1px solid var(--line);border-radius:13px;padding:12px 13px;background:var(--card);}
+  .stat .v{font-family:var(--mono);font-size:19px;font-weight:600;color:var(--teal);}
+  .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+  .row{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;
+    background:var(--card);margin-bottom:9px;}
+  .row .av{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:grid;place-items:center;color:#04121f;
+    font-family:var(--mono);font-weight:500;font-size:14px;background:var(--grad);}
+  .row .meta{min-width:0;flex:1;}
+  .row .nm{font-family:var(--display);font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .row .un{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .row .num{text-align:right;}
+  .row .num .s{font-family:var(--mono);font-weight:600;font-size:15px;}
+  .row .g{font-family:var(--mono);font-size:12px;display:flex;align-items:center;gap:3px;justify-content:flex-end;}
+  .g.up{color:var(--teal);} .g.down{color:var(--red);}
+  .collect{font-family:var(--mono);font-size:10px;color:var(--amber);}
+  .rbadge{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:1px 6px;border-radius:999px;color:var(--muted);border:1px solid var(--line);vertical-align:middle;}
+  .rbadge.own{color:var(--teal);border-color:rgba(93,202,165,.4);}
+  .switch{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--line);
+    position:relative;cursor:pointer;flex-shrink:0;transition:.2s;}
+  .switch span{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:.2s;}
+  .switch.on{background:rgba(93,202,165,.22);border-color:rgba(93,202,165,.5);}
+  .switch.on span{left:20px;background:var(--teal);}
+  .row.tappable{cursor:pointer;}
+  .backbtn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;
+    background:none;border:none;padding:6px 0;margin-bottom:6px;font-family:var(--body);}
+  .backbtn svg{font-size:16px;}
+  .gsec{margin:22px 2px 11px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);
+    display:flex;align-items:center;gap:7px;}
+  textarea,input,select{width:100%;font-family:var(--body);font-size:14px;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;resize:vertical;}
+  select{-webkit-appearance:none;appearance:none;}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:rgba(93,202,165,.5);}
+  .imggrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;}
+  .genimg{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:2px solid transparent;cursor:pointer;background:var(--card);}
+  .genimg.sel{border-color:var(--teal);}
+  input[type=datetime-local]{color-scheme:dark;}
+  .btnrow{display:flex;gap:8px;margin-top:9px;}
+  .btnrow .btn{margin-top:0;}
+  .userchip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;
+    border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:8px;}
+  .userchip .uid{font-family:var(--mono);font-size:13px;}
+  .userchip .w{font-family:var(--mono);font-size:11px;color:var(--amber);}
+  .minibtn{font-family:var(--body);font-size:12px;font-weight:600;color:var(--teal);cursor:pointer;
+    padding:6px 12px;border-radius:999px;border:1px solid rgba(93,202,165,.4);background:rgba(93,202,165,.06);}
+  .minibtn.red{color:var(--red);border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.06);}
+  .setrow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);}
+  .setrow b{font-size:14px;font-weight:600;} .setrow span{display:block;font-size:12px;color:var(--muted);}
+  .toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 18px);transform:translateX(-50%);z-index:60;
+    background:rgba(11,18,32,.96);border:1px solid var(--line);color:var(--ink);font-size:13px;padding:10px 16px;
+    border-radius:12px;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .dropdown{border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:10px;overflow:hidden;}
+  .dhead{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer;font-weight:600;font-size:14px;}
+  .dhead .chev{color:var(--muted);transition:transform .2s;}
+  .dropdown.open .dhead .chev{transform:rotate(90deg);}
+  .dbody{padding:2px 12px 12px;}
+  .uexp .chev{color:var(--muted);transition:transform .2s;}
+  .userchip.open .chev{transform:rotate(90deg);}
+  .casbox{margin:-2px 0 9px;padding:11px 13px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:12.5px;line-height:1.7;}
+  .casbox .k{color:var(--muted);}
+  .casbox .banned{color:var(--red);font-weight:600;} .casbox .clean{color:var(--teal);font-weight:600;}
+
+  /* ── Grid de servicios (Red) ── */
+  .services{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .svc{border:1px solid var(--line);border-radius:13px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:10px;background:var(--card);transition:.15s;}
+  .svc:active{background:rgba(255,255,255,.06);}
+  .svc .si{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--teal);
+    background:rgba(93,202,165,.08);font-size:17px;flex-shrink:0;}
+  .sec{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);
+    margin:22px 2px 12px;}
+  .listitem{display:flex;align-items:center;gap:13px;padding:14px;border:1px solid var(--line);border-radius:14px;
+    background:var(--card);cursor:pointer;}
+  .listitem .li-ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--teal);
+    background:rgba(93,202,165,.08);font-size:18px;flex-shrink:0;}
+  .listitem .li-t{flex:1;min-width:0;}
+  .listitem .li-t b{font-size:14.5px;font-weight:600;}
+  .listitem .li-t span{display:block;font-size:12px;color:var(--muted);}
+  .listitem .chev{color:var(--muted);font-size:18px;}
+  .proxy-out{margin-top:10px;}
+  .proxy-item{border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:8px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .proxy-item .pd{font-family:var(--mono);font-size:12.5px;}
+  .proxy-item small{color:var(--muted);}
+  .connect{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal);cursor:pointer;
+    padding:5px 11px;border-radius:999px;border:1px solid rgba(93,202,165,.4);background:rgba(93,202,165,.06);}
+
+  .muted{font-size:12.5px;color:var(--muted);}
+  .skel{height:64px;border-radius:14px;background:rgba(255,255,255,.03);margin-bottom:9px;
+    animation:pulse 1.3s ease-in-out infinite;}
+  @keyframes pulse{50%{opacity:.5}}
+
+  /* ── Ajustes ── */
+  .themeopt{display:flex;align-items:center;gap:13px;padding:15px;border:1px solid var(--line);border-radius:14px;
+    background:var(--card);margin-bottom:10px;cursor:pointer;transition:.15s;}
+  .themeopt.sel{border-color:rgba(93,202,165,.55);background:rgba(93,202,165,.06);}
+  .themeopt .ra{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;display:grid;place-items:center;}
+  .themeopt.sel .ra{border-color:var(--teal);}
+  .themeopt.sel .ra::after{content:'';width:10px;height:10px;border-radius:50%;background:var(--teal);}
+  .themeopt .to-t b{font-size:15px;font-weight:600;}
+  .themeopt .to-t span{display:block;font-size:12.5px;color:var(--muted);}
+
+  /* ── Barra de pestañas ── */
+  .tabbar{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;min-height:var(--tabh);
+    padding-bottom:env(safe-area-inset-bottom);background:rgba(9,14,24,.92);backdrop-filter:blur(16px);border-top:1px solid var(--line);}
+  .tab{flex:1;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:3px;color:var(--muted);font-family:var(--body);font-size:10.5px;font-weight:500;transition:.15s;}
+  .tab svg{font-size:21px;}
+  .tab.active{color:var(--teal);}
+
+  /* ── Tema clásico ── */
+  #app-classic{padding:16px 16px calc(24px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto;}
+  #app-classic .c-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--card);margin-bottom:12px;}
+  #app-classic h2{font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:4px;}
+  .backnew{margin-top:18px;}
+</style>
+</head>
+<body>
+<div class="aurora"></div>
+
+<!-- ══════════════════ DISEÑO NUEVO ══════════════════ -->
+<div id="app" hidden>
+  <div class="topbar">
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#04121f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l3-1 2 4 3-9 3 6 2-3h3"/></svg></div>
+    <div class="who">
+      <div class="hi">Hola <b id="uname">invitado</b> <span class="badge" id="roleBadge" hidden>master</span></div>
+      <div class="sub">ComunidadTelebots</div>
+    </div>
+    <button class="gear" id="btnAjustes" aria-label="Ajustes" data-ic="settings"></button>
+  </div>
+
+  <main>
+    <section class="view" data-view="canales" id="v-canales"></section>
+    <section class="view" data-view="admin" id="v-admin" hidden></section>
+    <section class="view" data-view="directorio" id="v-directorio" hidden></section>
+    <section class="view" data-view="red" id="v-red" hidden></section>
+    <section class="view" data-view="ajustes" id="v-ajustes" hidden></section>
+    <section class="view" data-view="grupo" id="v-grupo" hidden></section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" data-tab="canales" data-ic="megaphone"><span>Mis canales</span></button>
+    <button class="tab" data-tab="admin" data-ic="shield"><span>Administrar</span></button>
+    <button class="tab" data-tab="directorio" data-ic="compass"><span>Directorio</span></button>
+    <button class="tab" data-tab="red" data-ic="share"><span>Red</span></button>
+  </nav>
+</div>
+
+<!-- ══════════════════ DISEÑO CLÁSICO ══════════════════ -->
+<div id="app-classic" hidden>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+    <div class="logo" style="width:44px;height:44px;border-radius:13px;font-size:22px;"><svg viewBox="0 0 24 24" fill="none" stroke="#04121f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l3-1 2 4 3-9 3 6 2-3h3"/></svg></div>
+    <div><div style="font-family:var(--display);font-weight:800;font-size:20px;">Panel</div>
+    <div style="font-size:12px;color:var(--muted);">ComunidadTelebots</div></div>
+  </div>
+  <div class="hi" id="c-hello" style="font-size:14px;color:var(--muted);margin:14px 2px 16px;">Bienvenido al panel principal.</div>
+  <div class="c-card" id="c-masterCard" style="display:none;">
+    <h2>Administración</h2><p class="muted">Tienes acceso de master.</p>
+    <button class="btn ghost" id="c-btnMaster" style="margin-top:12px;">Acceder al panel Moonbot</button>
+  </div>
+  <div class="c-card">
+    <h2>Obtener proxy MTProto</h2><p class="muted">Salta bloqueos con un proxy de la red.</p>
+    <button class="btn ghost" id="c-btnProxy" style="margin-top:12px;">Obtener proxy</button>
+    <div class="proxy-out" id="c-proxyOut" style="margin-top:10px;"></div>
+  </div>
+  <div class="c-card">
+    <h2>Panel de canales</h2><p class="muted" id="c-chStat">Estadísticas de canales.</p>
+    <button class="btn ghost" id="c-btnCanales" style="margin-top:12px;">Ver directorio completo</button>
+  </div>
+  <div class="c-card">
+    <h2>Servicios de la red</h2><div class="services" id="c-services" style="margin-top:12px;"></div>
+  </div>
+  <button class="btn teal backnew" id="c-backNew">Volver al diseño Nuevo</button>
+</div>
+
+<script>
+  const API="/api/public";
+  const tg=(window.Telegram&&window.Telegram.WebApp)?window.Telegram.WebApp:null;
+  if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor("#070b14");tg.setBackgroundColor&&tg.setBackgroundColor("#070b14");}catch(e){}}
+  const user=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||null;
+  let master=false;
+  const BOT="CintiaBot";
+  const ADD_LINK=`https://t.me/${BOT}?startchannel&admin=post_messages+edit_messages+invite_users`;
+
+  // Iconos Lucide (inline, sin dependencias, sin emojis)
+  const IC={
+    settings:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+    megaphone:'<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+    shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+    compass:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+    share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
+    plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+    ext:'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+    chevron:'<path d="m9 18 6-6-6-6"/>',
+    trendup:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    trenddown:'<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+    globe:'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    message:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/>',
+    newspaper:'<path d="M15 18h-5"/><path d="M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M10 6h8"/>',
+    gamepad:'<line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><rect width="20" height="12" x="2" y="6" rx="2"/>',
+    users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    sparkles:'<path d="M9.94 14.66A4.6 4.6 0 0 1 5.9 10.6 4.6 4.6 0 0 1 9.94 6.56 4.6 4.6 0 0 1 14 10.6a4.6 4.6 0 0 1-4.06 4.06z"/>',
+  };
+  function svg(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[name]||''}</svg>`;}
+  document.querySelectorAll("[data-ic]").forEach(el=>{el.insertAdjacentHTML("afterbegin",svg(el.dataset.ic));});
+
+  function openLink(u){if(u.startsWith("/")) u = window.location.origin + u; if(tg&&tg.openLink)tg.openLink(u,{try_instant_view:false});else window.open(u,"_blank");}
+  function openTg(u){if(tg&&tg.openTelegramLink)tg.openTelegramLink(u);else window.open(u,"_blank");}
+  function fmt(n){if(n==null||isNaN(n))return"—";const a=Math.abs(n);
+    if(a>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,'').replace('.',',')+"M";
+    if(a>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,'').replace('.',',')+"K";return String(Math.round(n));}
+  function gpct(n){if(n==null||isNaN(n))return"—";const s=Math.abs(n).toFixed(1).replace('.',',');return(n>=0?"+":"−")+s+"%";}
+  function initials(s){return(s||"C").replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||"CH";}
+  async function apiGet(p){try{const r=await fetch(API+p);return await r.json();}catch(e){return null;}}
+  async function apiPost(p,b){try{const r=await fetch(API+p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});return await r.json();}catch(e){return null;}}
+  // Evento GA4 seguro (no rompe la app si gtag no está / está bloqueado). Sin PII.
+  function ev(name,params){try{if(window.gtag)gtag("event",name,params||{});}catch(e){}}
+
+  const skel=()=>`<div class="skel"></div><div class="skel"></div><div class="skel"></div>`;
+
+  function escAttr(s){return String(s||"").replace(/"/g,"").replace(/</g,"");}
+  function escHtml(s){return String(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+  function channelRow(c, tappable){
+    const up=(c.growth30d||0)>=0;
+    const collecting=c.collecting?`<div class="collect">recopilando…</div>`:`<div class="g ${up?'up':'down'}">${svg(up?'trendup':'trenddown')} ${gpct(c.growth30d)}</div>`;
+    const role=c.role==="administrator"?`<span class="rbadge">admin</span>`:(c.role==="creator"?`<span class="rbadge own">propietario</span>`:"");
+    const tap=tappable?`row tappable" data-chat="${c.chat_id}" data-name="${escAttr(c.name)}`:"row";
+    return `<div class="${tap}">
+      <div class="av">${initials(c.name)}</div>
+      <div class="meta"><div class="nm">${c.name} ${role}</div><div class="un">@${c.username}</div></div>
+      <div class="num"><div class="s">${fmt(c.subscribers)}</div>${collecting}</div>
+    </div>`;
+  }
+  function bindRowOpen(container){
+    container.querySelectorAll(".row.tappable").forEach(r=> r.addEventListener("click", e=>{
+      if(e.target.closest(".switch")) return;
+      openGroup(r.dataset.chat, r.dataset.name);
+    }));
+  }
+
+  // ── Mis canales ──
+  async function loadCanales(){
+    const el=document.getElementById("v-canales");
+    el.innerHTML=`<div class="vtitle">Mis canales</div><div class="vsub">Detectados automáticamente: donde eres propietario o administrador.</div>`+skel();
+    let chs=[];
+    if(tg&&tg.initData){const d=await apiPost("/stats/mine",{initData:tg.initData});if(d&&d.ok)chs=d.channels||[];}
+    if(!chs.length){
+      el.innerHTML=`<div class="empty">
+        <div class="big">${svg('megaphone')}</div>
+        <h2>Añade tu primer canal</h2>
+        <p>Haz administrador a <b style="color:var(--ink)">@${BOT}</b> en tu canal y aparecerá aquí <b style="color:var(--ink)">automáticamente</b>, sin reclamar nada.</p>
+        <button class="btn cta" id="ctaAdd">${svg('plus')} Añade tu primer canal</button>
+        <ol class="steps">
+          <li><span class="n">1</span><div>Abre tu canal → <b>Administradores</b></div></li>
+          <li><span class="n">2</span><div>Toca <b>Añadir administrador</b> y busca <code>@${BOT}</code></div></li>
+          <li><span class="n">3</span><div>Deja activado <b>Publicar mensajes</b> y confirma</div></li>
+        </ol></div>`;
+      document.getElementById("ctaAdd").onclick=()=>{ev("add_channel",{from:"canales_empty"});openTg(ADD_LINK);};
+      return;
+    }
+    el.innerHTML=`<div class="vtitle">Mis canales</div><div class="vsub">${chs.length} canal${chs.length>1?'es':''} · toca uno para gestionarlo.</div>`
+      +chs.map(c=>channelRow(c,true)).join("")
+      +`<button class="btn cta" id="ctaAdd2" style="margin-top:6px;">${svg('plus')} Añadir otro canal</button>`;
+    document.getElementById("ctaAdd2").onclick=()=>{ev("add_channel",{from:"canales_list"});openTg(ADD_LINK);};
+    bindRowOpen(el);
+  }
+
+  // ── Administrar ──
+  function adminRow(c){
+    const t=c.ctype==="channel"?"Canal":"Grupo";
+    const uname=(c.username&&!String(c.username).startsWith("-"))?("@"+c.username):"privado";
+    return `<div class="row tappable" data-chat="${c.chat_id}" data-name="${escAttr(c.name)}">
+      <div class="av">${initials(c.name)}</div>
+      <div class="meta"><div class="nm">${c.name} <span class="rbadge">${t}</span></div>
+        <div class="un">${uname} · ${fmt(c.subscribers)} subs</div></div>
+      <div class="switch ${c.listed?"on":""}" data-chat="${c.chat_id}" role="switch" aria-label="Publicar en directorio"><span></span></div>
+    </div>`;
+  }
+  function bindSwitches(el){
+    el.querySelectorAll(".switch").forEach(sw=> sw.onclick=(e)=>{
+      e.stopPropagation();
+      const chat=sw.dataset.chat, on=!sw.classList.contains("on");
+      sw.classList.toggle("on",on);
+      ev("channel_publish",{listed:on});
+      apiPost("/admin/set_listed",{initData:tg&&tg.initData,chat_id:chat,listed:on})
+        .then(d=>{ if(!d||!d.ok) sw.classList.toggle("on",!on); });  // revertir si falla
+    });
+    bindRowOpen(el);
+  }
+
+  // ── Panel de grupo (gestión: mensajes, programados, baneados, avisos, ajustes) ──
+  let curChat=null;
+  function showToast(msg){
+    let t=document.getElementById("toast");
+    if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t);}
+    t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800);
+  }
+  function toUTC(local){ if(!local)return""; const d=new Date(local); if(isNaN(d))return"";
+    const p=n=>String(n).padStart(2,"0");
+    return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:00`; }
+  function fromUTC(s){ if(!s)return""; const d=new Date(String(s).replace(" ","T")+"Z"); return isNaN(d)?s:d.toLocaleString(); }
+  const gp=(p,b)=>apiPost(p,Object.assign({initData:tg&&tg.initData,chat_id:curChat},b));
+
+  function openGroup(chat_id,name){
+    curChat=chat_id;
+    if(window.gtag)gtag("event","page_view",{page_path:"/hub/grupo"});
+    document.querySelectorAll("#app .view").forEach(v=>v.hidden=v.dataset.view!=="grupo");
+    document.querySelectorAll("#app .tab").forEach(t=>t.classList.remove("active"));
+    const el=document.getElementById("v-grupo");
+    el.innerHTML=`<button class="backbtn" id="gback">${svg('chevron')} Volver</button><div class="vtitle">${escHtml(name||'Grupo')}</div><div class="vsub">Cargando…</div>`;
+    document.getElementById("gback").onclick=()=>showView("canales");
+    loadGroup();
+  }
+
+  async function loadGroup(){
+    const d=await gp("/group/get",{});
+    const el=document.getElementById("v-grupo");
+    if(!d||!d.ok){
+      el.innerHTML=`<button class="backbtn" id="gb">${svg('chevron')} Volver</button><p class="muted">No se pudo cargar (sin permiso o error).</p>`;
+      document.getElementById("gb").onclick=()=>showView("canales"); return;
+    }
+    const m=d.meta||{}, t=m.ctype==="channel"?"Canal":"Grupo";
+    const sched=d.scheduled||[], bans=d.bans||[], warns=d.warns||[], cfg=d.config||{};
+    el.innerHTML=`
+      <button class="backbtn" id="gback">${svg('chevron')} Volver</button>
+      <div class="vtitle">${escHtml(m.name||'Grupo')}</div>
+      <div class="vsub">${t} · ${fmt(m.subscribers)} miembros</div>
+
+      <div id="gstats"></div>
+      <div id="gads"></div>
+
+      <div class="gsec">${svg('share')} Enviar mensaje</div>
+      <textarea id="gmsg" rows="3" placeholder="Escribe un mensaje para el grupo…"></textarea>
+      <div class="btnrow"><button class="btn cta" id="gsend" style="flex:1">Enviar ahora</button></div>
+      <div class="btnrow" style="align-items:center"><input type="datetime-local" id="gwhen" style="flex:1"><button class="btn ghost" id="gsched" style="width:auto;padding:13px 16px">Programar</button></div>
+
+      <div class="gsec">Generar imagen</div>
+      <div class="btnrow" style="align-items:center"><input type="text" id="gimgprompt" placeholder="Describe la imagen…" style="flex:1"><button class="btn ghost" id="gimggen" style="width:auto;padding:13px 16px">Generar</button></div>
+      <div id="gimgout"></div>
+
+      <div class="gsec">Programados (${sched.length})</div><div id="gschedlist"></div>
+      <div class="gsec">Moderación</div>
+      <div class="dropdown" id="dd-bans"><div class="dhead">Baneados en Telegram (${bans.length}) <span class="chev">${svg('chevron')}</span></div><div class="dbody" id="gbans" hidden></div></div>
+      <div class="dropdown" id="dd-warns"><div class="dhead">Con aviso (${warns.length}) <span class="chev">${svg('chevron')}</span></div><div class="dbody" id="gwarns" hidden></div></div>
+      <div class="gsec">Ajustes</div><div id="gsettings"></div>
+      <div class="gsec">Palabras prohibidas</div>
+      <textarea id="gbadwords" rows="2" placeholder="palabra1, palabra2, …">${escHtml((d.badwords&&d.badwords.words||[]).join(", "))}</textarea>
+      <div class="btnrow" style="align-items:center">
+        <select id="gbwaction" style="flex:1">
+          <option value="delete">Borrar mensaje</option>
+          <option value="warn">Borrar y avisar</option>
+          <option value="ban">Borrar y banear</option>
+        </select>
+        <button class="btn ghost" id="gbwsave" style="width:auto;padding:13px 16px">Guardar</button>
+      </div>
+
+      <div class="gsec">Notas de moderación</div>
+      <textarea id="gnotes" rows="2" placeholder="Notas internas…">${escHtml(d.notes)}</textarea>
+      <div class="btnrow"><button class="btn ghost" id="gnotesSave">Guardar notas</button></div>`;
+    document.getElementById("gback").onclick=()=>showView("canales");
+
+    document.getElementById("gsend").onclick=async()=>{
+      const txt=document.getElementById("gmsg").value.trim(); if(!txt){showToast("Escribe el mensaje");return;}
+      const r=await gp("/group/send",{text:txt});
+      if(r&&r.ok){ev("group_message_sent");document.getElementById("gmsg").value="";showToast("Mensaje enviado");} else showToast("No se pudo enviar");
+    };
+    document.getElementById("gsched").onclick=async()=>{
+      const txt=document.getElementById("gmsg").value.trim(), when=toUTC(document.getElementById("gwhen").value);
+      if(!txt){showToast("Escribe el mensaje");return;} if(!when){showToast("Elige fecha y hora");return;}
+      const r=await gp("/group/schedule",{text:txt,send_at:when});
+      if(r&&r.ok){showToast("Programado");loadGroup();} else showToast("No se pudo programar");
+    };
+    const sl=document.getElementById("gschedlist");
+    sl.innerHTML=sched.length?sched.map(s=>`<div class="userchip"><div><div class="uid">${escHtml((s.text||'').slice(0,42))}</div><div class="w">${fromUTC(s.send_at)}</div></div><span class="minibtn red" data-sid="${s.id}">Cancelar</span></div>`).join(""):`<p class="muted">Ninguno.</p>`;
+    sl.querySelectorAll("[data-sid]").forEach(b=>b.onclick=async()=>{const r=await gp("/group/unschedule",{id:b.dataset.sid});if(r&&r.ok){showToast("Cancelado");loadGroup();}});
+    // fila de usuario con desplegable CAS (clic en la fila) + acción
+    function userRow(uid, extra, actLabel, actAttr){
+      return `<div class="userchip uexp" data-uid="${uid}">
+          <span class="uid">${uid}${extra||""}</span>
+          <span style="display:flex;gap:8px;align-items:center"><span class="minibtn" ${actAttr}>${actLabel}</span><span class="chev">${svg('chevron')}</span></span>
+        </div><div class="casbox" data-cas="${uid}" hidden></div>`;
+    }
+    function bindCas(container){
+      container.querySelectorAll(".uexp").forEach(row=> row.addEventListener("click", async e=>{
+        if(e.target.closest(".minibtn")) return;  // no abrir CAS al pulsar la acción
+        const uid=row.dataset.uid, box=container.querySelector(`[data-cas="${uid}"]`);
+        if(!box) return;
+        row.classList.toggle("open"); box.hidden=!box.hidden;
+        if(!box.hidden && !box.dataset.loaded){
+          box.innerHTML=`<span class="k">Consultando cas.chat…</span>`;
+          const c=await gp("/group/cas",{user_id:uid});
+          if(c&&c.ok){
+            const cas=c.cas||{}, res=cas.result;
+            let ex="";
+            if(res&&typeof res==="object"){
+              if(res.offenses!=null) ex+=`<div><span class="k">Ofensas CAS:</span> ${res.offenses}</div>`;
+              if(res.time_added) ex+=`<div><span class="k">En CAS desde:</span> ${res.time_added}</div>`;
+            }
+            box.innerHTML=`<div><span class="k">cas.chat:</span> <span class="${cas.banned?'banned':'clean'}">${cas.banned?'BANEADO globalmente':'limpio'}</span></div>${ex}<div><span class="k">Estado en el grupo:</span> ${c.tg_status||'—'}</div>`;
+            box.dataset.loaded="1";
+          } else box.innerHTML=`<span class="k">No se pudo consultar CAS.</span>`;
+        }
+      }));
+    }
+    const bl=document.getElementById("gbans");
+    bl.innerHTML=bans.length?bans.map(u=>userRow(u,"",'Quitar ban',`data-unban="${u}"`)).join(""):`<p class="muted">El bot no tiene baneados registrados en este grupo.</p>`;
+    bl.querySelectorAll("[data-unban]").forEach(b=>b.onclick=async(e)=>{e.stopPropagation();const r=await gp("/group/unban",{user_id:b.dataset.unban});if(r&&r.ok){showToast("Desbaneado");loadGroup();}});
+    bindCas(bl); bindDropdown("dd-bans");
+    const wl=document.getElementById("gwarns");
+    wl.innerHTML=warns.length?warns.map(w=>userRow(w.user_id,` <span class="w">${w.count} avisos</span>`,'Quitar',`data-unwarn="${w.user_id}"`)).join(""):`<p class="muted">Sin avisos.</p>`;
+    wl.querySelectorAll("[data-unwarn]").forEach(b=>b.onclick=async(e)=>{e.stopPropagation();const r=await gp("/group/unwarn",{user_id:b.dataset.unwarn});if(r&&r.ok){showToast("Aviso quitado");loadGroup();}});
+    bindCas(wl); bindDropdown("dd-warns");
+    const SET=[["auto_mod","Auto-moderación","Filtra spam y contenido"],["security_shield","Escudo de seguridad","Bloquea usuarios en listas negras"],["welcome","Bienvenida","Saluda a los nuevos"],["ia_learning","Aprendizaje IA","La IA aprende de este grupo"]];
+    const gs=document.getElementById("gsettings");
+    gs.innerHTML=SET.map(([k,tt,de])=>`<div class="setrow"><div><b>${tt}</b><span>${de}</span></div><div class="switch ${cfg[k]?'on':''}" data-set="${k}"><span></span></div></div>`).join("");
+    gs.querySelectorAll("[data-set]").forEach(sw=>sw.onclick=async()=>{const on=!sw.classList.contains("on");sw.classList.toggle("on",on);const r=await gp("/group/settings",{key:sw.dataset.set,value:on});if(!r||!r.ok)sw.classList.toggle("on",!on);});
+    document.getElementById("gnotesSave").onclick=async()=>{const r=await gp("/group/notes",{notes:document.getElementById("gnotes").value});if(r&&r.ok)showToast("Notas guardadas");};
+
+    // palabras prohibidas
+    const bwsel=document.getElementById("gbwaction"); if(d.badwords&&d.badwords.action) bwsel.value=d.badwords.action;
+    document.getElementById("gbwsave").onclick=async()=>{
+      const words=document.getElementById("gbadwords").value.split(/[,\n]/).map(w=>w.trim()).filter(Boolean);
+      const r=await gp("/group/badwords",{words,action:bwsel.value});
+      if(r&&r.ok)showToast(`Filtro guardado (${words.length} palabras)`); else showToast("No se pudo guardar");
+    };
+
+    // generar imagen desde descripción
+    document.getElementById("gimggen").onclick=async()=>{
+      const p=document.getElementById("gimgprompt").value.trim(); if(!p){showToast("Describe la imagen");return;}
+      const out=document.getElementById("gimgout"); out.innerHTML=`<p class="muted" style="margin-top:9px">Generando imágenes…</p>`;
+      const r=await gp("/image/generate",{prompt:p});
+      if(!r||!r.ok||!r.images){out.innerHTML=`<p class="muted" style="margin-top:9px">No se pudo generar.</p>`;return;}
+      out.innerHTML=`<div class="imggrid">${r.images.map(u=>`<img class="genimg" src="${u}" data-url="${u}" loading="lazy">`).join("")}</div>
+        <button class="btn cta" id="gimgsend" disabled style="margin-top:9px">Enviar imagen al grupo</button>`;
+      let sel=null;
+      out.querySelectorAll(".genimg").forEach(im=>im.onclick=()=>{out.querySelectorAll(".genimg").forEach(x=>x.classList.remove("sel"));im.classList.add("sel");sel=im.dataset.url;document.getElementById("gimgsend").disabled=false;});
+      document.getElementById("gimgsend").onclick=async()=>{
+        if(!sel){showToast("Elige una imagen");return;}
+        const cap=document.getElementById("gmsg").value.trim();
+        const rr=await gp("/group/sendphoto",{photo_url:sel,caption:cap});
+        if(rr&&rr.ok){showToast("Imagen enviada");} else showToast("No se pudo enviar");
+      };
+    };
+
+    loadStats(); loadAds();
+  }
+
+  function bindDropdown(id){
+    const dd=document.getElementById(id); if(!dd) return;
+    const head=dd.querySelector(".dhead"), body=dd.querySelector(".dbody");
+    head.onclick=()=>{ body.hidden=!body.hidden; dd.classList.toggle("open",!body.hidden); };
+  }
+
+  // Widget reutilizable: describe → genera 4 → elige una. onSelect(url) al elegir.
+  function imgGenHTML(pfx,placeholder){
+    return `<div class="btnrow" style="align-items:center;margin-top:8px"><input type="text" id="${pfx}p" placeholder="${placeholder||'Describe la imagen…'}" style="flex:1"><button class="btn ghost" id="${pfx}g" style="width:auto;padding:11px 14px">Generar</button></div><div id="${pfx}o"></div>`;
+  }
+  function bindImgGen(pfx,onSelect){
+    const g=document.getElementById(pfx+"g"); if(!g) return;
+    g.onclick=async()=>{
+      const p=document.getElementById(pfx+"p").value.trim(); if(!p){showToast("Describe la imagen");return;}
+      const o=document.getElementById(pfx+"o"); o.innerHTML=`<p class="muted" style="margin-top:8px">Generando imágenes…</p>`;
+      const r=await gp("/image/generate",{prompt:p});
+      if(!r||!r.ok||!r.images){o.innerHTML=`<p class="muted">No se pudo generar.</p>`;return;}
+      o.innerHTML=`<div class="imggrid">${r.images.map(u=>`<img class="genimg" src="${u}" data-url="${u}" loading="lazy">`).join("")}</div>`;
+      o.querySelectorAll(".genimg").forEach(im=>im.onclick=()=>{o.querySelectorAll(".genimg").forEach(x=>x.classList.remove("sel"));im.classList.add("sel");onSelect(im.dataset.url);showToast("Imagen seleccionada");});
+    };
+  }
+
+  function lineChart(series){
+    const w=320,h=90,pad=5;
+    const ys=series.map(p=>p.subs), min=Math.min(...ys), max=Math.max(...ys), span=(max-min)||1;
+    const sx=(w-pad*2)/(series.length-1);
+    const pts=series.map((p,i)=>[pad+i*sx, h-pad-((p.subs-min)/span)*(h-pad*2)]);
+    const line=pts.map(([x,y],i)=>`${i?"L":"M"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+    const area=`${line} L${pts[pts.length-1][0].toFixed(1)},${h} L${pts[0][0].toFixed(1)},${h} Z`;
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:88px;display:block">
+      <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5DCAA5" stop-opacity=".3"/><stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/></linearGradient></defs>
+      <path d="${area}" fill="url(#cg)"/><path d="${line}" fill="none" stroke="#5DCAA5" stroke-width="2" stroke-linejoin="round"/></svg>`;
+  }
+
+  async function loadStats(){
+    const st=document.getElementById("gstats"); if(!st) return;
+    const d=await gp("/group/stats",{});
+    if(!d||!d.ok||!d.stats){ st.innerHTML=""; return; }
+    const s=d.stats, up=(s.growth30d||0)>=0, series=s.series||[];
+    const n7=s.new7d!=null?((s.new7d>=0?"+":"")+fmt(s.new7d)):"—";
+    st.innerHTML=`<div class="gsec">Estadísticas</div>
+      <div class="statbar">
+        <div class="stat"><div class="v">${fmt(s.subscribers)}</div><div class="l">Suscriptores</div></div>
+        <div class="stat"><div class="v" style="color:${up?'var(--teal)':'var(--red)'}">${gpct(s.growth30d)}</div><div class="l">30 días</div></div>
+        <div class="stat"><div class="v">${n7}</div><div class="l">Nuevos 7d</div></div>
+      </div>
+      <div class="statbar">
+        <div class="stat"><div class="v">${fmt(s.postsPerDay)}</div><div class="l">Posts/día</div></div>
+        <div class="stat"><div class="v">${fmt(s.posts_count)}</div><div class="l">Posts vistos</div></div>
+        <div class="stat"><div class="v">${series.length}</div><div class="l">Días de datos</div></div>
+      </div>
+      ${series.length>=2?`<div class="card" style="padding:14px">${lineChart(series)}</div>`
+        :`<p class="muted">La evolución de suscriptores se irá dibujando según se acumulen días (1 muestra diaria).</p>`}`;
+  }
+
+  async function loadAds(){
+    const box=document.getElementById("gads"); if(!box) return;
+    const inc=await gp("/ads/incoming",{}); const ads=(inc&&inc.ads)||[];
+    const p=await gp("/ads/partners",{}); const partners=(p&&p.partners)||[];
+    box.innerHTML=`<div class="gsec">Anuncios mutuos</div>
+      <div class="dropdown" id="dd-adnew"><div class="dhead">Solicitar anuncio <span class="chev">${svg('chevron')}</span></div>
+        <div class="dbody" hidden>
+          <p class="muted" style="margin:2px 0 10px">Tu anuncio se publica en el canal socio y el suyo en el tuyo, a la hora acordada.</p>
+          <select id="adpartner">${partners.length?partners.map(x=>`<option value="${x.chat_id}">${escHtml(x.name)} · ${fmt(x.subscribers)}</option>`).join(""):`<option value="">(no hay otros canales)</option>`}</select>
+          <textarea id="admsg" rows="3" placeholder="Diseña el texto del anuncio…" style="margin-top:9px"></textarea>
+          <div style="font-size:12px;color:var(--muted);margin:10px 2px 0">Imagen del anuncio (opcional)</div>
+          ${imgGenHTML("adimg","Describe la imagen del anuncio…")}
+          <div class="btnrow" style="align-items:center"><input type="datetime-local" id="adwhen" style="flex:1"><button class="btn ghost" id="adsend" style="width:auto;padding:13px 16px">Enviar</button></div>
+        </div></div>
+      <div class="dropdown" id="dd-adinc"><div class="dhead">Solicitudes recibidas (${ads.length}) <span class="chev">${svg('chevron')}</span></div>
+        <div class="dbody" hidden id="adinclist"></div></div>`;
+    bindDropdown("dd-adnew"); bindDropdown("dd-adinc");
+    let adImg=null; bindImgGen("adimg", u=>{ adImg=u; });
+    document.getElementById("adsend").onclick=async()=>{
+      const to=document.getElementById("adpartner").value, txt=document.getElementById("admsg").value.trim(), when=toUTC(document.getElementById("adwhen").value);
+      if(!to){showToast("Elige un canal");return;} if(!txt){showToast("Escribe el anuncio");return;} if(!when){showToast("Elige fecha y hora");return;}
+      const r=await gp("/ads/request",{from_chat:curChat,to_chat:to,from_ad:txt,when,from_image:adImg||""});
+      if(r&&r.ok){showToast("Solicitud enviada");document.getElementById("admsg").value="";adImg=null;document.getElementById("adimgo").innerHTML="";}
+      else showToast((r&&r.error)||"No se pudo enviar");
+    };
+    const il=document.getElementById("adinclist");
+    const incImg={};
+    il.innerHTML=ads.length?ads.map(a=>`<div class="casbox" style="margin-bottom:10px">
+        <div><span class="k">De:</span> ${escHtml(a.from_name||'canal')}</div>
+        <div style="margin:6px 0"><span class="k">Su anuncio:</span><br>${escHtml(a.from_ad)}</div>
+        ${a.from_image?`<img src="${a.from_image}" style="width:100%;border-radius:10px;margin:6px 0" loading="lazy">`:""}
+        <div><span class="k">Cuándo:</span> ${fromUTC(a.when)}</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--muted)">Tu anuncio recíproco</div>
+        <textarea rows="2" placeholder="Texto de tu anuncio…" data-adtext="${a.id}"></textarea>
+        ${imgGenHTML("ai"+a.id,"Describe la imagen de tu anuncio…")}
+        <div class="btnrow"><button class="btn cta" data-adok="${a.id}" style="flex:1">Aceptar</button><button class="btn ghost" data-adno="${a.id}" style="width:auto">Rechazar</button></div>
+      </div>`).join(""):`<p class="muted">Sin solicitudes.</p>`;
+    ads.forEach(a=>bindImgGen("ai"+a.id, u=>{ incImg[a.id]=u; }));
+    il.querySelectorAll("[data-adok]").forEach(b=>b.onclick=async()=>{const id=b.dataset.adok, ta=il.querySelector(`[data-adtext="${id}"]`); const r=await gp("/ads/accept",{id,to_ad:ta.value.trim(),to_image:incImg[id]||""}); if(r&&r.ok){showToast("Aceptado y programado");loadAds();} else showToast((r&&r.error)||"Escribe tu anuncio");});
+    il.querySelectorAll("[data-adno]").forEach(b=>b.onclick=async()=>{const r=await gp("/ads/decline",{id:b.dataset.adno}); if(r&&r.ok){showToast("Rechazado");loadAds();}});
+  }
+  async function loadAdmin(){
+    const el=document.getElementById("v-admin");
+    if(!master){
+      el.innerHTML=`<div class="vtitle">Administrar</div><div class="vsub">Tus canales. Actívalos para publicarlos en el directorio.</div><div id="adminList">${skel()}</div>`;
+      let chs=[];
+      if(tg&&tg.initData){const d=await apiPost("/stats/mine",{initData:tg.initData});if(d&&d.ok)chs=d.channels||[];}
+      const list=document.getElementById("adminList");
+      if(!chs.length){ list.innerHTML=`<p class="muted">No administras ningún canal todavía. Añade @${BOT} como admin.</p>`; return; }
+      list.innerHTML=chs.map(adminRow).join(""); bindSwitches(list);
+      return;
+    }
+    // MASTER: panel moonbot (solo tú) + TODOS los canales del bot
+    el.innerHTML=`<div class="vtitle">Administrar</div><div class="vsub">Todos los canales y grupos donde está el bot.</div>
+      <div class="card"><h3>Panel Moonbot</h3><p>Administración completa del bot: moderación, IA, seguridad, proxies, bots.</p>
+        <button class="btn teal" id="goPanel" style="margin-top:13px;">${svg('shield')} Acceder al panel Moonbot</button></div>
+      <div class="sec">Canales del bot <span id="adCount"></span></div>
+      <p class="muted" style="margin:-4px 2px 12px;">Interruptor = publicar en el directorio público.</p>
+      <div id="adminList">${skel()}</div>`;
+    document.getElementById("goPanel").onclick=()=>openLink("https://cintiabot.todosobreall.tech/panel");
+    const d=await apiPost("/admin/channels",{initData:tg.initData});
+    const chs=(d&&d.ok&&d.channels)||[];
+    document.getElementById("adCount").textContent=`(${chs.length})`;
+    const list=document.getElementById("adminList");
+    list.innerHTML=chs.length?chs.map(adminRow).join(""):`<p class="muted">El bot no está en ningún canal todavía.</p>`;
+    bindSwitches(list);
+  }
+
+  // ── Directorio ──
+  async function loadDirectorio(){
+    const el=document.getElementById("v-directorio");
+    el.innerHTML=`<div class="vtitle">Directorio</div><div class="vsub">Todos los canales de la red, por suscriptores.</div>`+skel();
+    const g=await apiGet("/stats/global");
+    const list=await apiGet("/stats/channels?sort=subscribers");
+    const chs=(list&&list.channels)||[];
+    if(!chs.length){
+      el.innerHTML=`<div class="vtitle">Directorio</div><div class="vsub">El directorio aún está creciendo.</div>
+        <div class="empty"><div class="big">${svg('compass')}</div><h2>Sé el primero</h2>
+        <p>Todavía no hay canales en el directorio. Añade el tuyo y aparecerá aquí con sus métricas.</p>
+        <button class="btn cta" id="dirAdd">${svg('plus')} Añadir mi canal</button></div>`;
+      document.getElementById("dirAdd").onclick=()=>{ev("add_channel",{from:"directorio"});openTg(ADD_LINK);};
+      return;
+    }
+    const gv=g&&g.ok?g:{channels:chs.length,totalSubscribers:0,avgGrowth:0};
+    el.innerHTML=`<div class="vtitle">Directorio</div><div class="vsub">${gv.channels} canales en la red.</div>
+      <div class="statbar">
+        <div class="stat"><div class="v">${fmt(gv.channels)}</div><div class="l">Canales</div></div>
+        <div class="stat"><div class="v">${fmt(gv.totalSubscribers)}</div><div class="l">Suscriptores</div></div>
+        <div class="stat"><div class="v">${gpct(gv.avgGrowth)}</div><div class="l">Crecim.</div></div>
+      </div>`
+      +chs.map(c=>channelRow(c)).join("")
+      +`<button class="btn ghost" id="dirFull" style="margin-top:6px;">${svg('ext')} Ver directorio completo</button>`;
+    document.getElementById("dirFull").onclick=()=>openLink("https://canales.todosobreall.tech");
+  }
+
+  // ── Red (servicios + proxy secundario) ──
+  const SERVICES=[
+    {ic:"message",n:"Telegram Web",url:"https://chat.todosobreall.tech"},
+    {ic:"newspaper",n:"Noticias Web3",url:"https://noticiasweb3.todosobreall.tech"},
+    {ic:"shield",n:"Resistencia",url:"https://resistenciaalacensura.todosobreall.tech"},
+    {ic:"gamepad",n:"Gameplays",url:"https://todosobregameplays.todosobreall.tech"},
+    {ic:"globe",n:"Todo Sobre All",url:"https://todosobreall.tech"},
+    {ic:"users",n:"Comunidad",url:"https://comunidadtelebots.todosobreall.tech"},
+  ];
+  function loadRed(){
+    const el=document.getElementById("v-red");
+    el.innerHTML=`<div class="vtitle">Red</div><div class="vsub">Servicios y herramientas de ComunidadTelebots.</div>
+      <div class="services">${SERVICES.map((s,i)=>`<div class="svc" data-i="${i}"><span class="si">${svg(s.ic)}</span>${s.n}</div>`).join("")}</div>
+      <div class="sec">Herramientas</div>
+      <div class="listitem" id="proxyItem"><span class="li-ic">${svg('globe')}</span>
+        <div class="li-t"><b>Obtener proxy MTProto</b><span>Salta bloqueos de Telegram</span></div>
+        <span class="chev">${svg('chevron')}</span></div>
+      <div class="proxy-out" id="proxyOut"></div>`;
+    el.querySelectorAll(".svc").forEach(x=>x.onclick=()=>{ev("service_open",{service:SERVICES[x.dataset.i].n});openLink(SERVICES[x.dataset.i].url);});
+    document.getElementById("proxyItem").onclick=fetchProxy;
+  }
+  function fetchProxy(){
+    const out=document.getElementById("proxyOut");
+    out.innerHTML=`<p class="muted" style="margin-top:10px;">Buscando proxy…</p>`;
+    apiGet("/proxy").then(d=>{
+      if(!d||!d.ok||!d.proxies||!d.proxies.length){out.innerHTML=`<p class="muted" style="margin-top:10px;">No hay proxies disponibles ahora mismo.</p>`;return;}
+      out.innerHTML=d.proxies.slice(0,3).map(p=>`<div class="proxy-item"><div class="pd">${p.server}:${p.port}<br><small>${p.tag||'MTProto'}</small></div><span class="connect" data-l="${p.https_link}">Conectar</span></div>`).join("");
+      out.querySelectorAll(".connect").forEach(el=>el.onclick=()=>{ev("proxy_connect");openTg(el.dataset.l);});
+    });
+  }
+
+  // ── Ajustes ──
+  function loadAjustes(){
+    const el=document.getElementById("v-ajustes");
+    el.innerHTML=`<div class="vtitle">Ajustes</div><div class="vsub">Personaliza tu panel.</div>
+      <div class="sec">Tema</div>
+      <div class="themeopt" data-theme-opt="nuevo"><div class="ra"></div><div class="to-t"><b>Nuevo</b><span>Pestañas, jerarquía por producto. Recomendado.</span></div></div>
+      <div class="themeopt" data-theme-opt="clasico"><div class="ra"></div><div class="to-t"><b>Clásico</b><span>La maqueta original con tarjetas apiladas.</span></div></div>`;
+    el.querySelectorAll("[data-theme-opt]").forEach(o=>o.onclick=()=>setTheme(o.dataset.themeOpt));
+    reflectTheme();
+  }
+  function reflectTheme(){document.querySelectorAll("[data-theme-opt]").forEach(o=>o.classList.toggle("sel",o.dataset.themeOpt===curTheme));}
+
+  // ── Navegación ──
+  const LOADERS={canales:loadCanales,admin:loadAdmin,directorio:loadDirectorio,red:loadRed,ajustes:loadAjustes};
+  function showView(name){
+    document.querySelectorAll("#app .view").forEach(v=>v.hidden=v.dataset.view!==name);
+    document.querySelectorAll("#app .tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
+    if(window.gtag)gtag("event","page_view",{page_path:"/hub/"+name});
+    (LOADERS[name]||(()=>{}))();
+  }
+  let newBound=false;
+  function initNew(){
+    if(!newBound){
+      document.querySelectorAll("#app .tab").forEach(t=>t.onclick=()=>showView(t.dataset.tab));
+      document.getElementById("btnAjustes").onclick=()=>showView("ajustes");
+      newBound=true;
+    }
+    showView("canales");
+  }
+
+  // ── Tema clásico ──
+  let classicBound=false;
+  function initClassic(){
+    if(user&&user.first_name)document.getElementById("c-hello").innerHTML=`Hola <b style="color:var(--ink)">${user.first_name}</b>, este es tu panel.`;
+    if(master)document.getElementById("c-masterCard").style.display="block";
+    apiGet("/stats/global").then(d=>{if(d&&d.ok&&d.channels>0)document.getElementById("c-chStat").textContent=`${d.channels} canales · ${fmt(d.totalSubscribers)} suscriptores`;});
+    document.getElementById("c-services").innerHTML=SERVICES.map((s,i)=>`<div class="svc" data-i="${i}"><span class="si">${svg(s.ic)}</span>${s.n}</div>`).join("");
+    if(classicBound)return; classicBound=true;
+    document.getElementById("c-services").querySelectorAll(".svc").forEach(x=>x.onclick=()=>openLink(SERVICES[x.dataset.i].url));
+    document.getElementById("c-btnCanales").onclick=()=>openLink("https://canales.todosobreall.tech");
+    document.getElementById("c-btnMaster").onclick=()=>openLink("https://cintiabot.todosobreall.tech/panel");
+    document.getElementById("c-backNew").onclick=()=>setTheme("nuevo");
+    document.getElementById("c-btnProxy").onclick=function(){
+      const out=document.getElementById("c-proxyOut");out.innerHTML=`<p class="muted">Buscando…</p>`;
+      apiGet("/proxy").then(d=>{
+        if(!d||!d.ok||!d.proxies||!d.proxies.length){out.innerHTML=`<p class="muted">No hay proxies disponibles ahora.</p>`;return;}
+        out.innerHTML=d.proxies.slice(0,3).map(p=>`<div class="proxy-item"><div class="pd">${p.server}:${p.port}<br><small>${p.tag||'MTProto'}</small></div><span class="connect" data-l="${p.https_link}">Conectar</span></div>`).join("");
+        out.querySelectorAll(".connect").forEach(el=>el.onclick=()=>{ev("proxy_connect");openTg(el.dataset.l);});
+      });
+    };
+  }
+
+  // ── Tema: carga/guardado por usuario ──
+  let curTheme="nuevo";
+  function applyTheme(t){
+    curTheme=(t==="clasico")?"clasico":"nuevo";
+    const nuevo=curTheme==="nuevo";
+    document.getElementById("app").hidden=!nuevo;
+    document.getElementById("app-classic").hidden=nuevo;
+    if(nuevo)initNew();else initClassic();
+  }
+  function setTheme(t){ev("theme_change",{theme:t});saveTheme(t);applyTheme(t);if(curTheme==="nuevo"){reflectTheme();}}
+  function saveTheme(t){
+    try{if(tg&&tg.CloudStorage)tg.CloudStorage.setItem("hub_theme",t);}catch(e){}
+    try{localStorage.setItem("hub_theme",t);}catch(e){}
+  }
+  function loadTheme(){
+    return new Promise(res=>{
+      let fb="nuevo";try{fb=localStorage.getItem("hub_theme")||"nuevo";}catch(e){}
+      if(tg&&tg.CloudStorage){
+        try{tg.CloudStorage.getItem("hub_theme",(err,val)=>res(val||fb));}catch(e){res(fb);}
+      }else res(fb);
+    });
+  }
+
+  // ── Arranque ──
+  (async function(){
+    if(user&&user.first_name)document.getElementById("uname").textContent=user.first_name;
+    const urlParams = new URLSearchParams(window.location.search);
+    if(tg&&tg.initData){
+      const d=await apiPost("/tg_auth",{initData:tg.initData});
+      if(d&&d.ok&&d.is_master){master=true;document.getElementById("roleBadge").hidden=false;}
+    }
+    if(urlParams.get("master")==="1"){
+      master=true;
+      const rb=document.getElementById("roleBadge");
+      if(rb)rb.hidden=false;
+    }
+    const t=await loadTheme();
+    applyTheme(t);
+  })();
+</script>
+</body>
+</html>

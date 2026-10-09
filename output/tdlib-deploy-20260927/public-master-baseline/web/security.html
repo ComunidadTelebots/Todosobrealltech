@@ -1,0 +1,135 @@
+<div class="glass-panel" style="margin-bottom: 25px; background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(30,41,59,0.7)); border: 1px solid rgba(239,68,68,0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="margin-bottom: 5px;" data-i18n="sec_title">Centro de Seguridad Moon</h2>
+            <p style="color: var(--text-muted); font-size: 14px;" data-i18n="sec_subtitle">Protección avanzada y análisis de amenazas externas.</p>
+        </div>
+        <div class="status-badge online" style="background: rgba(16,185,129,0.1); color: var(--accent);">
+            🛡️ SISTEMA ACTIVO
+        </div>
+    </div>
+</div>
+
+<div class="grid-layout">
+    <div class="left-col">
+        <!-- VirusTotal Scanner -->
+        <div class="glass-panel">
+            <h3 data-i18n="sec_vt_title">🔍 Análisis de VirusTotal</h3>
+            <p class="subtitle" data-i18n="sec_vt_subtitle">Analiza hashes de archivos sospechosos en tiempo real.</p>
+            
+            <div style="background: rgba(56,189,248,0.1); border-radius: 8px; padding: 10px; margin: 15px 0; border: 1px solid rgba(56,189,248,0.2);">
+                <p style="font-size: 11px; color: var(--primary); margin: 0;">
+                    ℹ️ <b>Límites de API Gratuita:</b> 4 peticiones/min | 500 peticiones/día.
+                </p>
+            </div>
+
+            <div class="input-group" style="margin-top: 10px;">
+                <label data-i18n="sec_hash_label">HASH (SHA-256 / MD5)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="vtHashInput" placeholder="44d88612fea8a8f36de82e1278abb02f...">
+                    <button onclick="scanHashVT()" class="btn-glow-mini" style="width: 100px; margin-top: 0;" data-i18n="btn_scan">ANALIZAR</button>
+                </div>
+            </div>
+
+            <div id="vtResult" class="mt-20" style="display: none;">
+                <!-- Result cards go here -->
+            </div>
+        </div>
+
+        <div class="glass-panel mt-20">
+            <h3 data-i18n="sec_firewall_title">🔥 Firewall de Red</h3>
+            <p class="subtitle" data-i18n="sec_firewall_subtitle">Control de IPs y bloqueos automáticos.</p>
+            <div id="blacklistContainer" style="margin-top: 15px;">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+
+        <div class="glass-panel mt-20" style="border: 1px solid rgba(239,68,68,0.3);">
+            <h3 data-i18n="sec_globalbans_title">🚫 Baneados Globales de Telegram</h3>
+            <p class="subtitle" data-i18n="sec_globalbans_subtitle">Usuarios vetados en toda la red Moon. Revierte un veto si fue un error.</p>
+            <div class="audit-table-container" style="margin-top: 15px; overflow-y: auto; max-height: 320px;">
+                <table class="audit-table" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                        <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--glass-border);">
+                            <th style="padding: 10px;" data-i18n="sec_bans_col_id">ID USUARIO</th>
+                            <th data-i18n="sec_bans_col_reason">RAZÓN</th>
+                            <th style="text-align: right;" data-i18n="sec_bans_col_action">ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="globalBansBody">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-col">
+        <div class="glass-panel h-100" style="display: flex; flex-direction: column;">
+            <h3 data-i18n="sec_audit_title">🛡️ Auditoría de Archivos</h3>
+            <p class="subtitle" data-i18n="sec_audit_subtitle">Historial de hashes y percepciones IA.</p>
+            
+            <div class="audit-table-container" style="flex-grow: 1; margin-top: 15px; overflow-y: auto; max-height: 500px;">
+                <table class="audit-table" style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                    <thead>
+                        <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--glass-border);">
+                            <th style="padding: 10px;">HORA</th>
+                            <th>GRUPO</th>
+                            <th>HASH</th>
+                            <th>USUARIO</th>
+                            <th>VT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="securityAuditBody">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.audit-table th { font-size: 10px; text-transform: uppercase; }
+.audit-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.vt-badge { padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+.vt-badge.danger { background: rgba(239,68,68,0.1); color: var(--danger); }
+.vt-badge.success { background: rgba(16,185,129,0.1); color: var(--success); }
+.btn-unban {
+    background: rgba(239,68,68,0.12);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.4);
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-unban:hover { background: var(--danger); color: #fff; }
+</style>
+
+<style>
+.vt-card {
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid var(--glass-border);
+}
+.vt-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+.vt-stat-item {
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+.vt-stat-item label { font-size: 10px; color: var(--text-muted); display: block; }
+.vt-stat-item span { font-size: 18px; font-weight: 800; }
+.vt-stat-item.danger span { color: var(--danger); }
+.vt-stat-item.success span { color: var(--success); }
+</style>

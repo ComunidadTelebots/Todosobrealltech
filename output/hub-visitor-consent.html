@@ -1,0 +1,13 @@
+<script>
+(function(){
+const key='moon_hub_first_party_analytics'; let sent=false;
+function send(){if(sent||navigator.doNotTrack==='1'||navigator.globalPrivacyControl)return;sent=true;
+fetch('https://todosobreall.tech/hcgi/api/visitor-analytics/pageview',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({consent:true,event_id:crypto.randomUUID(),source:'hub',page:'/hub',language:navigator.language,device:/Mobi/i.test(navigator.userAgent)?'mobile':'desktop'})}).catch(()=>{});}
+function init(){let allowed=null;try{allowed=localStorage.getItem(key);}catch{}if(allowed==='true')send();
+const box=document.createElement('aside');box.style.cssText='position:fixed;bottom:12px;left:12px;z-index:9999;background:#0f172a;color:white;padding:12px;border:1px solid #64748b;border-radius:10px;max-width:320px;font:13px system-ui';
+const text=document.createElement('p');text.textContent='Analítica propia del Hub: vistas e idioma, con ubicación aproximada. Sin contenido de tus chats.';box.append(text);
+const yes=document.createElement('button');yes.textContent=allowed==='true'?'Desactivar analítica':'Permitir analítica';yes.style.cssText='margin-right:12px;padding:6px';yes.onclick=()=>{const enable=allowed!=='true';allowed=String(enable);try{localStorage.setItem(key,allowed);}catch{}if(enable)send();yes.textContent=enable?'Desactivar analítica':'Permitir analítica';};
+const close=document.createElement('button');close.textContent='Cerrar';close.onclick=()=>box.remove();box.append(yes,close);document.body.append(box);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>

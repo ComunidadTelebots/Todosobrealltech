@@ -1,0 +1,103 @@
+<div class="glass-panel" style="margin-bottom: 25px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(30,41,59,0.7));">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="margin-bottom: 5px;" data-i18n="prox_title">Gestor de Proxies MTProto</h2>
+            <p style="color: var(--text-muted); font-size: 14px;" data-i18n="prox_subtitle">Despliega y monitoriza tus propios túneles de Telegram.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="scanDocker()" class="btn-glow-mini" style="width: auto; padding: 10px 20px; background: rgba(56,189,248,0.2);">📦 SCAN DOCKER</button>
+            <button onclick="openProxyModal()" class="btn-glow-mini" style="width: auto; padding: 10px 20px;" data-i18n="prox_btn_add">DESPLEGAR PROXY</button>
+        </div>
+    </div>
+</div>
+
+<div class="glass-panel" style="margin-bottom: 25px; border-left: 4px solid var(--secondary);">
+    <div class="panel-header-flex">
+        <h3>VPS MTProto Real</h3>
+        <button onclick="saveVpsProxyConfig()" class="btn-glow-mini" style="width:auto;">GUARDAR VPS</button>
+    </div>
+    <p class="section-desc">Conecta por SSH al VPS para leer puertos, contenedores Docker, tráfico y conexiones reales. Las contraseñas no se guardan desde la web; usa variables de entorno en el servidor si necesitas password o passphrase.</p>
+    <div class="input-group" style="display:grid; grid-template-columns: 1.3fr 0.8fr 0.5fr; gap:10px;">
+        <input type="text" id="vpsHost" placeholder="203.0.113.10">
+        <input type="text" id="vpsUser" placeholder="root">
+        <input type="number" id="vpsPort" placeholder="22" value="22">
+    </div>
+    <div class="input-group" style="display:grid; grid-template-columns: 1fr 1fr auto; gap:10px; margin-top:10px;">
+        <input type="text" id="vpsKeyPath" placeholder="Ruta clave SSH opcional">
+        <input type="text" id="vpsPorts" placeholder="8443,8444,8445,8446" value="8443,8444,8445,8446">
+        <button onclick="loadVpsProxyStats()" class="btn-glow-mini" style="width:auto;">LEER STATS REALES</button>
+    </div>
+    <div id="vpsProxyStats" class="res-panel" style="margin-top:15px;">Sin datos VPS cargados.</div>
+</div>
+
+<div class="glass-panel" style="margin-bottom: 25px; border-left: 4px solid var(--primary);">
+    <h4 style="margin-bottom: 10px;">❓ ¿Cómo funciona?</h4>
+    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+        Para desplegar un proxy MTProto necesitas un <b>Puerto</b> libre en tu servidor y un <b>Secret Hex</b>. <br>
+        • Puedes generar un Secret aleatorio de 32 caracteres (0-9, a-f). <br>
+        • Si usas <b>Docker</b>, el botón de escaneo buscará contenedores con nombres que incluyan "proxy" o "mtproto". <br>
+        • Una vez creado, usa el enlace <code>tg://proxy?server=TU_IP&port=PUERTO&secret=SECRET</code> para conectarte.
+    </p>
+</div>
+
+<div id="proxyGrid" class="grid-layout">
+    <!-- Dynamically populated -->
+</div>
+
+<!-- Modal para añadir Proxy -->
+<div id="proxyModal" class="modal-overlay" style="display: none;">
+    <div class="glass-panel modal-content" style="max-width: 400px;">
+        <h3 data-i18n="prox_modal_title">Nuevo Proxy MTProto</h3>
+        <div class="setting-item-vertical mt-20">
+            <label data-i18n="prox_port_label">PUERTO</label>
+            <input type="number" id="newProxyPort" placeholder="443" value="443">
+        </div>
+        <div class="setting-item-vertical mt-10">
+            <label data-i18n="prox_secret_label">SECRET (HEX)</label>
+            <input type="text" id="newProxySecret" placeholder="ee00000000000000000000000000000000">
+            <small style="font-size: 9px; color: var(--text-muted);">Debe ser un hash hexadecimal de 32 caracteres.</small>
+        </div>
+        <div class="setting-item-vertical mt-10">
+            <label data-i18n="prox_tag_label">TAG (PROMOCIÓN)</label>
+            <input type="text" id="newProxyTag" placeholder="opcional...">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <button onclick="deployProxy()" class="btn-glow-mini" style="flex:1;">CREAR</button>
+            <button onclick="closeProxyModal()" style="flex:1; background: rgba(255,255,255,0.05);">CANCELAR</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.proxy-card {
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.proxy-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 4px; height: 100%;
+    background: var(--status-color, #64748b);
+}
+.proxy-card.online { --status-color: var(--accent); }
+.proxy-card.offline { --status-color: var(--danger); }
+
+.proxy-mini-stat {
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+    padding: 10px;
+    border-radius: 8px;
+}
+.proxy-mini-stat label {
+    display: block;
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+.proxy-mini-stat span {
+    font-weight: 800;
+    font-size: 13px;
+}
+</style>

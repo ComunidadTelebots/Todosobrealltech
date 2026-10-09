@@ -1,0 +1,22 @@
+<div class="glass-panel bot-manager-panel" style="background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(15,23,42,0.8));">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 style="margin: 0;">🤖 Gestión de Instancias Multibot</h2>
+            <p style="color: var(--text-muted); font-size: 14px;">Panel de control avanzado para tus clones en la red.</p>
+        </div>
+        <button onclick="switchTab('dashboard')" class="tab-btn" style="width: auto; margin: 0;">VOLVER</button>
+    </div>
+
+    <div id="fullBotList" class="grid-3">
+        <div class="loading-spinner">Escaneando red en busca de instancias...</div>
+    </div>
+</div>
+
+<div class="glass-panel mt-20">
+    <h3>➕ Vincular Nueva Unidad</h3>
+    <p class="subtitle">Introduce el API Token de BotFather para desplegar un nuevo nodo.</p>
+    <div class="input-group" style="display: flex; gap: 15px;">
+        <input type="text" id="botTokenInput" placeholder="Token de Telegram...">
+        <button onclick="addBot()" style="width: 200px; margin-top: 0;">DESPLEGAR BOT</button>
+    </div>
+</div>

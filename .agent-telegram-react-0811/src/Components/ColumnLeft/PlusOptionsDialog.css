@@ -1,0 +1,12 @@
+.plus-options-dialog { background: var(--design-page-background, #f3f5f7); color: var(--design-text-color, #111); }
+.plus-options-toolbar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 12px; background: var(--design-header-background, var(--design-panel-background, #fff)); color: var(--design-header-color, inherit); border-bottom: 1px solid var(--design-border-color, rgba(127,127,127,.2)); }
+.plus-options-toolbar button { display: grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.plus-options-toolbar div { display: grid; gap: 2px; }.plus-options-toolbar small { opacity: .7; }
+.plus-options-content { width: min(720px, 100%); margin: 0 auto; box-sizing: border-box; display: grid; align-content: start; gap: 14px; padding: 18px !important; }
+.plus-options-card { display: grid; gap: 12px; padding: 14px; background: var(--design-panel-background, #fff); border: 1px solid var(--design-border-color, rgba(127,127,127,.24)); border-radius: var(--design-dialog-radius, 14px); }
+.plus-options-card label { display: flex; align-items: center; justify-content: space-between; gap: 14px; }.plus-options-card small { color: var(--design-muted-color, #667); }
+.plus-options-card select { max-width: 240px; padding: 7px 9px; border: 1px solid var(--design-border-color, rgba(127,127,127,.3)); border-radius: var(--design-control-radius, 8px); background: var(--design-input-surface, transparent); color: inherit; }
+.plus-options-github { display: block; padding: 14px; text-align: center; color: var(--color-accent-main, #2196f3); background: var(--design-panel-background, #fff); border: 1px solid var(--design-border-color, rgba(127,127,127,.24)); border-radius: var(--design-dialog-radius, 14px); text-decoration: none; font-weight: 600; }
+body.design-android-holo .plus-options-card,body.design-webogram .plus-options-card,body.design-tdesktop-classic .plus-options-card { border-radius: 2px; }
+body.design-ios .plus-options-card,body.design-macos .plus-options-card,body.design-android-glass .plus-options-card { backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+@media(max-width:600px){.plus-options-content{padding:12px !important}.plus-options-card label{align-items:flex-start;flex-direction:column}.plus-options-card select{width:100%;max-width:none}}

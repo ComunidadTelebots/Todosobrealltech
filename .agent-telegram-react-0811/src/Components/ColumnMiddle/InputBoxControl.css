@@ -1,0 +1,277 @@
+/*
+ *  Copyright (c) 2018-present, Evgeny Nadymov
+ *
+ * This source code is licensed under the GPL v.3.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.inputbox-background {
+    /*background: #e6ebee;*/
+}
+
+.inputbox {
+    /*padding: 0 12px;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    box-sizing: border-box;
+    border-top-width: 1px;
+    border-top-style: solid;
+
+    padding: 10px 0 25px;
+    width: calc(100% - 22px);
+    max-width: var(--composer-max-width);
+    margin: 0 auto;
+}
+
+.inputbox-icon-button {
+    padding: 6px;
+    margin: 7px;
+}
+
+.inputbox-bubble {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: calc(100% - 63px);
+    border-radius: 12px 12px 0 12px;
+    box-shadow: var(--shadow-bubble);
+    margin-right: 9px;
+    /*background: white;*/
+}
+
+.inputbox-bubble::after {
+    position: absolute;
+    bottom: -3px;
+    right: -11px;
+    width: 11px;
+    height: 20px;
+    content: '';
+    mask: url(../../Assets/bubble-tail-right.svg);
+    transform: translate(-2px, -2px);
+    box-sizing: border-box;
+    /*background: red;*/
+}
+
+.inputbox-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+#inputbox-message {
+    box-shadow: 0 0 0 0;
+    max-height: 150px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 0 16px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+#inputbox-message::before {
+    /*content: attr(placeholder);*/
+    color: var(--fg-placeholder);
+    pointer-events: none;
+    transform: translateX(20px);
+    will-change: transform;
+    opacity: 0;
+    /*position: absolute;*/
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+#inputbox-message:empty::before {
+    content: attr(placeholder);
+    transform: translateX(0px);
+    opacity: 0.75;
+}
+
+#inputbox-message:empty:active::before,
+#inputbox-message:empty:focus::before {
+    opacity: 0.75;
+}
+
+#inputbox-message:focus {
+    border: 0;
+    outline: none;
+    box-shadow: 0 0 0 0;
+}
+
+.inputbox-attach-button {
+    display: none;
+}
+
+.inputbox-left-column {
+    margin-right: 1px;
+    width: 48px;
+}
+
+/* Ocultar botón de stickers duplicado (evita el "emoji doble" en todos los skins) */
+.inputbox-left-column [aria-label='Stickers'] {
+    display: none;
+}
+
+.inputbox-middle-column {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+}
+
+.inputbox-right-column {
+    margin-left: 20px;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.inputbox-send-button {
+    margin: 0;
+    min-width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    box-shadow: var(--shadow-bubble);
+    color: #fff;
+}
+
+.photo-quality-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 112px;
+    margin: 0 3px;
+    color: inherit;
+}
+
+.photo-quality-control select {
+    min-width: 0;
+    max-width: 84px;
+    height: 30px;
+    padding: 2px 4px;
+    border: 1px solid var(--design-border-color, rgba(127, 127, 127, 0.25));
+    border-radius: var(--design-control-radius, 9px);
+    background: var(--design-input-surface, transparent);
+    color: inherit;
+    font: inherit;
+    font-size: 11px;
+}
+
+@media (max-width: 480px) {
+    .photo-quality-control span {
+        display: none;
+    }
+    .photo-quality-control {
+        max-width: 72px;
+    }
+    .photo-quality-control select {
+        max-width: 72px;
+        font-size: 10px;
+    }
+}
+
+/* Formatting toolbar */
+.format-toolbar {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    background: var(--color-background, #fff);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+    padding: 3px 4px;
+    gap: 2px;
+    z-index: 300;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    pointer-events: all;
+}
+
+.fmt-btn {
+    background: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 7px;
+    color: var(--color-text, #222);
+    transition: background 0.15s;
+    line-height: 1;
+}
+
+.fmt-btn:hover {
+    background: rgba(0, 0, 0, 0.07);
+}
+
+.fmt-btn-clear {
+    color: #999;
+    font-size: 11px;
+}
+
+/* Send with Effect picker */
+.effect-picker-popup {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    background: var(--color-background, #fff);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 220px;
+}
+
+.effect-picker-title {
+    font-size: 11px;
+    color: var(--color-text-secondary, #888);
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.effect-picker-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.effect-picker-item {
+    background: none;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 22px;
+    padding: 4px 6px;
+    line-height: 1;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.effect-picker-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.effect-picker-item-selected {
+    border-color: var(--color-primary, #5b8af1);
+    background: rgba(91, 138, 241, 0.1);
+}
+
+.effect-picker-clear {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary, #888);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.effect-picker-clear:hover {
+    color: var(--color-primary, #5b8af1);
+}

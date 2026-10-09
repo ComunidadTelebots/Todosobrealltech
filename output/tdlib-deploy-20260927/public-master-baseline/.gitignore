@@ -1,0 +1,54 @@
+# Datos y Base de Datos
+data/
+*.db
+*.db-journal
+*.sqlite
+
+# Entorno y Secretos
+.env
+*.json
+!package.json
+!composer.json
+!data/bots.json.example
+
+# Archivos Comprimidos (Peligro de filtración)
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# Descargas y Logs
+downloads/
+logs/
+*.log
+
+# Análisis y Reportes
+export.csv
+spam_analysis_report.json
+
+# Customización de Agentes IA (local, no commitear)
+AGENTS.md
+.instructions.md
+.prompt.md
+.agent.md
+copilot-instructions.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TDLib binario local (copiado por setup_tdlib.sh, no commitear)
+libtdjson.so
+ollama_data/
+
+# Backups temporales
+*.bak
+*.bak*

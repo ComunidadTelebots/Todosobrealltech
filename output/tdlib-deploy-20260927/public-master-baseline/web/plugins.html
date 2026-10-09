@@ -1,0 +1,65 @@
+<div class="plugins-container">
+    <div class="glass-panel main-plugins">
+        <div class="plugins-header">
+            <h3>🔌 Sistema de Plugins (Extensiones)</h3>
+            <span class="status-badge pulse">ACTIVO</span>
+        </div>
+        
+        <div class="plugins-grid">
+            <div class="plugin-card">
+                <h4>🧠 Entrenamiento IA</h4>
+                <p>Genera conocimiento con IA externa o local.</p>
+                <input type="text" id="trainPrompt" placeholder="Prompt para entrenar...">
+                <button onclick="sendPluginCommand('/train_ai ' + document.getElementById('trainPrompt').value)" class="btn-glow">Entrenar</button>
+            </div>
+            <div class="plugin-card">
+                <h4>🎙️ Transcripción Voz</h4>
+                <p>Transcribe mensajes de voz a texto.</p>
+                <input type="text" id="voiceFileId" placeholder="File ID del audio...">
+                <button onclick="sendPluginCommand('/transcribe ' + document.getElementById('voiceFileId').value)" class="btn-glow">Transcribir</button>
+            </div>
+            <div class="plugin-card">
+                <h4>🖼️ Análisis Imágenes</h4>
+                <p>Analiza imágenes con OCR e IA.</p>
+                <input type="text" id="imageFileId" placeholder="File ID de la imagen...">
+                <button onclick="sendPluginCommand('/analyze_image ' + document.getElementById('imageFileId').value)" class="btn-glow">Analizar</button>
+            </div>
+            <div class="plugin-card">
+                <h4>📊 Detección Spam</h4>
+                <p>Detecta si un mensaje es spam.</p>
+                <input type="text" id="spamText" placeholder="Texto a analizar...">
+                <button onclick="sendPluginCommand('/detect_spam ' + document.getElementById('spamText').value)" class="btn-glow">Detectar</button>
+            </div>
+            <div class="plugin-card">
+                <h4>😊 Análisis Sentimiento</h4>
+                <p>Analiza el sentimiento de un texto.</p>
+                <input type="text" id="sentimentText" placeholder="Texto a analizar...">
+                <button onclick="sendPluginCommand('/sentiment ' + document.getElementById('sentimentText').value)" class="btn-glow">Analizar</button>
+            </div>
+            <div class="plugin-card">
+                <h4>💾 Backup DB</h4>
+                <p>Crea backup de la base de datos.</p>
+                <button onclick="sendPluginCommand('/backup_db')" class="btn-glow">Backup</button>
+            </div>
+            <div class="plugin-card">
+                <h4>🔐 Encriptar</h4>
+                <p>Encripta un texto.</p>
+                <input type="text" id="encryptText" placeholder="Texto a encriptar...">
+                <button onclick="sendPluginCommand('/encrypt ' + document.getElementById('encryptText').value)" class="btn-glow">Encriptar</button>
+            </div>
+            <div class="plugin-card">
+                <h4>🔓 Desencriptar</h4>
+                <p>Desencripta un texto.</p>
+                <input type="text" id="decryptText" placeholder="Texto a desencriptar...">
+                <button onclick="sendPluginCommand('/decrypt ' + document.getElementById('decryptText').value)" class="btn-glow">Desencriptar</button>
+            </div>
+        </div>
+        
+        <div class="plugin-logs">
+            <h4>📋 Logs de Plugins</h4>
+            <div id="pluginLogs" class="res-panel">
+                Los resultados de los comandos aparecerán aquí...
+            </div>
+        </div>
+    </div>
+</div>

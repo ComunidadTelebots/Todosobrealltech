@@ -1,0 +1,30 @@
+.star-gift-store-backdrop { position: fixed; inset: 0; z-index: 2100; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.5); }
+.star-gift-store { width: min(440px, 100%); max-height: min(720px, 92vh); overflow: auto; border-radius: 16px; background: var(--design-panel-background, #fff); color: var(--color-text-primary, #111); box-shadow: 0 12px 44px rgba(0,0,0,.28); }
+.star-gift-store-header { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: inherit; border-bottom: 1px solid var(--design-border-color, rgba(0,0,0,.1)); }
+.star-gift-store-header div { display: flex; flex-direction: column; gap: 2px; }
+.star-gift-store-header span { font-size: 12px; color: var(--design-muted-color, #667); }
+.star-gift-store-header button { border: 0; background: transparent; color: inherit; font-size: 24px; cursor: pointer; }
+.star-gift-store-loading { display: flex; justify-content: center; padding: 48px; }
+.star-gift-store-body { padding: 14px; }
+.star-gift-store-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.star-gift-store-grid button { min-height: 94px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1px solid var(--design-border-color, rgba(0,0,0,.12)); border-radius: 12px; background: var(--design-hover-color, rgba(255,193,7,.07)); color: inherit; cursor: pointer; }
+.star-gift-store-grid button.is-selected { border-color: var(--color-accent-main, #2196f3); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent-main, #2196f3) 22%, transparent); }
+.star-gift-store-grid button:disabled { opacity: .45; cursor: default; }
+.star-gift-store-grid small { color: var(--design-muted-color, #667); }
+.star-gift-store-emoji { font-size: 30px; }
+.star-gift-store-confirm { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--design-border-color, rgba(0,0,0,.1)); }
+.star-gift-store-confirm > label:first-child { display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
+.star-gift-store-confirm textarea { min-height: 58px; resize: vertical; padding: 8px; border: 1px solid var(--design-border-color, rgba(0,0,0,.15)); border-radius: 8px; background: var(--design-page-background, #fff); color: inherit; font: inherit; }
+.star-gift-store-confirm label > small { align-self: flex-end; color: var(--design-muted-color, #667); }
+.star-gift-store-check { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+.star-gift-store-final-check { padding: 9px; border-radius: 9px; background: var(--design-hover-color, rgba(0,0,0,.04)); font-weight: 600; }
+.star-gift-store-send, .stargift-shop-button { border: 0; border-radius: 9px; background: var(--color-accent-main, #2196f3); color: #fff; padding: 9px 12px; font: inherit; font-weight: 600; cursor: pointer; }
+.star-gift-store-send:disabled { opacity: .5; cursor: default; }
+.star-gift-store-error, .star-gift-store-success { margin-top: 10px; padding: 9px; border-radius: 8px; font-size: 12px; }
+.star-gift-store-error { color: var(--message-error-color, #c62828); background: rgba(198,40,40,.09); }
+.star-gift-store-success { color: #137333; background: rgba(19,115,51,.1); }
+.stargift-gallery-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.stargift-gallery-heading .stargift-gallery-title { margin-bottom: 0; }
+.stargift-shop-button { padding: 6px 9px; font-size: 12px; }
+.stargift-gallery-empty { padding: 8px 0 12px; color: var(--design-muted-color, #667); font-size: 12px; }
+@media (max-width: 420px) { .star-gift-store-grid { grid-template-columns: repeat(2, 1fr); } }

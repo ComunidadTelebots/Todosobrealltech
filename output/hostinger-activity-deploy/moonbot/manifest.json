@@ -1,0 +1,14 @@
+{
+  "expected_before": {
+    "moon_multibot.py": "4e0838935915d3c31eecbfeaad7dac4a4a1144f6df0003a01e3cb7e2b018d083",
+    "core/routes_public.py": "4ea735cb921df8602d0683b1db8ea0fc95b0e52636558b72d1faf65f9cf8c60a",
+    "web/hub.html": "db76e2776b6f7b346eaf4672773a95b7462512b1069824e8996c8d5884cd8d9d",
+    "core/language_map.py": null
+  },
+  "after": {
+    "moon_multibot.py": "53f1980d2a0b6fe35ca0ea6f06a86b99dd0a664b1760c5349e6b2f229466da2e",
+    "core/routes_public.py": "31e9ed2549da9234e6007a2068138a9b240ab480f60bed557ba3cb2201660d81",
+    "web/hub.html": "d8cab210eebd0ad942234c9d4ccbe47876e732feab4fdefc474dd04bed551d9c",
+    "core/language_map.py": "0a827ef500224817edd37979aa92e0525e0cb5c5426b199624200dfa42362e46"
+  }
+}

@@ -1,0 +1,1694 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Aster Viento 3D · Heavy Transport Simulator Canva Official Ecosystem</title>
+  <script src="./vendor/three.min.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; user-select: none; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #070d17; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    #canvas-container { position: fixed; inset: 0; z-index: 1; outline: none; }
+    canvas { width: 100% !important; height: 100% !important; display: block; }
+
+    /* --- Top-Left Canva Telemetry & Minimap (Exact Reference Match) --- */
+    .canva-hud-topleft {
+      position: fixed;
+      top: max(env(safe-area-inset-top), 16px);
+      left: 16px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .telemetry-card {
+      background: rgba(11, 23, 38, 0.88);
+      border: 1px solid rgba(76, 230, 208, 0.45);
+      border-radius: 16px;
+      padding: 14px 20px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.8);
+      min-width: 250px;
+    }
+    .telem-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 5px;
+    }
+    .telem-row:last-child { margin-bottom: 0; }
+    .telem-label { font-size: 13px; color: #cbd5e1; font-weight: 500; }
+    .telem-val { font-size: 15px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+    .telem-val.green { color: #34d399; font-weight: 800; }
+    .telem-val.speed { font-size: 20px; color: #4ce6d0; font-weight: 900; }
+
+    /* Circular Navigation Radar */
+    .radar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .radar-circle {
+      width: 116px;
+      height: 116px;
+      border-radius: 50%;
+      border: 3px solid rgba(76, 230, 208, 0.75);
+      background: radial-gradient(circle, rgba(14, 30, 48, 0.95), rgba(7, 16, 29, 0.98));
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(76,230,208,0.25);
+      position: relative;
+    }
+    #miniCanvas { width: 100%; height: 100%; }
+    .road-pill-badge {
+      background: rgba(11, 23, 38, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+    }
+
+    /* Live Weigh-In-Motion WIM Banner Notification */
+    .wim-banner-notification {
+      position: fixed;
+      top: max(env(safe-area-inset-top), 20px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(6, 78, 59, 0.95);
+      border: 2px solid #34d399;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 800;
+      z-index: 40;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(52, 211, 153, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+    .wim-banner-notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* --- Cockpit 1st Person Overlay --- */
+    .cockpit-interior-frame {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      display: none;
+    }
+    .cockpit-dash-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42%;
+      background: linear-gradient(180deg, transparent 0%, rgba(10, 14, 20, 0.92) 15%, #050810 100%);
+    }
+
+    /* Left A-Pillar Mirror Assembly */
+    .cockpit-left-mirror {
+      position: absolute;
+      left: 24px;
+      top: 10%;
+      bottom: 35%;
+      width: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mirror-box {
+      border: 4px solid #1e293b;
+      border-radius: 12px;
+      background: #0f172a;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 0 12px rgba(0,0,0,0.8);
+      overflow: hidden;
+      position: relative;
+    }
+    .mirror-box.top { height: 75px; }
+    .mirror-box.main { flex: 1; }
+    .mirror-glass {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e293b 0%, #091322 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    /* Textured 3D Canvas Steering Wheel */
+    .cockpit-steering-container {
+      position: absolute;
+      bottom: -65px;
+      left: 28%;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 340px;
+      transition: transform 0.04s ease-out;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.95));
+    }
+    #steeringCanvas { width: 100%; height: 100%; }
+
+    /* Digital Instrument Cluster */
+    .cockpit-digital-dash {
+      position: absolute;
+      bottom: 145px;
+      left: 28%;
+      transform: translateX(-50%);
+      width: 290px;
+      height: 95px;
+      background: #030712;
+      border: 2px solid #0891b2;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.45), inset 0 0 20px rgba(0,0,0,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+    }
+    .cluster-gauge {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 3px solid #164e63;
+      border-top-color: #22d3ee;
+      border-right-color: #22d3ee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .cluster-gauge span { font-size: 8px; color: #8794ad; font-weight: 700; }
+    .cluster-gauge b { font-size: 13px; color: #22d3ee; }
+    .cluster-center-speed {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .cluster-center-speed b { font-size: 30px; color: #fff; font-weight: 900; line-height: 1; text-shadow: 0 0 12px #22d3ee; }
+    .cluster-center-speed small { font-size: 9px; color: #34d399; font-weight: 700; }
+
+    /* Center Console: Infotainment GPS & CB Radio */
+    .cockpit-center-console {
+      position: absolute;
+      bottom: 25px;
+      left: 55%;
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cb-radio-box {
+      background: #111827;
+      border: 2px solid #374151;
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .cb-lcd {
+      background: #78350f;
+      color: #fde047;
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.6);
+    }
+    .gps-touchscreen {
+      background: #020617;
+      border: 3px solid #1e293b;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .gps-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .gps-speed-limit {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #ef4444;
+      background: #fff;
+      color: #000;
+      font-size: 9px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gps-route-line {
+      height: 38px;
+      background: #091322;
+      border-radius: 6px;
+      border: 1px solid #1e3a5f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 800;
+      gap: 6px;
+    }
+
+    /* --- Floating Modern Controls Bar --- */
+    .bottom-controls-dock {
+      position: fixed;
+      bottom: max(env(safe-area-inset-bottom), 16px);
+      right: 16px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      background: rgba(11, 23, 38, 0.88);
+      border: 1px solid rgba(76, 230, 208, 0.4);
+      border-radius: 16px;
+      padding: 8px 12px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+    .btn-dock {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-dock:active, .btn-dock.active {
+      background: rgba(76, 230, 208, 0.25);
+      border-color: #4ce6d0;
+      color: #4ce6d0;
+      transform: scale(0.95);
+    }
+    .btn-dock.accent {
+      border-color: #facc15;
+      color: #facc15;
+      background: rgba(250, 204, 21, 0.12);
+    }
+
+    /* Full 12-Section Canva Dispatch & Fleet Tablet Modal */
+    .tablet-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(14px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .tablet-modal.open { display: flex; }
+    .tablet-body {
+      width: 100%;
+      max-width: 820px;
+      background: #09121f;
+      border: 2px solid rgba(76, 230, 208, 0.5);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .tablet-nav-scroll {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding-bottom: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tablet-nav-scroll::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #cbd5e1;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background: rgba(76, 230, 208, 0.25);
+      border-color: #4ce6d0;
+      color: #4ce6d0;
+    }
+    .tablet-section { display: none; }
+    .tablet-section.active { display: block; }
+    
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .interactive-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .interactive-card:hover, .interactive-card:active {
+      background: rgba(76, 230, 208, 0.12);
+      border-color: rgba(76, 230, 208, 0.4);
+      transform: translateY(-2px);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* Mobile Touch Pedals */
+    .touch-controls {
+      position: fixed;
+      bottom: max(env(safe-area-inset-bottom), 14px);
+      left: 14px;
+      right: 14px;
+      z-index: 12;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+    .touch-group { display: flex; gap: 10px; pointer-events: auto; }
+    .touch-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      background: rgba(11, 23, 38, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      backdrop-filter: blur(14px);
+      touch-action: none;
+      user-select: none;
+    }
+    .touch-btn:active, .touch-btn.pressed {
+      background: rgba(76, 230, 208, 0.35);
+      border-color: #4ce6d0;
+      color: #4ce6d0;
+      transform: scale(0.92);
+    }
+    .touch-btn.gas {
+      border-color: rgba(76, 230, 208, 0.6);
+      background: linear-gradient(145deg, rgba(20, 60, 52, 0.9), rgba(7, 16, 29, 0.9));
+      color: #4ce6d0;
+    }
+    .touch-btn.brake {
+      border-color: rgba(244, 63, 94, 0.5);
+      background: linear-gradient(145deg, rgba(60, 20, 30, 0.9), rgba(7, 16, 29, 0.9));
+      color: #f43f5e;
+    }
+
+    @media (max-width: 768px) {
+      .canva-hud-topleft { top: 10px; left: 10px; }
+      .telemetry-card { padding: 8px 12px; min-width: 180px; }
+      .telem-label, .telem-val { font-size: 11px; }
+      .radar-circle { width: 85px; height: 85px; }
+      .bottom-controls-dock { bottom: 90px; right: 10px; left: 10px; overflow-x: auto; justify-content: flex-start; scrollbar-width: none; }
+      .bottom-controls-dock::-webkit-scrollbar { display: none; }
+      .touch-controls { display: flex; }
+      .cockpit-steering-container { left: 50%; bottom: -80px; width: 280px; height: 280px; }
+      .cockpit-digital-dash { left: 50%; bottom: 110px; width: 250px; }
+      .cockpit-center-console { display: none; }
+    }
+    @media (min-width: 769px) {
+      .touch-controls { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- WebGL 3D Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Dynamic WIM Overhead Weigh-In-Motion Scale Notification -->
+  <div class="wim-banner-notification" id="wimBanner">
+    <span>⚖️</span>
+    <span id="wimText">WIM ESTACIÓN DE PESAJE · 32.4t CONFORME</span>
+  </div>
+
+  <!-- Top-Left Canva Telemetry & Circular Radar -->
+  <div class="canva-hud-topleft">
+    <div class="telemetry-card">
+      <div class="telem-row">
+        <span class="telem-label">Speed:</span>
+        <span class="telem-val speed" id="telemSpeed">0 km/h</span>
+      </div>
+      <div class="telem-row">
+        <span class="telem-label">Fuel:</span>
+        <span class="telem-val green" id="telemFuel">84%</span>
+      </div>
+      <div class="telem-row">
+        <span class="telem-label">Gear:</span>
+        <span class="telem-val green" id="telemGear">D12</span>
+      </div>
+      <div class="telem-row">
+        <span class="telem-label">Tachograph Rest Timer:</span>
+        <span class="telem-val green" id="telemTacho">2:14:05</span>
+      </div>
+    </div>
+
+    <!-- Circular Navigation Radar -->
+    <div class="radar-wrapper">
+      <div class="radar-circle">
+        <canvas id="miniCanvas" width="116" height="116"></canvas>
+      </div>
+      <div class="road-pill-badge" id="roadNameBadge">COASTAL HIGHWAY · A-6</div>
+    </div>
+  </div>
+
+  <!-- Cockpit 1st-Person Interior Overlay -->
+  <div class="cockpit-interior-frame" id="cockpitFrame">
+    <div class="cockpit-dash-bottom"></div>
+
+    <!-- Left A-Pillar Mirror Assembly -->
+    <div class="cockpit-left-mirror">
+      <div class="mirror-box top"><div class="mirror-glass">WIDE ANGLE CONVEX</div></div>
+      <div class="mirror-box main"><div class="mirror-glass">REAR TRAFFIC VIEW</div></div>
+    </div>
+
+    <!-- Digital Instrument Cluster -->
+    <div class="cockpit-digital-dash">
+      <div class="cluster-gauge">
+        <span>RPM x100</span>
+        <b id="cockpitRpm">900</b>
+      </div>
+      <div class="cluster-center-speed">
+        <b id="cockpitSpeed">0</b>
+        <small>KM/H · D12</small>
+      </div>
+      <div class="cluster-gauge">
+        <span>BAR / AIR</span>
+        <b>8.5</b>
+      </div>
+    </div>
+
+    <!-- Textured 3D Canvas Steering Wheel -->
+    <div class="cockpit-steering-container" id="cockpitWheelWrap">
+      <canvas id="steeringCanvas" width="512" height="512"></canvas>
+    </div>
+
+    <!-- Center Console: CB Radio & Infotainment GPS -->
+    <div class="cockpit-center-console">
+      <div class="cb-radio-box" id="cbRadioClick">
+        <span style="font-size:10px; color:#94a3b8; font-weight:800;">CB RADIO CH-19</span>
+        <div class="cb-lcd">27.185 MHz</div>
+      </div>
+      <div class="gps-touchscreen" id="gpsTouchscreenClick">
+        <div class="gps-nav-header">
+          <span>A7 · PUERTO ALBA (12 km)</span>
+          <div class="gps-speed-limit">90</div>
+        </div>
+        <div class="gps-route-line">
+          <span>⇗ Continúa por A-6 hacia Valleverde</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Action Dock -->
+  <div class="bottom-controls-dock">
+    <button class="btn-dock accent" id="btnCam">🎥 Cambiar Vista (C)</button>
+    <button class="btn-dock" id="btnTablet">📱 Terminal Canva (Tab)</button>
+    <button class="btn-dock" id="btnLights">💡 Luces (L)</button>
+    <button class="btn-dock" id="btnLivery">🎨 Pintura Flota</button>
+    <button class="btn-dock" id="btnTime">🌅 Clima / Lluvia</button>
+    <button class="btn-dock" id="btnHorn">📢 Claxon (H)</button>
+  </div>
+
+  <!-- Full 12-Section Canva Dispatch & Fleet Tablet Modal -->
+  <div class="tablet-modal" id="tabletModal">
+    <div class="tablet-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <h3 style="color:#4ce6d0;font-size:16px;">📱 Ecosistema Canva · Rutas del Continente</h3>
+          <p style="font-size:11px;color:#94a3b8;">Canal Alfa v16.85.0 · Sede Central Puerto Alba</p>
+        </div>
+        <button class="tab-btn" id="closeTabletBtn" style="background:rgba(239,68,68,0.2);border-color:#ef4444;color:#ef4444;">✕ Cerrar</button>
+      </div>
+
+      <!-- 12 Canva Section Tabs -->
+      <div class="tablet-nav-scroll" id="tabletNavContainer"></div>
+
+      <!-- Dynamic Content Area -->
+      <div id="tabletContentArea"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Touch Pedals -->
+  <div class="touch-controls">
+    <div class="touch-group">
+      <div class="touch-btn" id="btnLeft">◀<br><span style="font-size:9px;">GIRAR</span></div>
+      <div class="touch-btn" id="btnRight">▶<br><span style="font-size:9px;">GIRAR</span></div>
+    </div>
+    <div class="touch-group">
+      <div class="touch-btn brake" id="btnBrake">FRENO<br><span style="font-size:9px;">REVERSA</span></div>
+      <div class="touch-btn gas" id="btnGas">GAS<br><span style="font-size:9px;">ACELERAR</span></div>
+    </div>
+  </div>
+
+  <!-- Main ES Module Connecting all 23 Repository Transport Modules to 3D -->
+  <script type="module">
+    import { TRANSPORT_INTERFACE_SECTIONS, TRANSPORT_INTERFACE_CARDS } from "./transport-ui-shell.js";
+    import { createDigitalTachograph, TACHOGRAPH_CONSTANTS } from "./transport-digital-tachograph.js";
+    import { createConvoyRadioSystem, CB_CHANNELS, CB_QUICK_MESSAGES } from "./transport-convoy-panel.js";
+    import { evaluateDynamicWIMScale } from "./transport-dynamic-wim-scale.js";
+    import { BOX_07A_SPEC } from "./transport-story-campaign.js";
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // --- 1. Audio Engine & Telegram WebApp ---
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      try { tg.expand(); } catch(e){}
+      try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch(e){}
+    }
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let engineOsc = null, engineGain = null, turboOsc = null, turboGain = null;
+
+    function initAudio() {
+      if (engineOsc) return;
+      try {
+        engineOsc = audioCtx.createOscillator();
+        engineGain = audioCtx.createGain();
+        engineOsc.type = 'sawtooth';
+        engineOsc.frequency.setValueAtTime(42, audioCtx.currentTime);
+        engineGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        engineOsc.connect(engineGain);
+        engineGain.connect(audioCtx.destination);
+        engineOsc.start();
+
+        turboOsc = audioCtx.createOscillator();
+        turboGain = audioCtx.createGain();
+        turboOsc.type = 'sine';
+        turboOsc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        turboGain.gain.setValueAtTime(0.005, audioCtx.currentTime);
+        turboOsc.connect(turboGain);
+        turboGain.connect(audioCtx.destination);
+        turboOsc.start();
+      } catch(e){}
+    }
+    window.addEventListener('keydown', initAudio, { once: true });
+    window.addEventListener('touchstart', initAudio, { once: true });
+
+    function playHornSound() {
+      try {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc1.type = 'triangle'; osc1.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc2.type = 'triangle'; osc2.frequency.setValueAtTime(277, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+        osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
+        osc1.start(); osc2.start();
+        osc1.stop(audioCtx.currentTime + 0.6); osc2.stop(audioCtx.currentTime + 0.6);
+      } catch(e){}
+    }
+
+    function playAirBrake() {
+      try {
+        const bufferSize = audioCtx.sampleRate * 0.25;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+        noise.connect(gain); gain.connect(audioCtx.destination);
+        noise.start();
+      } catch(e){}
+    }
+
+    function playRadioChime() {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(1760, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+      } catch(e){}
+    }
+
+    // --- 2. Tacógrafo Digital & Radio CB Core Initialization ---
+    const tachoSystem = createDigitalTachograph({ driverName: "Conductor Aster", driverId: "DRV-770" });
+    const radioSystem = createConvoyRadioSystem({ defaultChannel: 19 });
+
+    // --- 3. Build Full 12-Section Canva Tablet Interface ---
+    const tabletNavContainer = document.getElementById('tabletNavContainer');
+    const tabletContentArea = document.getElementById('tabletContentArea');
+    let activeSectionId = 'home';
+
+    function renderTabletUI() {
+      tabletNavContainer.innerHTML = '';
+      tabletContentArea.innerHTML = '';
+
+      TRANSPORT_INTERFACE_SECTIONS.forEach((sec, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${sec.id === activeSectionId ? 'active' : ''}`;
+        btn.innerHTML = `<span>${sec.icon}</span> ${sec.label}`;
+        btn.onclick = () => {
+          activeSectionId = sec.id;
+          renderTabletUI();
+          if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        };
+        tabletNavContainer.appendChild(btn);
+      });
+
+      const currentSec = TRANSPORT_INTERFACE_SECTIONS.find(s => s.id === activeSectionId) || TRANSPORT_INTERFACE_SECTIONS[0];
+      const sectionCards = TRANSPORT_INTERFACE_CARDS.filter(c => c.section === activeSectionId);
+
+      const secWrapper = document.createElement('div');
+      secWrapper.className = 'tablet-section active';
+      secWrapper.innerHTML = `
+        <div style="margin-bottom:12px;">
+          <h4 style="color:#f8fafc;font-size:15px;">${currentSec.icon} ${currentSec.title}</h4>
+          <p style="font-size:12px;color:#94a3b8;">${currentSec.subtitle}</p>
+        </div>
+        <div class="cards-grid">
+          ${sectionCards.map(c => `
+            <div class="interactive-card" data-target="${c.target}">
+              <div class="card-header">
+                <span style="font-size:16px;">${c.icon}</span>
+                <span>${c.title}</span>
+              </div>
+              <div class="card-desc">${c.description}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Add Custom Live Content for Tacografo, Radio, and Cargo sections
+      if (activeSectionId === 'drive' || activeSectionId === 'home') {
+        const tachoBox = document.createElement('div');
+        tachoBox.style.cssText = 'margin-top:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(76,230,208,0.3);border-radius:12px;padding:14px;';
+        tachoBox.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <b style="color:#4ce6d0;font-size:13px;">⏱ Tacógrafo Digital UE 561/2006</b>
+            <span style="color:#34d399;font-weight:800;font-size:12px;">Estado: CONFORME</span>
+          </div>
+          <p style="font-size:11.5px;color:#cbd5e1;">Límite continuo: <b>4h 30m</b> · Tiempo restante: <b>2h 14m 05s</b> · Pausa requerida: <b>45m</b></p>
+        `;
+        secWrapper.appendChild(tachoBox);
+      }
+
+      if (activeSectionId === 'convoy') {
+        const radioBox = document.createElement('div');
+        radioBox.style.cssText = 'margin-top:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(250,204,21,0.3);border-radius:12px;padding:14px;';
+        radioBox.innerHTML = `
+          <b style="color:#facc15;font-size:13px;display:block;margin-bottom:8px;">📻 Transmisión Rápida CB CH-19 (27.185 MHz)</b>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${CB_QUICK_MESSAGES.map(m => `
+              <button class="tab-btn cb-broadcast-btn" data-text="${m.text}">📢 ${m.label}</button>
+            `).join('')}
+          </div>
+        `;
+        secWrapper.appendChild(radioBox);
+      }
+
+      tabletContentArea.appendChild(secWrapper);
+
+      // Bind Card Clicks
+      secWrapper.querySelectorAll('.interactive-card').forEach(card => {
+        card.onclick = () => {
+          const target = card.getAttribute('data-target');
+          if (target === 'close') {
+            toggleTablet();
+          } else if (target === 'truck') {
+            alert('🚛 Vehículo Scania 770 S V8 activo en ruta.');
+          } else if (target === 'serviceButton') {
+            alert('🔧 Diagnóstico VDO: Temperatura 88°C, Frenos 8.5 bar, Aceite 4.2 bar.');
+          } else {
+            alert(`Acción: ${card.querySelector('.card-header').textContent}`);
+          }
+          if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        };
+      });
+
+      secWrapper.querySelectorAll('.cb-broadcast-btn').forEach(btn => {
+        btn.onclick = () => {
+          const msg = btn.getAttribute('data-text');
+          radioSystem.broadcast(null, { senderName: "Aster V8", extraText: msg });
+          playRadioChime();
+          alert(`[Radio CB Transmitido]: "${msg}"`);
+          if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        };
+      });
+    }
+
+    renderTabletUI();
+
+    // Tablet Modal Handlers
+    const tabletModal = document.getElementById('tabletModal');
+    function toggleTablet() {
+      tabletModal.classList.toggle('open');
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    }
+    document.getElementById('btnTablet').onclick = toggleTablet;
+    document.getElementById('closeTabletBtn').onclick = toggleTablet;
+    document.getElementById('cbRadioClick').onclick = () => {
+      activeSectionId = 'convoy';
+      renderTabletUI();
+      toggleTablet();
+    };
+    document.getElementById('gpsTouchscreenClick').onclick = () => {
+      activeSectionId = 'world';
+      renderTabletUI();
+      toggleTablet();
+    };
+
+    if (urlParams.get('modal') === 'tablet' || urlParams.get('tab')) {
+      if (urlParams.get('tab')) activeSectionId = urlParams.get('tab');
+      renderTabletUI();
+      tabletModal.classList.add('open');
+    }
+    document.getElementById('gpsTouchscreenClick').onclick = () => {
+      activeSectionId = 'world';
+      renderTabletUI();
+      toggleTablet();
+    };
+
+    // --- 4. High-Resolution Steering Wheel Canvas ---
+    function renderTexturedSteeringWheel() {
+      const canvas = document.getElementById('steeringCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = 512, h = 512;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 12;
+
+      ctx.beginPath();
+      ctx.arc(256, 256, 210, 0, Math.PI * 2);
+      ctx.lineWidth = 44;
+      ctx.strokeStyle = '#181e26';
+      ctx.stroke();
+
+      ctx.shadowColor = 'transparent';
+      ctx.lineWidth = 40;
+      ctx.strokeStyle = '#1e2632';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(256, 256, 226, 0, Math.PI * 2);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ef4444';
+      ctx.setLineDash([4, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#334155';
+      ctx.beginPath(); ctx.roundRect(80, 230, 130, 52, 10); ctx.fill();
+      ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2; ctx.stroke();
+
+      ctx.beginPath(); ctx.roundRect(302, 230, 130, 52, 10); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.roundRect(228, 310, 56, 120, 8); ctx.fill(); ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(256, 256, 80, 0, Math.PI * 2);
+      const hubGrad = ctx.createRadialGradient(240, 240, 10, 256, 256, 80);
+      hubGrad.addColorStop(0, '#2d3748'); hubGrad.addColorStop(1, '#0f172a');
+      ctx.fillStyle = hubGrad; ctx.fill();
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 4; ctx.stroke();
+
+      ctx.beginPath(); ctx.arc(256, 256, 46, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a'; ctx.fill();
+      ctx.strokeStyle = '#4ce6d0'; ctx.lineWidth = 3; ctx.stroke();
+
+      ctx.beginPath(); ctx.arc(256, 256, 38, 0, Math.PI * 2);
+      ctx.fillStyle = '#991b1b'; ctx.fill();
+
+      ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('👑', 256, 250);
+      ctx.font = '900 11px sans-serif'; ctx.fillStyle = '#ffffff';
+      ctx.fillText('SCANIA', 256, 268);
+    }
+    setTimeout(renderTexturedSteeringWheel, 50);
+
+    // --- 5. Textures Generator (Ground, Cliff, Road, and Traffic Vehicles) ---
+    function makeForestGroundTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512; canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#1c281e'; ctx.fillRect(0, 0, 512, 512);
+
+      for (let i = 0; i < 2000; i++) {
+        ctx.fillStyle = (Math.random() > 0.4) ? '#143823' : '#2d4a22';
+        ctx.fillRect(Math.random() * 512, Math.random() * 512, 3 + Math.random() * 4, 3 + Math.random() * 4);
+      }
+      for (let i = 0; i < 1500; i++) {
+        ctx.fillStyle = '#3a2717';
+        ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(8, 32);
+      return tex;
+    }
+
+    function makeMountainCliffTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512; canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, 512, 512);
+
+      for (let y = 0; y < 512; y += 32) {
+        ctx.fillStyle = (y % 64 === 0) ? '#0f172a' : '#334155';
+        ctx.fillRect(0, y, 512, 16);
+      }
+      for (let i = 0; i < 1000; i++) {
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 6);
+      }
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(4, 24);
+      return tex;
+    }
+
+    function makeHighwayAsphaltTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024; canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#1c222c'; ctx.fillRect(0, 0, 1024, 1024);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.03)';
+      for (let i = 0; i < 4000; i++) ctx.fillRect(Math.random() * 1024, Math.random() * 1024, 2, 2);
+
+      ctx.fillStyle = '#facc15'; ctx.fillRect(90, 0, 16, 1024);
+      ctx.fillStyle = '#ffffff';
+      for (let y = 0; y < 1024; y += 128) {
+        ctx.fillRect(365, y, 14, 64);
+        ctx.fillRect(655, y, 14, 64);
+      }
+      ctx.fillRect(920, 0, 16, 1024);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(1, 16);
+      return tex;
+    }
+
+    function makeEuroFreightTexture(title, sub, colorBg, colorAccent) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024; canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = colorBg; ctx.fillRect(0, 0, 1024, 512);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.18)';
+      for (let x = 0; x < 1024; x += 16) ctx.fillRect(x, 0, 7, 512);
+
+      ctx.fillStyle = colorAccent; ctx.fillRect(80, 140, 48, 80);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(104, 155, 48, 20); ctx.fillRect(104, 190, 48, 20);
+      ctx.fillStyle = '#ffffff'; ctx.font = '900 68px sans-serif'; ctx.fillText(title, 170, 195);
+      ctx.fillStyle = colorAccent; ctx.font = 'bold 26px sans-serif'; ctx.fillText(sub, 174, 235);
+
+      ctx.fillStyle = '#ef4444'; ctx.fillRect(0, 470, 1024, 42);
+      ctx.fillStyle = '#ffffff';
+      for (let x = 0; x < 1024; x += 55) {
+        ctx.beginPath(); ctx.moveTo(x, 470); ctx.lineTo(x + 28, 470); ctx.lineTo(x + 10, 512); ctx.lineTo(x - 18, 512); ctx.fill();
+      }
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function makeCarSideBodyTexture(bodyColorHex, liveryLabel = '', stripeColor = null) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512; canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = bodyColorHex; ctx.fillRect(0, 0, 512, 256);
+
+      const grad = ctx.createLinearGradient(0, 0, 0, 256);
+      grad.addColorStop(0, 'rgba(255,255,255,0.25)');
+      grad.addColorStop(0.5, 'rgba(255,255,255,0.0)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.35)');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 512, 256);
+
+      ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(180, 40); ctx.lineTo(180, 240);
+      ctx.moveTo(340, 40); ctx.lineTo(340, 240);
+      ctx.stroke();
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(200, 110, 24, 8);
+      ctx.fillRect(360, 110, 24, 8);
+
+      if (stripeColor) {
+        ctx.fillStyle = stripeColor;
+        ctx.fillRect(0, 150, 512, 18);
+      }
+      if (liveryLabel) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 24px sans-serif';
+        ctx.fillText(liveryLabel, 80, 140);
+      }
+
+      ctx.fillStyle = '#f8fafc'; ctx.fillRect(470, 80, 36, 40);
+      ctx.fillStyle = '#38bdf8'; ctx.fillRect(478, 90, 20, 20);
+
+      ctx.fillStyle = '#ef4444'; ctx.fillRect(6, 80, 34, 40);
+      ctx.fillStyle = '#fbbf24'; ctx.fillRect(6, 122, 34, 14);
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function makeCarFrontRearTexture(isFront = true) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256; canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, 256, 256);
+
+      if (isFront) {
+        ctx.fillStyle = '#1e293b'; ctx.fillRect(30, 80, 196, 90);
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3; ctx.strokeRect(30, 80, 196, 90);
+        ctx.fillStyle = '#cbd5e1';
+        for (let y = 95; y < 165; y += 18) ctx.fillRect(40, y, 176, 5);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(10, 45, 45, 30);
+        ctx.fillRect(201, 45, 45, 30);
+
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(78, 185, 100, 28);
+        ctx.fillStyle = '#1e3a8a'; ctx.fillRect(78, 185, 14, 28);
+        ctx.fillStyle = '#000000'; ctx.font = 'bold 13px sans-serif'; ctx.fillText('2489 LKM', 100, 205);
+      } else {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(10, 50, 60, 35);
+        ctx.fillRect(186, 50, 60, 35);
+
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(78, 120, 100, 28);
+        ctx.fillStyle = '#1e3a8a'; ctx.fillRect(78, 120, 14, 28);
+        ctx.fillStyle = '#000000'; ctx.font = 'bold 13px sans-serif'; ctx.fillText('2489 LKM', 100, 140);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.beginPath(); ctx.arc(45, 210, 14, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(211, 210, 14, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#000000';
+        ctx.beginPath(); ctx.arc(45, 210, 9, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(211, 210, 9, 0, Math.PI*2); ctx.fill();
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function makeCarAlloyWheelTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256; canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, 256, 256);
+
+      ctx.beginPath(); ctx.arc(128, 128, 110, 0, Math.PI*2);
+      ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 14; ctx.stroke();
+
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 16;
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        ctx.beginPath(); ctx.moveTo(128, 128); ctx.lineTo(128 + Math.cos(a) * 95, 128 + Math.sin(a) * 95); ctx.stroke();
+      }
+
+      ctx.beginPath(); ctx.arc(128, 128, 32, 0, Math.PI*2);
+      ctx.fillStyle = '#475569'; ctx.fill();
+      ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 3; ctx.stroke();
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- 6. Three.js PBR Scene & Lighting ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x131d2e, 0.0025);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1400);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    container.appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.9);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xffaa55, 1.8);
+    sunLight.position.set(120, 50, -150);
+    sunLight.castShadow = true;
+    scene.add(sunLight);
+
+    const skyGeo = new THREE.SphereGeometry(750, 32, 16);
+    const skyMat = new THREE.MeshBasicMaterial({ color: 0x1a263c, side: THREE.BackSide });
+    const skyMesh = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(skyMesh);
+
+    // --- 7. Highway & Clean Scenery with WIM Weigh Gantries ---
+    const ROAD_WIDTH = 22;
+    const ROAD_LENGTH = 1800;
+
+    const oceanGeo = new THREE.PlaneGeometry(600, ROAD_LENGTH);
+    const oceanMat = new THREE.MeshStandardMaterial({ color: 0x081e36, roughness: 0.1, metalness: 0.8 });
+    const oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
+    oceanMesh.rotation.x = -Math.PI / 2; oceanMesh.position.set(320, -1.2, 0);
+    scene.add(oceanMesh);
+
+    const mountainCliffTex = makeMountainCliffTexture();
+    const mountainGeo = new THREE.PlaneGeometry(500, ROAD_LENGTH, 16, 32);
+    const mountainMat = new THREE.MeshStandardMaterial({ map: mountainCliffTex, roughness: 0.9 });
+    const mountainMesh = new THREE.Mesh(mountainGeo, mountainMat);
+    mountainMesh.rotation.x = -Math.PI / 2; mountainMesh.position.set(-270, 0, 0);
+    scene.add(mountainMesh);
+
+    const forestGroundTex = makeForestGroundTexture();
+    const groundMat = new THREE.MeshStandardMaterial({ map: forestGroundTex, roughness: 0.85 });
+
+    const vergeLeftGeo = new THREE.PlaneGeometry(35, ROAD_LENGTH);
+    const vergeLeft = new THREE.Mesh(vergeLeftGeo, groundMat);
+    vergeLeft.rotation.x = -Math.PI / 2; vergeLeft.position.set(-ROAD_WIDTH/2 - 17.5, -0.05, 0);
+    vergeLeft.receiveShadow = true; scene.add(vergeLeft);
+
+    const vergeRightGeo = new THREE.PlaneGeometry(35, ROAD_LENGTH);
+    const vergeRight = new THREE.Mesh(vergeRightGeo, groundMat);
+    vergeRight.rotation.x = -Math.PI / 2; vergeRight.position.set(ROAD_WIDTH/2 + 17.5, -0.05, 0);
+    vergeRight.receiveShadow = true; scene.add(vergeRight);
+
+    const highwayAsphaltTex = makeHighwayAsphaltTexture();
+    const roadGeo = new THREE.PlaneGeometry(ROAD_WIDTH, ROAD_LENGTH);
+    const roadMat = new THREE.MeshStandardMaterial({ map: highwayAsphaltTex, roughness: 0.85, metalness: 0.1 });
+    const roadMesh = new THREE.Mesh(roadGeo, roadMat);
+    roadMesh.rotation.x = -Math.PI / 2; roadMesh.receiveShadow = true;
+    scene.add(roadMesh);
+
+    const guardMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.2 });
+    const pineTrunkMat = new THREE.MeshStandardMaterial({ color: 0x382314, roughness: 0.9 });
+    const pineLeavesMat = new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.75 });
+
+    const sceneryPool = [];
+
+    function createPineTree() {
+      const tree = new THREE.Group();
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 4.0, 8), pineTrunkMat);
+      trunk.position.y = 2.0; tree.add(trunk);
+
+      const t1 = new THREE.Mesh(new THREE.ConeGeometry(3.2, 3.8, 8), pineLeavesMat); t1.position.y = 3.8; t1.castShadow = true; tree.add(t1);
+      const t2 = new THREE.Mesh(new THREE.ConeGeometry(2.5, 3.2, 8), pineLeavesMat); t2.position.y = 5.6; t2.castShadow = true; tree.add(t2);
+      const t3 = new THREE.Mesh(new THREE.ConeGeometry(1.7, 2.6, 8), pineLeavesMat); t3.position.y = 7.2; t3.castShadow = true; tree.add(t3);
+      return tree;
+    }
+
+    for (let z = -ROAD_LENGTH/2; z < ROAD_LENGTH/2; z += 35) {
+      const itemGroup = new THREE.Group();
+      itemGroup.position.z = z;
+
+      const railL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.65, 35), guardMat);
+      railL.position.set(-ROAD_WIDTH/2 - 0.3, 0.45, 0); itemGroup.add(railL);
+      const railR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.65, 35), guardMat);
+      railR.position.set(ROAD_WIDTH/2 + 0.3, 0.45, 0); itemGroup.add(railR);
+
+      for (let side of [-1, 1]) {
+        const tx = side * (ROAD_WIDTH/2 + 8 + Math.random() * 20);
+        const pTree = createPineTree();
+        pTree.position.set(tx, 0, (Math.random() - 0.5) * 8);
+        const scale = 0.85 + Math.random() * 0.35;
+        pTree.scale.set(scale, scale, scale);
+        itemGroup.add(pTree);
+      }
+
+      // Dynamic WIM Weigh Station Gantry every 350m
+      if (Math.abs(z) % 350 === 0) {
+        const wimGantry = new THREE.Group();
+        const colL = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 8.5, 12), guardMat);
+        colL.position.set(-ROAD_WIDTH/2 - 1.5, 4.25, 0); wimGantry.add(colL);
+        const colR = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 8.5, 12), guardMat);
+        colR.position.set(ROAD_WIDTH/2 + 1.5, 4.25, 0); wimGantry.add(colR);
+
+        const beam = new THREE.Mesh(new THREE.BoxGeometry(ROAD_WIDTH + 4, 0.8, 0.8), guardMat);
+        beam.position.set(0, 8.0, 0); wimGantry.add(beam);
+
+        // LED WIM Display Sign
+        const wimSignMat = new THREE.MeshBasicMaterial({ color: 0x064e3b });
+        const wimSign = new THREE.Mesh(new THREE.PlaneGeometry(12, 2.8), wimSignMat);
+        wimSign.position.set(0, 8.0, 0.45); wimGantry.add(wimSign);
+
+        itemGroup.add(wimGantry);
+      }
+
+      scene.add(itemGroup);
+      sceneryPool.push(itemGroup);
+    }
+
+    // --- 8. Beautiful Sculpted Heavy European Truck 3D Model ---
+    const truckGroup = new THREE.Group();
+    scene.add(truckGroup);
+
+    const liveries = {
+      euro: makeEuroFreightTexture('EURO FREIGHT', 'EXPRESS LOGISTICS', '#1e3a8a', '#ef4444'),
+      rutas: makeEuroFreightTexture('RUTAS CONTINENTE', 'LÍNEA DIRECTA PUERTO ALBA', '#0b263b', '#22d3ee'),
+      trans: makeEuroFreightTexture('TRANS IBÉRICA', 'INTERMODAL CONTAINER', '#1c1917', '#facc15')
+    };
+
+    const cabPaintMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.85, roughness: 0.12 });
+    const cabTrimMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.4 });
+    const chromeMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.98, roughness: 0.04 });
+    const chassisSteelMat = new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.75, roughness: 0.45 });
+    const darkMetalMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.5 });
+    const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x0369a1, transparent: true, opacity: 0.35, roughness: 0.05, transmission: 0.95 });
+    const tireMat = new THREE.MeshStandardMaterial({ color: 0x111318, roughness: 0.92 });
+    const rimMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.94, roughness: 0.1 });
+    const ledWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+    const chassisL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.3, 6.2), chassisSteelMat); chassisL.position.set(-0.6, 0.65, -0.6); truckGroup.add(chassisL);
+    const chassisR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.3, 6.2), chassisSteelMat); chassisR.position.set(0.6, 0.65, -0.6); truckGroup.add(chassisR);
+
+    const fuelTank = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 2.2, 20), chromeMat);
+    fuelTank.rotation.x = Math.PI / 2; fuelTank.position.set(-1.15, 0.65, -0.3); truckGroup.add(fuelTank);
+    const batteryBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 1.8), darkMetalMat);
+    batteryBox.position.set(1.15, 0.65, -0.3); truckGroup.add(batteryBox);
+
+    const cabMain = new THREE.Mesh(new THREE.BoxGeometry(2.55, 1.85, 2.6), cabPaintMat);
+    cabMain.position.set(0, 1.85, -1.3); cabMain.castShadow = true; truckGroup.add(cabMain);
+
+    const roofAero = new THREE.Mesh(new THREE.BoxGeometry(2.45, 0.85, 2.3), cabPaintMat);
+    roofAero.position.set(0, 3.1, -1.35); roofAero.castShadow = true; truckGroup.add(roofAero);
+
+    const topSpoiler = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 1.4), cabTrimMat);
+    topSpoiler.position.set(0, 3.65, -1.4); topSpoiler.rotation.x = -0.12; truckGroup.add(topSpoiler);
+
+    for (let side of [-1, 1]) {
+      const horn = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.1, 0.9, 12), chromeMat);
+      horn.rotation.x = Math.PI / 2; horn.position.set(side * 0.85, 3.65, -2.1); truckGroup.add(horn);
+    }
+
+    const grilleBase = new THREE.Mesh(new THREE.BoxGeometry(2.25, 1.35, 0.25), darkMetalMat);
+    grilleBase.position.set(0, 1.5, -2.65); truckGroup.add(grilleBase);
+
+    for (let g = 0; g < 4; g++) {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.08, 0.08), chromeMat);
+      bar.position.set(0, 1.2 + g * 0.22, -2.78); truckGroup.add(bar);
+    }
+    const badge = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.18, 0.08), chromeMat);
+    badge.position.set(0, 1.9, -2.78); truckGroup.add(badge);
+
+    const windshield = new THREE.Mesh(new THREE.PlaneGeometry(2.3, 1.15), glassMat);
+    windshield.position.set(0, 2.45, -2.62); windshield.rotation.x = -0.18; truckGroup.add(windshield);
+
+    for (let side of [-1, 1]) {
+      const sideWin = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.8), glassMat);
+      sideWin.position.set(side * 1.29, 2.4, -1.5); sideWin.rotation.y = side * Math.PI / 2; truckGroup.add(sideWin);
+    }
+
+    const bumper = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.65, 0.45), cabTrimMat);
+    bumper.position.set(0, 0.75, -2.7); truckGroup.add(bumper);
+
+    const leftHeadlight = new THREE.SpotLight(0xfff6dd, 4.5, 120, Math.PI / 6, 0.35);
+    leftHeadlight.position.set(-0.95, 0.95, -2.85); leftHeadlight.target.position.set(-0.95, 0, -55);
+    truckGroup.add(leftHeadlight); truckGroup.add(leftHeadlight.target);
+
+    const rightHeadlight = new THREE.SpotLight(0xfff6dd, 4.5, 120, Math.PI / 6, 0.35);
+    rightHeadlight.position.set(0.95, 0.95, -2.85); rightHeadlight.target.position.set(0.95, 0, -55);
+    truckGroup.add(rightHeadlight); truckGroup.add(rightHeadlight.target);
+
+    for (let side of [-1, 1]) {
+      const drl = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.18, 0.08), ledWhiteMat);
+      drl.position.set(side * 0.95, 0.95, -2.92); truckGroup.add(drl);
+    }
+
+    for (let side of [-1, 1]) {
+      const mirrorArm = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 8), darkMetalMat);
+      mirrorArm.position.set(side * 1.45, 2.3, -2.2); truckGroup.add(mirrorArm);
+      const mirrorBox = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.7, 0.25), cabPaintMat);
+      mirrorBox.position.set(side * 1.55, 2.3, -2.2); truckGroup.add(mirrorBox);
+    }
+
+    for (let side of [-1, 1]) {
+      const skirt = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.55, 2.4), cabPaintMat);
+      skirt.position.set(side * 1.25, 0.65, -0.6); truckGroup.add(skirt);
+    }
+
+    // Articulated Semi-Trailer
+    const trailerGroup = new THREE.Group();
+    trailerGroup.position.set(0, 0, 0.8); truckGroup.add(trailerGroup);
+
+    const trailerChassis = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.28, 10.5), chassisSteelMat);
+    trailerChassis.position.set(0, 0.85, 5.0); trailerGroup.add(trailerChassis);
+
+    const trailerSidesMat = new THREE.MeshStandardMaterial({ map: liveries.euro, roughness: 0.35, metalness: 0.25 });
+    const trailerFrontRearMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
+    const trailerRoofMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4, metalness: 0.3 });
+    const trailerMats = [
+      trailerSidesMat, trailerSidesMat, trailerRoofMat, darkMetalMat, trailerFrontRearMat, trailerFrontRearMat
+    ];
+    const trailerBox = new THREE.Mesh(new THREE.BoxGeometry(2.6, 3.1, 9.8), trailerMats);
+    trailerBox.position.set(0, 2.7, 5.0); trailerBox.castShadow = true; trailerGroup.add(trailerBox);
+
+    // Functional Wheels
+    const wheels = [];
+    function createWheelAssembly(parent, x, y, z, isDual = false) {
+      const wGroup = new THREE.Group();
+      wGroup.position.set(x, y, z);
+
+      if (isDual) {
+        const offset = (x > 0) ? 0.22 : -0.22;
+        for (let d of [0, offset]) {
+          const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.56, 0.36, 20), tireMat);
+          tire.rotation.z = Math.PI / 2; tire.position.x = d; tire.castShadow = true; wGroup.add(tire);
+        }
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.48, 16), rimMat);
+        rim.rotation.z = Math.PI / 2; wGroup.add(rim);
+        const hubCap = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.52, 12), chromeMat);
+        hubCap.rotation.z = Math.PI / 2; wGroup.add(hubCap);
+      } else {
+        const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.56, 0.42, 20), tireMat);
+        tire.rotation.z = Math.PI / 2; tire.castShadow = true; wGroup.add(tire);
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.44, 16), rimMat);
+        rim.rotation.z = Math.PI / 2; wGroup.add(rim);
+        const hubCap = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.48, 12), chromeMat);
+        hubCap.rotation.z = Math.PI / 2; wGroup.add(hubCap);
+      }
+
+      parent.add(wGroup);
+      wheels.push(wGroup);
+      return wGroup;
+    }
+
+    const frontLeftWheel = createWheelAssembly(truckGroup, -1.22, 0.56, -2.0, false);
+    const frontRightWheel = createWheelAssembly(truckGroup, 1.22, 0.56, -2.0, false);
+    createWheelAssembly(truckGroup, -1.18, 0.56, 0.8, true);
+    createWheelAssembly(truckGroup, 1.18, 0.56, 0.8, true);
+    createWheelAssembly(trailerGroup, -1.22, 0.56, 6.4, false);
+    createWheelAssembly(trailerGroup, 1.22, 0.56, 6.4, false);
+    createWheelAssembly(trailerGroup, -1.22, 0.56, 7.7, false);
+    createWheelAssembly(trailerGroup, 1.22, 0.56, 7.7, false);
+    createWheelAssembly(trailerGroup, -1.22, 0.56, 9.0, false);
+    createWheelAssembly(trailerGroup, 1.22, 0.56, 9.0, false);
+
+    // --- 9. Rich Textured Traffic Vehicles ---
+    const trafficList = [];
+    const carAlloyTex = makeCarAlloyWheelTexture();
+    const carWheelMat = new THREE.MeshStandardMaterial({ map: carAlloyTex, roughness: 0.4, metalness: 0.8 });
+    const carFrontTex = makeCarFrontRearTexture(true);
+    const carRearTex = makeCarFrontRearTexture(false);
+
+    const vehicleConfigs = [
+      { type: 'sedan', color: '#dc2626', label: '', stripe: null, length: 4.2, width: 1.85, height: 0.8 },
+      { type: 'van', color: '#facc15', label: 'EXPRESS 24H', stripe: '#dc2626', length: 5.2, width: 2.1, height: 1.6 },
+      { type: 'suv', color: '#2563eb', label: '', stripe: '#38bdf8', length: 4.5, width: 1.95, height: 1.0 },
+      { type: 'sedan', color: '#16a34a', label: '', stripe: null, length: 4.2, width: 1.85, height: 0.8 },
+      { type: 'van', color: '#ffffff', label: 'SAMUR 112', stripe: '#ef4444', length: 5.2, width: 2.1, height: 1.6 },
+      { type: 'suv', color: '#d97706', label: '', stripe: null, length: 4.5, width: 1.95, height: 1.0 },
+      { type: 'sedan', color: '#334155', label: '', stripe: '#94a3b8', length: 4.2, width: 1.85, height: 0.8 }
+    ];
+
+    for (let i = 0; i < vehicleConfigs.length; i++) {
+      const cfg = vehicleConfigs[i];
+      const car = new THREE.Group();
+
+      const sideTex = makeCarSideBodyTexture(cfg.color, cfg.label, cfg.stripe);
+      const bodyMats = [
+        new THREE.MeshStandardMaterial({ map: sideTex, roughness: 0.3, metalness: 0.6 }),
+        new THREE.MeshStandardMaterial({ map: sideTex, roughness: 0.3, metalness: 0.6 }),
+        new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.3, metalness: 0.6 }),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 }),
+        new THREE.MeshStandardMaterial({ map: carFrontTex, roughness: 0.4 }),
+        new THREE.MeshStandardMaterial({ map: carRearTex, roughness: 0.4 })
+      ];
+
+      const cBody = new THREE.Mesh(new THREE.BoxGeometry(cfg.width, cfg.height, cfg.length), bodyMats);
+      cBody.position.y = cfg.height / 2 + 0.3;
+      cBody.castShadow = true;
+      car.add(cBody);
+
+      const cabinH = (cfg.type === 'van') ? 0.8 : 0.7;
+      const cabinL = (cfg.type === 'van') ? cfg.length * 0.75 : cfg.length * 0.55;
+      const cCabin = new THREE.Mesh(new THREE.BoxGeometry(cfg.width * 0.9, cabinH, cabinL), glassMat);
+      cCabin.position.set(0, cBody.position.y + cfg.height / 2 + cabinH / 2 - 0.05, -0.1);
+      car.add(cCabin);
+
+      const halfW = cfg.width / 2;
+      const halfL = cfg.length * 0.32;
+      for (let cx of [-halfW, halfW]) {
+        for (let cz of [-halfL, halfL]) {
+          const cwGroup = new THREE.Group();
+          cwGroup.position.set(cx, 0.34, cz);
+          
+          const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.22, 16), tireMat);
+          tire.rotation.z = Math.PI / 2;
+          cwGroup.add(tire);
+
+          const rimFace = new THREE.Mesh(new THREE.CircleGeometry(0.24, 16), carWheelMat);
+          rimFace.rotation.y = (cx > 0) ? Math.PI / 2 : -Math.PI / 2;
+          rimFace.position.x = (cx > 0) ? 0.12 : -0.12;
+          cwGroup.add(rimFace);
+
+          car.add(cwGroup);
+        }
+      }
+
+      const isOpposite = (i % 2 === 0);
+      car.position.set(isOpposite ? -6.5 : 6.5, 0, -120 - i * 110);
+      car.userData = { speed: isOpposite ? 18 : -14 };
+      if (isOpposite) car.rotation.y = Math.PI;
+      scene.add(car);
+      trafficList.push(car);
+    }
+
+    // --- 10. Controls & Camera Switcher ---
+    let speedKmh = 0, steerAngle = 0, truckPosX = 3.6;
+    let cameraMode = (urlParams.get('view') === 'cockpit' || urlParams.get('view') === 'interior') ? 1 : 0;
+    let headlightsActive = true, weatherIndex = 0;
+    let currentLiveryIndex = 0;
+    const liveryKeys = ['euro', 'rutas', 'trans'];
+    const cameraModes = ['Exterior (3ªP)', 'Cabina (Cockpit)', 'Capó (Bumper Cam)', 'Aérea Cinemática'];
+
+    if (cameraMode === 1) {
+      document.getElementById('cockpitFrame').style.display = 'block';
+    }
+
+    const keys = { w: false, s: false, a: false, d: false };
+
+    window.addEventListener('keydown', (e) => {
+      const k = e.key.toLowerCase();
+      if (k === 'w' || k === 'arrowup') keys.w = true;
+      if (k === 's' || k === 'arrowdown') keys.s = true;
+      if (k === 'a' || k === 'arrowleft') keys.a = true;
+      if (k === 'd' || k === 'arrowright') keys.d = true;
+      if (k === 'c') toggleCamera();
+      if (k === 'l') toggleLights();
+      if (k === 'h') playHornSound();
+      if (k === 'tab') { e.preventDefault(); toggleTablet(); }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      const k = e.key.toLowerCase();
+      if (k === 'w' || k === 'arrowup') keys.w = false;
+      if (k === 's' || k === 'arrowdown') keys.s = false;
+      if (k === 'a' || k === 'arrowleft') keys.a = false;
+      if (k === 'd' || k === 'arrowright') keys.d = false;
+    });
+
+    function bindTouch(id, keyName) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const setTrue = (e) => { e.preventDefault(); keys[keyName] = true; el.classList.add('pressed'); };
+      const setFalse = (e) => { e.preventDefault(); keys[keyName] = false; el.classList.remove('pressed'); };
+      el.addEventListener('touchstart', setTrue); el.addEventListener('touchend', setFalse);
+      el.addEventListener('mousedown', setTrue); el.addEventListener('mouseup', setFalse);
+    }
+    bindTouch('btnGas', 'w'); bindTouch('btnBrake', 's');
+    bindTouch('btnLeft', 'a'); bindTouch('btnRight', 'd');
+
+    document.getElementById('btnCam').onclick = toggleCamera;
+    document.getElementById('btnLights').onclick = toggleLights;
+    document.getElementById('btnHorn').onclick = playHornSound;
+    document.getElementById('btnTime').onclick = cycleWeather;
+
+    document.getElementById('btnLivery').onclick = () => {
+      currentLiveryIndex = (currentLiveryIndex + 1) % liveryKeys.length;
+      const lKey = liveryKeys[currentLiveryIndex];
+      trailerSidesMat.map = liveries[lKey];
+      trailerSidesMat.needsUpdate = true;
+      if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    };
+
+    function toggleCamera() {
+      cameraMode = (cameraMode + 1) % 4;
+      const cockpitEl = document.getElementById('cockpitFrame');
+      cockpitEl.style.display = (cameraMode === 1) ? 'block' : 'none';
+      document.getElementById('btnCam').textContent = `🎥 ${cameraModes[cameraMode]}`;
+      if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    }
+
+    function toggleLights() {
+      headlightsActive = !headlightsActive;
+      leftHeadlight.intensity = headlightsActive ? 4.5 : 0;
+      rightHeadlight.intensity = headlightsActive ? 4.5 : 0;
+      document.getElementById('btnLights').classList.toggle('active', headlightsActive);
+    }
+
+    function cycleWeather() {
+      weatherIndex = (weatherIndex + 1) % 3;
+      if (weatherIndex === 0) { // Sunset
+        scene.fog.color.setHex(0x131d2e);
+        ambientLight.intensity = 0.9;
+        sunLight.color.setHex(0xffaa55);
+        sunLight.intensity = 1.8;
+        document.getElementById('btnTime').textContent = '🌅 Clima / Atardecer';
+      } else if (weatherIndex === 1) { // Rain
+        scene.fog.color.setHex(0x0f1d33);
+        skyMat.color.setHex(0x1e3a8a);
+        ambientLight.intensity = 0.7;
+        sunLight.color.setHex(0x93c5fd);
+        sunLight.intensity = 1.0;
+        document.getElementById('btnTime').textContent = '🌧️ Clima / Lluvia';
+      } else { // Night
+        scene.fog.color.setHex(0x030712);
+        skyMat.color.setHex(0x050c18);
+        ambientLight.intensity = 0.3;
+        sunLight.intensity = 0.2;
+        document.getElementById('btnTime').textContent = '🌙 Clima / Noche';
+      }
+    }
+
+    // --- 11. Orbit Camera Handlers ---
+    let isDragging = false, prevPointerX = 0, prevPointerY = 0;
+    let orbitYaw = 0.42, orbitPitch = 0.18, orbitDistance = 16.0;
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.canva-hud-topleft, .bottom-controls-dock, .touch-controls, .tablet-modal')) return;
+      isDragging = true;
+      prevPointerX = e.clientX;
+      prevPointerY = e.clientY;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging || cameraMode === 1) return;
+      const dx = e.clientX - prevPointerX;
+      const dy = e.clientY - prevPointerY;
+      prevPointerX = e.clientX;
+      prevPointerY = e.clientY;
+
+      orbitYaw -= dx * 0.008;
+      orbitPitch = Math.max(0.04, Math.min(0.75, orbitPitch + dy * 0.006));
+    });
+
+    window.addEventListener('pointerup', () => isDragging = false);
+    window.addEventListener('pointercancel', () => isDragging = false);
+
+    window.addEventListener('wheel', (e) => {
+      if (cameraMode === 0) {
+        orbitDistance = Math.max(8, Math.min(30, orbitDistance + e.deltaY * 0.015));
+      }
+    }, { passive: true });
+
+    // --- 12. Main Game Loop with High-Speed Forward Scrolling, WIM Trigger & Physics ---
+    let clock = new THREE.Clock();
+    const miniCanvas = document.getElementById('miniCanvas');
+    const miniCtx = miniCanvas.getContext('2d');
+    let wimCooldown = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = Math.min(clock.getDelta(), 0.1);
+
+      if (keys.w) speedKmh = Math.min(speedKmh + 28 * delta, 90);
+      else if (keys.s) { speedKmh = Math.max(speedKmh - 40 * delta, -25); if (speedKmh > 0 && Math.abs(speedKmh) < 1) playAirBrake(); }
+      else speedKmh *= (1 - 0.25 * delta);
+
+      if (keys.a) { steerAngle = Math.max(steerAngle - 2.5 * delta, -0.42); truckPosX -= Math.abs(speedKmh) * 0.08 * delta; }
+      else if (keys.d) { steerAngle = Math.min(steerAngle + 2.5 * delta, 0.42); truckPosX += Math.abs(speedKmh) * 0.08 * delta; }
+      else steerAngle *= (1 - 4 * delta);
+
+      truckPosX = Math.max(-ROAD_WIDTH/2 + 2.5, Math.min(ROAD_WIDTH/2 - 2.5, truckPosX));
+
+      frontLeftWheel.rotation.y = -steerAngle;
+      frontRightWheel.rotation.y = -steerAngle;
+
+      const wheelSpin = (speedKmh / 3.6) * delta * 1.8;
+      wheels.forEach(w => {
+        w.children.forEach(child => {
+          if (child.isMesh) child.rotation.x -= wheelSpin;
+        });
+      });
+
+      const forwardMetersPerSec = (speedKmh / 3.6);
+      highwayAsphaltTex.offset.y += (forwardMetersPerSec * delta * 0.012);
+      forestGroundTex.offset.y += (forwardMetersPerSec * delta * 0.012);
+      mountainCliffTex.offset.y += (forwardMetersPerSec * delta * 0.012);
+
+      sceneryPool.forEach(item => {
+        item.position.z += forwardMetersPerSec * delta * 2.5;
+        if (item.position.z > 140) {
+          item.position.z -= ROAD_LENGTH;
+        }
+
+        // Check WIM Gantry Pass-by trigger
+        if (Math.abs(item.position.z) < 10 && wimCooldown <= 0 && speedKmh > 20) {
+          wimCooldown = 8.0;
+          const wimRes = evaluateDynamicWIMScale({ grossWeightKg: 32400, speedKmh: Math.round(speedKmh) });
+          const banner = document.getElementById('wimBanner');
+          document.getElementById('wimText').textContent = `⚖️ WIM PESAJE EN MOVIMIENTO · ${Math.round(speedKmh)} km/h · 32.4t CONFORME`;
+          banner.classList.add('show');
+          playRadioChime();
+          setTimeout(() => banner.classList.remove('show'), 3500);
+        }
+      });
+      if (wimCooldown > 0) wimCooldown -= delta;
+
+      truckGroup.position.x = truckPosX;
+      truckGroup.rotation.y = -steerAngle * 0.35;
+      trailerGroup.rotation.y = steerAngle * 0.45;
+
+      trafficList.forEach(car => {
+        car.position.z += (car.userData.speed + forwardMetersPerSec) * delta * 1.8;
+        if (car.position.z > 100) car.position.z = -600 - Math.random() * 200;
+        if (car.position.z < -700) car.position.z = 80;
+      });
+
+      if (cameraMode === 0) {
+        const camX = truckPosX + Math.sin(orbitYaw) * Math.cos(orbitPitch) * orbitDistance;
+        const camY = 2.2 + Math.sin(orbitPitch) * orbitDistance;
+        const camZ = 3.5 + Math.cos(orbitYaw) * Math.cos(orbitPitch) * orbitDistance;
+        camera.position.set(camX, camY, camZ);
+        camera.lookAt(truckPosX - 0.5, 2.3, -4.0);
+      } else if (cameraMode === 1) {
+        camera.position.set(truckPosX - 0.65, 2.45, -1.35);
+        camera.lookAt(truckPosX - 0.65 - steerAngle * 2.8, 2.2, -40);
+        document.getElementById('cockpitWheelWrap').style.transform = `translateX(-50%) rotate(${steerAngle * 220}deg)`;
+      } else if (cameraMode === 2) {
+        camera.position.set(truckPosX, 1.3, -2.8);
+        camera.lookAt(truckPosX - steerAngle * 3.0, 1.2, -45);
+      } else {
+        const time = clock.getElapsedTime() * 0.25;
+        camera.position.set(truckPosX + Math.sin(time) * 18, 9.5, Math.cos(time) * 18);
+        camera.lookAt(truckPosX, 2.2, 0);
+      }
+
+      if (engineOsc && engineGain) {
+        engineOsc.frequency.setValueAtTime(40 + Math.abs(speedKmh) * 1.6, audioCtx.currentTime);
+        if (turboOsc && turboGain) {
+          turboOsc.frequency.setValueAtTime(320 + Math.abs(speedKmh) * 16, audioCtx.currentTime);
+          turboGain.gain.setValueAtTime(keys.w ? 0.02 : 0.002, audioCtx.currentTime);
+        }
+      }
+
+      const displaySpeed = Math.round(Math.abs(speedKmh));
+      document.getElementById('telemSpeed').textContent = `${displaySpeed} km/h`;
+      document.getElementById('telemGear').textContent = speedKmh < -1 ? 'R' : displaySpeed === 0 ? 'N' : `D${Math.min(12, Math.floor(displaySpeed/8)+1)}`;
+      document.getElementById('cockpitSpeed').textContent = displaySpeed;
+      document.getElementById('cockpitRpm').textContent = Math.round(900 + displaySpeed * 15);
+
+      miniCtx.fillStyle = '#07101d'; miniCtx.fillRect(0, 0, 116, 116);
+      miniCtx.strokeStyle = '#334155'; miniCtx.lineWidth = 16;
+      miniCtx.beginPath(); miniCtx.moveTo(58, 0); miniCtx.lineTo(58, 116); miniCtx.stroke();
+      miniCtx.strokeStyle = '#38bdf8'; miniCtx.lineWidth = 4;
+      miniCtx.beginPath(); miniCtx.moveTo(58, 0); miniCtx.lineTo(58, 116); miniCtx.stroke();
+
+      miniCtx.fillStyle = '#4ce6d0';
+      miniCtx.beginPath();
+      const px = 58 + (truckPosX / ROAD_WIDTH) * 35;
+      miniCtx.moveTo(px, 72); miniCtx.lineTo(px - 5, 82); miniCtx.lineTo(px + 5, 82); miniCtx.fill();
+
+      miniCtx.fillStyle = '#f59e0b';
+      trafficList.forEach(car => {
+        const cx = 58 + (car.position.x / ROAD_WIDTH) * 35;
+        const cy = 76 + (car.position.z / 12);
+        if (cy >= 0 && cy <= 116) {
+          miniCtx.beginPath(); miniCtx.arc(cx, cy, 3.5, 0, Math.PI * 2); miniCtx.fill();
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+  </script>
+</body>
+</html>

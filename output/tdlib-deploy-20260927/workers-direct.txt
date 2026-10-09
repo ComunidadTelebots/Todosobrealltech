@@ -1,0 +1,8 @@
+  if (new URLSearchParams(location.search).get('moon') === 'moon-balancer' && ['admin', 'creator'].includes(userData?.role)) {
+    return <main className="container max-w-7xl py-6" id="moon-infrastructure">
+      <Helmet><title>Workers Moonbot · Todo sobre alltech</title></Helmet>
+      <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-bold">Bots y workers en directo</h1><Button variant="outline" asChild><Link to="/dashboard">Volver al dashboard</Link></Button></div>
+      <Suspense fallback={<p role="status" className="py-8">Cargando workers…</p>}><MoonbotLoadBalancer /></Suspense>
+    </main>;
+  }
+

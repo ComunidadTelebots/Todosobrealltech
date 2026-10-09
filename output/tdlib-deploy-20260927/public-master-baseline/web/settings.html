@@ -1,0 +1,213 @@
+<div class="glass-panel" style="max-width: 700px; margin: 0 auto; background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
+        <h3 style="margin:0;">⚙️ Configuración Maestra del Sistema</h3>
+        <span class="status-badge" id="settingsStatus">SIN CAMBIOS</span>
+    </div>
+
+    <div class="settings-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <!-- Columna 1: Seguridad & CAS -->
+        <div class="settings-col">
+            <h4>🛡️ SEGURIDAD & CAS</h4>
+            <div class="setting-item">
+                <label>🛰️ Escudo Global (CAS)</label>
+                <select id="casProtection" class="input-style">
+                    <option value="on">Activado (Auto-Baneos)</option>
+                    <option value="off">Desactivado</option>
+                </select>
+                <div class="help-hint" title="Banea automáticamente a usuarios reportados en la red global de Combot.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🛡️ Modo Mantenimiento</label>
+                <button onclick="toggleMaintenance()" id="maintBtn" class="btn-mini-wide">MANTENIMIENTO: OFF</button>
+                <div class="help-hint" title="Desactiva el bot para todos excepto para el Master.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🧹 Limpieza Automática</label>
+                <button onclick="toggleJoinDelete()" id="joinBtn" class="btn-mini-wide">UNIONES: ON</button>
+                <div class="help-hint" title="Borra los mensajes de 'Usuario se unió' automáticamente.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🌊 Límite Anti-Flood (msgs/10s)</label>
+                <input type="number" id="floodLimit" class="input-style" value="6" min="3" max="20" placeholder="6">
+                <div class="help-hint" title="Máximo de mensajes permitidos en 10 segundos antes de actuar.">?</div>
+            </div>
+        </div>
+
+        <!-- Columna 2: Inteligencia Artificial -->
+        <div class="settings-col">
+            <h4>🧠 NÚCLEO NEURONAL</h4>
+            <div class="setting-item">
+                <label>🧠 Potencia IA</label>
+                <select id="iaPowerMode" class="input-style" onchange="setIAPower()">
+                    <option value="eco">Eco (Corto)</option>
+                    <option value="balanced">Equilibrado</option>
+                    <option value="peak">Peak (Largo)</option>
+                </select>
+                <div class="help-hint" title="Define la complejidad y longitud de las respuestas de la IA.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🚫 Filtro Anti-Spam</label>
+                <button onclick="toggleSpamFilter()" id="spamFilterBtn" class="btn-mini-wide">SPAM FILTER: ON</button>
+                <div class="help-hint" title="Analiza enlaces y patrones para evitar estafas y spam.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>⚖️ Umbral Auditoría</label>
+                <select id="auditThreshold" class="input-style">
+                    <option value="40">Flexible (40+)</option>
+                    <option value="60" selected>Normal (60+)</option>
+                    <option value="80">Elite (80+)</option>
+                </select>
+                <div class="help-hint" title="Puntuación mínima para considerar una fuente de 'Alta Calidad'.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🗄️ Backup Automático (horas)</label>
+                <select id="autoBackupHours" class="input-style">
+                    <option value="0" selected>Desactivado</option>
+                    <option value="6">Cada 6 horas</option>
+                    <option value="12">Cada 12 horas</option>
+                    <option value="24">Cada 24 horas</option>
+                    <option value="48">Cada 48 horas</option>
+                </select>
+                <div class="help-hint" title="Envía automáticamente una copia de la base de datos al Master.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🧹 Limpieza Automática de Descargas</label>
+                <select id="autoCleanupDays" class="input-style">
+                    <option value="0" selected>Desactivado</option>
+                    <option value="1">Cada 1 día</option>
+                    <option value="3">Cada 3 días</option>
+                    <option value="7">Cada 7 días</option>
+                    <option value="30">Cada 30 días</option>
+                </select>
+                <div class="help-hint" title="Elimina archivos de la carpeta downloads/ más antiguos que el período seleccionado.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🕐 Hora del Reporte Diario</label>
+                <select id="dailyReportHour" class="input-style">
+                    <option value="0">00:00 (Medianoche)</option>
+                    <option value="6">06:00</option>
+                    <option value="7">07:00</option>
+                    <option value="8" selected>08:00</option>
+                    <option value="9">09:00</option>
+                    <option value="10">10:00</option>
+                    <option value="12">12:00 (Mediodía)</option>
+                    <option value="18">18:00</option>
+                    <option value="20">20:00</option>
+                    <option value="22">22:00</option>
+                </select>
+                <div class="help-hint" title="Hora del día (0-22) en que el bot enviará el resumen diario al Master.">?</div>
+            </div>
+        </div>
+
+        <!-- Columna 3: Identidad & Estética -->
+        <div class="settings-col">
+            <h4>💎 IDENTIDAD & UI</h4>
+            <div class="setting-item">
+                <label>👋 Bienvenida</label>
+                <input type="text" id="welcomeMsgInput" class="input-style" placeholder="Hola...">
+                <div class="help-hint" title="Mensaje que el bot enviará a los nuevos miembros.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🎨 Tema Visual</label>
+                <div class="theme-selector">
+                    <div onclick="setTheme('moon')" class="theme-btn moon"></div>
+                    <div onclick="setTheme('cyberpunk')" class="theme-btn cyberpunk"></div>
+                    <div onclick="setTheme('matrix')" class="theme-btn matrix"></div>
+                </div>
+                <div class="help-hint" title="Cambia la estética visual de todo el Dashboard.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🤖 Bio del Bot</label>
+                <input type="text" id="botDescInput" class="input-style" placeholder="Soy Moon Bot...">
+                <div class="help-hint" title="Descripción pública del bot en el Dashboard.">?</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="margin-top: 25px; border-left: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.05);">
+        <h4 style="color: #3b82f6; font-size: 11px; margin-bottom: 15px; letter-spacing: 2px;">🚀 ACTUALIZACIÓN DEL SISTEMA (GITHUB)</h4>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="flex: 1;">
+                <p id="updateStatusText" style="font-size: 12px; color: #94a3b8; margin: 0;">ID Local: <span id="currentCommit">Cargando...</span></p>
+                <p id="remoteStatusText" style="font-size: 11px; color: #64748b; margin: 5px 0 0 0;">Estado: Pendiente de comprobación</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="checkSystemUpdate()" class="btn-mini-wide" style="width: auto; padding: 10px 20px;">COMPROBAR GITHUB</button>
+                <button id="applyUpdateBtn" onclick="applySystemUpdate()" class="btn-mini-wide" style="width: auto; padding: 10px 20px; display: none; background: #3b82f6; color: white;">APLICAR ACTUALIZACIÓN</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="margin-top: 25px; border-left: 3px solid #10b981; background: rgba(16, 185, 129, 0.04);">
+        <h4 style="color: #10b981; font-size: 11px; margin-bottom: 15px; letter-spacing: 2px;">ANALYTICS & COOKIES</h4>
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 20px; align-items: end;">
+            <div class="setting-item">
+                <label>Google Analytics 4 Measurement ID</label>
+                <input type="text" id="googleAnalyticsId" class="input-style" placeholder="G-XXXXXXXXXX">
+                <div class="help-hint" title="Tambien puede definirse con GOOGLE_ANALYTICS_ID en .env.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>Banner de cookies</label>
+                <select id="cookieBannerEnabled" class="input-style">
+                    <option value="on">Activado</option>
+                    <option value="off">Desactivado</option>
+                </select>
+                <div class="help-hint" title="Muestra el aviso de consentimiento antes de activar Analytics.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>Analytics</label>
+                <select id="analyticsEnabled" class="input-style">
+                    <option value="on">Activado</option>
+                    <option value="off">Desactivado</option>
+                </select>
+                <div class="help-hint" title="Si esta desactivado, no se carga Google Analytics aunque haya consentimiento.">?</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="margin-top: 25px; border-left: 3px solid #fde047; background: rgba(253, 224, 71, 0.02);">
+        <h4 style="color: #fde047; font-size: 11px; margin-bottom: 15px; letter-spacing: 2px;">⚡ SEGURIDAD AVANZADA & VISIÓN</h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="setting-item">
+                <label>📡 Sincronización Externa</label>
+                <select id="syncFrequency" class="input-style">
+                    <option value="3600">Cada 1 Hora</option>
+                    <option value="21600" selected>Cada 6 Horas</option>
+                    <option value="86400">Cada 24 Horas</option>
+                </select>
+                <div class="help-hint" title="Frecuencia de descarga de nuevas huellas de seguridad.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>👁️ Profundidad de Análisis</label>
+                <select id="visionDepth" class="input-style">
+                    <option value="basic">Estructura Básica</option>
+                    <option value="full" selected>Análisis Completo (SOF/Atoms)</option>
+                </select>
+                <div class="help-hint" title="Nivel de detalle al escanear archivos multimedia.">?</div>
+            </div>
+            <div class="setting-item">
+                <label>🧹 Purga de Media (Días)</label>
+                <input type="number" id="mediaPurgeDays" class="input-style" value="7" min="1" max="30">
+                <div class="help-hint" title="Días que se guardan los archivos antes de ser borrados.">?</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 20px; display: flex; gap: 15px;">
+        <button onclick="saveGlobalSettings()" class="btn-glow" style="flex: 2; margin-top: 0;">APLICAR CAMBIOS GLOBALES</button>
+        <button onclick="runBackup()" class="tab-btn" style="flex: 1; margin-top: 0;">COPIA SEGURIDAD</button>
+    </div>
+</div>
+<style>
+.input-style {
+    width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+    color: white; padding: 10px; border-radius: 8px; font-size: 13px;
+}
+.btn-mini-wide {
+    width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    color: #94a3b8; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 800;
+    cursor: pointer; transition: 0.3s;
+}
+.btn-mini-wide:hover { background: rgba(139,92,246,0.1); border-color: var(--primary); color: white; }
+.settings-col h4 { font-size: 11px; margin-bottom: 15px; color: var(--primary); letter-spacing: 2px; }
+</style>

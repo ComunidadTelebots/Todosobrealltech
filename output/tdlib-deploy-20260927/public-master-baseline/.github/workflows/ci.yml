@@ -1,0 +1,26 @@
+name: CI — Lint
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**.py"
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint
+        run: ruff check . --select E,F,W --ignore E501,E402,F401,W291,W293

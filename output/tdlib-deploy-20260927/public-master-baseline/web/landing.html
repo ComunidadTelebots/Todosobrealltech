@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>@cintiabot — Administración inteligente para grupos de Telegram</title>
+<meta name="description" content="Cintiabot es un bot de Telegram para administración de grupos: anti-spam, moderación avanzada y 4 niveles de privilegios. IA integrada y panel web en camino." />
+<meta name="theme-color" content="#0b0d12" />
+<meta property="og:title" content="@cintiabot — Administración inteligente para Telegram" />
+<meta property="og:description" content="Anti-spam, moderación y 4 niveles de privilegios. Próximamente con IA integrada y panel web." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://cintiabot.duckdns.org" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%237aa2ff'/%3E%3Cstop offset='1' stop-color='%23c084fc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-family='system-ui,sans-serif' font-size='34' font-weight='700' fill='%230b0d12'%3EC%3C/text%3E%3C/svg%3E" />
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{
+    --bg:#0b0d12;
+    --bg-2:#0f1320;
+    --fg:#e6e8ef;
+    --muted:#9aa3b2;
+    --line:rgba(255,255,255,.08);
+    --accent:#7aa2ff;
+    --accent-2:#c084fc;
+    --ok:#34d399;
+    --warn:#fbbf24;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{position:sticky;top:0;backdrop-filter:saturate(140%) blur(10px);background:rgba(11,13,18,.7);border-bottom:1px solid var(--line);z-index:10}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#0b0d12;font-weight:800}
+  .nav a.cta{display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0d12;font-weight:600}
+  .hero{position:relative;padding:96px 0 64px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:-20% -10% auto -10%;height:520px;background:radial-gradient(60% 60% at 30% 30%,rgba(122,162,255,.18),transparent 60%),radial-gradient(50% 60% at 80% 20%,rgba(192,132,252,.18),transparent 60%);filter:blur(20px);z-index:0}
+  .hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+  @media (max-width:780px){.hero-inner{grid-template-columns:1fr;gap:32px}}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.02)}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+  h1{font-size:clamp(36px,5vw,56px);line-height:1.08;margin:18px 0 16px;letter-spacing:-.02em}
+  h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:18px;max-width:60ch}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;font-weight:600}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0d12}
+  .btn-ghost{border:1px solid var(--line);color:var(--fg)}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.2);text-decoration:none}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:18px;padding:22px}
+  .mock{display:flex;flex-direction:column;gap:10px}
+  .mock-row{display:flex;gap:10px;align-items:flex-start}
+  .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7aa2ff,#c084fc);flex:none;color:#0b0d12;display:grid;place-items:center;font-weight:700;font-size:13px}
+  .av.bot{background:#1a2030;color:#7aa2ff;border:1px solid var(--line)}
+  .bubble{background:rgba(255,255,255,.04);border:1px solid var(--line);padding:8px 12px;border-radius:12px;font-size:14px;color:var(--fg)}
+  .bubble.muted{color:var(--muted)}
+  .bubble code{background:rgba(122,162,255,.12);color:#cfdcff;padding:1px 6px;border-radius:6px;font-size:13px}
+  .meta{font-size:12px;color:var(--muted)}
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  .section-title{font-size:28px;letter-spacing:-.01em;margin:0 0 8px}
+  .section-sub{color:var(--muted);margin:0 0 32px;max-width:60ch}
+  .grid{display:grid;gap:16px}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .grid.cols-2{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:780px){.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}}
+  .feature .icon{width:38px;height:38px;border-radius:10px;background:rgba(122,162,255,.12);color:var(--accent);display:grid;place-items:center;margin-bottom:14px;font-weight:700}
+  .feature h3{margin:0 0 6px;font-size:17px}
+  .feature p{margin:0;color:var(--muted);font-size:14.5px}
+  .levels{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media (max-width:780px){.levels{grid-template-columns:repeat(2,1fr)}}
+  .level{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(255,255,255,.02)}
+  .level .tag{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .level h4{margin:6px 0 4px;font-size:17px}
+  .level p{margin:0;font-size:13.5px;color:var(--muted)}
+  .level.l1{border-color:rgba(52,211,153,.35)}
+  .level.l2{border-color:rgba(122,162,255,.35)}
+  .level.l3{border-color:rgba(192,132,252,.35)}
+  .level.l4{border-color:rgba(251,191,36,.35)}
+  .soon{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+  @media (max-width:780px){.soon{grid-template-columns:1fr}}
+  .soon .card h3{margin:0 0 8px}
+  .soon .badge{display:inline-block;background:rgba(251,191,36,.12);color:var(--warn);padding:3px 8px;border-radius:999px;font-size:12px;margin-bottom:8px}
+  footer{padding:40px 0 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:32px}
+  .footer-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+  /* ── Historial de versiones cintiabot (.cbh-*) ── */
+  .cbh-section{--cbh-blue:#7aa2ff;--cbh-violet:#c084fc;--cbh-green:#34d399;--cbh-amber:#fbbf24;--cbh-ink:#e6e8ef;--cbh-muted:#9aa3b2;--cbh-card:rgba(255,255,255,.04);--cbh-line:rgba(255,255,255,.09);--cbh-bg:#0b0d12;
+    padding:54px 22px;font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;}
+  .cbh-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cbh-violet);font-weight:600;text-align:center;}
+  .cbh-h2{font-size:clamp(24px,3.5vw,30px);font-weight:800;margin:6px 0 4px;letter-spacing:-.02em;text-align:center;color:var(--cbh-ink);}
+  .cbh-sub{color:var(--cbh-muted);font-size:14px;margin:0 auto 30px;text-align:center;max-width:50ch;}
+  .cbh-line{max-width:640px;margin:0 auto;position:relative;padding-left:28px;}
+  .cbh-line::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--cbh-blue),var(--cbh-violet));}
+  .cbh-v{position:relative;margin-bottom:14px;}
+  .cbh-v::before{content:"";position:absolute;left:-28px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--cbh-bg);border:2px solid var(--cbh-blue);box-shadow:0 0 0 4px rgba(122,162,255,.1);}
+  .cbh-v.cbh-now::before{background:var(--cbh-violet);border-color:var(--cbh-violet);box-shadow:0 0 0 5px rgba(192,132,252,.18);}
+  .cbh-card{background:var(--cbh-card);border:1px solid var(--cbh-line);border-radius:13px;padding:12px 14px;display:flex;gap:12px;align-items:center;transition:border-color .25s;}
+  .cbh-card:hover{border-color:var(--cbh-blue);}
+  .cbh-txt{flex:1;min-width:0;}
+  .cbh-vh{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+  .cbh-vn{font-family:'JetBrains Mono','Courier New',monospace;font-size:13px;font-weight:700;color:var(--cbh-ink);}
+  .cbh-vd{font-family:'JetBrains Mono','Courier New',monospace;font-size:10px;color:var(--cbh-muted);}
+  .cbh-nowtag{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#0b0d12;background:var(--cbh-violet);border-radius:20px;padding:2px 7px;font-weight:700;}
+  .cbh-t{font-weight:600;font-size:13px;margin:0 0 2px;color:var(--cbh-ink);}
+  .cbh-ds{font-size:11px;color:var(--cbh-muted);margin:0;line-height:1.4;}
+  .cbh-mk{width:108px;height:64px;flex:none;border-radius:9px;border:1px solid var(--cbh-line);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+  .cbh-more{text-align:center;margin-top:10px;}
+  .cbh-more a{font-size:12px;color:var(--cbh-blue);text-decoration:none;border:1px solid var(--cbh-line);border-radius:8px;padding:8px 16px;display:inline-block;transition:border-color .2s;}
+  .cbh-more a:hover{border-color:var(--cbh-blue);}
+  @media(max-width:540px){.cbh-card{flex-direction:column-reverse;align-items:stretch;}.cbh-mk{width:100%;height:70px;}}
+
+  /* maquetas */
+  .cbhx-land{width:80px;}
+  .cbhx-land .bar{height:12px;background:#1c2330;border-radius:5px 5px 0 0;display:flex;align-items:center;padding:0 5px;gap:3px;}
+  .cbhx-land .bar i{width:4px;height:4px;border-radius:50%;background:#3a4456;}
+  .cbhx-land .body{height:34px;background:#fff;border-radius:0 0 5px 5px;position:relative;overflow:hidden;}
+  .cbhx-land .hero{position:absolute;inset:5px;background:linear-gradient(135deg,var(--cbh-blue),var(--cbh-violet));border-radius:3px;animation:cbhx-land 3s ease-in-out infinite;}
+  @keyframes cbhx-land{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1)}}
+  .cbhx-an{display:flex;align-items:flex-end;gap:5px;height:40px;}
+  .cbhx-an i{width:9px;background:linear-gradient(180deg,var(--cbh-violet),var(--cbh-blue));border-radius:3px 3px 0 0;animation:cbhx-an 2.2s ease-in-out infinite;}
+  .cbhx-an i:nth-child(2){animation-delay:.2s}.cbhx-an i:nth-child(3){animation-delay:.4s}.cbhx-an i:nth-child(4){animation-delay:.6s}
+  @keyframes cbhx-an{0%,100%{height:10px}50%{height:38px}}
+  .cbhx-poll{position:relative;width:34px;height:34px;display:grid;place-items:center;}
+  .cbhx-poll .core{width:12px;height:12px;border-radius:50%;background:var(--cbh-green);z-index:2;}
+  .cbhx-poll .w{position:absolute;width:12px;height:12px;border-radius:50%;border:2px solid var(--cbh-green);animation:cbhx-poll 2s ease-out infinite;}
+  .cbhx-poll .w2{animation-delay:1s;}
+  @keyframes cbhx-poll{0%{transform:scale(1);opacity:.8}100%{transform:scale(3);opacity:0}}
+  .cbhx-cmd{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--cbh-green);text-align:left;width:84px;}
+  .cbhx-cmd .c{white-space:nowrap;overflow:hidden;border-right:2px solid var(--cbh-green);width:0;animation:cbhx-cmd 4s steps(12) infinite;}
+  @keyframes cbhx-cmd{0%{width:0}40%,90%{width:72px}100%{width:0}}
+  .cbhx-moji{font-size:13px;text-align:center;line-height:1.5;}
+  .cbhx-moji .bad{color:#f87171;animation:cbhx-mojiout 3s ease-in-out infinite;display:block;}
+  .cbhx-moji .good{color:var(--cbh-green);animation:cbhx-mojiin 3s ease-in-out infinite;display:block;}
+  @keyframes cbhx-mojiout{0%,40%{opacity:1}55%,100%{opacity:0}}
+  @keyframes cbhx-mojiin{0%,40%{opacity:0}55%,100%{opacity:1}}
+  .cbhx-mod{display:grid;grid-template-columns:repeat(2,16px);gap:4px;}
+  .cbhx-mod i{width:16px;height:16px;border-radius:4px;background:rgba(122,162,255,.5);border:1px solid var(--cbh-blue);animation:cbhx-mod 3s ease-in-out infinite;}
+  .cbhx-mod i:nth-child(2){animation-delay:.2s}.cbhx-mod i:nth-child(3){animation-delay:.4s}.cbhx-mod i:nth-child(4){animation-delay:.6s}
+  @keyframes cbhx-mod{0%,100%{transform:scale(.85);opacity:.6}50%{transform:scale(1);opacity:1}}
+  .cbhx-pie{width:38px;height:38px;border-radius:50%;background:conic-gradient(var(--cbh-violet) 0 35%,var(--cbh-blue) 35% 65%,var(--cbh-green) 65% 100%);animation:cbhx-pie 6s linear infinite;}
+  @keyframes cbhx-pie{to{transform:rotate(360deg)}}
+  .cbhx-bolt{font-size:24px;animation:cbhx-bolt 1.5s ease-in-out infinite;}
+  @keyframes cbhx-bolt{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(251,191,36,0))}50%{transform:scale(1.2);filter:drop-shadow(0 0 6px rgba(251,191,36,.8))}}
+  .cbhx-bp{display:grid;grid-template-columns:repeat(3,12px);grid-auto-rows:12px;gap:3px;}
+  .cbhx-bp i{width:12px;height:12px;border-radius:3px;display:block;animation:cbhx-bp 4s ease-in-out infinite;}
+  .cbhx-bp i:nth-child(1){background:#7aa2ff}.cbhx-bp i:nth-child(2){background:#c084fc;animation-delay:.4s}.cbhx-bp i:nth-child(3){background:#34d399;animation-delay:.8s}
+  .cbhx-bp i:nth-child(4){background:#fbbf24;animation-delay:1.2s}.cbhx-bp i:nth-child(5){background:#f87171;animation-delay:1.6s}.cbhx-bp i:nth-child(6){background:#38bdf8;animation-delay:2s}
+  @keyframes cbhx-bp{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.15);filter:brightness(1.4)}}
+
+  /* accesibilidad: sin movimiento */
+  @media (prefers-reduced-motion: reduce){
+    .cbhx-land .hero,.cbhx-an i,.cbhx-poll .w,.cbhx-cmd .c,.cbhx-moji .bad,.cbhx-moji .good,
+    .cbhx-mod i,.cbhx-pie,.cbhx-bolt,.cbhx-bp i{animation:none;}
+    .cbhx-moji .bad{display:none;}
+    .cbhx-cmd .c{width:72px;border-right:none;}
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F5P08EW3SV');
+</script>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <div class="logo">C</div>
+      <span>cintiabot</span>
+    </div>
+    <a class="cta" href="https://t.me/cintiabot" target="_blank" rel="noopener">Abrir en Telegram</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <span class="pill"><span class="dot"></span> Bot activo en Telegram</span>
+        <h1>Administra tu grupo de Telegram con <span class="grad">@cintiabot</span></h1>
+        <p class="lead">Anti-spam en tiempo real, moderación granular y un sistema de 4 niveles de privilegios para que cada miembro de tu equipo tenga exactamente los permisos que necesita. Sin más, sin menos.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://t.me/cintiabot" target="_blank" rel="noopener">Añadir a un grupo →</a>
+          <a class="btn btn-ghost" href="#features">Ver funciones</a>
+        </div>
+      </div>
+      <div class="card mock" aria-hidden="true">
+        <div class="mock-row">
+          <div class="av">A</div>
+          <div>
+            <div class="bubble">enlace spam.tk/promo</div>
+            <div class="meta">Alex · hace 2s</div>
+          </div>
+        </div>
+        <div class="mock-row">
+          <div class="av bot">C</div>
+          <div>
+            <div class="bubble">⚠️ Mensaje eliminado · dominio en blacklist. Usuario silenciado 1h. <code>/warn @alex</code></div>
+            <div class="meta">cintiabot · ahora</div>
+          </div>
+        </div>
+        <div class="mock-row">
+          <div class="av">M</div>
+          <div>
+            <div class="bubble"><code>/perms @maria nivel 3</code></div>
+            <div class="meta">Maria · admin</div>
+          </div>
+        </div>
+        <div class="mock-row">
+          <div class="av bot">C</div>
+          <div>
+            <div class="bubble muted">✅ @maria asignada a <b>Nivel 3 · Moderadora</b>. Puede silenciar, advertir y eliminar mensajes.</div>
+            <div class="meta">cintiabot · ahora</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2 class="section-title">Hecho para grupos que crecen rápido</h2>
+      <p class="section-sub">Las herramientas básicas de Telegram no escalan cuando tu comunidad pasa de 100 a 10.000. Cintiabot sí.</p>
+      <div class="grid cols-3">
+        <div class="card feature">
+          <div class="icon">🛡</div>
+          <h3>Anti-spam</h3>
+          <p>Detecta y elimina enlaces sospechosos, raids, flood y publicidad antes de que se vean.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">⚙</div>
+          <h3>Moderación</h3>
+          <p>Warns, mutes, kicks, bans temporales y permanentes con historial completo por usuario.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">🔐</div>
+          <h3>4 niveles de privilegios</h3>
+          <p>Delegación granular: cada miembro del staff hace exactamente lo que su rol permite.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">📋</div>
+          <h3>Comandos claros</h3>
+          <p>Sintaxis consistente y respuestas amigables. Sin manual de 40 páginas.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">📊</div>
+          <h3>Auditoría</h3>
+          <p>Quién hizo qué y cuándo. Trazabilidad completa de cada acción de moderación.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">⚡</div>
+          <h3>Ligero y rápido</h3>
+          <p>Respuesta inmediata, sin lag, incluso en grupos grandes con alto volumen de mensajes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section-title">4 niveles, 1 jerarquía clara</h2>
+      <p class="section-sub">Asigna roles según la confianza y responsabilidad de cada miembro del staff. Cada nivel hereda capacidades del anterior.</p>
+      <div class="levels">
+        <div class="level l1">
+          <div class="tag">Nivel 1</div>
+          <h4>Usuario</h4>
+          <p>Puede usar comandos públicos como ayuda, ping y consultas básicas.</p>
+        </div>
+        <div class="level l2">
+          <div class="tag">Nivel 2</div>
+          <h4>Ayudante</h4>
+          <p>Advertir y silenciar temporalmente. Sin permisos destructivos.</p>
+        </div>
+        <div class="level l3">
+          <div class="tag">Nivel 3</div>
+          <h4>Moderador</h4>
+          <p>Kick, ban temporal y limpieza de mensajes. Acceso al historial.</p>
+        </div>
+        <div class="level l4">
+          <div class="tag">Nivel 4</div>
+          <h4>Administrador</h4>
+          <p>Control total: asignación de niveles, configuración y bans permanentes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section-title">Próximamente</h2>
+      <p class="section-sub">Estamos trabajando en dos novedades que cambiarán cómo administras tu comunidad.</p>
+      <div class="soon">
+        <div class="card">
+          <span class="badge">Próximamente</span>
+          <h3>🤖 IA integrada</h3>
+          <p style="margin:0;color:var(--muted)">Moderación contextual con modelos de lenguaje: detecta toxicidad, sarcasmo y patrones de spam que las reglas estáticas no ven. Responde dudas frecuentes automáticamente.</p>
+        </div>
+        <div class="card">
+          <span class="badge">Próximamente</span>
+          <h3>🖥 Panel web</h3>
+          <p style="margin:0;color:var(--muted)">Dashboard con estadísticas en vivo, gestión de baneos, configuración de filtros y logs de auditoría desde cualquier navegador. Multi-grupo desde una sola pantalla.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section id="historial" class="cbh-section">
+  <div class="cbh-eyebrow">Historial</div>
+  <h2 class="cbh-h2">Novedades de cintiabot</h2>
+  <p class="cbh-sub">Cada versión, con una muestra de lo añadido. El registro completo está en GitHub.</p>
+
+  <div class="cbh-line">
+
+    <div class="cbh-v cbh-now"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.83</span><span class="cbh-vd">24 May 2026</span><span class="cbh-nowtag">actual</span></div><p class="cbh-t">Landing pública y panel en /panel</p><p class="cbh-ds">Nueva página de presentación en la raíz; el panel se mueve a /panel con su login.</p></div><div class="cbh-mk"><div class="cbhx-land"><div class="bar"><i></i><i></i><i></i></div><div class="body"><div class="hero"></div></div></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.82</span><span class="cbh-vd">16 May 2026</span></div><p class="cbh-t">Analytics y consentimiento de cookies</p><p class="cbh-ds">Google Analytics 4 con banner de cookies; no carga hasta aceptar.</p></div><div class="cbh-mk"><div class="cbhx-an"><i></i><i></i><i></i><i></i></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.81</span><span class="cbh-vd">11 May 2026</span></div><p class="cbh-t">Polling de Telegram más estable</p><p class="cbh-ds">El bot responde con fiabilidad; emojis corruptos arreglados.</p></div><div class="cbh-mk"><div class="cbhx-poll"><span class="w"></span><span class="w w2"></span><span class="core"></span></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.80</span><span class="cbh-vd">11 May 2026</span></div><p class="cbh-t">Comandos y plugins más fiables</p><p class="cbh-ds">Soporte de /comando@BotName en plugins y permisos normalizados.</p></div><div class="cbh-mk"><div class="cbhx-cmd"><div class="c">/ayuda @cintia</div></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.79</span><span class="cbh-vd">11 May 2026</span></div><p class="cbh-t">Texto corrupto (mojibake) saneado</p><p class="cbh-ds">Todo mensaje saliente se repara antes de enviarse.</p></div><div class="cbh-mk"><div class="cbhx-moji"><span class="bad">&#240;&#159;&#152;&#128; &#195;&#179;</span><span class="good">😀 ó</span></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.76</span><span class="cbh-vd">8 May 2026</span></div><p class="cbh-t">Modularización del core</p><p class="cbh-ds">Rutas de IA, admin, usuarios y operación en módulos limpios.</p></div><div class="cbh-mk"><div class="cbhx-mod"><i></i><i></i><i></i><i></i></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.74</span><span class="cbh-vd">8 May 2026</span></div><p class="cbh-t">Estadísticas de IA Markov</p><p class="cbh-ds">El modo Markov personal se contabiliza en la distribución de IA.</p></div><div class="cbh-mk"><div class="cbhx-pie"></div></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.73</span><span class="cbh-vd">8 May 2026</span></div><p class="cbh-t">IA Ollama más rápida</p><p class="cbh-ds">Circuit breaker y timeouts separados: falla rápido sin colgar al bot.</p></div><div class="cbh-mk"><span class="cbhx-bolt">⚡</span></div></div></div>
+
+    <div class="cbh-v"><div class="cbh-card"><div class="cbh-txt"><div class="cbh-vh"><span class="cbh-vn">v16.70</span><span class="cbh-vd">8 May 2026</span></div><p class="cbh-t">6 módulos Flask extraídos</p><p class="cbh-ds">Negocio, proxies, seguridad, cola y moderación reorganizados.</p></div><div class="cbh-mk"><div class="cbhx-bp"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></div>
+
+  </div>
+  <div class="cbh-more"><a href="https://github.com/ComunidadTelebots/moon-multibot/blob/master/CHANGELOG.md" target="_blank" rel="noreferrer">Ver historial completo en GitHub →</a></div>
+</section>
+
+  <section>
+    <div class="wrap" style="text-align:center">
+      <h2 class="section-title">¿Listo para limpiar tu grupo?</h2>
+      <p class="section-sub" style="margin-left:auto;margin-right:auto">Añade a @cintiabot, dale permisos de administrador y configura los niveles de tu staff en menos de un minuto.</p>
+      <a class="btn btn-primary" href="https://t.me/cintiabot" target="_blank" rel="noopener">Empezar ahora →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-row">
+    <div>© <span id="y"></span> cintiabot · Bot independiente para Telegram</div>
+    <div>
+      <a href="https://t.me/cintiabot" target="_blank" rel="noopener">@cintiabot</a>
+    </div>
+  </div>
+</footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>

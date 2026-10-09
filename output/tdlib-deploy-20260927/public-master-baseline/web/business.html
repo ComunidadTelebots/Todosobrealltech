@@ -1,0 +1,79 @@
+<div class="glass-panel" style="margin-bottom: 25px; background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(30,41,59,0.7));">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="margin-bottom: 5px;" data-i18n="bus_title">Telegram Business Automation</h2>
+            <p style="color: var(--text-muted); font-size: 14px;" data-i18n="bus_subtitle">Gestiona la automatización de tu cuenta personal vinculada.</p>
+        </div>
+        <div id="busConnBadge" class="status-badge" style="background: rgba(255,255,255,0.05); padding: 8px 15px;">
+            <span class="status-dot"></span> <span data-i18n="bus_no_conn">Sin conexiones</span>
+        </div>
+    </div>
+</div>
+
+<div class="glass-panel" style="margin-bottom: 25px; border-left: 4px solid var(--accent);">
+    <h4 style="margin-bottom: 10px;">📋 ¿Cómo obtener Telegram Business?</h4>
+    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+        1. <b>Suscripción</b>: Necesitas tener una suscripción de Telegram Premium o una cuenta de empresa activa. <br>
+        2. <b>BotFather</b>: Ve a <a href="https://t.me/BotFather" target="_blank" style="color: var(--primary);">@BotFather</a>, selecciona tu bot, ve a <b>Bot Settings > Business Mode</b> y actívalo. <br>
+        3. <b>Vinculación</b>: En tu app de Telegram, ve a <b>Ajustes > Telegram Business > Chatbots</b> y añade el nombre de usuario de este bot.
+    </div>
+</div>
+
+<div class="grid-layout">
+    <div class="left-col">
+        <!-- Greetings Card -->
+        <div class="glass-panel">
+            <h3 data-i18n="bus_card_greet">👋 Greeting Message</h3>
+            <p class="subtitle" data-i18n="bus_greet_sub">Sent automatically when receiving a first message.</p>
+            <textarea id="busGreeting" class="input-style-mini" style="height: 120px; margin-top: 15px;" placeholder="Hola! Gracias por contactar..."></textarea>
+            <button onclick="saveBusConfig()" class="btn-glow-mini" style="margin-top: 15px;" data-i18n="btn_apply">APLICAR</button>
+        </div>
+
+        <!-- Away Message Card -->
+        <div class="glass-panel mt-20">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin:0;" data-i18n="bus_card_away">🌙 Away Message</h3>
+                <label class="premium-switch" style="margin:0;">
+                    <input type="checkbox" id="busAwayMode" onchange="saveBusConfig()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="subtitle" data-i18n="bus_away_sub">Replies when you are not available.</p>
+            <textarea id="busAway" class="input-style-mini" style="height: 100px; margin-top: 15px;" placeholder="En este momento no puedo responder..."></textarea>
+            <button onclick="saveBusConfig()" class="btn-glow-mini" style="margin-top: 15px;" data-i18n="btn_apply">APLICAR</button>
+        </div>
+    </div>
+
+    <div class="right-col">
+        <!-- AI Agent Card -->
+        <div class="glass-panel" style="border: 1px solid rgba(139,92,246,0.3); background: rgba(139,92,246,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin:0;" data-i18n="bus_ia_auto">🤖 IA Business Agent</h3>
+                <label class="premium-switch" style="margin:0;">
+                    <input type="checkbox" id="busIAAuto" onchange="saveBusConfig()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="subtitle" data-i18n="bus_ia_sub">Let the AI handle customer inquiries.</p>
+            <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; font-size: 12px; color: var(--text-muted);">
+                <p>⚠️ <b>Nota:</b> La IA responderá a todos los mensajes en chats de Business si esta opción está activa. Úsalo con precaución.</p>
+            </div>
+        </div>
+
+        <!-- Quick Replies Card -->
+        <div class="glass-panel mt-20">
+            <h3 data-i18n="bus_card_quick">⚡ Quick Replies</h3>
+            <p class="subtitle" data-i18n="bus_quick_sub">Keyboard shortcuts for common messages.</p>
+            
+            <div id="quickRepliesList" style="margin-top: 15px;">
+                <!-- Dynamically populated -->
+            </div>
+
+            <div class="input-group mt-20" style="display: flex; gap: 5px;">
+                <input type="text" id="newQuickCmd" placeholder="/precio" style="width: 80px;">
+                <input type="text" id="newQuickText" placeholder="El precio es $50..." style="flex:1;">
+                <button onclick="addQuickReply()" style="width: 40px; margin:0;">➕</button>
+            </div>
+        </div>
+    </div>
+</div>

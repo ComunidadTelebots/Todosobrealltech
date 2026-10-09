@@ -1,0 +1,125 @@
+<div class="chat-layout glass-panel" style="padding: 0; overflow: hidden; display: flex; height: calc(100vh - 250px);">
+    <!-- Sidebar Izquierda: Lista de Chats -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header" style="padding: 20px; border-bottom: 1px solid var(--glass-border); background: rgba(255,255,255,0.02);">
+            <h3 style="margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px;" data-i18n="chat_directory">
+                💬 Canales <span id="chatCount" class="status-badge online" style="font-size: 9px; padding: 2px 6px;">0</span>
+            </h3>
+        </div>
+        <div id="chatDirectoryList" class="chat-contacts-list">
+            <div class="loading-spinner">Sincronizando nodos...</div>
+        </div>
+    </div>
+
+    <!-- Centro: Ventana de Mensajes -->
+    <div class="chat-main" style="flex-grow: 1;">
+        <div id="chatWindow" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chat-header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="chatAvatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">🌙</div>
+                    <div>
+                        <h3 id="currentChatName" style="margin: 0; font-size: 16px;" data-i18n="chat_placeholder">Selecciona un chat</h3>
+                        <small id="currentChatId" style="color: var(--text-muted); font-size: 11px;">Esperando conexión...</small>
+                    </div>
+                </div>
+                <div class="header-actions" style="display: flex; gap: 10px;">
+                    <button onclick="fetchChatHistory()" class="btn-mini-wide" style="width: auto; margin: 0; padding: 6px 12px; font-size: 10px;" data-i18n="btn_refresh">🔄 REFRESCAR</button>
+                    <button onclick="toggleGroupSettings()" class="btn-mini-wide" style="width: auto; margin: 0; padding: 6px 12px; font-size: 10px; background: rgba(255,255,255,0.1);" data-i18n="btn_settings">⚙️ AJUSTES NODO</button>
+                </div>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <div class="empty-state">
+                    <p data-i18n="chat_placeholder">Selecciona un canal para visualizar la telemetría.</p>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="format-bar">
+                    <button title="Negrita" onclick="insertFormat('**')">B</button>
+                    <button title="Itálica" onclick="insertFormat('_')">I</button>
+                    <button title="Código" onclick="insertFormat('`')">C</button>
+                    <button title="Karma" onclick="insertFormat('/karma')">⭐</button>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-end;">
+                    <textarea id="chatInput" data-i18n="chat_input_placeholder" placeholder="Escribe un mensaje al nodo..." onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }" rows="1"></textarea>
+                    <button onclick="sendChatMessage()" class="btn-glow-mini" style="margin: 0; padding: 0 20px; height: 44px;" data-i18n="btn_send">ENVIAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Derecha: Ajustes del Grupo (Oculto por defecto) -->
+    <div id="groupSettingsSidebar" class="chat-settings-sidebar" style="width: 0; overflow: hidden; transition: 0.3s; border-left: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);">
+        <div style="width: 280px; padding: 20px; height: 100%; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="font-size: 14px; margin: 0; color: var(--primary); letter-spacing: 1px;" data-i18n="config_local_title">⚙️ CONFIGURACIÓN</h3>
+                <button onclick="toggleGroupSettings()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:18px;">&times;</button>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-group-title" data-i18n="config_ia_title">INTELIGENCIA ARTIFICIAL</div>
+                <label class="premium-switch">
+                    <span data-i18n="config_ia_learning">🧠 Alimentación IA</span>
+                    <input type="checkbox" id="checkIALearning" onchange="saveGroupSettings()">
+                    <span class="slider"></span>
+                </label>
+                
+                <div style="margin-top: 15px;">
+                    <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px;" data-i18n="ia_mood_label">ESTADO DE ÁNIMO (IA)</label>
+                    <select id="selectIAMood" class="input-style-mini" onchange="saveGroupSettings()" style="width: 100%; background: rgba(255,255,255,0.05);">
+                        <option value="friendly" data-i18n="mood_friendly">😊 Amigable / Útil</option>
+                        <option value="serious" data-i18n="mood_serious">⚖️ Serio / Profesional</option>
+                        <option value="sarcastic" data-i18n="mood_sarcastic">😏 Sarcástico / Ácido</option>
+                        <option value="aggressive" data-i18n="mood_aggressive">🔥 Agresivo (Defensivo)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section" style="margin-top: 25px;">
+                <div class="settings-group-title" data-i18n="config_security_title">SEGURIDAD Y FILTROS</div>
+                <label class="premium-switch">
+                    <span data-i18n="config_auto_mod">🛡️ Neural Shield</span>
+                    <input type="checkbox" id="checkAutoMod" onchange="saveGroupSettings()">
+                    <span class="slider"></span>
+                </label>
+
+                <label class="premium-switch">
+                    <span data-i18n="config_anti_link">🚫 Bloquear Enlaces</span>
+                    <input type="checkbox" id="checkAntiLink" onchange="saveGroupSettings()">
+                    <span class="slider"></span>
+                </label>
+
+                <label class="premium-switch">
+                    <span data-i18n="config_anti_flood">🌊 Anti-Flood</span>
+                    <input type="checkbox" id="checkAntiFlood" onchange="saveGroupSettings()">
+                    <span class="slider"></span>
+                </label>
+
+                <label class="premium-switch">
+                    <span data-i18n="config_clean_join">🧹 Limpiar Entradas</span>
+                    <input type="checkbox" id="checkCleanJoin" onchange="saveGroupSettings()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-section" style="margin-top: 25px;">
+                <div class="settings-group-title" data-i18n="config_automations">AUTOMATIZACIÓN</div>
+                <label class="premium-switch">
+                    <span data-i18n="config_welcome">👋 Bienvenida</span>
+                    <input type="checkbox" id="checkWelcome" onchange="saveGroupSettings()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 25px 0;">
+            
+            <h4 style="font-size: 11px; color: var(--accent); margin-bottom: 10px; text-transform: uppercase;" data-i18n="admin_notes_title">📝 Notas del Administrador</h4>
+            <textarea id="groupNotes" data-i18n="admin_notes_placeholder" placeholder="Notas sobre este nodo..." style="width: 100%; height: 100px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--glass-border); color: white; padding: 10px; font-size: 12px; resize: none;" onchange="saveGroupSettings()"></textarea>
+            
+            <div style="margin-top: 30px; padding-bottom: 20px;">
+                <button onclick="saveGroupSettings()" class="btn-glow-mini" style="width: 100%; margin: 0;" data-i18n="btn_apply">APLICAR CAMBIOS</button>
+            </div>
+        </div>
+    </div>
+</div>

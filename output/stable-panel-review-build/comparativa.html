@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La evolución de nuestros paneles · ComunidadTelebots</title>
+<meta name="description" content="De un bot en Lua a una plataforma web moderna: la historia del desarrollo de los paneles de gestión de bots de ComunidadTelebots.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F5P08EW3SV');
+</script>
+<style>
+  :root{
+    --ink:#1a1714; --paper:#f4efe7; --paper-2:#ece4d6; --line:#d9cdb8;
+    --accent:#c2410c; --accent-2:#1d6e56; --violet:#6d5ae0; --blue:#2563eb;
+    --mono:'IBM Plex Mono',monospace; --serif:'Fraunces',Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--mono);font-size:15px;line-height:1.6;
+    background-image:radial-gradient(circle at 1px 1px, rgba(0,0,0,0.04) 1px, transparent 0);background-size:22px 22px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px}
+  header.top{padding:70px 0 34px;border-bottom:3px double var(--ink)}
+  .kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:var(--serif);font-weight:900;font-size:clamp(38px,7vw,72px);line-height:0.98;margin:14px 0 10px;letter-spacing:-0.02em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-size:16px;max-width:62ch;color:#544b40}
+  .meta-row{display:flex;flex-wrap:wrap;gap:26px;margin-top:26px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#776c5d}
+  .meta-row b{color:var(--ink);font-weight:600}
+
+  .timeline{position:relative;margin:50px 0;padding-left:30px}
+  .timeline::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tnode{position:relative;margin-bottom:14px;font-size:13px}
+  .tnode::before{content:"";position:absolute;left:-30px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
+  .tnode.dbteam::before{border-color:var(--accent);background:var(--accent)}
+  .tnode.moon::before{border-color:var(--violet);background:var(--violet)}
+  .tnode.react::before{border-color:var(--blue);background:var(--blue)}
+  .tnode .date{font-weight:600;color:var(--ink)}
+  .tnode .what{color:#6a6052}
+
+  section.panel{padding:54px 0;border-bottom:1px solid var(--line)}
+  .ptag{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;padding:5px 12px;border-radius:30px;border:1.5px solid currentColor}
+  .ptag.dbteam{color:var(--accent)} .ptag.moon{color:var(--violet)} .ptag.react{color:var(--blue)}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,40px);margin:14px 0 4px;letter-spacing:-0.01em}
+  .sub{color:#776c5d;font-size:13px;margin-bottom:22px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .facts dt{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#9a8e7c;margin-top:14px}
+  .facts dd{margin:2px 0 0;font-size:14px}
+  .tags{margin-top:18px;display:flex;flex-wrap:wrap;gap:7px}
+  .tags span{font-size:11px;padding:5px 11px;border-radius:20px;background:var(--paper-2);border:1px solid var(--line);color:#5d5347}
+
+  .frame{border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,0.18);box-shadow:6px 6px 0 rgba(26,23,20,0.12)}
+  .bar{padding:7px 11px;display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:10px}
+  .bar i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot1{background:#ff5f57}.dot2{background:#febc2e}.dot3{background:#28c840}
+  .bar span{margin-left:8px;opacity:.7}
+
+  .db{background:linear-gradient(180deg,#071028,#021021);color:#e6eef8;font-family:Inter,system-ui,sans-serif;padding:12px;min-height:300px}
+  .db .nav{display:flex;flex-wrap:wrap;gap:4px;font-size:9px;color:#2563eb;font-weight:600;margin-bottom:10px}
+  .db .card{background:#0b1220;border:1px solid rgba(255,255,255,0.05);border-radius:9px;padding:10px;margin-bottom:8px}
+  .db h5{margin:0 0 6px;font-size:11px;color:#dbe4f5}
+  .db .ipt{background:#181f2a;border:1px solid rgba(255,255,255,0.08);border-radius:5px;height:22px;margin:3px 4px 3px 0;display:inline-block;width:78px}
+  .db .btn{background:#2563eb;color:#fff;border-radius:5px;font-size:9px;padding:4px 8px;display:inline-block}
+  .db .mini{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .db .mini div{background:#181f2a;border-radius:7px;padding:8px;font-size:9px;color:#b0b8c9}
+
+  .mn{background:radial-gradient(420px 240px at 80% -10%,rgba(139,92,246,0.22),transparent),#07090e;color:#f8fafc;font-family:Inter,system-ui,sans-serif;padding:12px;min-height:300px;display:flex;gap:9px}
+  .mn .side{width:60px;flex:0 0 60px;display:flex;flex-direction:column;gap:3px;font-size:8px}
+  .mn .side div{color:#94a3b8;padding:5px 6px;border-radius:7px}
+  .mn .side div.on{background:#8b5cf6;color:#fff}
+  .mn .hero{background:linear-gradient(135deg,rgba(139,92,246,0.22),rgba(30,41,59,0.6));border:1px solid rgba(139,92,246,0.3);border-radius:13px;padding:11px;margin-bottom:8px}
+  .mn .hero b{font-size:13px} .mn .hero p{margin:3px 0 0;font-size:9px;color:#94a3b8}
+  .mn .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mn .gp{background:rgba(13,17,23,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:13px;padding:10px;font-size:9px}
+  .mn .stat{background:rgba(0,0,0,0.25);border-radius:8px;padding:7px;margin-top:6px}
+  .mn .stat b{font-size:15px;display:block}
+
+  .rc{background:#fafafa;color:#0a0a0b;font-family:Inter,system-ui,sans-serif;padding:14px;min-height:300px}
+  .rc h5{margin:0;font-size:14px;font-weight:800}
+  .rc .pill{font-size:9px;border:1px solid #ddd;border-radius:6px;padding:2px 7px;color:#444}
+  .rc .sub2{color:#71717a;font-size:10px;margin:3px 0 12px}
+  .rc .card{background:#fff;border:1px solid #e5e5e8;border-radius:11px;padding:12px;margin-bottom:10px}
+  .rc .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .rc .ic{width:30px;height:30px;border-radius:8px;background:#f1f1f4;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+  .rc .num{font-size:18px;font-weight:800} .rc .lbl{font-size:8px;color:#71717a}
+  .rc .cta{color:#fff;text-align:center;border-radius:7px;padding:6px;font-size:10px;font-weight:600;margin-top:8px}
+
+  .numgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+  @media(max-width:760px){.numgrid{grid-template-columns:1fr}}
+  .numcard{padding:18px;border-radius:12px;background:var(--paper-2);border:1px solid var(--line);position:relative;overflow:hidden}
+  .numcard::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .numcard.g1::after{background:var(--accent)} .numcard.g2::after{background:var(--violet)} .numcard.g3::after{background:var(--blue)}
+  .ng-gen{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9a8e7c;font-weight:600;display:block;margin-bottom:12px}
+  .ng-row{display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
+  .ng-row b{font-family:var(--serif);font-size:24px;font-weight:900;min-width:62px}
+  .ng-row span{font-size:12px;color:#6a6052}
+  .ng-tech{margin-top:10px;font-size:11px;color:#9a8e7c;border-top:1px solid var(--line);padding-top:10px}
+  .shot{margin:26px 0}
+  .shot-label{font-family:var(--serif);font-size:19px;font-weight:600;margin-bottom:10px;padding-left:10px;border-left:3px solid var(--ink)}
+  .shotpair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.shotpair{grid-template-columns:1fr}}
+  .fig{margin:0}
+  .fig figcaption{font-size:11px;color:#9a8e7c;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+  .mini{border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,0.15);box-shadow:4px 4px 0 rgba(26,23,20,0.1);font-family:Inter,system-ui,sans-serif;min-height:190px}
+  .mini .mh{background:#0b1220;color:#e6eef8;padding:9px 11px;display:flex;justify-content:space-between;align-items:center;font-size:11px}
+  .mini .mh span{font-size:8px;color:#2563eb}
+  .mini .mh.dark{background:#0b0d12} .mini .mh.dark .cta{background:linear-gradient(135deg,#7aa2ff,#c084fc);color:#0b0d12;border-radius:6px;padding:4px 8px;font-weight:600}
+  .db-land .mbody{background:linear-gradient(180deg,#071028,#021021);color:#b0b8c9;padding:26px 14px;text-align:center;min-height:150px}
+  .db-land .mt2{font-size:15px;font-weight:700;margin-bottom:8px}
+  .db-land p{font-size:10px;margin:0 0 14px}
+  .mbtns .b1{background:#2563eb;color:#fff;border-radius:7px;padding:6px 13px;font-size:9px;font-weight:600;margin-right:6px}
+  .mbtns .b2{background:rgba(255,255,255,0.06);color:#e6eef8;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:6px 13px;font-size:9px}
+  .mn-land .mbody{background:#0b0d12;color:#e6e8ef;padding:16px 14px;min-height:150px}
+  .mn-land .pill{font-size:8px;color:#9aa3b2;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 9px;display:inline-flex;align-items:center;gap:5px}
+  .mn-land .pill i{width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block}
+  .grad-h{font-size:18px;font-weight:800;margin:8px 0 4px} .grad-h em{font-style:normal;background:linear-gradient(135deg,#7aa2ff,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mn-land p{font-size:9px;color:#9aa3b2;margin:0 0 12px}
+  .mn-land .levels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .mn-land .levels span{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:6px 2px;font-size:8px;text-align:center}
+  .db-mod{background:#f7f7f7;color:#222;padding:14px}
+  .db-mod .mt3{color:#c0392b;font-weight:700;font-size:14px;margin-bottom:10px}
+  .db-mod table{width:100%;border-collapse:collapse;font-size:9px}
+  .db-mod .hd td{background:#c0392b;color:#fff;padding:5px}
+  .db-mod td{padding:5px;border-bottom:1px solid #eee} .db-mod .r{color:#c0392b}
+  .db-mod .chartph{margin-top:12px;border:1px dashed #ccc;border-radius:6px;padding:18px;text-align:center;color:#999;font-size:9px}
+  .mn-mod{background:#07090e;color:#f8fafc;padding:12px}
+  .mn-mod .mh3{font-size:11px;margin-bottom:10px}
+  .mn-mod .cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:8px;text-align:center}
+  .mn-mod .c{border-radius:8px;padding:10px 4px} .mn-mod .c small{font-size:13px;font-weight:800}
+  .mn-mod .red{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171}
+  .mn-mod .vio{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);color:#a78bfa}
+  .mn-mod .grn{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#34d399}
+  .mn-mod .lb{margin-top:10px;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;font-size:9px;color:#cbd5e1}
+  .db-prox{background:#fff;color:#222;padding:14px;font-family:'Segoe UI',Arial}
+  .db-prox .mt3{font-size:14px;font-weight:700;margin-bottom:8px}
+  .db-prox .ok{font-size:10px;color:green;font-weight:600;margin-bottom:8px}
+  .db-prox pre{background:#f6f8fa;border-radius:6px;padding:10px;font-size:9px;margin:0;color:#24292e}
+  .mn-prox .mbody{background:#07090e}
+  .mn-prox{background:#07090e;color:#f8fafc;padding:0}
+  .mn-prox .proxbtns{padding:12px 12px 0;display:flex;gap:6px}
+  .mn-prox .sc{background:rgba(56,189,248,0.2);color:#7dd3fc;border-radius:7px;padding:7px 10px;font-size:8px}
+  .mn-prox .dp{background:#8b5cf6;color:#fff;border-radius:7px;padding:7px 10px;font-size:8px;font-weight:600}
+  .mn-prox .vps{margin:12px;background:rgba(255,255,255,0.04);border-left:3px solid #3b82f6;border-radius:8px;padding:10px;font-size:9px;color:#94a3b8}
+  .rm-preview .rm{padding:0;overflow:hidden}
+  .rm-preview .rm::after{display:none}
+  .rm-preview .rm .soon,.rm-preview .rm h4,.rm-preview .rm p{margin-left:16px;margin-right:16px}
+  .rm-preview .rm .soon{margin-top:14px}
+  .rm-preview .rm p{margin-bottom:16px}
+  .rm-mockup{position:relative;padding:14px;min-height:150px;color:#f8fafc}
+  .prev-badge{position:absolute;top:8px;right:8px;font-size:8px;letter-spacing:.5px;text-transform:uppercase;background:rgba(255,255,255,.15);color:#fff;border-radius:20px;padding:3px 8px;backdrop-filter:blur(4px)}
+  .rm-mockup.ai{background:radial-gradient(300px 160px at 80% 0,rgba(139,92,246,.3),transparent),#0b0d12}
+  .m-line{margin-bottom:7px;display:flex} .m-line.bot{justify-content:flex-start}
+  .m-q{background:#2563eb;color:#fff;font-size:9px;padding:6px 9px;border-radius:10px 10px 2px 10px;margin-left:auto;max-width:80%}
+  .m-a{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#e6e8ef;font-size:9px;padding:6px 9px;border-radius:10px 10px 10px 2px;max-width:88%}
+  .m-input{margin-top:10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;font-size:9px;color:#64748b;display:flex;justify-content:space-between;align-items:center}
+  .m-send{color:#8b5cf6}
+  .rm-mockup.mod{background:#07090e}
+  .mm-head{font-size:10px;margin-bottom:10px;color:#cbd5e1}
+  .mm-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-align:center;font-size:8px}
+  .mm-c{border-radius:8px;padding:9px 4px} .mm-c b{font-size:15px;display:block;margin:2px 0}
+  .mm-c.red{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171}
+  .mm-c.vio{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);color:#a78bfa}
+  .mm-c.grn{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#34d399}
+  .mm-act{display:flex;gap:6px;margin-top:10px}
+  .mm-act span{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 9px;font-size:8px;color:#94a3b8}
+  .rm-mockup.priv{background:linear-gradient(180deg,#0a1f1a,#07090e)}
+  .pp-head{font-size:10px;margin-bottom:10px;color:#cbd5e1}
+  .pp-row{display:flex;justify-content:space-between;font-size:9px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);color:#94a3b8}
+  .pp-row .on{color:#34d399} .pp-row .off{color:#64748b}
+  .pp-bar{height:6px;background:rgba(255,255,255,.06);border-radius:6px;margin-top:10px;overflow:hidden}
+  .pp-bar i{display:block;height:100%;background:linear-gradient(90deg,#10b981,#34d399)}
+  .pp-meta{font-size:8px;color:#64748b;margin-top:5px}
+  .final{padding:46px 0 90px}
+  table.cmp{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:18px}
+  table.cmp th,table.cmp td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  table.cmp th{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#776c5d}
+  table.cmp td.y{color:var(--accent-2);font-weight:600} table.cmp td.n{color:#b2a896}
+
+  .roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:22px}
+  .rm{position:relative;padding:16px;border-radius:11px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+  .rm::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
+  .rm h4{font-family:var(--serif);font-weight:600;font-size:17px;margin:0 0 6px;line-height:1.15}
+  .rm p{margin:0;font-size:12.5px;color:#5d5347;line-height:1.5}
+  .rm .soon{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9a8e7c;font-weight:600;display:block;margin-bottom:6px}
+
+  .closing{margin-top:34px;padding:24px;border:2px solid var(--ink);border-radius:12px;background:var(--paper-2)}
+  .closing h3{font-family:var(--serif);margin:0 0 8px;font-size:24px}
+  .closing a{color:var(--blue);font-weight:600}
+  footer{font-size:11px;color:#9a8e7c;padding:26px 0;border-top:3px double var(--ink);letter-spacing:1px}
+
+  /* ── Header réplica todosobreall.tech (scope .tsa-) ── */
+  .tsa-header{position:sticky;top:0;z-index:100;width:100%;background:rgba(255,255,255,.8);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid hsl(240 5.9% 90%);
+    font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.4}
+  .tsa-wrap{max-width:1280px;margin:0 auto;padding:0 16px;height:64px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .tsa-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:hsl(240 10% 3.9%)}
+  .tsa-logo-ic{background:hsl(240 5.9% 10%);color:hsl(0 0% 98%);padding:6px;border-radius:8px;
+    display:flex;transition:transform .15s}
+  .tsa-logo:hover .tsa-logo-ic{transform:scale(1.05)}
+  .tsa-logo-tx{font-weight:700;font-size:20px;letter-spacing:-0.01em}
+  .tsa-nav{display:flex;align-items:center;gap:24px}
+  .tsa-nav a{font-size:14px;font-weight:500;color:hsl(240 3.8% 46.1%);text-decoration:none;transition:color .15s}
+  .tsa-nav a:hover{color:hsl(240 5.9% 10%)}
+  .tsa-actions{display:flex;align-items:center;gap:12px}
+  .tsa-btn,.tsa-btn-ghost{font-size:14px;font-weight:500;text-decoration:none;border-radius:8px;
+    padding:8px 14px;transition:opacity .15s,background .15s}
+  .tsa-btn{background:hsl(240 5.9% 10%);color:hsl(0 0% 98%)} .tsa-btn:hover{opacity:.9}
+  .tsa-btn-ghost{color:hsl(240 10% 3.9%)} .tsa-btn-ghost:hover{background:hsl(240 4.8% 95.9%)}
+  .tsa-menu-t,.tsa-burger,.tsa-mobile{display:none}
+  @media(max-width:768px){
+    .tsa-nav,.tsa-actions{display:none}
+    .tsa-burger{display:flex;align-items:center;padding:8px;cursor:pointer;color:hsl(240 3.8% 46.1%)}
+    .tsa-mobile{border-top:1px solid hsl(240 5.9% 90%);background:#fff;padding:16px;
+      flex-direction:column;gap:14px}
+    .tsa-menu-t:checked ~ .tsa-mobile{display:flex}
+    .tsa-mobile a{font-size:14px;font-weight:500;color:hsl(240 3.8% 46.1%);text-decoration:none}
+    .tsa-mobile .tsa-btn,.tsa-mobile .tsa-btn-ghost{text-align:center;border:1px solid hsl(240 5.9% 90%)}
+    .tsa-mobile .tsa-btn{border:none;color:hsl(0 0% 98%)}
+  }
+</style>
+</head>
+<body>
+<!-- Header de navegación · réplica estática del Header.jsx de la web -->
+<header class="tsa-header">
+  <input type="checkbox" id="tsa-menu" class="tsa-menu-t" aria-hidden="true">
+  <div class="tsa-wrap">
+    <a class="tsa-logo" href="https://todosobreall.tech/">
+      <span class="tsa-logo-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+      <span class="tsa-logo-tx">Todo sobre alltech</span>
+    </a>
+    <nav class="tsa-nav">
+      <a href="https://todosobreall.tech/">Inicio</a>
+      <a href="https://todosobreall.tech/blog">Blog</a>
+      <a href="https://todosobreall.tech/proxies">Proxies</a>
+      <a href="https://noticiasweb3.todosobreall.tech" target="_blank" rel="noreferrer">Noticiasweb3</a>
+      <a href="https://resistenciaalacensura.todosobreall.tech" target="_blank" rel="noreferrer">Resistencia</a>
+      <a href="https://comunidadtelebots.todosobreall.tech" target="_blank" rel="noreferrer">Telebots</a>
+      <a href="https://todosobregameplays.todosobreall.tech" target="_blank" rel="noreferrer">Gameplays</a>
+    </nav>
+    <div class="tsa-actions">
+      <a class="tsa-btn-ghost" href="https://todosobreall.tech/login">Iniciar sesión</a>
+      <a class="tsa-btn" href="https://todosobreall.tech/signup">Crear cuenta</a>
+    </div>
+    <label for="tsa-menu" class="tsa-burger" aria-label="Abrir menú">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </label>
+  </div>
+  <div class="tsa-mobile">
+    <a href="https://todosobreall.tech/">Inicio</a>
+    <a href="https://todosobreall.tech/blog">Blog</a>
+    <a href="https://todosobreall.tech/proxies">Proxies</a>
+    <a href="https://noticiasweb3.todosobreall.tech" target="_blank" rel="noreferrer">Noticiasweb3</a>
+    <a href="https://resistenciaalacensura.todosobreall.tech" target="_blank" rel="noreferrer">Resistencia</a>
+    <a href="https://comunidadtelebots.todosobreall.tech" target="_blank" rel="noreferrer">Telebots</a>
+    <a href="https://todosobregameplays.todosobreall.tech" target="_blank" rel="noreferrer">Gameplays</a>
+    <a class="tsa-btn-ghost" href="https://todosobreall.tech/login">Iniciar sesión</a>
+    <a class="tsa-btn" href="https://todosobreall.tech/signup">Crear cuenta</a>
+  </div>
+</header>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">ComunidadTelebots · Bitácora de desarrollo</div>
+    <h1>De un bot en Lua a una <em>plataforma web</em>.</h1>
+    <p class="lede">Durante años hemos construido y reconstruido el panel para gestionar nuestros bots de Telegram. Esta es la historia de esa evolución: tres generaciones, tres tecnologías, una misma obsesión por hacerlo mejor.</p>
+    <div class="meta-row">
+      <div>Generaciones<br><b>03</b></div>
+      <div>Periodo<br><b>2016 — 2026</b></div>
+      <div>Tecnologías<br><b>Lua · Python · React</b></div>
+      <div>Enfoque<br><b>Bots · IA · Privacidad</b></div>
+    </div>
+  </header>
+
+  <div class="timeline">
+    <div class="tnode dbteam"><span class="date">2016</span> — <span class="what">Nace el primer bot de administración, escrito en Lua.</span></div>
+    <div class="tnode dbteam"><span class="date">2026 · invierno</span> — <span class="what">Una versión ambiciosa reúne decenas de paneles e ideas en un solo proyecto.</span></div>
+    <div class="tnode moon"><span class="date">2026 · primavera</span> — <span class="what">Reescritura desde cero con una arquitectura modular, IA local y un diseño glassmorphism.</span></div>
+    <div class="tnode react"><span class="date">2026 · hoy</span> — <span class="what">Plataforma web moderna en React con cuentas, roles y contenido. La generación actual.</span></div>
+  </div>
+
+  <section class="panel">
+    <span class="ptag dbteam">● Primera generación · desde 2016</span>
+    <h2>Los cimientos</h2>
+    <p class="sub">Bot de administración en Lua · multi-idioma</p>
+    <div class="grid">
+      <div>
+        <div class="frame">
+          <div class="bar" style="background:#0b1220;color:#9aa"><i class="dot1"></i><i class="dot2"></i><i class="dot3"></i><span>panel de control</span></div>
+          <div class="db">
+            <div class="nav">Inicio · Chat · Telegram · Monitor · Traducciones · Estado · Bots</div>
+            <div class="card"><h5>Gestión de usuarios y administradores</h5>
+              <span class="ipt"></span><span class="ipt"></span><span class="btn">Crear</span><br>
+              <span style="font-size:9px;color:#b0b8c9">Niveles de privilegio</span></div>
+            <div class="card"><h5>Estadísticas · Monitor de servicios</h5>
+              <div class="mini"><div>Estado</div><div>Bots</div><div>Sesiones</div></div></div>
+            <div class="card"><h5>Mapas · Modelos de IA</h5>
+              <div style="font-size:9px;color:#8fa3c4">Geolocalización y herramientas</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <dl class="facts">
+          <dt>Qué fue</dt><dd>Un bot de administración multi-idioma para Telegram, con un panel donde fue creciendo la idea de centralizar toda la gestión.</dd>
+          <dt>Su huella</dt><dd>Sentó las bases: la visión de una plataforma única para administrar bots, usuarios, traducciones y publicidad.</dd>
+        </dl>
+        <div class="tags"><span>Lua</span><span>Telegram</span><span>Multi-idioma</span><span>Auto-administración</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="ptag moon">● Segunda generación · 2026</span>
+    <h2>El rediseño</h2>
+    <p class="sub">Arquitectura modular · IA local · diseño glassmorphism</p>
+    <div class="grid">
+      <div>
+        <div class="frame">
+          <div class="bar" style="background:#1a1d24;color:#9aa"><i class="dot1"></i><i class="dot2"></i><i class="dot3"></i><span>núcleo · dashboard</span></div>
+          <div class="mn">
+            <div class="side"><div class="on">📊 Panel</div><div>🤖 Bots</div><div>🧠 IA</div><div>🕸️ Red</div><div>👮 Mod</div><div>🛡️ Seg</div><div>⚡ Logs</div></div>
+            <div style="flex:1">
+              <div class="hero"><b>Centro de control</b><p>Gestionando <b style="color:#8b5cf6">varias</b> instancias activas</p></div>
+              <div class="row">
+                <div class="gp">📊 Rendimiento
+                  <div class="stat"><span style="color:#94a3b8">CPU</span><b>12%</b></div>
+                  <svg viewBox="0 0 160 40" preserveAspectRatio="none" style="width:100%;height:32px;margin-top:5px"><polyline fill="rgba(139,92,246,0.18)" stroke="#8b5cf6" stroke-width="2" points="0,32 22,27 44,30 66,18 88,22 110,12 132,17 160,9 160,40 0,40"/></svg></div>
+                <div class="gp">🧠 IA local
+                  <div class="stat"><span style="color:#94a3b8">Neuronas</span><b>20.08M</b></div>
+                  <div class="stat"><span style="color:#94a3b8">Conexiones</span><b>9.83B</b></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <dl class="facts">
+          <dt>Qué aportó</dt><dd>Una reescritura limpia con arquitectura modular y una API bien organizada. Moderación avanzada, gestión de proxies y un subsistema de inteligencia artificial propio.</dd>
+          <dt>Su sello</dt><dd>El diseño: una interfaz glassmorphism oscura, coherente, con soporte multi-idioma y varios temas visuales.</dd>
+        </dl>
+        <div class="tags"><span>Python</span><span>API modular</span><span>IA local</span><span>Moderación</span><span>Glassmorphism</span><span>Multi-tema</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="ptag react">● Generación actual · 2026</span>
+    <h2>La plataforma</h2>
+    <p class="sub">React · cuentas y roles · contenido y comunidad</p>
+    <div class="grid">
+      <div>
+        <div class="frame">
+          <div class="bar" style="background:#e7e9ee;color:#666"><i class="dot1"></i><i class="dot2"></i><i class="dot3"></i><span>tu panel</span></div>
+          <div class="rc">
+            <div style="display:flex;align-items:center;gap:8px"><h5>Bienvenido de nuevo</h5><span class="pill">Creator</span></div>
+            <div class="sub2">Gestiona tu cuenta y explora tu panel</div>
+            <div class="card"><b style="font-size:12px">👤 Perfil</b><div class="sub2" style="margin:3px 0 0">Datos de cuenta y ajustes</div></div>
+            <div class="two">
+              <div class="card"><div class="ic">🛡️</div><b style="font-size:11px">Administración</b>
+                <div style="font-size:9px;color:#71717a;margin-top:4px">Usuarios, roles y ajustes</div>
+                <div class="cta" style="background:#18181b">Abrir →</div></div>
+              <div class="card"><div class="ic" style="background:#eaf1fe">📄</div><b style="font-size:11px">Blog</b>
+                <div style="font-size:9px;color:#71717a;margin-top:4px">Artículos y comentarios</div>
+                <div class="cta" style="background:#2563eb">Gestionar →</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <dl class="facts">
+          <dt>Qué es</dt><dd>La plataforma web actual, en producción. Interfaz moderna en React con un backend de datos propio.</dd>
+          <dt>Lo nuevo</dt><dd>Cuentas de usuario con roles, blog con comentarios, directorio de webs en la red Tor y analítica de visitas. La base sobre la que seguimos construyendo.</dd>
+        </dl>
+        <div class="tags"><span>React</span><span>Cuentas + roles</span><span>Blog</span><span>Tor / Onion</span><span>Analítica</span><span>Diseño limpio</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="kicker">Cara a cara</div>
+    <h2 style="margin-top:8px">Pantalla a pantalla</h2>
+    <p class="sub">La misma función, dos generaciones. La evolución se ve mejor que se cuenta.</p>
+
+    <div class="shot">
+      <div class="shot-label">Portada</div>
+      <div class="shotpair">
+        <figure class="fig">
+          <figcaption>1ª gen · portal simple</figcaption>
+          <div class="mini db-land">
+            <div class="mh"><b>DBTeam</b><span>Inicio · Chat · Login</span></div>
+            <div class="mbody">
+              <div class="mt2" style="color:#7c3aed">DBTeam — Portal</div>
+              <p>Accede para gestionar tus bots.</p>
+              <div class="mbtns"><span class="b1">Iniciar sesión</span><span class="b2">Registrarse</span></div>
+            </div>
+          </div>
+        </figure>
+        <figure class="fig">
+          <figcaption>2ª gen · landing comercial</figcaption>
+          <div class="mini mn-land">
+            <div class="mh dark"><b>⬡ cintiabot</b><span class="cta">Añadir a Telegram</span></div>
+            <div class="mbody dark">
+              <span class="pill"><i></i>en línea</span>
+              <div class="grad-h">Administración <em>inteligente</em></div>
+              <p>Anti-spam · moderación · 4 niveles</p>
+              <div class="levels"><span>👑 Owner</span><span>⭐ Admin</span><span>🛡️ Mod</span><span>👤 User</span></div>
+            </div>
+          </div>
+        </figure>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-label">Moderación</div>
+      <div class="shotpair">
+        <figure class="fig">
+          <figcaption>1ª gen · tabla de baneados</figcaption>
+          <div class="mini db-mod">
+            <div class="mt3">Usuarios expulsados</div>
+            <table><tr class="hd"><td>Usuario</td><td>Motivo</td><td>Región</td></tr>
+            <tr><td>user_8821</td><td class="r">spam</td><td>ES</td></tr>
+            <tr><td>user_3390</td><td class="r">flood</td><td>RU</td></tr></table>
+            <div class="chartph">📊 gráfico por región</div>
+          </div>
+        </figure>
+        <figure class="fig">
+          <figcaption>2ª gen · panel completo</figcaption>
+          <div class="mini mn-mod">
+            <div class="mh3">👮 Panel de Moderación</div>
+            <div class="cols3"><div class="c red">⚠️ Warns<br><small>3</small></div><div class="c vio">🔇 Mutes<br><small>2</small></div><div class="c grn">📝 Notas</div></div>
+            <div class="lb">🏆 Leaderboard · @maria +340 · @dev +212</div>
+          </div>
+        </figure>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-label">MTProxy</div>
+      <div class="shotpair">
+        <figure class="fig">
+          <figcaption>1ª gen · solo ver stats</figcaption>
+          <div class="mini db-prox">
+            <div class="mt3">MTProxy — Estadísticas</div>
+            <div class="ok">Estado: OK</div>
+            <pre>{
+  "status":"ok",
+  "connections":42,
+  "port":8466
+}</pre>
+          </div>
+        </figure>
+        <figure class="fig">
+          <figcaption>2ª gen · gestor + despliegue</figcaption>
+          <div class="mini mn-prox">
+            <div class="mh dark"><b>Gestor MTProto</b></div>
+            <div class="proxbtns"><span class="sc">📦 SCAN DOCKER</span><span class="dp">DESPLEGAR</span></div>
+            <div class="vps">VPS real por SSH · puertos · tráfico · enlace tg://proxy</div>
+          </div>
+        </figure>
+      </div>
+    </div>
+
+    <div class="kicker">En cifras</div>
+    <h2 style="margin-top:8px">El proyecto, en números</h2>
+    <p class="sub">Tamaño real de cada generación según el código desplegado.</p>
+    <div class="numgrid">
+      <div class="numcard g1"><span class="ng-gen">1ª generación</span><div class="ng-row"><b>2</b><span>landings</span></div><div class="ng-row"><b>~0,3k</b><span>líneas</span></div><div class="ng-tech">HTML · nginx</div></div>
+      <div class="numcard g2"><span class="ng-gen">2ª generación</span><div class="ng-row"><b>19</b><span>paneles</span></div><div class="ng-row"><b>117</b><span>endpoints API</span></div><div class="ng-row"><b>26</b><span>plugins</span></div><div class="ng-row"><b>~9,9k</b><span>líneas</span></div><div class="ng-tech">Python · IA local</div></div>
+      <div class="numcard g3"><span class="ng-gen">Generación actual</span><div class="ng-row"><b>17</b><span>páginas + 6 webs</span></div><div class="ng-row"><b>118</b><span>componentes</span></div><div class="ng-row"><b>22</b><span>colecciones</span></div><div class="ng-row"><b>~44,3k</b><span>líneas</span></div><div class="ng-tech">React · PocketBase</div></div>
+    </div>
+
+    <div class="kicker" style="margin-top:46px">Capacidades por generación</div>
+    <h2 style="margin-top:8px">Lo que aporta cada una</h2>
+    <table class="cmp">
+      <thead><tr><th>Capacidad</th><th>1ª gen</th><th>2ª gen</th><th>Actual</th></tr></thead>
+      <tbody>
+        <tr><td>Cuentas y roles</td><td class="n">—</td><td class="n">—</td><td class="y">sí ✓</td></tr>
+        <tr><td>Gestión de usuarios</td><td class="n">básica</td><td class="n">—</td><td class="y">sí ✓</td></tr>
+        <tr><td>Inteligencia artificial</td><td class="n">inicial</td><td class="y">sí ✓</td><td class="n">próximo</td></tr>
+        <tr><td>Moderación avanzada</td><td class="n">inicial</td><td class="y">sí ✓</td><td class="n">en curso</td></tr>
+        <tr><td>Gestión de proxies</td><td class="n">—</td><td class="y">sí ✓</td><td class="n">en curso</td></tr>
+        <tr><td>Blog y comunidad</td><td class="n">—</td><td class="n">—</td><td class="y">sí ✓</td></tr>
+        <tr><td>Red Tor / Onion</td><td class="n">—</td><td class="n">—</td><td class="y">sí ✓</td></tr>
+        <tr><td>Portada / landing</td><td class="n">portal simple</td><td class="y">landing completa ✓</td><td class="y">web pública ✓</td></tr>
+        <tr><td>Tamaño (líneas)</td><td class="n">~0,3k</td><td class="y">~9,9k</td><td class="y">~44,3k</td></tr>
+        <tr><td>Diseño</td><td class="n">funcional</td><td class="y">glass ✓</td><td class="y">moderno ✓</td></tr></tbody>
+    </table>
+
+    <div class="kicker" style="margin-top:46px">Lo que viene</div>
+    <h2 style="margin-top:8px">Próximas funciones</h2>
+    <p class="sub" style="margin-bottom:0">Estamos trabajando en ampliar la plataforma. Estas son algunas de las líneas en las que avanzamos.</p>
+    <div class="roadmap rm-preview">
+      <article class="rm">
+        <div class="rm-mockup ai">
+          <span class="prev-badge">Vista previa</span>
+          <div class="m-line"><span class="m-q">¿Cómo modero el spam?</span></div>
+          <div class="m-line bot"><span class="m-a">Activa el escudo anti-spam en Ajustes → Moderación. Detecto patrones en 3 idiomas.</span></div>
+          <div class="m-input">Pregunta a la IA… <span class="m-send">➤</span></div>
+        </div>
+        <span class="soon">Próximamente</span><h4>IA integrada</h4><p>El motor de IA dentro de la web, con búsqueda y asistencia multi-idioma.</p>
+      </article>
+
+      <article class="rm">
+        <div class="rm-mockup mod">
+          <span class="prev-badge">Vista previa</span>
+          <div class="mm-head">👮 Moderación · grupo seleccionado</div>
+          <div class="mm-cols"><div class="mm-c red">⚠️<br><b>4</b><small>warns</small></div><div class="mm-c vio">🔇<br><b>1</b><small>mute</small></div><div class="mm-c grn">🏆<br><b>+340</b><small>karma</small></div></div>
+          <div class="mm-act"><span>/warn</span><span>/mute</span><span>/ban</span></div>
+        </div>
+        <span class="soon">Próximamente</span><h4>Moderación unificada</h4><p>warn · mute · karma · leaderboard, directos desde el panel.</p>
+      </article>
+
+      <article class="rm">
+        <div class="rm-mockup priv">
+          <span class="prev-badge">Concepto</span>
+          <div class="pp-head">🛡️ Centro de privacidad</div>
+          <div class="pp-row"><span>MTProxy</span><span class="on">● activo</span></div>
+          <div class="pp-row"><span>Snowflake</span><span class="on">● activo</span></div>
+          <div class="pp-row"><span>WireGuard</span><span class="off">○ parado</span></div>
+          <div class="pp-bar"><i style="width:72%"></i></div>
+          <div class="pp-meta">Tráfico circumvención · 72%</div>
+        </div>
+        <span class="soon">En estudio</span><h4>Centro de privacidad</h4><p>Proxies, MTProxy y herramientas de circumvención en un solo lugar.</p>
+      </article>
+    </div>
+    <p style="font-size:11px;color:#9a8e7c;margin-top:14px;font-style:italic">Las imágenes son maquetas conceptuales; las funciones están en desarrollo.</p>
+
+    <div class="closing">
+      <h3>Un trabajo en constante evolución</h3>
+      <p style="margin-bottom:0">Cada generación aprendió de la anterior. Seguimos construyendo en abierto desde <a href="https://github.com/ComunidadTelebots">ComunidadTelebots</a>, con el objetivo de ofrecer una plataforma libre, privada y potente para gestionar bots de Telegram.</p>
+    </div>
+  </section>
+
+  <footer>ComunidadTelebots · todosobreall.tech · 2026</footer>
+</div>
+</body>
+</html>

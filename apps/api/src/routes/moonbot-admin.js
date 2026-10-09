@@ -1147,6 +1147,36 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
+router.get('/android-channels', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  try {
+    const response = await moonRequest('/api/internal/android/channels');
+    if (!response.ok) throw new Error(`Moonbot HTTP ${response.status}`);
+    return res.json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-admin android-channels get] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'Moonbot no responde' });
+  }
+});
+
+router.post('/android-channels', express.json(), async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (!serviceConfig(res)) return;
+  try {
+    const response = await moonRequest('/api/internal/android/channels', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body)
+    });
+    if (!response.ok) throw new Error(`Moonbot HTTP ${response.status}`);
+    return res.json(await response.json());
+  } catch (error) {
+    logger.warn(`[moonbot-admin android-channels post] ${error.message}`);
+    return res.status(502).json({ ok: false, error: 'Moonbot no responde' });
+  }
+});
+
 const releaseChannelForUser = async (user, actorRole) => {
   if (actorRole === 'master') return 'alpha';
   const accountId = String(user?.id || '');

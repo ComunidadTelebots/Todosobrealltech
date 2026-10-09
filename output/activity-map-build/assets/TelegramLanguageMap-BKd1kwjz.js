@@ -1,0 +1,1 @@
+import{j as t}from"./index-Jk5f8p8Z.js";import{V as i}from"./VisitorAnalyticsSection-D51fNa4h.js";import"./earth-Cvoq5MPa.js";import"./refresh-cw-CZtLosbV.js";function s(){return t.jsx("section",{className:"mt-8",children:t.jsx(i,{initialSource:"telegram"})})}export{s as default};

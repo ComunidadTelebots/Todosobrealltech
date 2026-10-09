@@ -1,0 +1,296 @@
+.story-composer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.story-composer {
+    background: var(--background-color, #fff);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Header ── */
+.story-composer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    flex-shrink: 0;
+}
+
+.story-composer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color, #000);
+}
+
+.story-composer-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--secondary-color, rgba(0, 0, 0, 0.5));
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    transition: background 0.15s;
+}
+
+.story-composer-close:hover {
+    background: var(--border-color, rgba(0, 0, 0, 0.06));
+}
+
+/* ── Preview ── */
+.story-composer-preview {
+    position: relative;
+    background: var(--background-secondary, #000);
+    aspect-ratio: 9 / 16;
+    max-height: 320px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.story-composer-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-composer-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.story-composer-placeholder-icon {
+    font-size: 48px !important;
+    opacity: 0.5;
+}
+
+.story-composer-change-media {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--accent, var(--color-primary, #2196f3));
+    padding: 8px 16px;
+    text-align: left;
+    transition: opacity 0.15s;
+}
+
+.story-composer-change-media:hover {
+    opacity: 0.75;
+}
+
+.story-composer-album { display:flex; gap:7px; padding:10px; overflow-x:auto; border-bottom:1px solid var(--border-color,rgba(0,0,0,.08)); }
+.story-composer-thumb,.story-composer-add { position:relative; flex:0 0 54px; width:54px; height:70px; padding:0; overflow:hidden; border:2px solid transparent; border-radius:9px; background:var(--background-secondary,#eee); cursor:pointer; }
+.story-composer-thumb--active { border-color:var(--accent,var(--color-primary,#2196f3)); }
+.story-composer-thumb img,.story-composer-thumb video { width:100%;height:100%;object-fit:cover; }
+.story-composer-thumb span { position:absolute;right:3px;bottom:3px;min-width:17px;padding:1px;border-radius:10px;background:rgba(0,0,0,.65);color:#fff;font-size:10px; }
+.story-composer-add { display:grid;place-items:center;font-size:28px;color:var(--accent,var(--color-primary,#2196f3)); }
+.story-composer-toolbar { display:flex;justify-content:space-between;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border-color,rgba(0,0,0,.08)); }
+.story-composer-toolbar button { display:flex;align-items:center;gap:2px;padding:5px;border:0;background:none;color:var(--accent,var(--color-primary,#2196f3));font-size:12px;cursor:pointer; }
+.story-composer-toolbar button:disabled { opacity:.35;cursor:default; }
+.story-composer-toolbar svg { font-size:16px; }
+.story-composer-field small { display:block;text-align:right;color:var(--secondary-color,rgba(0,0,0,.45)); }
+
+/* ── Fields ── */
+.story-composer-field {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+}
+
+.story-composer-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--secondary-color, rgba(0, 0, 0, 0.45));
+    margin-bottom: 8px;
+}
+
+.story-composer-caption {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--background-secondary, rgba(0, 0, 0, 0.04));
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--primary-color, #000);
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.4;
+    transition: border-color 0.15s;
+}
+
+.story-composer-caption:focus {
+    border-color: var(--accent, var(--color-primary, #2196f3));
+}
+
+.story-composer-caption::placeholder {
+    color: var(--secondary-color, rgba(0, 0, 0, 0.38));
+}
+
+/* ── Option chips ── */
+.story-composer-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.story-composer-option {
+    padding: 5px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.15));
+    background: none;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--primary-color, #000);
+    transition: all 0.15s;
+}
+
+.story-composer-option:hover {
+    background: var(--border-color, rgba(0, 0, 0, 0.05));
+}
+
+.story-composer-option--active {
+    background: var(--accent, var(--color-primary, #2196f3));
+    border-color: var(--accent, var(--color-primary, #2196f3));
+    color: #fff;
+}
+
+/* ── Error ── */
+.story-composer-error {
+    margin: 0 16px;
+    padding: 8px 12px;
+    background: rgba(229, 57, 53, 0.1);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--message-error-color, #e53935);
+}
+
+/* ── Send button ── */
+.story-composer-send {
+    margin: 12px 16px 16px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent, var(--color-primary, #2196f3));
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+}
+
+.story-composer-send:hover:not(:disabled) {
+    opacity: 0.88;
+}
+
+.story-composer-send:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* ── Skin overrides ── */
+body.design-android-holo .story-composer-option--active,
+body.design-android-holo .story-composer-send {
+    background: #33b5e5;
+    border-color: #33b5e5;
+}
+body.design-android-holo .story-composer-change-media,
+body.design-android-holo .story-composer-caption:focus {
+    color: #33b5e5;
+    border-color: #33b5e5;
+}
+
+body.design-android-classic .story-composer-option--active,
+body.design-android-classic .story-composer-send {
+    background: #527da3;
+    border-color: #527da3;
+}
+body.design-android-classic .story-composer-change-media {
+    color: #527da3;
+}
+
+body.design-ios .story-composer-option--active,
+body.design-ios-ipad .story-composer-option--active,
+body.design-ios .story-composer-send,
+body.design-ios-ipad .story-composer-send {
+    background: #0088ff;
+    border-color: #0088ff;
+}
+
+body.design-macos .story-composer-option--active,
+body.design-macos-monterey .story-composer-option--active,
+body.design-macos .story-composer-send,
+body.design-macos-monterey .story-composer-send {
+    background: #2481cc;
+    border-color: #2481cc;
+}
+
+body.design-aurora .story-composer-option--active,
+body.design-aurora-midnight .story-composer-option--active,
+body.design-aurora .story-composer-send,
+body.design-aurora-midnight .story-composer-send {
+    background: #34d9a8;
+    border-color: #34d9a8;
+    color: #000;
+}
+
+body.design-telegramx .story-composer-option--active,
+body.design-telegramx-red .story-composer-option--active,
+body.design-telegramx .story-composer-send,
+body.design-telegramx-red .story-composer-send {
+    background: #35b7f3;
+    border-color: #35b7f3;
+}
+
+body.design-tdesktop .story-composer-option--active,
+body.design-tdesktop-classic .story-composer-option--active,
+body.design-tdesktop .story-composer-send,
+body.design-tdesktop-classic .story-composer-send {
+    background: #40a7e3;
+    border-color: #40a7e3;
+}
+
+body.design-webk .story-composer-option--active,
+body.design-webk .story-composer-send {
+    background: #3390ec;
+    border-color: #3390ec;
+}
+
+body.design-weba .story-composer-option--active,
+body.design-weba-classic .story-composer-option--active,
+body.design-weba .story-composer-send,
+body.design-weba-classic .story-composer-send {
+    background: #2ca5e0;
+    border-color: #2ca5e0;
+}

@@ -1,0 +1,75 @@
+.image-editor-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.68);
+}
+.image-editor {
+    width: min(520px, 100%);
+    max-height: 92vh;
+    overflow: auto;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--panel-background, #fff);
+    color: var(--foreground, #111);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+.image-editor-preview {
+    display: block;
+    width: 100%;
+    max-height: 52vh;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #111;
+}
+.image-editor-tools,
+.image-editor-crops,
+.image-editor-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.image-editor button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--background, #edf1f5);
+    color: inherit;
+    cursor: pointer;
+}
+.image-editor label {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+.image-editor-actions {
+    justify-content: flex-end;
+}
+.image-editor .image-editor-save {
+    background: var(--color-accent, #168acd);
+    color: #fff;
+}
+.image-editor-error {
+    margin-top: 10px;
+    color: #d32f2f;
+}
+.image-editor-quality {
+    min-height: 34px;
+    padding: 5px 9px;
+    border: 1px solid var(--design-border-color, rgba(127, 127, 127, 0.3));
+    border-radius: var(--design-control-radius, 10px);
+    background: var(--design-input-surface, var(--background, #edf1f5));
+    color: inherit;
+    font: inherit;
+}

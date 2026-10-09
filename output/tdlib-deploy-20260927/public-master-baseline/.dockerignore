@@ -1,0 +1,40 @@
+# Control de versiones
+.git/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Datos en tiempo de ejecución (no van a la imagen)
+data/
+.env
+*.db
+*.db-journal
+*.sqlite
+
+# Logs y descargas generadas por el bot
+logs/
+downloads/
+
+# Ollama
+ollama_data/
+
+# Archivos temporales y de trabajo
+scratch/
+*.log
+*.tmp
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# NOTA: libtdjson.so NO está ignorado — setup_tdlib.sh lo copia aquí
+#        intencionadamente para que el Dockerfile lo use.

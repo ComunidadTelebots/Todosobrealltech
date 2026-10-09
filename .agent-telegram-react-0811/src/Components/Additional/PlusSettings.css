@@ -1,0 +1,25 @@
+.plus-settings { width: 100%; box-sizing: border-box; display: grid; gap: 10px; padding: 14px; color: var(--design-text-color, inherit); background: var(--design-panel-background, transparent); border: 1px solid var(--design-border-color, rgba(127,127,127,.25)); border-radius: var(--design-dialog-radius, 14px); }
+.plus-settings p,.plus-settings small { margin: 0; color: var(--design-muted-color, #667); }
+.plus-settings>label { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 34px; }
+.plus-settings select,.plus-settings button,.plus-settings-import { box-sizing: border-box; padding: 7px 10px; color: inherit; background: var(--design-input-surface, transparent); border: 1px solid var(--design-border-color, rgba(127,127,127,.3)); border-radius: var(--design-control-radius, 9px); font: inherit; }
+.plus-settings-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.plus-settings-actions button,.plus-settings-import { cursor: pointer; }
+.plus-settings-import input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
+.plus-settings-message { padding: 8px; border-radius: var(--design-control-radius, 8px); background: var(--design-hover-background, rgba(33,150,243,.1)); }
+.plus-notice { position: fixed; z-index: 5000; inset-inline-end: 18px; inset-block-start: 18px; max-width: min(340px, calc(100vw - 36px)); padding: 11px 14px; color: var(--design-text-color, #111); background: var(--design-panel-background, #fff); border: 1px solid var(--design-border-color, rgba(127,127,127,.3)); border-radius: var(--design-dialog-radius, 14px); box-shadow: 0 8px 28px rgba(0,0,0,.2); }
+body.design-android-holo .plus-settings,body.design-webogram .plus-settings,body.design-tdesktop-classic .plus-settings,body.design-android-holo .plus-notice { border-radius: 2px; box-shadow: none; }
+body.design-ios .plus-settings,body.design-macos .plus-settings,body.design-android-glass .plus-settings,body.design-ios .plus-notice,body.design-macos .plus-notice { backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+@media (max-width:600px) { .plus-settings>label { align-items: flex-start; } .plus-settings select { max-width: 48%; } .plus-notice { inset-inline: 12px; inset-block-start: 12px; } }
+body.plus-system-font { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important; }
+body.plus-hide-phone .android-drawer-phone,body.plus-hide-phone .android-settings-profile-phone { display: none !important; }
+body.plus-hide-bottom-navigation .android-bottom-nav { display: none !important; }
+body.plus-hide-new-message.design-android .dialogs::after { display: none !important; content: none !important; }
+body.plus-hide-bottom-on-scroll.plus-navigation-scrolled .android-bottom-nav { transform: translateY(110%); pointer-events: none; }
+.android-bottom-nav { transition: transform 180ms ease; }
+body[data-plus-emoji-size='compact'] .emoji-picker-content { width: 540px; }
+body[data-plus-emoji-size='compact'] .emoji-picker-content-stickers { transform: translateX(-270px); }
+body[data-plus-emoji-size='compact'] .emoji-mart,body[data-plus-emoji-size='compact'] .stickers-picker { width: 270px !important; }
+body[data-plus-emoji-size='large'] .emoji-picker-content { width: 760px; }
+body[data-plus-emoji-size='large'] .emoji-picker-content-stickers { transform: translateX(-380px); }
+body[data-plus-emoji-size='large'] .emoji-mart,body[data-plus-emoji-size='large'] .stickers-picker { width: 380px !important; }
+

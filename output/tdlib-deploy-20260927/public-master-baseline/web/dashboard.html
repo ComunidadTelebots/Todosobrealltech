@@ -1,0 +1,84 @@
+<!-- Hero Section -->
+<div class="glass-panel" style="margin-bottom: 25px; background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(30,41,59,0.7)); border: 1px solid rgba(139,92,246,0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="margin-bottom: 5px;" data-i18n="welcome_title">Bienvenido al Núcleo Moon</h2>
+            <p style="color: var(--text-muted); font-size: 14px;"><span data-i18n="welcome_subtitle">Gestionando</span> <span id="activeBotsCount" style="color: var(--primary); font-weight: 700;">...</span> <span data-i18n="hero_instances">instancias activas en la red.</span></p>
+        </div>
+        <div class="hero-stats" style="display: flex; gap: 30px;">
+            <div class="mini-stat">
+                <div class="subtitle" data-i18n="hero_users">USUARIOS VISTOS</div>
+                <div id="heroDbVistos" style="font-size: 24px; font-weight: 800;">...</div>
+            </div>
+            <div class="mini-stat">
+                <div class="subtitle" data-i18n="hero_disk">DISCO</div>
+                <div id="heroDiskVal" style="font-size: 24px; font-weight: 800; color: var(--success);">...%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid-layout">
+    <div class="left-col">
+        <!-- Stats Card -->
+        <div class="glass-panel">
+            <h3 data-i18n="card_performance">📊 Rendimiento Global</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-title" data-i18n="cpu_load">Carga CPU</span>
+                    <h4 id="cpuVal" style="font-size: 28px; margin: 10px 0;">0%</h4>
+                    <div class="progress-bar"><div id="cpuBar" style="width: 0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title" data-i18n="ram_usage">Uso RAM</span>
+                    <h4 id="ramVal" style="font-size: 20px; margin: 10px 0;">0/0 GB</h4>
+                    <div class="progress-bar"><div id="ramBar" style="width: 0%"></div></div>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="height: 180px; margin-top: 20px; position: relative;">
+                <canvas id="perfChart"></canvas>
+            </div>
+            
+            <div class="mt-20">
+                <h3 data-i18n="card_ia_feeding">📥 Alimentación IA</h3>
+                <p class="subtitle" data-i18n="ia_feeding_subtitle">Inyección de datos para el entrenamiento cerebral.</p>
+                <div class="input-group" style="display: flex; gap: 10px;">
+                    <input type="text" id="iaQuickSeed" data-i18n="ia_seed_placeholder" placeholder="Palabra o frase clave...">
+                    <button onclick="quickSeed()" style="width: 50px; margin-top: 0;">➕</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multibot Card -->
+        <div class="glass-panel mt-20">
+            <h3 data-i18n="card_multibot">🤖 Gestor Multibot</h3>
+            <p class="subtitle" data-i18n="multibot_subtitle">Añade nuevos tokens en caliente.</p>
+            <div class="input-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="botTokenInput" data-i18n="bot_token_placeholder" placeholder="78234xxx:AAHxxxx...">
+                <button onclick="addBot()" style="width: 100px; margin-top: 0;" data-i18n="btn_bind">VINCULAR</button>
+            </div>
+            <div id="botList" class="bot-list-container" style="max-height: 250px; overflow-y: auto;">
+                <div class="loading-spinner">Sincronizando hilos...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-col">
+        <!-- Console Card -->
+        <div class="glass-panel h-100" style="display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;" data-i18n="card_console">📟 Consola del Sistema</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="clearLogs()" style="width: auto; margin: 0; padding: 5px 12px; font-size: 11px; background: rgba(255,255,255,0.05);" data-i18n="btn_clear">LIMPIAR</button>
+                    <button onclick="exportLogs()" style="width: auto; margin: 0; padding: 5px 12px; font-size: 11px; background: rgba(255,255,255,0.05);" data-i18n="btn_export">EXPORTAR</button>
+                </div>
+            </div>
+            <div id="webLog" class="log-container" style="flex-grow: 1; min-height: 480px; font-family: 'JetBrains Mono'; font-size: 12px;"></div>
+            <div class="console-footer" style="margin-top: 15px; border-top: 1px solid var(--glass-border); padding-top: 10px; display: flex; gap: 10px;">
+                <input type="text" id="consoleCmd" data-i18n="console_placeholder" placeholder="Ejecutar comando interno..." onkeyup="if(event.key==='Enter') execCmd()" style="background: transparent; border: none; border-bottom: 1px solid var(--glass-border); border-radius: 0;">
+                <button onclick="execCmd()" style="width: 80px; margin-top: 0; font-size: 11px;" data-i18n="btn_exec">EJECUTAR</button>
+            </div>
+        </div>
+    </div>
+</div>

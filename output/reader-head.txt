@@ -1,0 +1,23 @@
+(() => {
+  'use strict';
+  const telegram = () => window.Telegram?.WebApp;
+  function safeUrl(value) {
+    try { const url = new URL(value, window.location.href); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password ? url : null; } catch { return null; }
+  }
+  function open(value) {
+    const url = safeUrl(value);
+    if (!url) return false;
+    if (url.origin === window.location.origin && url.pathname === '/hub.html' && url.searchParams.get('channel') === 'alltech') { showReader(); return true; }
+    const tg = telegram();
+    if (['t.me', 'www.t.me', 'telegram.me', 'www.telegram.me'].includes(url.hostname.toLowerCase())) {
+      url.protocol = 'https:'; url.hostname = 't.me'; url.port = '';
+      if (url.pathname.startsWith('/s/')) url.pathname = url.pathname.slice(2);
+      try { if (tg?.openTelegramLink) { tg.openTelegramLink(url.href); return true; } } catch {}
+    } else {
+      try { if (tg?.openLink) { tg.openLink(url.href, { try_instant_view: false }); return true; } } catch {}
+    }
+    window.open(url.href, '_blank', 'noopener,noreferrer');
+    return true;
+  }
+  window.MoonHubLinks = { open, safeUrl };
+

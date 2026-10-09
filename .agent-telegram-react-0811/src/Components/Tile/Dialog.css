@@ -1,0 +1,105 @@
+/*
+ *  Copyright (c) 2018-present, Evgeny Nadymov
+ *
+ * This source code is licensed under the GPL v.3.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*.dialog:hover {*/
+/*background: #f2f6fa;*/
+/*}*/
+
+.dialog {
+    /*border-radius: 8px;*/
+    /*cursor: pointer;*/
+    /*margin: 0 12px;*/
+}
+
+.dialog-tile {
+    height: 48px;
+    position: relative;
+}
+
+.dialog-active {
+    /*background-color: #3B9EDB;*/
+    /*color: #fff;*/
+    /*border-radius: 8px;*/
+    /*cursor: pointer;*/
+    /*margin: 0 12px;*/
+}
+
+.accent-background .dialog-title,
+.accent-background .dialog-content,
+.accent-background .dialog-content-accent,
+.accent-background .dialog-meta {
+    color: #fff;
+}
+
+.tile-first-row {
+    display: flex;
+}
+
+.tile-second-row {
+    margin: 3px 0 0 0;
+    display: flex;
+}
+
+.chat-big .dialog-inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 22px 20px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.chat-big .tile-first-row {
+    max-width: 100%;
+}
+
+.dialog-inner-wrapper {
+    /*width: 48px;*/
+    overflow: hidden;
+    flex-grow: 1;
+    margin-left: 12px;
+    z-index: 1;
+}
+
+.dialog-wrapper {
+    padding: 10px 12px 10px 10px;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+.dialog-selection-mode {
+    position: relative;
+}
+
+.dialog-bulk-selected {
+    background: var(--design-active-background, rgba(33, 150, 243, 0.12)) !important;
+    outline: 1px solid var(--color-accent-main);
+    outline-offset: -1px;
+}
+
+.dialog-selection-check {
+    position: absolute;
+    z-index: 3;
+    left: 8px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--color-accent-main);
+    border-radius: 50%;
+    background: var(--design-panel-background, #fff);
+    color: var(--color-accent-main);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.dialog-selection-mode .dialog-wrapper {
+    padding-left: 28px;
+}

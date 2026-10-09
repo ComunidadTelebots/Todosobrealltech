@@ -1,0 +1,22 @@
+router.all('/bot-conversations', async (req, res) => {
+  if (!await requireAdmin(req, res)) return;
+  if (req.adminUser.role !== 'creator') return res.status(403).json({ ok: false, error: 'Conversaciones reservadas al master' });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ok:false});
+  if (!serviceConfig(res)) return;
+  res.set('Cache-Control', 'private, no-store');
+  const params = new URLSearchParams();
+  for (const key of ['bot_id', 'chat_id', 'q', 'type', 'page']) {
+    if (req.query[key] !== undefined) {
+      if (typeof req.query[key] !== 'string' || req.query[key].length > 100) return res.status(400).json({ ok: false, error: 'Filtro inválido' });
+      params.set(key, req.query[key]);
+    }
+  }
+  try {
+    const response = await moonRequest(`/api/internal/bot-conversations?${params}`, { timeoutMs: 30000, method: req.method, ...(req.method === 'POST' ? { body: JSON.stringify({ ...req.body, actor_id: req.adminUser.id }) } : {}) });
+    const payload = await response.json();
+    return res.status(response.status).json(payload);
+  } catch {
+    return res.status(502).json({ ok: false, error: 'No se pueden consultar las conversaciones de Moonbot' });
+  }
+});
+

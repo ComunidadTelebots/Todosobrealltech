@@ -1,0 +1,44 @@
+.group-call-video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.group-call-video-tile {
+    position: relative;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #111;
+    aspect-ratio: 16 / 9;
+}
+
+.group-call-video-tile video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.group-call-video-tile figcaption {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    overflow: hidden;
+    padding: 4px 7px;
+    border-radius: 7px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.58);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    .group-call-video-grid {
+        grid-template-columns: 1fr;
+    }
+}

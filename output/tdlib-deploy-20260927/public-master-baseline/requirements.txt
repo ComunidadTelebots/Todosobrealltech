@@ -1,0 +1,17 @@
+requests
+psutil
+flask
+PyJWT
+python-dotenv
+cryptography
+openai
+scikit-learn
+textblob
+paramiko
+speechrecognition
+pytesseract
+Pillow
+waitress
+gunicorn
+langdetect
+ftfy

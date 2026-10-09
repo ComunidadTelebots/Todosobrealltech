@@ -1,0 +1,15 @@
+services:
+  moonbot:
+    networks:
+      - traefik
+    labels:
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.moonbot-duckdns.rule=Host(`cintiabot.duckdns.org`) || Host(`andreabot.duckdns.org`)"
+      - "traefik.http.routers.moonbot-duckdns.entrypoints=websecure"
+      - "traefik.http.routers.moonbot-duckdns.tls=true"
+      - "traefik.http.routers.moonbot-duckdns.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.moonbot-duckdns.service=moonbot"
+
+networks:
+  traefik:
+    external: true

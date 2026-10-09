@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Arcade HTML5 & Juegos Táctiles · ComunidadTelebots</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM: iOS & Android (Día y Noche)
+       ========================================================================== */
+    :root {
+      --bg: #070b14;
+      --ink: #e9f0fb;
+      --ink-muted: #8794ad;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      --accent-teal: #5DCAA5;
+      --accent-cyan: #22D3EE;
+      --accent-grad: linear-gradient(135deg, #5DCAA5 0%, #22D3EE 100%);
+      --canvas-bg: #070b14;
+      --canvas-border: rgba(255,255,255,0.1);
+      --dpad-bg: rgba(255, 255, 255, 0.06);
+      --dpad-border: rgba(255, 255, 255, 0.12);
+      --dpad-color: #e2e8f0;
+      --font-display: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-card: 18px;
+      --radius-btn: 12px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ─── 1. iOS MODO DÍA (Light Mode) ─── */
+    body.platform-ios.theme-day {
+      --bg: #f2f2f7;
+      --ink: #000000;
+      --ink-muted: #6e6e73;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+      --accent-teal: #34c759;
+      --accent-cyan: #007aff;
+      --accent-grad: linear-gradient(135deg, #007aff 0%, #34c759 100%);
+      --canvas-bg: #ffffff;
+      --canvas-border: rgba(0,0,0,0.12);
+      --dpad-bg: rgba(0, 0, 0, 0.05);
+      --dpad-border: rgba(0, 0, 0, 0.1);
+      --dpad-color: #1c1c1e;
+      --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      --radius-card: 20px;
+      --radius-btn: 14px;
+    }
+
+    /* ─── 2. iOS MODO NOCHE (Dark / OLED Mode) ─── */
+    body.platform-ios.theme-night {
+      --bg: #000000;
+      --ink: #ffffff;
+      --ink-muted: #8e8e93;
+      --card-bg: rgba(28, 28, 30, 0.85);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+      --accent-teal: #30d158;
+      --accent-cyan: #0a84ff;
+      --accent-grad: linear-gradient(135deg, #0a84ff 0%, #30d158 100%);
+      --canvas-bg: #0a0a0c;
+      --canvas-border: rgba(255,255,255,0.15);
+      --dpad-bg: rgba(255, 255, 255, 0.08);
+      --dpad-border: rgba(255, 255, 255, 0.16);
+      --dpad-color: #ffffff;
+      --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      --radius-card: 20px;
+      --radius-btn: 14px;
+    }
+
+    /* ─── 3. ANDROID MODO DÍA (Material You Light) ─── */
+    body.platform-android.theme-day {
+      --bg: #f8f9fa;
+      --ink: #1a1c1e;
+      --ink-muted: #44474e;
+      --card-bg: #ffffff;
+      --card-border: #e0e2ec;
+      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --accent-teal: #006c4c;
+      --accent-cyan: #00639b;
+      --accent-grad: linear-gradient(135deg, #00639b 0%, #006c4c 100%);
+      --canvas-bg: #f1f3f9;
+      --canvas-border: #c4c6d0;
+      --dpad-bg: #e1e2ec;
+      --dpad-border: #c4c6d0;
+      --dpad-color: #1a1c1e;
+      --font-display: 'Roboto', sans-serif;
+      --font-body: 'Roboto', sans-serif;
+      --radius-card: 16px;
+      --radius-btn: 20px;
+    }
+
+    /* ─── 4. ANDROID MODO NOCHE (Material You Dark) ─── */
+    body.platform-android.theme-night {
+      --bg: #111318;
+      --ink: #e2e2e9;
+      --ink-muted: #8e9099;
+      --card-bg: #1d2026;
+      --card-border: #44474f;
+      --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      --accent-teal: #6dd5a7;
+      --accent-cyan: #78dc77;
+      --accent-grad: linear-gradient(135deg, #58d8ea 0%, #6dd5a7 100%);
+      --canvas-bg: #0e1116;
+      --canvas-border: #44474f;
+      --dpad-bg: #2b2f38;
+      --dpad-border: #44474f;
+      --dpad-color: #e2e2e9;
+      --font-display: 'Roboto', sans-serif;
+      --font-body: 'Roboto', sans-serif;
+      --radius-card: 16px;
+      --radius-btn: 20px;
+    }
+
+    /* Base Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      width: 100%; min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .container { max-width: 980px; margin: 0 auto; }
+
+    /* Top Switcher Bar (iOS/Android & Día/Noche) */
+    .theme-platform-toolbar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-card);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .segmented-control {
+      display: inline-flex;
+      background: var(--dpad-bg);
+      border: 1px solid var(--dpad-border);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .seg-btn {
+      background: transparent;
+      border: none;
+      color: var(--ink-muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .seg-btn.active {
+      background: var(--card-bg);
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    body.platform-ios .seg-btn.active {
+      background: #ffffff;
+      color: #000000;
+    }
+    body.platform-ios.theme-night .seg-btn.active {
+      background: #3a3a3c;
+      color: #ffffff;
+    }
+
+    /* Game Cards Grid */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .game-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    body.platform-ios .game-card:active {
+      transform: scale(0.99);
+    }
+    body.platform-android .game-card {
+      border-left: 4px solid var(--accent-teal);
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .game-title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-pill {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--dpad-bg);
+      color: var(--accent-teal);
+      border: 1px solid var(--dpad-border);
+    }
+
+    .canvas-box {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      border-radius: 14px;
+      background: var(--canvas-bg);
+      border: 1px solid var(--canvas-border);
+      transition: background 0.25s ease;
+    }
+
+    /* Virtual D-Pad */
+    .dpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 46px);
+      grid-template-rows: repeat(3, 46px);
+      gap: 6px;
+      margin: 14px auto 0;
+      justify-content: center;
+    }
+    .dpad-btn {
+      background: var(--dpad-bg);
+      border: 1px solid var(--dpad-border);
+      border-radius: var(--radius-btn);
+      color: var(--dpad-color);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: background 0.1s, transform 0.1s;
+    }
+    .dpad-btn:active {
+      background: var(--accent-teal);
+      color: #04121f;
+      transform: scale(0.92);
+    }
+    .hint-text {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* Buttons */
+    .btn-action {
+      background: var(--accent-grad);
+      color: #04121f;
+      font-family: var(--font-body);
+      font-weight: 800;
+      font-size: 13px;
+      border: none;
+      border-radius: var(--radius-btn);
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn-action:active { transform: scale(0.96); opacity: 0.9; }
+    .btn-ghost {
+      background: var(--dpad-bg);
+      border: 1px solid var(--dpad-border);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: var(--radius-btn);
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    /* 2048 Grid */
+    .grid-2048 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: var(--canvas-bg);
+      border: 1px solid var(--canvas-border);
+      border-radius: 14px;
+      padding: 8px;
+      max-width: 300px;
+      margin: 0 auto;
+      aspect-ratio: 1;
+      touch-action: none;
+    }
+    .cell-2048 {
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 800;
+      background: var(--dpad-bg);
+      color: var(--ink);
+      transition: all 0.15s ease;
+    }
+    .cell-2048[data-val="2"] { background: #5DCAA5; color: #04121f; }
+    .cell-2048[data-val="4"] { background: #22D3EE; color: #04121f; }
+    .cell-2048[data-val="8"] { background: #fbbf24; color: #04121f; }
+    .cell-2048[data-val="16"] { background: #f97316; color: #ffffff; }
+    .cell-2048[data-val="32"] { background: #ef4444; color: #ffffff; }
+    .cell-2048[data-val="64"] { background: #ec4899; color: #ffffff; }
+    .cell-2048[data-val="128"] { background: #a855f7; color: #ffffff; }
+    .cell-2048[data-val="256"] { background: #6366f1; color: #ffffff; }
+    .cell-2048[data-val="512"] { background: #3b82f6; color: #ffffff; }
+    .cell-2048[data-val="1024"] { background: #10b981; color: #ffffff; }
+    .cell-2048[data-val="2048"] { background: var(--accent-grad); color: #04121f; font-size: 15px; }
+
+    /* Tic-Tac-Toe & Memory */
+    .ttt-box, .mem-box {
+      border-radius: 10px;
+      background: var(--dpad-bg);
+      border: 1px solid var(--dpad-border);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      font-weight: 900;
+      cursor: pointer;
+      aspect-ratio: 1;
+      color: var(--ink);
+    }
+    .ttt-box:active, .mem-box:active {
+      background: var(--accent-teal);
+      color: #04121f;
+    }
+  </style>
+</head>
+<body class="platform-ios theme-night">
+
+  <div class="container">
+    
+    <!-- Top Platform & Theme Selector Toolbar -->
+    <div class="theme-platform-toolbar">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:18px;display:flex;align-items:center;gap:8px;">
+          🎮 Arcade Móvil Adaptativo
+        </h2>
+        <p style="font-size:12px;color:var(--ink-muted);">Adaptación nativa de interfaz para iOS y Android en modos Día y Noche.</p>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <!-- Platform Switcher -->
+        <div class="segmented-control" id="platformControl">
+          <button class="seg-btn active" data-platform="ios">🍎 iOS</button>
+          <button class="seg-btn" data-platform="android">🤖 Android</button>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="segmented-control" id="themeControl">
+          <button class="seg-btn" data-theme="day">☀️ Día</button>
+          <button class="seg-btn active" data-theme="night">🌙 Noche</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="game-grid">
+
+      <!-- 1. Cyber Snake -->
+      <section class="game-card">
+        <div class="game-header">
+          <div class="game-title">🐍 Cyber Snake</div>
+          <div class="score-pill">Puntos: <span id="snakeScore">0</span></div>
+        </div>
+        <div class="canvas-box" id="snakeTouchArea">
+          <canvas id="snakeCanvas" width="300" height="260"></canvas>
+        </div>
+        <div class="hint-text">👆 Desliza el dedo (Swipe) o usa el D-Pad</div>
+        <div class="dpad-grid">
+          <div></div><button class="dpad-btn" id="dpadUp">▲</button><div></div>
+          <button class="dpad-btn" id="dpadLeft">◀</button>
+          <button class="dpad-btn" id="dpadCenter" style="font-size:11px;">OK</button>
+          <button class="dpad-btn" id="dpadRight">▶</button>
+          <div></div><button class="dpad-btn" id="dpadDown">▼</button><div></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button id="snakeStartBtn" class="btn-action" style="flex:1;">Iniciar</button>
+          <button id="snakeResetBtn" class="btn-ghost">Reiniciar</button>
+        </div>
+      </section>
+
+      <!-- 2. 2048 Cyber Puzzle -->
+      <section class="game-card">
+        <div class="game-header">
+          <div class="game-title">⚡ 2048 Cyber</div>
+          <div class="score-pill">Score: <span id="score2048">0</span></div>
+        </div>
+        <div class="grid-2048" id="board2048"></div>
+        <div class="hint-text">👆 Desliza el dedo (Swipe) en 4 direcciones para unir números</div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button id="reset2048Btn" class="btn-action" style="flex:1;">Nueva Partida</button>
+        </div>
+      </section>
+
+      <!-- 3. Tres en Raya -->
+      <section class="game-card">
+        <div class="game-header">
+          <div class="game-title">❌ Tres en Raya</div>
+          <div class="score-pill" id="tttStatus">Turno: X</div>
+        </div>
+        <div id="tttBoard" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:300px;margin:10px auto;"></div>
+        <div class="hint-text">Toca una casilla para jugar contra la IA</div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button id="tttResetBtn" class="btn-action" style="flex:1;">Reiniciar</button>
+        </div>
+      </section>
+
+      <!-- 4. Memoria Cuántica -->
+      <section class="game-card">
+        <div class="game-header">
+          <div class="game-title">🧠 Memoria Cuántica</div>
+          <div class="score-pill">Intentos: <span id="memoryMoves">0</span></div>
+        </div>
+        <div id="memoryBoard" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:300px;margin:10px auto;"></div>
+        <div class="hint-text">Encuentra las parejas de iconos</div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button id="memoryResetBtn" class="btn-action" style="flex:1;">Mezclar</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    // --- 1. Platform & Theme Switcher Logic ---
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      try { tg.expand(); } catch(e){}
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentPlatform = urlParams.get('platform') || (navigator.userAgent.match(/iPhone|iPad|iPod/i) ? 'ios' : 'android');
+    let currentTheme = urlParams.get('theme') || (tg?.colorScheme === 'light' ? 'day' : 'night');
+
+    function applyThemeAndPlatform(p, t) {
+      currentPlatform = p;
+      currentTheme = t;
+      document.body.className = `platform-${p} theme-${t}`;
+
+      document.querySelectorAll('#platformControl .seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-platform') === p);
+      });
+      document.querySelectorAll('#themeControl .seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme') === t);
+      });
+
+      // Redraw canvas with theme-matched colors
+      drawSnake();
+    }
+
+    document.querySelectorAll('#platformControl .seg-btn').forEach(btn => {
+      btn.onclick = () => applyThemeAndPlatform(btn.getAttribute('data-platform'), currentTheme);
+    });
+    document.querySelectorAll('#themeControl .seg-btn').forEach(btn => {
+      btn.onclick = () => applyThemeAndPlatform(currentPlatform, btn.getAttribute('data-theme'));
+    });
+
+    applyThemeAndPlatform(currentPlatform, currentTheme);
+
+    // Helper de vibración háptica
+    function triggerHaptic(type) {
+      if (tg?.HapticFeedback) {
+        try {
+          if (type === "light") tg.HapticFeedback.impactOccurred("light");
+          else if (type === "medium") tg.HapticFeedback.impactOccurred("medium");
+          else if (type === "success") tg.HapticFeedback.notificationOccurred("success");
+        } catch(e) {}
+      } else if (navigator.vibrate) {
+        try { navigator.vibrate(type === "medium" ? 25 : 12); } catch(e) {}
+      }
+    }
+
+    // Swipe Gesture Helper
+    function attachSwipeGesture(element, onSwipe) {
+      let startX = 0, startY = 0, startTime = 0;
+      element.addEventListener("touchstart", (e) => {
+        const touch = e.touches[0];
+        startX = touch.clientX; startY = touch.clientY; startTime = Date.now();
+      }, { passive: true });
+
+      element.addEventListener("touchend", (e) => {
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        const elapsed = Date.now() - startTime;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 25 && elapsed < 800) {
+          if (Math.abs(dx) > Math.abs(dy)) onSwipe(dx > 0 ? "right" : "left");
+          else onSwipe(dy > 0 ? "down" : "up");
+          triggerHaptic("light");
+        }
+      }, { passive: true });
+    }
+
+    // --- 2. Cyber Snake Engine ---
+    const sCanvas = document.getElementById("snakeCanvas");
+    const sCtx = sCanvas.getContext("2d");
+    const sScoreEl = document.getElementById("snakeScore");
+    const GRID = 15;
+    let snake = [{x: 10, y: 8}, {x: 9, y: 8}, {x: 8, y: 8}];
+    let dir = {x: 1, y: 0}, nextDir = {x: 1, y: 0};
+    let food = {x: 15, y: 8};
+    let snakeScore = 0, snakeRunning = false, snakeTimer = null;
+
+    function placeFood() {
+      food = {
+        x: Math.floor(Math.random() * (sCanvas.width / GRID)),
+        y: Math.floor(Math.random() * (sCanvas.height / GRID))
+      };
+    }
+
+    function drawSnake() {
+      const isDay = currentTheme === 'day';
+      sCtx.fillStyle = isDay ? '#ffffff' : '#070b14';
+      sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+
+      // Grid Lines
+      sCtx.strokeStyle = isDay ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.03)';
+      sCtx.lineWidth = 1;
+      for (let x = 0; x < sCanvas.width; x += GRID) {
+        sCtx.beginPath(); sCtx.moveTo(x, 0); sCtx.lineTo(x, sCanvas.height); sCtx.stroke();
+      }
+      for (let y = 0; y < sCanvas.height; y += GRID) {
+        sCtx.beginPath(); sCtx.moveTo(0, y); sCtx.lineTo(sCanvas.width, y); sCtx.stroke();
+      }
+
+      // Food
+      sCtx.fillStyle = "#ef4444";
+      sCtx.beginPath();
+      sCtx.arc(food.x * GRID + GRID/2, food.y * GRID + GRID/2, GRID/2 - 2, 0, Math.PI * 2);
+      sCtx.fill();
+
+      // Snake Body
+      snake.forEach((seg, idx) => {
+        sCtx.fillStyle = idx === 0 ? (isDay ? "#007aff" : "#22D3EE") : (isDay ? "#34c759" : "#5DCAA5");
+        sCtx.beginPath();
+        sCtx.roundRect(seg.x * GRID + 1, seg.y * GRID + 1, GRID - 2, GRID - 2, 4);
+        sCtx.fill();
+      });
+    }
+
+    function updateSnake() {
+      dir = nextDir;
+      const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+      const maxX = sCanvas.width / GRID;
+      const maxY = sCanvas.height / GRID;
+
+      if (head.x < 0 || head.x >= maxX || head.y < 0 || head.y >= maxY || snake.some(s => s.x === head.x && s.y === head.y)) {
+        clearInterval(snakeTimer);
+        snakeRunning = false;
+        triggerHaptic("medium");
+        alert("💥 ¡Fin de partida! Puntos: " + snakeScore);
+        return;
+      }
+
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        snakeScore += 10;
+        sScoreEl.textContent = snakeScore;
+        triggerHaptic("light");
+        placeFood();
+      } else {
+        snake.pop();
+      }
+      drawSnake();
+    }
+
+    function startSnake() {
+      if (snakeRunning) return;
+      snake = [{x: 10, y: 8}, {x: 9, y: 8}, {x: 8, y: 8}];
+      dir = {x: 1, y: 0}; nextDir = {x: 1, y: 0};
+      snakeScore = 0; sScoreEl.textContent = "0";
+      placeFood();
+      snakeRunning = true;
+      clearInterval(snakeTimer);
+      snakeTimer = setInterval(updateSnake, 120);
+    }
+
+    document.getElementById("snakeStartBtn").onclick = startSnake;
+    document.getElementById("snakeResetBtn").onclick = () => { clearInterval(snakeTimer); snakeRunning = false; startSnake(); };
+
+    function setSnakeDir(d) {
+      if (d === "up" && dir.y === 0) nextDir = {x: 0, y: -1};
+      if (d === "down" && dir.y === 0) nextDir = {x: 0, y: 1};
+      if (d === "left" && dir.x === 0) nextDir = {x: -1, y: 0};
+      if (d === "right" && dir.x === 0) nextDir = {x: 1, y: 0};
+    }
+
+    attachSwipeGesture(document.getElementById("snakeTouchArea"), setSnakeDir);
+    document.getElementById("dpadUp").onclick = () => { setSnakeDir("up"); triggerHaptic("light"); };
+    document.getElementById("dpadDown").onclick = () => { setSnakeDir("down"); triggerHaptic("light"); };
+    document.getElementById("dpadLeft").onclick = () => { setSnakeDir("left"); triggerHaptic("light"); };
+    document.getElementById("dpadRight").onclick = () => { setSnakeDir("right"); triggerHaptic("light"); };
+    document.getElementById("dpadCenter").onclick = startSnake;
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" || e.key === "w") setSnakeDir("up");
+      if (e.key === "ArrowDown" || e.key === "s") setSnakeDir("down");
+      if (e.key === "ArrowLeft" || e.key === "a") setSnakeDir("left");
+      if (e.key === "ArrowRight" || e.key === "d") setSnakeDir("right");
+    });
+
+    drawSnake();
+
+    // --- 3. 2048 Puzzle Engine ---
+    const b2048 = document.getElementById("board2048");
+    const s2048 = document.getElementById("score2048");
+    let grid2048 = Array(16).fill(0);
+    let score2048 = 0;
+
+    function init2048() {
+      grid2048 = Array(16).fill(0);
+      score2048 = 0;
+      s2048.textContent = "0";
+      addRandom2048(); addRandom2048();
+      render2048();
+    }
+
+    function addRandom2048() {
+      const empties = grid2048.map((v, i) => v === 0 ? i : -1).filter(i => i !== -1);
+      if (!empties.length) return;
+      const idx = empties[Math.floor(Math.random() * empties.length)];
+      grid2048[idx] = Math.random() > 0.1 ? 2 : 4;
+    }
+
+    function render2048() {
+      b2048.innerHTML = "";
+      grid2048.forEach(val => {
+        const cell = document.createElement("div");
+        cell.className = "cell-2048";
+        if (val > 0) {
+          cell.textContent = val;
+          cell.setAttribute("data-val", val);
+        }
+        b2048.appendChild(cell);
+      });
+      s2048.textContent = score2048;
+    }
+
+    function move2048(direction) {
+      let moved = false;
+      function slide(row) {
+        let arr = row.filter(v => v !== 0);
+        for (let i = 0; i < arr.length - 1; i++) {
+          if (arr[i] === arr[i + 1]) {
+            arr[i] *= 2; score2048 += arr[i];
+            arr[i + 1] = 0;
+            moved = true;
+          }
+        }
+        arr = arr.filter(v => v !== 0);
+        while (arr.length < 4) arr.push(0);
+        return arr;
+      }
+
+      if (direction === "left") {
+        for (let r = 0; r < 4; r++) {
+          const row = [grid2048[r*4], grid2048[r*4+1], grid2048[r*4+2], grid2048[r*4+3]];
+          const next = slide(row);
+          for (let c = 0; c < 4; c++) { if (grid2048[r*4+c] !== next[c]) moved = true; grid2048[r*4+c] = next[c]; }
+        }
+      } else if (direction === "right") {
+        for (let r = 0; r < 4; r++) {
+          const row = [grid2048[r*4+3], grid2048[r*4+2], grid2048[r*4+1], grid2048[r*4]];
+          const next = slide(row);
+          for (let c = 0; c < 4; c++) { if (grid2048[r*4+3-c] !== next[c]) moved = true; grid2048[r*4+3-c] = next[c]; }
+        }
+      } else if (direction === "up") {
+        for (let c = 0; c < 4; c++) {
+          const col = [grid2048[c], grid2048[c+4], grid2048[c+8], grid2048[c+12]];
+          const next = slide(col);
+          for (let r = 0; r < 4; r++) { if (grid2048[r*4+c] !== next[r]) moved = true; grid2048[r*4+c] = next[r]; }
+        }
+      } else if (direction === "down") {
+        for (let c = 0; c < 4; c++) {
+          const col = [grid2048[c+12], grid2048[c+8], grid2048[c+4], grid2048[c]];
+          const next = slide(col);
+          for (let r = 0; r < 4; r++) { if (grid2048[(3-r)*4+c] !== next[r]) moved = true; grid2048[(3-r)*4+c] = next[r]; }
+        }
+      }
+
+      if (moved) {
+        addRandom2048();
+        render2048();
+        triggerHaptic("light");
+      }
+    }
+
+    attachSwipeGesture(b2048, move2048);
+    document.getElementById("reset2048Btn").onclick = init2048;
+    init2048();
+
+    // --- 4. Tic-Tac-Toe & Memory Games ---
+    const tttBoard = document.getElementById("tttBoard");
+    let tttState = Array(9).fill("");
+    function initTTT() {
+      tttBoard.innerHTML = "";
+      tttState = Array(9).fill("");
+      document.getElementById("tttStatus").textContent = "Turno: X";
+      for (let i = 0; i < 9; i++) {
+        const box = document.createElement("div");
+        box.className = "ttt-box";
+        box.onclick = () => {
+          if (tttState[i]) return;
+          tttState[i] = "X"; box.textContent = "X";
+          triggerHaptic("light");
+          // Simple AI reply
+          const free = tttState.map((v, idx) => v === "" ? idx : -1).filter(v => v !== -1);
+          if (free.length) {
+            const pick = free[Math.floor(Math.random() * free.length)];
+            tttState[pick] = "O";
+            setTimeout(() => { tttBoard.children[pick].textContent = "O"; }, 200);
+          }
+        };
+        tttBoard.appendChild(box);
+      }
+    }
+    document.getElementById("tttResetBtn").onclick = initTTT;
+    initTTT();
+
+    // Memory Game
+    const memBoard = document.getElementById("memoryBoard");
+    const icons = ["🚀","🛸","🛰️","⚡","👑","🚛","🎮","🎲"];
+    function initMemory() {
+      memBoard.innerHTML = "";
+      const deck = [...icons, ...icons].sort(() => Math.random() - 0.5);
+      deck.forEach(sym => {
+        const box = document.createElement("div");
+        box.className = "mem-box";
+        box.textContent = "❓";
+        box.onclick = () => {
+          box.textContent = sym;
+          triggerHaptic("light");
+        };
+        memBoard.appendChild(box);
+      });
+    }
+    document.getElementById("memoryResetBtn").onclick = initMemory;
+    initMemory();
+  </script>
+</body>
+</html>

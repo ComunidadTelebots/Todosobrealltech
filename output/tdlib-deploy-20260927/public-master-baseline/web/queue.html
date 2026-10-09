@@ -1,0 +1,79 @@
+<div class="glass-panel" style="margin-bottom: 25px; background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(30,41,59,0.7)); border: 1px solid rgba(56,189,248,0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="margin-bottom: 5px;" data-i18n="q_title">Gestor de Cola de Tareas</h2>
+            <p style="color: var(--text-muted); font-size: 14px;" data-i18n="q_subtitle">Supervisa y controla las operaciones asíncronas del bot.</p>
+        </div>
+        <div id="tgStatusBadge" class="status-badge" style="background: rgba(255,255,255,0.05);">
+            🌐 Telegram API: <span id="tgStatusVal">Cargando...</span>
+        </div>
+    </div>
+</div>
+
+<div class="glass-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 data-i18n="q_list_title">📋 Tareas Pendientes</h3>
+        <button onclick="loadQueueTab()" class="btn-glow-mini" style="width: auto; margin: 0; padding: 5px 15px;">🔄 ACTUALIZAR</button>
+    </div>
+    
+    <div class="queue-table-container">
+        <table class="queue-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>TIPO</th>
+                    <th>DESTINO</th>
+                    <th>DATOS</th>
+                    <th>PRIORIDAD</th>
+                    <th>ESTADO</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody id="queueListBody">
+                <!-- Dinámico -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="emptyQueueMsg" style="display: none; text-align: center; padding: 40px; color: var(--text-muted);">
+        <p>📭 No hay tareas pendientes en la cola.</p>
+    </div>
+</div>
+
+<style>
+.queue-table-container {
+    overflow-x: auto;
+}
+.queue-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.queue-table th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid var(--glass-border);
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+.queue-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.status-pill {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.status-pill.pending { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.status-pill.running { background: rgba(56,189,248,0.1); color: #38bdf8; }
+
+.priority-badge {
+    background: rgba(255,255,255,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono';
+}
+</style>

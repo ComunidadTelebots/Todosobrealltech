@@ -1,0 +1,10 @@
+    const governorsTask = Promise.all(rows.map(async row => {
+      if (!row.running || !adminKey) return { node: row.id, installed: false };
+      try {
+        const node = nodes.find(item => item.id === row.id);
+        const response = await fetcher(`${node.url}/api/internal/governor`, { headers: { 'X-Moon-Admin-Key': adminKey }, signal: AbortSignal.timeout(3000), redirect: 'error' });
+        const body = await response.json();
+        if (!response.ok || body.ok !== true) throw new Error();
+        return { node: row.id, installed: true, enabled: body.enabled === true, scope: body.scope === 'single_process' ? body.scope : 'unknown', workers: Array.isArray(body.workers) ? body.workers.length : null };
+      } catch { return { node: row.id, installed: false }; }
+    }));

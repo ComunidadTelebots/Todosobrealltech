@@ -1,0 +1,8 @@
+.plus-interaction-settings { display: grid; gap: 12px; width: 100%; color: var(--design-text-color, inherit); }
+.plus-interaction-settings > strong { font-size: 15px; }
+.plus-interaction-settings label { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.plus-interaction-settings select { max-width: 220px; padding: 7px 9px; border: 1px solid var(--design-border-color, rgba(0, 0, 0, .16)); border-radius: var(--design-control-radius, 8px); background: var(--design-input-surface, transparent); color: inherit; }
+.plus-interaction-settings small { color: var(--design-muted-color, #667); line-height: 1.35; }
+.plus-interaction-settings input:focus-visible,
+.plus-interaction-settings select:focus-visible { outline: 2px solid var(--color-accent-main, #2196f3); outline-offset: 2px; }
+@media (max-width: 520px) { .plus-interaction-settings label { align-items: flex-start; flex-direction: column; } .plus-interaction-settings select { max-width: 100%; width: 100%; } }

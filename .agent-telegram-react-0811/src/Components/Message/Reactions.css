@@ -1,0 +1,320 @@
+.reactions-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    position: relative;
+}
+
+.reaction-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 12px;
+    border: 1px solid var(--divider);
+    background: rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    font-size: var(--text-dialog);
+    line-height: 1.4;
+    transition: background 0.15s;
+}
+
+.reaction-bubble:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.reaction-chosen {
+    border-color: var(--color-accent-main);
+    background: var(--reaction-chosen-bg);
+}
+
+.reaction-unread {
+    box-shadow: 0 0 0 2px var(--reaction-unread-ring);
+}
+
+.reaction-emoji {
+    font-size: var(--text-body);
+}
+
+.reaction-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: inherit;
+}
+
+@keyframes reaction-big-pulse-anim {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.5); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+.reaction-big-pulse {
+    animation: reaction-big-pulse-anim 0.6s ease forwards;
+}
+
+.reaction-add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 24px;
+    border-radius: 12px;
+    border: 1px dashed rgba(0, 0, 0, 0.2);
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.4);
+    transition: all 0.15s;
+}
+
+.reaction-add-btn:hover {
+    border-color: var(--color-accent-main);
+    color: var(--color-accent-main);
+    background: rgba(33, 150, 243, 0.05);
+}
+
+.reaction-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    padding: 0 8px;
+    border: 1px solid var(--design-border-color, var(--divider));
+    border-radius: var(--design-control-radius, 12px);
+    background: var(--design-input-surface, transparent);
+    color: var(--design-muted-color, var(--fg3));
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.reaction-more-btn:hover {
+    border-color: var(--color-accent-main);
+    color: var(--color-accent-main);
+    background: var(--design-hover-background, rgba(0, 0, 0, 0.05));
+}
+
+.reaction-picker-panel {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    width: min(250px, calc(100vw - 32px));
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid var(--design-border-color, var(--divider));
+    border-radius: var(--design-dialog-radius, 14px);
+    background: var(--design-panel-background, #fff);
+    color: var(--design-page-color, var(--fg1));
+    box-shadow: var(--design-message-shadow, var(--shadow-bubble));
+    z-index: 200;
+}
+
+.reaction-picker-search {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 6px;
+    padding: 6px 9px;
+    border: 1px solid var(--design-border-color, var(--divider));
+    border-radius: var(--design-control-radius, 8px);
+    outline: none;
+    background: var(--design-input-surface, rgba(0, 0, 0, 0.04));
+    color: var(--design-page-color, var(--fg1));
+    font: inherit;
+    font-size: 13px;
+}
+
+.reaction-picker-search:focus {
+    border-color: var(--color-accent-main);
+}
+
+.reaction-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(28px, 1fr));
+    gap: 3px;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+.reaction-tooltip {
+    position: fixed;
+    max-width: 240px;
+    overflow: hidden;
+    padding: 5px 10px;
+    border-radius: var(--design-control-radius, 8px);
+    background: var(--design-header-background, rgba(0, 0, 0, 0.82));
+    color: var(--design-header-color, #fff);
+    box-shadow: var(--design-message-shadow, 0 2px 8px rgba(0, 0, 0, 0.25));
+    font-size: 12px;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 9999;
+}
+
+.reaction-picker {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+    z-index: 100;
+}
+
+.reaction-picker-item {
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 8px;
+    transition: transform 0.1s, background 0.1s;
+}
+
+.reaction-picker-item:hover {
+    transform: scale(1.3);
+    background: rgba(0, 0, 0, 0.06);
+}
+
+body[class*='design-'] .reaction-picker-item:hover {
+    background: var(--design-hover-background) !important;
+}
+
+body[class*='design-'] .reaction-add-btn,
+body[class*='design-'] .reaction-paid-add,
+body[class*='design-'] .reaction-more-btn {
+    border-radius: var(--design-control-radius) !important;
+}
+
+body.design-android-holo .reaction-picker-panel,
+body.design-webogram .reaction-picker-panel,
+body.design-tdesktop-classic .reaction-picker-panel {
+    border-radius: 2px;
+}
+
+body.design-ios .reaction-picker-panel,
+body.design-macos .reaction-picker-panel,
+body.design-android-glass .reaction-picker-panel {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+@media (max-width: 480px) {
+    .reaction-picker-panel {
+        position: fixed;
+        right: 12px;
+        bottom: 76px;
+        left: 12px;
+        width: auto;
+    }
+
+    .reaction-picker-grid {
+        grid-template-columns: repeat(8, minmax(28px, 1fr));
+    }
+}
+
+/* Paid reaction (stars) badge */
+.reaction-paid-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 7px;
+    border-radius: 12px;
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+}
+
+.reaction-paid-badge:hover {
+    background: rgba(255, 193, 7, 0.28);
+}
+
+/* Button to send a paid star reaction */
+.reaction-paid-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 7px;
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 193, 7, 0.5);
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    color: #b8860b;
+    transition: all 0.15s;
+}
+
+.reaction-paid-add:hover {
+    background: rgba(255, 193, 7, 0.12);
+    border-color: #f5c518;
+}
+
+.reaction-paid-sending {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.reaction-paid-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-primary, #222);
+}
+
+/* ── Premium reaction particles ───────────────────────────────────────────── */
+
+/* Wrapper that positions particles relative to the reaction bubble */
+.reaction-bubble {
+    position: relative;
+    overflow: visible;
+}
+
+/* Keyframe: particle bursts outward and fades */
+@keyframes reaction-particle {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--px), var(--py)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Each particle dot spawned via JS */
+.reaction-particle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent-main, #2196f3);
+    pointer-events: none;
+    animation: reaction-particle 0.55s ease-out forwards;
+}
+
+/* Premium video sticker: glow shimmer */
+.sticker-premium-glow {
+    filter: drop-shadow(0 0 6px var(--color-accent-main, #2196f3));
+    animation: premium-shimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes premium-shimmer {
+    0%,
+    100% {
+        filter: drop-shadow(0 0 4px rgba(51, 144, 236, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 10px rgba(51, 144, 236, 0.85));
+    }
+}

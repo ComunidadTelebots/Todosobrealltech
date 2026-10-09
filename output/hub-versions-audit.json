@@ -1,0 +1,352 @@
+[
+  {
+    "ref": "origin",
+    "commit": "22d2b1f6fcbe72e9955cc270ca6d9afaeb304bf7",
+    "version": "v16.85.0-alpha",
+    "htmlSha": "cb52e794cd5c",
+    "bytes": 57002,
+    "nativeMaster": false,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "origin/agent/improve-noticiasweb3-hub",
+    "commit": "dda8aabe6e0279b236b8873ce399aa31ddbd303c",
+    "version": "v18.23.37",
+    "htmlSha": "654045fd80f2",
+    "bytes": 426313,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/alfa",
+    "commit": "899d80596fb2fe8c4a56ecc53349c2456d7e8502",
+    "version": "v18.26.15.16-alpha",
+    "htmlSha": "2c954aa0c8c9",
+    "bytes": 521260,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/alpha",
+    "commit": "0c3c46c2d623d3750c05b62979b299b968633c64",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "5d01c6e41a1a",
+    "bytes": 369098,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/beta",
+    "commit": "5604906af1f2a103dfdf096e14d0f06526b2b367",
+    "version": "v18.26.15.16-alpha",
+    "htmlSha": "a77427c41c08",
+    "bytes": 3045875,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "origin/codex/chat-message-ranking",
+    "commit": "c39aecaf0697110895acd2c18d0879f9a64bf831",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "5d01c6e41a1a",
+    "bytes": 369098,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/codex/operations-telemetry",
+    "commit": "356447b9ad7d2f4adcb299dd93989edcc8384305",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "5d01c6e41a1a",
+    "bytes": 369098,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/codex/release-startup-guard",
+    "commit": "fa00941dec54c1fb53b4956ab9856f6951e00db7",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "5d01c6e41a1a",
+    "bytes": 369098,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/codex/scaling-monitoring",
+    "commit": "07edd7660e0a663e8614b0b47ffdc6868753f4b6",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "5d01c6e41a1a",
+    "bytes": 369098,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/codex/unified-activity-map",
+    "commit": "de30184e7e96f314277d1b6309c13309ab5f9178",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "2c20e75c98b2",
+    "bytes": 369799,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/dev",
+    "commit": "f2525300ae8b0c15fb902e338a4a632b4d4ac5bc",
+    "version": "v18.23.17-alpha.3",
+    "htmlSha": "5d01c6e41a1a",
+    "bytes": 369098,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  },
+  {
+    "ref": "origin/master",
+    "commit": "22d2b1f6fcbe72e9955cc270ca6d9afaeb304bf7",
+    "version": "v16.85.0-alpha",
+    "htmlSha": "cb52e794cd5c",
+    "bytes": 57002,
+    "nativeMaster": false,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "origin/prealfa",
+    "commit": "cae50956fcd2d7e2d4d5e2a3855d14656407ad1b",
+    "version": "v18.26.15.16-alpha",
+    "htmlSha": "a77427c41c08",
+    "bytes": 3045875,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "origin/rc",
+    "commit": "a0dcfdad4feff397eeffdf03710e9822767d2812",
+    "version": "v18.26.15.16-alpha",
+    "htmlSha": "a77427c41c08",
+    "bytes": 3045875,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV",
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "v16.85.0",
+    "commit": "22d2b1f6fcbe72e9955cc270ca6d9afaeb304bf7",
+    "version": "v16.85.0-alpha",
+    "htmlSha": "cb52e794cd5c",
+    "bytes": 57002,
+    "nativeMaster": false,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "v16.85.0-beta",
+    "commit": "9eb245e27461e8541442dfa664afec8b303fb18e",
+    "version": "v16.85.0-alpha",
+    "htmlSha": "cb52e794cd5c",
+    "bytes": 57002,
+    "nativeMaster": false,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "v16.85.0-rc",
+    "commit": "3619a18bd08443160faf9c7f550aa5bf0de808e0",
+    "version": "v16.85.0-alpha",
+    "htmlSha": "cb52e794cd5c",
+    "bytes": 57002,
+    "nativeMaster": false,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "https://www.googletagmanager.com/gtag/js?id=G-F5P08EW3SV"
+    ]
+  },
+  {
+    "ref": "v18.25.15.15-alpha",
+    "commit": "28270642d91a1bf34a0fbf869ba3a1c2584815c6",
+    "version": "v18.23.37",
+    "htmlSha": "a082c1eb98c2",
+    "bytes": 516845,
+    "nativeMaster": true,
+    "scripts": [
+      "https://telegram.org/js/telegram-web-app.js",
+      "seasonal.js",
+      "/i18n.js?v=1701",
+      "/context-help.js?v=1710"
+    ]
+  }
+]

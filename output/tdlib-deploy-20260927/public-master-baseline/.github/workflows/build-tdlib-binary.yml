@@ -1,0 +1,51 @@
+name: Compile & publish libtdjson.so
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/build-tdlib-binary.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install build dependencies
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo apt-get install -y \
+            make git zlib1g-dev libssl-dev gperf php-cli cmake \
+            clang-14 libc++-14-dev libc++abi-14-dev
+
+      - name: Clone TDLib
+        run: git clone --depth=1 https://github.com/tdlib/td.git /tmp/td
+
+      - name: Compile TDLib
+        working-directory: /tmp/td
+        run: |
+          mkdir build && cd build
+          CXXFLAGS="-stdlib=libc++" \
+          CC=/usr/bin/clang-14 \
+          CXX=/usr/bin/clang++-14 \
+          cmake -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX:PATH=../example/python/tdlib ..
+          cmake --build . --target install
+
+      - name: Get TDLib commit hash
+        id: tdlib_hash
+        run: echo "hash=$(git -C /tmp/td rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Upload libtdjson.so as Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tdlib-prebuilt
+          name: "TDLib prebuilt (linux/amd64)"
+          body: |
+            Binario `libtdjson.so` compilado automáticamente desde tdlib/td@${{ steps.tdlib_hash.outputs.hash }}.
+            Descargado por el Dockerfile principal. No borrar ni renombrar el release.
+          files: /tmp/td/example/python/tdlib/lib/libtdjson.so
+          make_latest: false

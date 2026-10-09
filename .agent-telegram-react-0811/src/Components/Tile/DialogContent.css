@@ -1,0 +1,44 @@
+/*
+ *  Copyright (c) 2018-present, Evgeny Nadymov
+ *
+ * This source code is licensed under the GPL v.3.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.dialog-content {
+    font-size: var(--text-dialog);
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.dialog-content-accent {
+    /*color: #000;*/
+}
+
+.dialog-active .dialog-content,
+.dialog-active .dialog-content-accent,
+.dialog-active .dialog-content-draft,
+.dialog-active .dialog-badge-pinned {
+    color: #fff;
+}
+
+.dialog-content-draft {
+    color: var(--draft-red);
+}
+
+.chat-list-three-lines .dialog-content {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    line-height: 1.25;
+}
+
+.chat-list-three-lines .dialog-wrapper {
+    min-height: 66px;
+    align-items: center;
+}

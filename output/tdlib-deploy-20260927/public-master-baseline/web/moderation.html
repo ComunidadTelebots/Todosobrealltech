@@ -1,0 +1,154 @@
+<!-- Pestaña Moderación -->
+<div class="glass-panel" style="margin-bottom: 25px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
+        <h3 style="margin:0;">👮 Panel de Moderación</h3>
+        <select id="modGroupSelect" class="input-style" style="width: 250px;" onchange="loadModerationData()">
+            <option value="">— Seleccionar Grupo —</option>
+        </select>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+        <!-- Warns -->
+        <div class="glass-panel" style="background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.2);">
+            <h4 style="color: #f87171; margin-bottom: 15px;">⚠️ Advertencias Activas</h4>
+            <div id="modWarnsList" style="min-height: 100px; font-size: 12px;">
+                <div style="color: var(--text-muted); text-align: center; margin-top: 20px;">Selecciona un grupo</div>
+            </div>
+        </div>
+
+        <!-- Mutes -->
+        <div class="glass-panel" style="background: rgba(139,92,246,0.05); border-color: rgba(139,92,246,0.2);">
+            <h4 style="color: var(--primary); margin-bottom: 15px;">🔇 Usuarios Silenciados</h4>
+            <div id="modMutesList" style="min-height: 100px; font-size: 12px;">
+                <div style="color: var(--text-muted); text-align: center; margin-top: 20px;">Selecciona un grupo</div>
+            </div>
+        </div>
+
+        <!-- Notas del Grupo -->
+        <div class="glass-panel" style="background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.2);">
+            <h4 style="color: var(--accent); margin-bottom: 15px;">📝 Notas del Grupo</h4>
+            <textarea id="modGroupNotes" class="input-style" rows="4" placeholder="Notas sobre este grupo..." style="resize: none; width: 100%; margin-bottom: 10px;"></textarea>
+            <button class="btn-glow" style="margin: 0; padding: 8px; font-size: 12px;" onclick="saveGroupNotes()">💾 Guardar Nota</button>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de Leaderboard -->
+<div class="glass-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin:0;">🏆 Leaderboard Global</h3>
+        <button class="tab-btn" style="width: auto; padding: 6px 14px; margin:0; font-size: 12px;" onclick="refreshLeaderboard()">🔄 Actualizar</button>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--glass-border);">
+                <th style="text-align:left; padding: 8px; color: var(--text-muted);">#</th>
+                <th style="text-align:left; padding: 8px; color: var(--text-muted);">Usuario</th>
+                <th style="text-align:left; padding: 8px; color: var(--text-muted);">Mensajes</th>
+                <th style="text-align:left; padding: 8px; color: var(--text-muted);">Karma</th>
+                <th style="text-align:left; padding: 8px; color: var(--text-muted);">Insignia</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboardBody">
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">Cargando...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Acciones Rápidas de Moderación -->
+<div class="glass-panel" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 15px;">⚡ Acciones Rápidas</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <label style="font-size: 12px; color: var(--text-muted);">Banear usuario (UID)</label>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <input type="text" id="modBanUid" class="input-style" placeholder="123456789" style="flex:1;">
+                <button class="btn-glow" style="margin:0; padding: 8px 16px; background: rgba(239,68,68,0.2); border-color: var(--danger);" onclick="modBanUser()">BAN</button>
+            </div>
+        </div>
+        <div>
+            <label style="font-size: 12px; color: var(--text-muted);">Broadcast al grupo seleccionado</label>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <input type="text" id="modBroadcastMsg" class="input-style" placeholder="Mensaje para el grupo..." style="flex:1;">
+                <button class="btn-glow" style="margin:0; padding: 8px 16px;" onclick="modSendToGroup()">📢</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LISTA GLOBAL DE BANEOS (SINCRONIZADA) -->
+    <div class="glass-panel" style="margin-top: 20px; border-left: 3px solid #ef4444; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin:0;">🌐 Lista Negra Global (Sincronizada)</h3>
+            <button class="tab-btn" style="width: auto; padding: 6px 14px; margin:0; font-size: 12px;" onclick="loadGlobalBans()">🔄 Actualizar</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <label style="font-size: 11px; color: var(--text-muted); font-weight: 700;">ESTADÍSTICAS</label>
+                <div id="banStatsContainer" style="margin-top: 10px; font-size: 12px;">
+                    <div style="padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px;">
+                        <div>Total baneado: <strong id="totalBans">0</strong></div>
+                        <div>Últimas 24h: <strong id="recentBans">0</strong></div>
+                        <div style="margin-top: 5px; font-size: 10px; color: var(--text-muted);" id="banSourcesBreakdown"></div>
+                    </div>
+                </div>
+
+                <label style="font-size: 11px; color: var(--text-muted); font-weight: 700; margin-top: 15px;">DESBANEAR USUARIO</label>
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <input type="text" id="unbanUid" class="input-style" placeholder="UID a desbanear..." style="flex:1;">
+                    <button class="btn-glow" style="margin:0; padding: 8px 15px; background: rgba(34,197,94,0.2); border-color: #22c55e;" onclick="unbanUser()">✓</button>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="background: rgba(0,0,0,0.2); padding: 15px;">
+                <label style="font-size: 10px; color: #f87171; font-weight: 800; letter-spacing: 1px;">USUARIOS BANEADOS</label>
+                <div id="globalBansList" style="margin-top: 10px; font-family: monospace; font-size: 10px; color: var(--text-muted); max-height: 200px; overflow-y: auto;">
+                    Cargando...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seguridad Avanzada: Huellas Digitales -->
+    <div class="glass-panel" style="margin-top: 20px; border-left: 3px solid #f87171; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin:0;">🛡️ Lista Negra de Archivos (SHA-256)</h3>
+            <div class="help-hint" title="Baneo permanente de contenido prohibido mediante su huella digital única (SHA-256).">?</div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <label style="font-size: 11px; color: var(--text-muted); font-weight: 700;">BLOQUEO MANUAL</label>
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <input type="text" id="manualHashInput" class="input-style" placeholder="Pegar SHA-256..." style="font-family: monospace; font-size: 11px;">
+                    <button class="btn-glow" style="margin:0; padding: 8px 15px;" onclick="addManualHash()">🔒</button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <label style="font-size: 11px; color: var(--text-muted); font-weight: 700;">🌐 SINCRONIZACIÓN EXTERNA</label>
+                    <div class="help-hint" title="Importa listas de bloqueo desde URLs externas de forma automática.">?</div>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <input type="text" id="syncUrlInput" class="input-style" placeholder="https://..." style="font-size: 11px;">
+                        <button class="btn-glow" style="margin:0; padding: 8px 15px; background: rgba(59,130,246,0.2); border-color: #3b82f6;" onclick="addSyncUrl()">🔗</button>
+                    </div>
+                    <div id="syncUrlsList" style="margin-top: 10px; font-size: 10px; color: var(--accent);"></div>
+                </div>
+            </div>
+            
+            <div class="glass-panel" style="background: rgba(0,0,0,0.2); padding: 15px;">
+                <label style="font-size: 10px; color: var(--accent); font-weight: 800; letter-spacing: 1px;">HUELLAS EN LISTA NEGRA</label>
+                <div id="bannedHashesList" style="margin-top: 10px; font-family: monospace; font-size: 10px; color: var(--text-muted); max-height: 120px; overflow-y: auto;">
+                    Cargando base de datos...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.input-style { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; font-size: 13px; }
+.mod-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.mod-item:last-child { border-bottom: none; }
+.btn-mod-mini { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; padding: 3px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; }
+.btn-mod-mini:hover { background: rgba(239,68,68,0.2); }
+</style>

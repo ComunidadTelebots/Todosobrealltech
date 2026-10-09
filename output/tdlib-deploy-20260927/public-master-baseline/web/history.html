@@ -1,0 +1,331 @@
+<!-- Panel de Historial Diario — acordeón con deltas vs día anterior. Datos estáticos. -->
+<div class="glass-panel" style="margin-bottom: 25px; background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(59,130,246,0.08), rgba(13,17,23,0.7)); border: 1px solid rgba(139,92,246,0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2 style="margin-bottom: 5px;">📅 Historial de Crecimiento</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Instantáneas diarias del núcleo Moon. Pulsa una fecha para desplegar sus métricas y la variación respecto al registro anterior.</p>
+        </div>
+        <div class="status-badge online" style="background: rgba(139,92,246,0.12); color: var(--primary);">
+            7 REGISTROS
+        </div>
+    </div>
+</div>
+
+<div class="hist-timeline">
+
+    <!-- 2026-05-24 actual -->
+    <details class="hist-entry glass-panel" open>
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">24 may 2026</span>
+                <span class="hist-time">· actual</span>
+                <span class="hist-tag live">EN VIVO</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">2.518</span>
+                <span class="hist-delta neg">▼ 9</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">2.518</div><span class="hist-delta neg">▼ 9</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">14</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">44</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">386</div><span class="hist-delta neg">▼ 4</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">62</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">20,08 M</div><span class="hist-delta nd">n/d</span></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2026-05-24 07:22 -->
+    <details class="hist-entry glass-panel">
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">24 may 2026</span>
+                <span class="hist-time">· 07:22</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">2.527</span>
+                <span class="hist-delta pos">▲ 39</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">2.527</div><span class="hist-delta pos">▲ 39</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">14</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">44</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">390</div><span class="hist-delta pos">▲ 80</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">62</div><span class="hist-delta pos">▲ 3</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">—</div><span class="hist-delta nd">n/d</span></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2026-05-23 23:31 -->
+    <details class="hist-entry glass-panel">
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">23 may 2026</span>
+                <span class="hist-time">· 23:31</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">2.488</span>
+                <span class="hist-delta pos big">▲ 2.133</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">2.488</div><span class="hist-delta pos">▲ 2.133</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">14</div><span class="hist-delta pos">▲ 6</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">44</div><span class="hist-delta pos">▲ 44</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">310</div><span class="hist-delta pos">▲ 285</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">59</div><span class="hist-delta pos">▲ 56</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">—</div><span class="hist-delta nd">n/d</span></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2026-04-30 16:49 — expansión maestra Wikipedia -->
+    <details class="hist-entry glass-panel">
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">30 abr 2026</span>
+                <span class="hist-time">· 16:49</span>
+                <span class="hist-tag event">🌐 Expansión Wikipedia</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">355</span>
+                <span class="hist-delta pos">▲ 101</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <p class="hist-note">🧠 Expansión maestra de Wikipedia: la base neuronal se triplicó en una sola jornada.</p>
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">355</div><span class="hist-delta pos">▲ 101</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">8</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">0</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">25</div><span class="hist-delta pos">▲ 8</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">3</div><span class="hist-delta pos">▲ 3</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">96.125</div><span class="hist-delta pos big">▲ 66.172</span></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2026-04-30 15:03 -->
+    <details class="hist-entry glass-panel">
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">30 abr 2026</span>
+                <span class="hist-time">· 15:03</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">254</span>
+                <span class="hist-delta pos">▲ 96</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">254</div><span class="hist-delta pos">▲ 96</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">8</div><span class="hist-delta pos">▲ 1</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">0</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">17</div><span class="hist-delta pos">▲ 17</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">0</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">29.953</div><span class="hist-delta pos">▲ 355</span></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2026-04-28 16:47 -->
+    <details class="hist-entry glass-panel">
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">28 abr 2026</span>
+                <span class="hist-time">· 16:47</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">158</span>
+                <span class="hist-delta pos">▲ 102</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">158</div><span class="hist-delta pos">▲ 102</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">7</div><span class="hist-delta pos">▲ 7</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">0</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">0</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">0</div><span class="hist-delta zero">= 0</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">29.598</div><span class="hist-delta pos big">▲ 29.598</span></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2026-04-27 18:20 — primer registro -->
+    <details class="hist-entry glass-panel">
+        <summary class="hist-summary">
+            <div class="hist-date-block">
+                <span class="hist-day">27 abr 2026</span>
+                <span class="hist-time">· 18:20</span>
+                <span class="hist-tag genesis">⭐ Génesis</span>
+            </div>
+            <div class="hist-quick">
+                <span class="hist-quick-icon">👥</span>
+                <span class="hist-quick-val">56</span>
+                <span class="hist-delta base">—</span>
+            </div>
+            <span class="hist-chevron">▾</span>
+        </summary>
+        <div class="hist-body">
+            <p class="hist-note">Primer registro del núcleo. No hay día anterior con el que comparar.</p>
+            <div class="hist-grid">
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👥</span><span class="hm-label">Usuarios</span></div><div class="hm-value">56</div><span class="hist-delta base">—</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">👨‍👩‍👧</span><span class="hm-label">Grupos</span></div><div class="hm-value">0</div><span class="hist-delta base">—</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🚫</span><span class="hm-label">Baneados</span></div><div class="hm-value">0</div><span class="hist-delta base">—</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">📸</span><span class="hm-label">Fotos</span></div><div class="hm-value">0</div><span class="hist-delta base">—</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🎬</span><span class="hm-label">Vídeos</span></div><div class="hm-value">0</div><span class="hist-delta base">—</span></div>
+                <div class="hist-metric"><div class="hm-head"><span class="hm-icon">🧠</span><span class="hm-label">Neuronas</span></div><div class="hm-value">0</div><span class="hist-delta base">—</span></div>
+            </div>
+        </div>
+    </details>
+
+</div>
+
+<style>
+.hist-timeline { display: flex; flex-direction: column; gap: 16px; }
+
+.hist-entry {
+    padding: 0;
+    overflow: hidden;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.hist-entry[open] {
+    border-color: rgba(139,92,246,0.35);
+    box-shadow: 0 0 0 1px rgba(139,92,246,0.12), 0 8px 30px rgba(139,92,246,0.08);
+}
+
+/* Cabecera clicable (acordeón) */
+.hist-summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+.hist-summary::-webkit-details-marker { display: none; }
+.hist-summary:hover { background: rgba(139,92,246,0.06); }
+
+.hist-date-block { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: 1; }
+.hist-day { font-size: 16px; font-weight: 800; color: var(--text-main); letter-spacing: -0.3px; }
+.hist-time { font-size: 13px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+.hist-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+.hist-tag.live { background: rgba(16,185,129,0.12); color: var(--accent); border: 1px solid rgba(16,185,129,0.35); }
+.hist-tag.event { background: rgba(59,130,246,0.12); color: var(--secondary); border: 1px solid rgba(59,130,246,0.35); }
+.hist-tag.genesis { background: rgba(139,92,246,0.12); color: var(--primary); border: 1px solid rgba(139,92,246,0.35); }
+
+/* Resumen rápido (usuarios) en la cabecera */
+.hist-quick { display: flex; align-items: center; gap: 8px; }
+.hist-quick-icon { font-size: 15px; opacity: 0.85; }
+.hist-quick-val { font-size: 17px; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+
+/* Chevron que rota al abrir */
+.hist-chevron {
+    color: var(--primary);
+    font-size: 16px;
+    transition: transform 0.25s ease;
+    margin-left: 4px;
+}
+.hist-entry[open] .hist-chevron { transform: rotate(180deg); }
+
+/* Cuerpo expandible */
+.hist-body {
+    padding: 4px 22px 22px;
+    border-top: 1px solid var(--glass-border);
+    animation: histReveal 0.28s ease;
+}
+@keyframes histReveal {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.hist-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    background: rgba(59,130,246,0.07);
+    border-left: 3px solid var(--secondary);
+    padding: 9px 14px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0 4px;
+}
+
+/* Rejilla de métricas */
+.hist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+.hist-metric {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.hist-metric:hover { transform: translateY(-2px); border-color: rgba(139,92,246,0.3); }
+.hm-head { display: flex; align-items: center; gap: 7px; }
+.hm-icon { font-size: 15px; }
+.hm-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+.hm-value { font-size: 22px; font-weight: 800; color: var(--text-main); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px; }
+
+/* Insignias de variación (delta) */
+.hist-delta {
+    align-self: flex-start;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+.hist-delta.pos  { background: rgba(16,185,129,0.12); color: var(--accent); }
+.hist-delta.neg  { background: rgba(244,63,94,0.12);  color: var(--danger); }
+.hist-delta.zero { background: rgba(148,163,184,0.1); color: var(--text-muted); }
+.hist-delta.nd   { background: rgba(148,163,184,0.08); color: var(--text-muted); font-style: italic; }
+.hist-delta.base { background: transparent; color: var(--text-muted); }
+.hist-delta.big  { box-shadow: 0 0 0 1px currentColor; }
+
+/* En la cabecera el delta es algo mayor */
+.hist-quick .hist-delta { font-size: 13px; padding: 3px 10px; }
+
+@media (max-width: 600px) {
+    .hist-summary { flex-wrap: wrap; gap: 10px; }
+    .hist-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>

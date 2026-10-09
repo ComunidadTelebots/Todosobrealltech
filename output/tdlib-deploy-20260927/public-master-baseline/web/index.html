@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Multibot - Neural Dashboard 🌙</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1041/1041916.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #38bdf8;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+        }
+    </style>
+</head>
+
+<body class="theme-moon">
+    <!-- Fondo decorativo (Neón) -->
+    <div class="background-glow"></div>
+    <div class="background-glow"
+        style="top: 60%; left: 70%; background: radial-gradient(circle, rgba(56,189,248,0.1) 0%, rgba(15,23,42,0) 70%);">
+    </div>
+
+    <!-- Matrix Background Container -->
+    <div id="matrix-container"></div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-overlay">
+        <div class="glass-panel login-box">
+            <div class="moon-logo" style="font-size: 50px; margin-bottom: 20px;">🌙</div>
+            <h2 style="font-size: 28px; font-weight: 800; letter-spacing: -1px;"><span data-i18n="login_title">MOON
+                    CORE</span></h2>
+            <p data-i18n="login_subtitle">Acceso restringido al Núcleo Neuronal</p>
+            <input type="password" id="authKey" data-i18n="login_placeholder" placeholder="Llave Maestra..."
+                onkeyup="if(event.key==='Enter') login()" style="text-align: center; letter-spacing: 4px;">
+            <div id="loginError" class="error-msg"></div>
+            <button onclick="login()" data-i18n="login_btn">INGRESAR</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" style="display: none;">
+        <header class="glass-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-area">
+                        <span class="moon-icon">🌙</span>
+                        <div class="logo-text">
+                            <h1>MOON <span class="version-tag" id="appVersionTag">v16.76.0</span></h1>
+                            <p class="status-indicator"><span class="status-dot online"></span> <span
+                                    data-i18n="status_online">SISTEMA ACTIVO</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-center">
+                    <div class="search-wrapper">
+                        <i class="search-icon">🔍</i>
+                        <input type="text" id="globalSearch" data-i18n="search_placeholder"
+                            placeholder="Buscar en el núcleo..." onkeyup="handleGlobalSearch(event)">
+                        <div id="ai-mode-pill" class="ai-status-pill">MOON</div>
+                        <div id="searchSuggestions" class="search-results-dropdown"></div>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="uptime-counter">
+                        <span class="label">UPTIME:</span>
+                        <span id="uptimeDisplay" class="value">00:00:00</span>
+                    </div>
+                    <div class="server-time" id="serverClock">00:00:00</div>
+                    <div class="action-buttons">
+                        <select class="lang-select" onchange="setLanguage(this.value)">
+                            <option value="es">ES</option>
+                            <option value="en">EN</option>
+                            <option value="fr">FR</option>
+                        </select>
+                        <button class="icon-btn logout-btn" onclick="logout()" title="Cerrar Sesión">🚪</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="main-nav glass-panel">
+            <div class="nav-links">
+                <button class="nav-item active" onclick="switchTab('dashboard', this)">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label" data-i18n="nav_dashboard">Panel</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('bots', this)">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label" data-i18n="nav_bots">Bots</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('chat', this)">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label" data-i18n="nav_chat">Chat</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('ia', this)">
+                    <span class="nav-icon">🧠</span>
+                    <span class="nav-label" data-i18n="nav_ia">IA</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('brain-map', this)">
+                    <span class="nav-icon">🕸️</span>
+                    <span class="nav-label" data-i18n="nav_brain_map">Mapa Neuronal</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('moderation', this)">
+                    <span class="nav-icon">👮</span>
+                    <span class="nav-label" data-i18n="nav_security">Moderación</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('plugins', this)">
+                    <span class="nav-icon">🔌</span>
+                    <span class="nav-label" data-i18n="nav_plugins">Plugins</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('terminal', this)">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-label" data-i18n="nav_terminal">Terminal</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('proxies', this)">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-label">Proxies</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('security', this)">
+                    <span class="nav-icon">🛡️</span>
+                    <span class="nav-label">Seguridad</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('queue', this)">
+                    <span class="nav-icon">📬</span>
+                    <span class="nav-label">Cola</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('games', this)">
+                    <span class="nav-icon">🎮</span>
+                    <span class="nav-label">Juegos</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('history', this)">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-label">Historial</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('changelog', this)">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Cambios</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('settings', this)">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label" data-i18n="nav_settings">Ajustes</span>
+                </button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div id="tab-container">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p data-i18n="loading_core">Inicializando Núcleo Moon...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal de Auditoría en Tiempo Real -->
+    <div id="auditModal" class="modal-overlay" style="display: none;">
+        <div class="glass-panel modal-content audit-live-panel">
+            <div class="modal-header-flex">
+                <h3>🛡️ Peritaje en Tiempo Real</h3>
+                <button onclick="closeAuditModal()" class="btn-close-mini">×</button>
+            </div>
+            <div class="audit-live-grid">
+                <div class="audit-live-step" id="step-neural">
+                    <div class="step-icon">🧠</div>
+                    <div class="step-info">
+                        <label>ANÁLISIS NEURONAL</label>
+                        <p id="neural-status">Iniciando escaneo de sinapsis...</p>
+                        <div class="mini-progress">
+                            <div id="neural-bar" style="width: 10%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="audit-live-step" id="step-cas">
+                    <div class="step-icon">🛰️</div>
+                    <div class="step-info">
+                        <label>ESCUDO CAS (GLOBAL)</label>
+                        <p id="cas-status">Conectando con base de datos Combot...</p>
+                        <div class="status-led" id="cas-led"></div>
+                    </div>
+                </div>
+                <div class="audit-live-step" id="step-spam">
+                    <div class="step-icon">🚫</div>
+                    <div class="step-info">
+                        <label>FILTRO ANTI-SPAM</label>
+                        <p id="spam-status">Analizando patrones de estafa...</p>
+                    </div>
+                </div>
+            </div>
+            <div id="audit-live-results" class="audit-results-area">
+                <p>Esperando telemetría del grupo...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pre-load de seguridad para asegurar que script.js encuentre sus elementos -->
+    <script>
+        window.MOON_CONFIG = {
+            currentTab: 'login',
+            loadedTemplates: {}
+        };
+    </script>
+
+    <script src="script.js?v=1680"></script>
+    <script src="i18n.js"></script>
+</body>
+
+</html>
