@@ -8,7 +8,6 @@
 - [Blog Management - Admin](/blogadmin): No description available
 - [Bot Directory - Todo sobre alltech](/bots): Browse and manage all available bots in the platform.
 - [Creator Dashboard - Todo sobre alltech](/creator): No description available
-- [Login - Todo sobre alltech](/login): Login to your Todo sobre alltech account to access your dashboard and manage your profile.
 - [Manage Translations - Admin Dashboard](/translations): No description available
 - [Onion Web Management - Admin](/onionwebmanagement): Manage hidden services and .onion addresses.
 - [Política de Privacidad | Todo sobre alltech](/privacypolicy): Nuestra política de privacidad, uso de datos y cookies en cumplimiento con las normativas internacionales de protección de datos (GDPR).

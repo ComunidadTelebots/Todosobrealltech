@@ -1,3 +1,4 @@
+import moonbotClusterRouter from './moonbot-cluster.js';
 import { Router } from 'express';
 import healthCheck from './health-check.js';
 import translateRouter from './translate.js';
@@ -44,6 +45,7 @@ export default () => {
     router.use('/preview', previewRouter);
     router.use('/stats', statsRouter);
     router.use('/telegram-language-map', telegramLanguageMapRouter);
+    router.use('/moonbot-admin/cluster', moonbotClusterRouter);
     router.use('/moonbot-admin', moonbotAdminRouter);
     router.use('/house-ads', houseAdsRouter);
     // Alias neutral: algunos bloqueadores interceptan cualquier URL que incluya

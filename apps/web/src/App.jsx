@@ -16,6 +16,7 @@ import AdSenseAutoAds from '@/components/AdSenseAutoAds.jsx';
 import SeasonalTheme from '@/components/SeasonalTheme.jsx';
 import { Toaster } from '@/components/ui/sonner';
 
+const MoonbotControlPage = lazy(() => import('@/pages/MoonbotControlPage.jsx'));
 const HomePage = lazy(() => import('@/pages/HomePage.jsx'));
 const LoginPage = lazy(() => import('@/pages/LoginPage.jsx'));
 const SignupPage = lazy(() => import('@/pages/SignupPage.jsx'));
@@ -88,6 +89,7 @@ function App() {
               <main className="flex-1">
                 <Suspense fallback={<PageFallback />}><Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/moonbot-control" element={<ProtectedRoute requiredRole={["admin", "creator"]}><MoonbotControlPage /></ProtectedRoute>} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
                   <Route path="/blog" element={<BlogPage />} />

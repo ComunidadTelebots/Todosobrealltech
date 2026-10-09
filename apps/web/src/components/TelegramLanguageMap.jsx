@@ -15,7 +15,7 @@ const continents = [
 const project = ({ lat, lon }) => ({ x: ((Number(lon) + 180) / 360) * 1000, y: ((90 - Number(lat)) / 180) * 500 });
 
 const TelegramLanguageMap = () => {
-  const [data, setData] = useState({ points: [], total_users: 0, languages: 0 });
+  const [data, setData] = useState({ points: [], total_users: null, languages: null });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -37,9 +37,10 @@ const TelegramLanguageMap = () => {
         <CardDescription>Distribución agregada según el idioma configurado en Telegram; no representa la ubicación física real.</CardDescription>
       </CardHeader>
       <CardContent>
+        {data.notice && <p role="status" className="mb-4 rounded-lg border p-4 text-sm">{data.notice}</p>}
         <div className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
-          <div className="rounded-xl border bg-muted/30 p-3"><Users className="mb-1 h-4 w-4 text-cyan-500" /><p className="text-2xl font-bold">{data.total_users}</p><p className="text-xs text-muted-foreground">Usuarios con idioma</p></div>
-          <div className="rounded-xl border bg-muted/30 p-3"><Languages className="mb-1 h-4 w-4 text-violet-500" /><p className="text-2xl font-bold">{data.languages}</p><p className="text-xs text-muted-foreground">Idiomas detectados</p></div>
+          <div className="rounded-xl border bg-muted/30 p-3"><Users className="mb-1 h-4 w-4 text-cyan-500" /><p className="text-2xl font-bold">{data.total_users ?? "—"}</p><p className="text-xs text-muted-foreground">Usuarios con idioma</p></div>
+          <div className="rounded-xl border bg-muted/30 p-3"><Languages className="mb-1 h-4 w-4 text-violet-500" /><p className="text-2xl font-bold">{data.languages ?? "—"}</p><p className="text-xs text-muted-foreground">Idiomas detectados</p></div>
         </div>
         {error ? <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300">{error}</div> : (
           <div className="overflow-hidden rounded-2xl border bg-slate-950">

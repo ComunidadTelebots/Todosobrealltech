@@ -3,18 +3,19 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import articles from '../data/articles.jsx';
 import pb from '../pb.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { ShareBar, readingTime } from '../components/ShareBar.jsx';
+import { ShareBar, readingTime, extractText } from '../components/ShareBar.jsx';
 import { TelegramEmbed, getTelegramPost } from '../components/TelegramEmbed.jsx';
 import { trackArticleView } from '../utils/analytics.js';
 import { getSiteInfo } from '../utils/site.js';
 import { ArticleLayoutPreview, parseLayoutBlocks } from '../components/NewsLegoEditor.jsx';
+import ArticleFacts from '../components/ArticleFacts.jsx';
 import RelatedNews from '../components/RelatedNews.jsx';
 
 const DEFAULT_OG_IMAGE = 'https://noticiasweb3.todosobreall.tech/og-default.png';
 
 // Upserts a <meta>. OG/Article tags are keyed by `property`, the rest by `name`.
 function setMeta(key, content) {
-  if (content == null) return;
+  if (content == null) { document.head.querySelector(`meta[property="${key}"]`)?.remove(); return; }
   const attr = key.startsWith('og:') || key.startsWith('article:') ? 'property' : 'name';
   let el = document.head.querySelector(`meta[${attr}="${key}"]`);
   if (!el) {
@@ -44,7 +45,7 @@ function toIso(article, pbRecord) {
     const d = new Date(raw);
     if (!Number.isNaN(d.getTime())) return d.toISOString();
   }
-  if (article?.year) return `${article.year}-01-01T00:00:00.000Z`;
+  // Do not invent a publication day or time from a year alone.
   return null;
 }
 
@@ -107,9 +108,8 @@ export default function NoticiaDetailPage({ siteVersion }) {
     const prev = document.title;
     document.title = `${article.title} — ${siteName}`;
 
-    const desc = typeof article.body?.props?.children === 'string'
-      ? article.body.props.children.slice(0, 155)
-      : article.title;
+    const bodyText = pbRecord?.contenido || extractText(article.body);
+    const desc = bodyText.trim().slice(0, 155) || article.title;
     const url = window.location.origin + window.location.pathname;
     const image = article.image || DEFAULT_OG_IMAGE;
     const publishedTime = toIso(article, pbRecord);
@@ -122,9 +122,24 @@ export default function NoticiaDetailPage({ siteVersion }) {
     setMeta('og:image', image);
     setMeta('og:site_name', siteName);
     setMeta('article:published_time', publishedTime);
+    setMeta('article:section', article.category || '');
     setCanonical(url);
+    const schema = document.createElement('script');
+    schema.type = 'application/ld+json';
+    schema.dataset.nw3Article = 'true';
+    const author = pbRecord?.autor || article.author;
+    schema.textContent = JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'NewsArticle',
+      headline: article.title, description: desc, url, mainEntityOfPage: url,
+      image: [image], articleSection: article.category || undefined,
+      datePublished: publishedTime || undefined,
+      author: author ? { '@type': 'Person', name: author } : undefined,
+      publisher: { '@type': 'Organization', name: siteName },
+      isBasedOn: article.source?.url || undefined,
+    });
+    document.head.appendChild(schema);
 
-    return () => { document.title = prev; };
+    return () => { document.title = prev; schema.remove(); };
   }, [article?.slug, pbRecord]);
 
   async function handleEliminar() {
@@ -214,7 +229,7 @@ export default function NoticiaDetailPage({ siteVersion }) {
         )}
         {article.date}
         {' · '}
-        <span style={{ color: '#888' }}>⏱ {readingTime(article.body)} lectura</span>
+        <span style={{ color: '#888' }}>⏱ {readingTime(pbRecord?.contenido || article.body)} lectura estimada</span>
         {visitas !== null && (
           <> · <span style={{ color: '#888' }}>👁 {visitas.toLocaleString('es')} {visitas === 1 ? 'visita' : 'visitas'}</span></>
         )}
@@ -225,6 +240,8 @@ export default function NoticiaDetailPage({ siteVersion }) {
           <> · <a href={article.telegramUrl} target="_blank" rel="noopener noreferrer">Ver en Telegram</a></>
         )}
       </div>
+
+      <ArticleFacts key={article.slug} article={article} record={pbRecord} text={pbRecord?.contenido || extractText(article.body)} published={toIso(article, pbRecord)} />
 
       <div className="article-body">{article.body}</div>
 

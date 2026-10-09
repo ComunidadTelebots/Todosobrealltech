@@ -1,3 +1,4 @@
+import { apiTraffic } from './utils/apiTraffic.js';
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
@@ -34,6 +35,7 @@ process.on('SIGTERM', async () => {
 	process.exit();
 });
 
+app.use(apiTraffic.middleware);
 app.use(helmet());
 const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '').split(',').map(o => o.trim()).filter(Boolean);
 app.use(cors({
