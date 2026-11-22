@@ -43,7 +43,9 @@ app.use(cors({
 	},
 	credentials: true,
 }));
-app.use(morgan('combined'));
+// Query strings and referring URLs can contain private login or invitation data.
+morgan.token('request-path', req => (req.originalUrl || req.url || '/').split('?', 1)[0]);
+app.use(morgan(':remote-addr - [:date[clf]] ":method :request-path HTTP/:http-version" :status :res[content-length] :response-time ms'));
 app.use(express.json({ limit: '6mb' }));
 app.use(express.urlencoded({ extended: true }));
 
