@@ -1,0 +1,24 @@
+name: Imagen NoticiasWeb3
+on:
+  pull_request:
+    paths:
+      - apps/noticiasweb3/**
+      - package-lock.json
+      - package.json
+      - .github/workflows/noticiasweb3-image.yml
+permissions:
+  contents: read
+jobs:
+  imagen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Compilar la web y validar Nginx
+        run: |
+          docker build -f apps/noticiasweb3/Dockerfile -t noticiasweb3-ci .
+          docker run --rm noticiasweb3-ci nginx -t
+          docker run -d --name noticiasweb3-ci -p 127.0.0.1:18080:80 noticiasweb3-ci
+          trap 'docker rm -f noticiasweb3-ci' EXIT
+          curl --retry 10 --retry-all-errors --retry-delay 1 -fsS http://127.0.0.1:18080/ -o portada.html
+          grep -q 'id="root"' portada.html

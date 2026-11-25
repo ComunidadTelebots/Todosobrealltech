@@ -1,4 +1,4 @@
-FROM node:20-slim AS build
+FROM node:24-slim AS build
 
 WORKDIR /repo
 
@@ -32,7 +32,7 @@ ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
 
-FROM nginx:1.27-alpine
+FROM nginx:1.30-alpine
 
 COPY apps/noticiasweb3/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /repo/apps/noticiasweb3/dist /usr/share/nginx/html
