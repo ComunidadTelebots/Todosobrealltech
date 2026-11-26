@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogIn, AlertCircle, Send, Loader2 } from 'lucide-react';
+import { LogIn, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import apiServerClient from '@/lib/apiServerClient.js';
+import TelegramAuthButton from '@/components/TelegramAuthButton.jsx';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, loginWithTelegram } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,99 +23,6 @@ const LoginPage = () => {
     sessionStorage.removeItem('post_auth_path');
     navigate(target?.startsWith('/admin/invite/') ? target : '/dashboard');
   };
-  const [tgReady, setTgReady] = useState(false);
-  const [telegramEnabled, setTelegramEnabled] = useState(false);
-  const [telegramConfig, setTelegramConfig] = useState(null);
-
-  // Client ID del bot (CintiaBot) registrado en BotFather → Web Login.
-
-  // Carga la librería nativa de Telegram Login (OpenID) una sola vez.
-  useEffect(() => {
-    const prepareTelegram = () => apiServerClient.fetch('/auth/telegram/config?prepare=1').then((response) => response.json()).then((config) => {
-      setTelegramEnabled(Boolean(config.enabled && config.client_id));
-      setTelegramConfig(config.enabled && config.client_id && config.nonce ? config : null);
-      if (!config.enabled && config.error) setError(config.error);
-    }).catch(() => setError('No se pudo consultar la configuración de Telegram.'));
-    prepareTelegram();
-    const nonceRefresh = window.setInterval(prepareTelegram, 4 * 60 * 1000);
-    if (window.Telegram && window.Telegram.Login) {
-      setTgReady(true);
-    } else {
-      const existing = document.getElementById('telegram-login-native');
-      if (existing) {
-        existing.addEventListener('load', () => setTgReady(true), { once: true });
-      } else {
-        const script = document.createElement('script');
-        script.id = 'telegram-login-native';
-        script.src = 'https://oauth.telegram.org/js/telegram-login.js';
-        script.async = true;
-        script.onload = () => setTgReady(true);
-        script.onerror = () => setError('No se pudo cargar Telegram Login. Revisa el bloqueador de contenido.');
-        document.head.appendChild(script);
-      }
-    }
-    return () => window.clearInterval(nonceRefresh);
-  }, []);
-
-  const handleTelegramLogin = () => {
-    if (!window.Telegram || !window.Telegram.Login) {
-      toast.error('Telegram todavía se está cargando, inténtalo de nuevo en un momento.');
-      return;
-    }
-    setError('');
-    setTelegramLoading(true);
-    const config = telegramConfig;
-    if (!config?.enabled || !config?.client_id || !config?.nonce) {
-      setTelegramLoading(false);
-      setError('Telegram todavía se está preparando. Inténtalo de nuevo en un momento.');
-      return;
-    }
-    // No debe haber ningún await antes de auth: los navegadores bloquearían
-    // la ventana de Telegram al dejar de considerarla iniciada por el usuario.
-    const loginPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    // El SDK usa location.pathname como redirect_uri y BotFather registra solo
-    // Trusted Origin. Durante la apertura hacemos que ambos coincidan exactamente.
-    window.history.replaceState(window.history.state, '', '/');
-    try {
-      window.Telegram.Login.auth(
-        {
-          client_id: Number(config.client_id),
-          scope: ['profile'],
-          nonce: config.nonce,
-          lang: 'es',
-        },
-        async (result) => {
-        setTelegramConfig(null);
-        if (!result || result.error || !result.id_token) {
-          setTelegramLoading(false);
-          if (result && result.error && result.error !== 'cancelled') {
-            setError('No se pudo iniciar sesión con Telegram.');
-          }
-          apiServerClient.fetch('/auth/telegram/config?prepare=1').then((response) => response.json()).then(setTelegramConfig).catch(() => {});
-          return;
-        }
-        const res = await loginWithTelegram({ id_token: result.id_token, nonce: config.nonce });
-        if (res.success) {
-          toast.success('Sesión iniciada con Telegram');
-          afterLogin();
-        } else {
-          const errorMsg = res.error === 'Esta cuenta ha sido congelada. Contacta al administrador.'
-            ? 'Tu cuenta ha sido congelada. Por favor contacta al administrador para más información.'
-            : res.error || 'No se pudo autenticar con Telegram';
-          setError(errorMsg);
-          toast.error('El login con Telegram falló');
-        }
-        setTelegramLoading(false);
-        },
-      );
-    } catch (reason) {
-      setTelegramLoading(false);
-      setError(reason.message || 'No se pudo abrir Telegram Login.');
-    } finally {
-      window.history.replaceState(window.history.state, '', loginPath || '/login');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -223,20 +130,17 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full bg-[#2481cc]/10 text-[#2481cc] border-[#2481cc]/20 hover:bg-[#2481cc]/20 hover:text-[#2481cc] transition-all duration-200 active:scale-[0.98]"
-              onClick={handleTelegramLogin}
-              disabled={loading || telegramLoading || !tgReady || !telegramEnabled}
-            >
-              {telegramLoading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4 mr-2" />
-              )}
-              Iniciar sesión con Telegram
-            </Button>
+            <TelegramAuthButton
+              label="Iniciar sesión con Telegram"
+              busy={telegramLoading}
+              setBusy={setTelegramLoading}
+              disabled={loading}
+              onError={setError}
+              onSuccess={() => {
+                toast.success('Sesión iniciada con Telegram');
+                afterLogin();
+              }}
+            />
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 pt-2 border-t border-border/50 mt-2">
             <div className="text-sm text-center text-muted-foreground mt-4">

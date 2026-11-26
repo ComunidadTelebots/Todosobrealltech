@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserPlus, AlertCircle } from 'lucide-react';
+import TelegramAuthButton from '@/components/TelegramAuthButton.jsx';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const SignupPage = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [telegramLoading, setTelegramLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -155,10 +157,20 @@ const SignupPage = () => {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading || telegramLoading}>
                 {loading ? 'Creating account...' : 'Create account'}
               </Button>
             </form>
+            <div className="mt-6 border-t border-border pt-6">
+              <TelegramAuthButton
+                label="Registrarse con Telegram"
+                busy={telegramLoading}
+                setBusy={setTelegramLoading}
+                disabled={loading}
+                onError={setError}
+                onSuccess={afterSignup}
+              />
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-sm text-center text-muted-foreground">

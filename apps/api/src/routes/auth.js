@@ -11,12 +11,23 @@ const TG_ISSUER = 'https://oauth.telegram.org';
 const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID || '';
 const telegramLoginNonces = new Map();
 const NONCE_TTL_MS = 5 * 60 * 1000;
+const isJwksUnavailable = (error) => {
+  const message = String(error?.message);
+  return message === 'Failed to parse the JSON Web Key Set HTTP response as JSON'
+    || /timed? out|timeout|fetch failed|network/i.test(message);
+};
 const describePocketBaseError = (error) => JSON.stringify({
-  message: error?.message,
   status: error?.status,
-  url: error?.url,
-  response: error?.response,
+  cause: error?.originalError?.cause?.code || error?.originalError?.code,
+  fields: Object.keys(error?.response?.data || {}),
 });
+const pocketBaseFailure = (res, error, message) => {
+  if (error?.status === 0 || error?.status >= 500) {
+    res.set('Retry-After', '5');
+    return res.status(503).json({ error: 'La base de cuentas no responde temporalmente. Inténtalo de nuevo en unos segundos.' });
+  }
+  return res.status(500).json({ error: message });
+};
 
 // Claves públicas de Telegram para verificar la firma del id_token (cacheadas por jose).
 const JWKS = createRemoteJWKSet(
@@ -37,6 +48,7 @@ const TELEGRAM_JWKS_FALLBACK = createLocalJWKSet({ keys: [
 ] });
 
 router.get('/telegram/config', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   if (!CLIENT_ID) return res.json({ enabled: false, error: 'Login de Telegram no configurado' });
   if (req.query.prepare !== '1') return res.json({ enabled: true, client_id: String(CLIENT_ID) });
   const now = Date.now();
@@ -72,7 +84,7 @@ router.post('/telegram', async (req, res) => {
     try {
       verified = await jwtVerify(id_token, JWKS, { issuer: TG_ISSUER });
     } catch (remoteError) {
-      if (!/timed? out|timeout|fetch failed|network/i.test(String(remoteError.message))) throw remoteError;
+      if (!isJwksUnavailable(remoteError)) throw remoteError;
       logger.warn(`JWKS remoto de Telegram no disponible; usando claves públicas de respaldo: ${remoteError.message}`);
       verified = await jwtVerify(id_token, TELEGRAM_JWKS_FALLBACK, { issuer: TG_ISSUER });
     }
@@ -80,7 +92,7 @@ router.post('/telegram', async (req, res) => {
     claims = payload;
   } catch (e) {
     logger.warn(`id_token de Telegram inválido: ${e.message}`);
-    if (/timed? out|timeout|fetch failed|network/i.test(String(e.message))) {
+    if (isJwksUnavailable(e)) {
       res.set('Retry-After', '10');
       return res.status(503).json({ error: 'Telegram no responde temporalmente; inténtalo de nuevo' });
     }
@@ -105,15 +117,19 @@ router.post('/telegram', async (req, res) => {
   const telegramName = claims.name || [claims.given_name, claims.family_name].filter(Boolean).join(' ');
   const username = claims.preferred_username || '';
   const photo = claims.picture || '';
-  logger.info(`Telegram login (OIDC) for user ${telegramId}`);
+  logger.info('Telegram login (OIDC) verified');
 
   // 4) Busca o crea el usuario en PocketBase (role es obligatorio en la colección).
   let user;
   try {
-    const existing = await pb.collection('users').getFullList({ filter: `telegram_id = "${telegramId}"` });
-    if (existing && existing.length > 0) user = existing[0];
+    const existing = await pb.collection('users').getList(1, 1, {
+      filter: pb.filter('telegram_id = {:telegramId}', { telegramId }),
+      skipTotal: true,
+    });
+    [user] = existing.items;
   } catch (error) {
     logger.warn(`Error querying existing Telegram user: ${describePocketBaseError(error)}`);
+    return pocketBaseFailure(res, error, 'No se pudo buscar la cuenta de Telegram');
   }
 
   try {
@@ -140,7 +156,7 @@ router.post('/telegram', async (req, res) => {
     }
   } catch (error) {
     logger.error(`Error creating/updating Telegram user: ${describePocketBaseError(error)}`);
-    return res.status(500).json({ error: 'No se pudo iniciar sesión' });
+    return pocketBaseFailure(res, error, 'No se pudo guardar la cuenta de Telegram');
   }
 
   // 5) Emite token de sesión de ese usuario (cliente PB = superadmin → impersonate).
@@ -149,8 +165,8 @@ router.post('/telegram', async (req, res) => {
     const impersonated = await pb.collection('users').impersonate(user.id, SESSION_TTL_SECONDS);
     authToken = impersonated.authStore.token;
   } catch (error) {
-    logger.error(`Error impersonating Telegram user: ${error.message}`);
-    return res.status(500).json({ error: 'No se pudo emitir la sesión' });
+    logger.error(`Error issuing Telegram session: ${describePocketBaseError(error)}`);
+    return pocketBaseFailure(res, error, 'No se pudo emitir la sesión');
   }
 
   logger.info(`Telegram user authenticated: ${user.id}`);
