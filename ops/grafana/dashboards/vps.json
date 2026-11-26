@@ -1,0 +1,507 @@
+{
+  "uid": "alltech-vps",
+  "title": "Estado del VPS · Todosobrealltech",
+  "schemaVersion": 40,
+  "version": 1,
+  "timezone": "browser",
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "title": "CPU del VPS",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "CPU"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "Memoria del VPS",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "RAM"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "Disco raíz ocupado",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1 - node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "/"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "Contenedores en marcha",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(alltech_docker_state{state=\"running\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "En marcha"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Contenedores detenidos",
+      "type": "stat",
+      "gridPos": {
+        "x": 6,
+        "y": 7,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(alltech_docker_state{state!=\"running\"}) or vector(0)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "Detenidos"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Avisos activos",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 7,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(ALERTS{alertstate=\"firing\"}) or vector(0)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "Activos"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Fuentes con error de recogida",
+      "type": "stat",
+      "gridPos": {
+        "x": 18,
+        "y": 7,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "alltech_log_collection_failures",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "Errores"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "CPU por contenedor",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(8,alltech_docker_cpu_percent)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "{{container}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "title": "RAM por contenedor",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 8,
+        "y": 11,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(8,alltech_docker_memory_percent)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "{{container}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "title": "Tráfico de red",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 16,
+        "y": 11,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(alltech_network_received_bytes_total{interface!~\"lo|veth.*|br-.*\"}[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "↓ {{interface}}"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(alltech_network_transmitted_bytes_total{interface!~\"lo|veth.*|br-.*\"}[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "legendFormat": "↑ {{interface}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "title": "Inventario Docker",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "alltech_docker_state",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "/^(container|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Servicios systemd",
+      "type": "table",
+      "gridPos": {
+        "x": 12,
+        "y": 19,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "alltech_systemd_state",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "/^(container|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Avisos activos y pendientes",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ALERTS",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          },
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "/^(container|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Logs del VPS",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 24,
+        "h": 16
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "vps-logs"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{source=~\"$origen\",service=~\"$servicio\"} | json | line_format \"{{.level}} {{.service}} · {{.message}}\"",
+          "datasource": {
+            "type": "loki",
+            "uid": "vps-logs"
+          }
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    }
+  ],
+  "tags": [
+    "VPS",
+    "Docker",
+    "Hostinger"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "origen",
+        "label": "Origen del log",
+        "type": "custom",
+        "query": "docker,journal",
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      },
+      {
+        "name": "servicio",
+        "label": "Servicio del log",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "vps-logs"
+        },
+        "query": {
+          "type": 1,
+          "label": "service",
+          "stream": "{source=~\"$origen\"}"
+        },
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "refresh": 1
+      }
+    ]
+  }
+}

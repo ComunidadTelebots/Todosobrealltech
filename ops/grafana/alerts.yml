@@ -1,0 +1,38 @@
+groups:
+  - name: vps-observabilidad
+    rules:
+      - alert: ServicioNoInventariado
+        expr: alltech_unexpected_workload == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.source }}: {{ $labels.service }} no está en el inventario autorizado"
+      - alert: ContenedorNoSaludable
+        expr: alltech_docker_state{health="unhealthy"} == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.container }} indica unhealthy"
+      - alert: ServicioSystemdFallido
+        expr: alltech_systemd_state{state="failed"} == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.unit }} está en estado failed"
+      - alert: RecolectorSinDatos
+        expr: absent(alltech_collector_last_success_seconds) or time() - alltech_collector_last_success_seconds > 180
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "El recolector de Docker y systemd ha dejado de actualizar datos"
+      - alert: PocoDisco
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.12
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "El disco raíz tiene menos del 12 % libre"
