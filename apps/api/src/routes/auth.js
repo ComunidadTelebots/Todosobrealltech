@@ -11,6 +11,11 @@ const TG_ISSUER = 'https://oauth.telegram.org';
 const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID || '';
 const telegramLoginNonces = new Map();
 const NONCE_TTL_MS = 5 * 60 * 1000;
+const isJwksUnavailable = (error) => {
+  const message = String(error?.message);
+  return message === 'Failed to parse the JSON Web Key Set HTTP response as JSON'
+    || /timed? out|timeout|fetch failed|network/i.test(message);
+};
 const describePocketBaseError = (error) => JSON.stringify({
   message: error?.message,
   status: error?.status,
@@ -37,6 +42,7 @@ const TELEGRAM_JWKS_FALLBACK = createLocalJWKSet({ keys: [
 ] });
 
 router.get('/telegram/config', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   if (!CLIENT_ID) return res.json({ enabled: false, error: 'Login de Telegram no configurado' });
   if (req.query.prepare !== '1') return res.json({ enabled: true, client_id: String(CLIENT_ID) });
   const now = Date.now();
@@ -72,7 +78,7 @@ router.post('/telegram', async (req, res) => {
     try {
       verified = await jwtVerify(id_token, JWKS, { issuer: TG_ISSUER });
     } catch (remoteError) {
-      if (!/timed? out|timeout|fetch failed|network/i.test(String(remoteError.message))) throw remoteError;
+      if (!isJwksUnavailable(remoteError)) throw remoteError;
       logger.warn(`JWKS remoto de Telegram no disponible; usando claves públicas de respaldo: ${remoteError.message}`);
       verified = await jwtVerify(id_token, TELEGRAM_JWKS_FALLBACK, { issuer: TG_ISSUER });
     }
@@ -80,7 +86,7 @@ router.post('/telegram', async (req, res) => {
     claims = payload;
   } catch (e) {
     logger.warn(`id_token de Telegram inválido: ${e.message}`);
-    if (/timed? out|timeout|fetch failed|network/i.test(String(e.message))) {
+    if (isJwksUnavailable(e)) {
       res.set('Retry-After', '10');
       return res.status(503).json({ error: 'Telegram no responde temporalmente; inténtalo de nuevo' });
     }
