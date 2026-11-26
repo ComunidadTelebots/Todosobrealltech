@@ -2,7 +2,7 @@
   "uid": "alltech-vps",
   "title": "Estado del VPS · Todosobrealltech",
   "schemaVersion": 40,
-  "version": 1,
+  "version": 2,
   "timezone": "browser",
   "time": {
     "from": "now-3h",
@@ -397,7 +397,7 @@
       "type": "table",
       "gridPos": {
         "x": 0,
-        "y": 29,
+        "y": 37,
         "w": 24,
         "h": 7
       },
@@ -435,7 +435,7 @@
       "type": "logs",
       "gridPos": {
         "x": 0,
-        "y": 36,
+        "y": 44,
         "w": 24,
         "h": 16
       },
@@ -459,6 +459,99 @@
         "wrapLogMessage": true,
         "enableLogDetails": true,
         "sortOrder": "Descending"
+      }
+    },
+    {
+      "title": "Memoria disponible",
+      "id": 15,
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "node_memory_MemAvailable_bytes",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "title": "Espacio libre del disco raíz",
+      "id": 16,
+      "type": "timeseries",
+      "gridPos": {
+        "x": 8,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "node_filesystem_avail_bytes{mountpoint=\"/\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "title": "Antigüedad de los datos del recolector",
+      "id": 17,
+      "type": "timeseries",
+      "gridPos": {
+        "x": 16,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "vps-metrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time() - alltech_collector_last_success_seconds",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vps-metrics"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
       }
     }
   ],
@@ -503,5 +596,21 @@
         "refresh": 1
       }
     ]
-  }
+  },
+  "links": [
+    {
+      "title": "Alertas y silencios",
+      "type": "link",
+      "url": "/observabilidad/alerting/list",
+      "icon": "external link",
+      "targetBlank": false
+    },
+    {
+      "title": "Disponibilidad · Uptime Kuma",
+      "type": "link",
+      "url": "https://status.todosobreall.tech/dashboard",
+      "icon": "external link",
+      "targetBlank": true
+    }
+  ]
 }

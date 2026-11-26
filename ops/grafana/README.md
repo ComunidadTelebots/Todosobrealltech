@@ -21,7 +21,7 @@ Desde este directorio:
    Guardar una contraseña aleatoria en `grafana-password` (UID 472, 0400) sin mostrarla. Grafana la usa al inicializar su base de datos.
 2. Crear `/var/lib/alltech-observability/metrics` (0755) e instalar
    `collect.py` y `purpose.json` en `/opt/alltech-observability`, bajo root.
-3. Arrancar con `docker compose up -d`. Verificar que los cuatro contenedores
+3. Arrancar con `docker compose up -d`. Verificar que los cinco contenedores
    arrancan y que una sesión sin credenciales es redirigida al login.
 4. Inicializar una sola vez el inventario de referencia con
    `python3 /opt/alltech-observability/collect.py --initialize-baseline`.
@@ -37,7 +37,9 @@ El panel muestra servicios Docker nuevos que siguen en marcha, nombres de conten
 con cambios en su definición Docker, unidades systemd
 activas fuera del inventario, contenedores con healthcheck fallido, errores de
 systemd, pérdida del recolector y falta de espacio. Esta primera versión no
-audita cada ejecución de procesos ni integra un canal externo de notificaciones.
+audita cada ejecución de procesos ni integra un canal externo de notificaciones. Alertmanager recibe y agrupa
+los avisos de Prometheus y está disponible dentro de Grafana para revisarlos
+y silenciarlos.
 El inventario inicial registra lo observado en el servidor y requiere validación
 del propietario para distinguir servicios deliberados de servicios heredados.
 

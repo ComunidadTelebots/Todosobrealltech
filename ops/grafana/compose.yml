@@ -40,6 +40,14 @@ services:
       - prometheus_data:/prometheus
     networks: [metrics]
     restart: unless-stopped
+  alertmanager:
+    image: prom/alertmanager:v0.35.1
+    command: [--config.file=/etc/alertmanager/alertmanager.yml, --storage.path=/alertmanager, --cluster.listen-address=]
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    networks: [metrics]
+    restart: unless-stopped
   node-exporter:
     image: prom/node-exporter:v1.13.1
     pid: host
@@ -61,6 +69,7 @@ services:
 volumes:
   grafana_secure_data:
   prometheus_data:
+  alertmanager_data:
   loki_data:
 networks:
   metrics:

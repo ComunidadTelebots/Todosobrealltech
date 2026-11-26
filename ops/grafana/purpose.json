@@ -7,6 +7,7 @@
   "^alltech-observability-grafana-": "Panel privado de métricas, avisos y logs",
   "^alltech-observability-prometheus-": "Recoger métricas y evaluar avisos del VPS",
   "^alltech-observability-node-exporter-": "Exportar métricas Linux e inventario del VPS",
+  "^alltech-observability-alertmanager-": "Agrupar avisos y gestionar silencios del VPS",
   "^alltech-observability-loki-": "Indexar y conservar los logs operativos del VPS",
   "^wireguard-": "Acceso VPN WireGuard",
   "^duckdns$": "Actualizar el DNS dinámico autorizado",
