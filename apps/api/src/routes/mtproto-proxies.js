@@ -647,7 +647,4 @@ router.post('/community', (req, res) => {
   return res.json({ ok: true, added: !exists, total: list.length });
 });
 
-// Calienta la caché al arrancar para que la primera visita sea rápida.
-refreshPayload().catch((err) => logger.warn(`Warm-up de proxies falló: ${err.message}`));
-
 export default router;
