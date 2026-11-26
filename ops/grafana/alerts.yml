@@ -36,3 +36,10 @@ groups:
           severity: warning
         annotations:
           summary: "El disco raíz tiene menos del 12 % libre"
+      - alert: DefinicionDeContenedorModificada
+        expr: alltech_container_definition_changed == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.container }} cambió respecto a su definición Docker inventariada"

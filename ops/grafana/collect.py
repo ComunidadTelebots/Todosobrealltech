@@ -2,6 +2,7 @@
 """Read bounded Docker/systemd diagnostics and publish them locally."""
 import concurrent.futures
 import datetime as dt
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -35,6 +36,18 @@ def collect_inventory():
         json.loads(line)
         for line in command('docker', 'ps', '-a', '--no-trunc', '--format', '{{json .}}').stdout.splitlines()
     ]
+    if containers:
+        inventory = command(
+            'docker', 'inspect', '--format',
+            '{{json .Image}} {{json .Config.User}} {{json .Config.Entrypoint}} '
+            '{{json .Config.Cmd}} {{json .HostConfig.Privileged}} '
+            '{{json .HostConfig.NetworkMode}} {{json .HostConfig.CapAdd}} '
+            '{{json .HostConfig.CapDrop}} {{json .HostConfig.SecurityOpt}} '
+            '{{json .HostConfig.ReadonlyRootfs}} {{json .HostConfig.PortBindings}}',
+            *(entry['ID'] for entry in containers),
+        ).stdout.splitlines()
+        for entry, settings in zip(containers, inventory, strict=True):
+            entry['fingerprint'] = hashlib.sha256(settings.encode()).hexdigest()
     units = {}
     output = command('systemctl', 'list-units', '--all', '--type=service', '--plain',
                      '--no-legend', '--no-pager').stdout
@@ -64,9 +77,13 @@ def metrics(containers, units, baseline, purposes):
                   'starting' if '(health: starting)' in status else 'sin_healthcheck')
         purpose = next((text for match, text in purposes.items() if re.search(match, name)), 'Por documentar')
         labels = f'container={label_value(name)},purpose={label_value(purpose)}'
+        labels += f',image={label_value(entry["Image"])}'
         lines.append(f'alltech_docker_state{{{labels},state={label_value(state)},health={label_value(health)}}} 1')
         if name not in baseline['containers'] and state == 'running':
             lines.append(f'alltech_unexpected_workload{{source="docker",service={label_value(name)}}} 1')
+        expected = baseline.get('fingerprints', {}).get(name)
+        if expected and entry['fingerprint'] != expected:
+            lines.append(f'alltech_container_definition_changed{{container={label_value(name)}}} 1')
     for name, state in units.items():
         lines.append(f'alltech_systemd_state{{unit={label_value(name)},state={label_value(state)}}} 1')
         if name not in baseline['units'] and state == 'active':
@@ -156,7 +173,8 @@ def main():
     containers, units = collect_inventory()
     if sys.argv[1:] == ['--initialize-baseline']:
         baseline = {'containers': sorted(row['Names'] for row in containers),
-                    'units': sorted(name for name, state in units.items() if state == 'active')}
+                    'units': sorted(name for name, state in units.items() if state == 'active'),
+                    'fingerprints': {row['Names']: row['fingerprint'] for row in containers}}
         with BASELINE.open('x') as file:
             json.dump(baseline, file, indent=2)
         return
@@ -174,12 +192,14 @@ def main():
                 if entries := job.result():
                     streams.append({'stream': {'source': 'docker', 'service': jobs[job]}, 'values': entries})
             except (RuntimeError, subprocess.TimeoutExpired):
+                print(f'No se pudo leer la fuente Docker {jobs[job]}')
                 failures += 1
     try:
         streams.extend(journal_logs(start, end))
         push(streams)
         write_atomic(cursor, str(end))
-    except (RuntimeError, OSError, subprocess.TimeoutExpired, ValueError):
+    except (RuntimeError, OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        print(f'No se pudo publicar la lectura de Loki: {type(exc).__name__}')
         failures += 1
     lines.append(f'alltech_log_collection_failures {failures}')
     write_atomic(ROOT / 'metrics' / 'vps.prom', '\n'.join(lines) + '\n')

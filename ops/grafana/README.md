@@ -17,9 +17,8 @@ se conservan 7 días y las métricas hasta 15 días, con un límite de 2 GB.
 
 Desde este directorio:
 
-1. Crear `/etc/alltech-observability` (permisos 0750, propietario root y grupo
-   472). Guardar una contraseña aleatoria en `grafana-password` (root:472,
-   0440) sin mostrarla. Grafana la usa al inicializar su base de datos.
+1. Crear `/etc/alltech-observability` (permisos 0750 y propietario root).
+   Guardar una contraseña aleatoria en `grafana-password` (UID 472, 0400) sin mostrarla. Grafana la usa al inicializar su base de datos.
 2. Crear `/var/lib/alltech-observability/metrics` (0755) e instalar
    `collect.py` y `purpose.json` en `/opt/alltech-observability`, bajo root.
 3. Arrancar con `docker compose up -d`. Verificar que los cuatro contenedores
@@ -34,7 +33,8 @@ Desde este directorio:
 
 ## Avisos y límites
 
-El panel muestra servicios Docker nuevos que siguen en marcha, unidades systemd
+El panel muestra servicios Docker nuevos que siguen en marcha, nombres de contenedor
+con cambios en su definición Docker, unidades systemd
 activas fuera del inventario, contenedores con healthcheck fallido, errores de
 systemd, pérdida del recolector y falta de espacio. Esta primera versión no
 audita cada ejecución de procesos ni integra un canal externo de notificaciones.
@@ -48,6 +48,10 @@ externos forma parte de su función. No necesita un panel web ni montar el socke
 Docker. Deben mantenerse el modo de red y los puertos UDP que exige el puente.
 El contenedor de servicios onion usa una red independiente y configura oniones
 con un `torrc` de solo lectura. Sus claves permanecen en el volumen propio.
+
+El VPS fija la imagen Snowflake por digest, usa el UID 65534, descarta
+capacidades, bloquea la elevación y monta su raíz en solo lectura.
+Se mantiene la red de host para el tráfico WebRTC.
 
 El inventario distingue función, estado y origen de los logs. Para confirmar una
 build, registrar repositorio, commit, imagen o digest y configuración efectiva.

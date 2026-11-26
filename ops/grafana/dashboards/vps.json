@@ -347,7 +347,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "pattern": "/^(container|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
+              "pattern": "/^(container|image|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
             }
           }
         }
@@ -385,7 +385,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "pattern": "/^(container|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
+              "pattern": "/^(container|image|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
             }
           }
         }
@@ -423,7 +423,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "pattern": "/^(container|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
+              "pattern": "/^(container|image|purpose|state|health|unit|alertname|severity|source|service|alertstate)$/"
             }
           }
         }

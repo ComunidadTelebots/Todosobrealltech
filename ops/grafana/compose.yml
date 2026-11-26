@@ -2,6 +2,10 @@ name: alltech-observability
 services:
   grafana:
     image: grafana/grafana:13.3.2
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - test -r /run/secrets/grafana_password && test -s /run/secrets/grafana_password && exec /run.sh
     environment:
       GF_SERVER_ROOT_URL: https://todosobreall.tech/observabilidad/
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
@@ -14,7 +18,7 @@ services:
       GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
     secrets: [grafana_password]
     volumes:
-      - grafana_data:/var/lib/grafana
+      - grafana_secure_data:/var/lib/grafana
       - ./provisioning:/etc/grafana/provisioning:ro
       - ./dashboards:/etc/grafana/dashboards:ro
     networks: [metrics, traefik]
@@ -55,7 +59,7 @@ services:
     networks: [metrics]
     restart: unless-stopped
 volumes:
-  grafana_data:
+  grafana_secure_data:
   prometheus_data:
   loki_data:
 networks:
