@@ -3,7 +3,7 @@ migrate((app) => {
   const collection = app.findCollectionByNameOrId("users");
   const record = new Record(collection);
   record.set("email", "creator@todosobrealltech.com");
-  record.setPassword("Creator123456");
+  record.setRandomPassword();
   record.set("name", "Creador");
   record.set("role", "creator");
   try {
