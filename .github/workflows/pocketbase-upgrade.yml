@@ -1,0 +1,49 @@
+name: Migración de PocketBase
+on:
+  pull_request:
+    paths:
+      - apps/pocketbase/**
+      - .github/workflows/pocketbase-upgrade.yml
+permissions:
+  contents: read
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Construir las dos versiones
+        run: |
+          docker build -f apps/pocketbase/Dockerfile --build-arg POCKETBASE_VERSION=0.31.0 -t pb-before .
+          docker build -f apps/pocketbase/Dockerfile -t pb-after .
+          expected=$(cat apps/pocketbase/.pocketbase-version)
+          actual=$(docker run --rm pb-after pocketbase --version)
+          test "${actual##* }" = "$expected"
+      - name: Migrar datos de prueba y verificar la colección final
+        run: |
+          export PB_ENCRYPTION_KEY=$(openssl rand -hex 16)
+          export PB_SUPERUSER_PASSWORD=$(openssl rand -hex 24)
+          export PB_SUPERUSER_EMAIL=ci@example.invalid
+          docker volume create pb-ci
+          trap 'docker rm -f pb-ci >/dev/null 2>&1 || true; docker volume rm pb-ci >/dev/null' EXIT
+          for image in pb-before pb-after; do
+            docker run -d --network none --name pb-ci -v pb-ci:/data \
+              -e PB_ENCRYPTION_KEY -e PB_SUPERUSER_EMAIL -e PB_SUPERUSER_PASSWORD "$image"
+            for attempt in $(seq 1 40); do
+              if docker exec pb-ci wget -qO /dev/null http://127.0.0.1:8090/api/health; then break; fi
+              if [ "$(docker inspect -f '{{.State.Running}}' pb-ci)" != true ]; then
+                docker logs pb-ci 2>&1 | grep -iE 'failed to apply migration|error:' | tail -5
+                exit 1
+              fi
+              sleep 1
+            done
+            docker exec pb-ci wget -qO /dev/null http://127.0.0.1:8090/api/health
+            docker exec pb-ci pocketbase horizons --help | grep -q 'migrations:up'
+            docker stop pb-ci
+            docker cp pb-ci:/data/data.db "$RUNNER_TEMP/$image.db"
+            sqlite3 "$RUNNER_TEMP/$image.db" "SELECT count(*) FROM nw3_affiliate_applications"
+            docker rm pb-ci
+          done
+          before=$(sqlite3 "$RUNNER_TEMP/pb-before.db" "SELECT id FROM _superusers WHERE email='ci@example.invalid'")
+          after=$(sqlite3 "$RUNNER_TEMP/pb-after.db" "SELECT id FROM _superusers WHERE email='ci@example.invalid'")
+          test -n "$before" && test "$after" = "$before"
