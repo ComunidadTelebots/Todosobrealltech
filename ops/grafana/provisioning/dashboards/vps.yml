@@ -1,0 +1,8 @@
+apiVersion: 1
+providers:
+  - name: VPS Hostinger
+    folder: Infraestructura
+    type: file
+    disableDeletion: true
+    options:
+      path: /etc/grafana/dashboards

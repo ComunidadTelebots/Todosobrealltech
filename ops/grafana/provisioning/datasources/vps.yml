@@ -1,0 +1,21 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus VPS
+    uid: vps-metrics
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+  - name: Loki VPS
+    uid: vps-logs
+    type: loki
+    access: proxy
+    url: http://loki:3100
+  - name: Alertmanager VPS
+    uid: vps-alerts
+    type: alertmanager
+    access: proxy
+    url: http://alertmanager:9093
+    jsonData:
+      implementation: prometheus
+      handleGrafanaManagedAlerts: false

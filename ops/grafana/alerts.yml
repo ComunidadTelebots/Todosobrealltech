@@ -1,0 +1,87 @@
+groups:
+  - name: vps-observabilidad
+    rules:
+      - alert: ServicioNoInventariado
+        expr: alltech_unexpected_workload == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.source }}: {{ $labels.service }} no está en el inventario autorizado"
+      - alert: ContenedorNoSaludable
+        expr: alltech_docker_state{health="unhealthy"} == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.container }} indica unhealthy"
+      - alert: ServicioSystemdFallido
+        expr: alltech_systemd_state{state="failed"} == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.unit }} está en estado failed"
+      - alert: RecolectorSinDatos
+        expr: absent(alltech_collector_last_success_seconds) or time() - alltech_collector_last_success_seconds > 180
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "El recolector de Docker y systemd ha dejado de actualizar datos"
+      - alert: PocoDisco
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.12
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "El disco raíz tiene menos del 12 % libre"
+      - alert: DefinicionDeContenedorModificada
+        expr: alltech_container_definition_changed == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.container }} cambió respecto a su definición Docker inventariada"
+      - alert: CPUAlta
+        expr: 100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "La CPU del VPS supera el 90 % durante 10 minutos"
+      - alert: MemoriaBaja
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Menos del 10 % de RAM disponible durante 5 minutos"
+      - alert: DiscoCritico
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.05
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "El disco raíz tiene menos del 5 % libre"
+      - alert: ComponenteMonitorizacionCaido
+        expr: up{job=~"vps|grafana|servicios-observabilidad"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus no puede recoger métricas de {{ $labels.instance }}"
+      - alert: ErroresRecogidaLogs
+        expr: alltech_log_collection_failures > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "El recolector lleva 5 minutos con fallos de lectura o publicación"
+      - alert: PocketBasePlataformaDetenido
+        expr: absent(alltech_docker_state{container="todosobrealltech-pocketbase-1",state="running"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PocketBase de Todosobrealltech no figura en ejecución"

@@ -1,0 +1,9 @@
+[Unit]
+Description=Publicar métricas y logs del VPS en Grafana
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/alltech-observability/collect.py
+TimeoutStartSec=55
+UMask=0027

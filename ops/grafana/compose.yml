@@ -1,0 +1,80 @@
+name: alltech-observability
+services:
+  grafana:
+    image: grafana/grafana:13.3.2
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - test -r /run/secrets/grafana_password && test -s /run/secrets/grafana_password && exec /run.sh
+    environment:
+      GF_SERVER_ROOT_URL: https://todosobreall.tech/observabilidad/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_SECURITY_ADMIN_USER: observador
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_password
+      GF_SECURITY_COOKIE_SECURE: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    secrets: [grafana_password]
+    volumes:
+      - grafana_secure_data:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning:ro
+      - ./dashboards:/etc/grafana/dashboards:ro
+    networks: [metrics, traefik]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+      traefik.http.routers.alltech-grafana.rule: "Host(`todosobreall.tech`) && (Path(`/observabilidad`) || PathPrefix(`/observabilidad/`))"
+      traefik.http.routers.alltech-grafana.entrypoints: websecure
+      traefik.http.routers.alltech-grafana.tls: "true"
+      traefik.http.routers.alltech-grafana.tls.certresolver: letsencrypt
+      traefik.http.services.alltech-grafana.loadbalancer.server.port: "3000"
+    restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.path=/prometheus, --storage.tsdb.retention.time=15d, --storage.tsdb.retention.size=2GB]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    networks: [metrics]
+    restart: unless-stopped
+  alertmanager:
+    image: prom/alertmanager:v0.35.1
+    command: [--config.file=/etc/alertmanager/alertmanager.yml, --storage.path=/alertmanager, --cluster.listen-address=]
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    networks: [metrics]
+    restart: unless-stopped
+  node-exporter:
+    image: prom/node-exporter:v1.13.1
+    pid: host
+    command: [--path.rootfs=/host, --collector.textfile.directory=/textfile, "--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+)($|/)"]
+    volumes:
+      - /:/host:ro,rslave
+      - /var/lib/alltech-observability/metrics:/textfile:ro
+    networks: [metrics]
+    restart: unless-stopped
+  loki:
+    image: grafana/loki:3.7.10
+    command: [-config.file=/etc/loki/loki.yml]
+    volumes:
+      - ./loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    ports: ["127.0.0.1:13100:3100"]
+    networks: [metrics]
+    restart: unless-stopped
+volumes:
+  grafana_secure_data:
+  prometheus_data:
+  alertmanager_data:
+  loki_data:
+networks:
+  metrics:
+  traefik:
+    external: true
+secrets:
+  grafana_password:
+    file: /etc/alltech-observability/grafana-password
